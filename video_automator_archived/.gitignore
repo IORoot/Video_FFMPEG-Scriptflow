@@ -1,0 +1,13 @@
+1_input_raw_videos
+2_output_instagram_videos
+src/intermediate_videos
+*.csv
+*.mp4
+*.m4v
+*.mov
+._.DS_Store
+**/._.DS_Store
+.DS_Store
+**/.DS_Store
+2_output_instagram_videos/.DS_Store
+1_input_raw_videos/.DS_Store
