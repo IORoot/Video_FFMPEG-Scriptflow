@@ -37,6 +37,7 @@ usage()
         printf "\tThe name of an input file.\n\n"
 
         printf " -o | --output <OUTPUT_FILE>\n"
+        printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
 
         printf " -r | --rotation <ROTATION>\n"
@@ -118,6 +119,11 @@ function main()
 {
 
     printf "This will convert a landscape video to portrait.\n"
+
+    if [[ -z "${INPUT_FILENAME}" ]]; then 
+        printf "❌ No input file specified. Exiting.\n"
+        exit 1
+    fi
 
     # ╭──────────────────────────────────────────────────────────╮
     # │           Step 1. Detect orientation of video.           │

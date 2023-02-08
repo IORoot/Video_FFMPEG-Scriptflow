@@ -43,7 +43,7 @@ usage()
         printf "\tThe name of the second input file.\n\n"
 
         printf " -o | --output <OUTPUT_FILE>\n"
-        printf "\tDefault is output_appended.mp4\n"
+        printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -117,6 +117,15 @@ function arguments()
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
+
+    if [[ -z "${FIRST_FILENAME}" ]]; then 
+        printf "❌ No first file specified. Exiting.\n"
+        exit 1
+    fi
+    if [[ -z "${SECOND_FILENAME}" ]]; then 
+        printf "❌ No second file specified. Exiting.\n"
+        exit 1
+    fi
 
     printf "This will append the first and second files together while re-encoding them.\n"
 
