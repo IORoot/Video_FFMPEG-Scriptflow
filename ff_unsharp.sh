@@ -1,7 +1,7 @@
 #!/bin/bash
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │                         Alter the colour of a video                          │
+# │                    Sharpen a video using the unsharp mask                    │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 
@@ -19,12 +19,16 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
 
-OUTPUT_FILENAME="output_colour.mp4"
-BRIGHTNESS="0"      # -1.0 to 1.0
-CONTRAST="1"        # -1000.0 to 1000.0
-GAMMA="1"           # 0.1 to 10.0
-SATURATION="1"      # 0.0 to 3.0
-WEIGHT="1"          # 0.0 to 1.0
+OUTPUT_FILENAME="output_unsharp.mp4"
+LX="5"          # odd numbers only. 3 to 23
+LY="5"          # odd numbers only. 3 to 23
+LA="1.0"        # -1.5 and 1.5
+CX="5"          # odd numbers only. 3 to 23
+CY="5"          # odd numbers only. 3 to 23
+CA="0.0"        # -1.5 and 1.5
+AX="5"          # odd numbers only. 3 to 23
+AY="5"          # odd numbers only. 3 to 23
+AA="0.0"        # -1.5 and 1.5
 LOGLEVEL="error" 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -37,7 +41,7 @@ usage()
         printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> -t <LUT_FILE> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Change the Brightness, Contrast, Gamma, Gamma-Weight and Saturation of a video.\n\n"
+        printf "Uses an unsharp mask to alter the luma,chroma and alpha of a video.\n\n"
 
         printf "Flags:\n"
 
@@ -48,20 +52,37 @@ usage()
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
 
-        printf " -b | --brightness <BRIGHTNESS>\n"
-        printf "\tChange the brightness value from -1.0 to 1.0.\n\n"
+        printf " -lx | --luma_x <SIZE>\n"
+        printf "\tSet the luma matrix horizontal size. It must be an odd integer between 3 and 23. The default value is 5.\n\n"
 
-        printf " -c | --contrast <CONTRAST>\n"
-        printf "\tChange the contrast value from -1000.0 to 1000.0.\n\n"
+        printf " -ly | --luma_y <SIZE>\n"
+        printf "\tSet the luma matrix vertical size. It must be an odd integer between 3 and 23. The default value is 5.\n\n"
 
-        printf " -g | --gamma <GAMMA>\n"
-        printf "\tChange the gamma value from 0.1 to 10.0.\n\n"
+        printf " -la | --luma_amount <AMOUNT>\n"
+        printf "\tSet the luma effect strength. It must be a floating point number. -2.0 to 5.0. Default value is 1.0.\n"
+        printf "\tNegative values will blur the input video, while positive values will sharpen it, a value of zero will disable the effect.\n\n"
 
-        printf " -s | --saturation <SATURATION>\n"
-        printf "\tChange the saturation value from 0.0 to 3.0.\n\n"
+        printf " -cx | --chroma_x <SIZE>\n"
+        printf "\tSet the chroma matrix horizontal size. It must be an odd integer between 3 and 23. The default value is 5.\n\n"
 
-        printf " -w | --weight <GAMMAWEIGHT>\n"
-        printf "\tChange the gamma weight value from 0.0 to 1.0.\n\n"
+        printf " -cy | --chroma_y <SIZE>\n"
+        printf "\tSet the chroma matrix vertical size. It must be an odd integer between 3 and 23. The default value is 5.\n\n"
+
+        printf " -ca | --chroma_amount <AMOUNT>\n"
+        printf "\tSet the chroma effect strength. It must be a floating point number. Default value is 0.0.\n"
+        printf "\tNegative values will blur the input video, while positive values will sharpen it, a value of zero will disable the effect.\n\n"
+
+        printf " -ax | --alpha_x <SIZE>\n"
+        printf "\tSet the alpha matrix horizontal size. It must be an odd integer between 3 and 23. The default value is 5.\n\n"
+
+        printf " -ay | --alpha_y <SIZE>\n"
+        printf "\tSet the alpha matrix vertical size. It must be an odd integer between 3 and 23. The default value is 5.\n\n"
+
+        printf " -aa | --alpha_amount <AMOUNT>\n"
+        printf "\tSet the alpha effect strength. It must be a floating point number. Default value is 0.0.\n"
+        printf "\tNegative values will blur the input video, while positive values will sharpen it, a value of zero will disable the effect.\n\n"
+
+        printf "\tAll parameters are optional and default to the equivalent of the string '5:5:1.0:5:5:0.0'.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
@@ -97,36 +118,64 @@ function arguments()
             ;;
 
 
-        -b|--brightness)
-            BRIGHTNESS="$2"
+        -lx|--luma_x)
+            LX="$2"
             shift 
             shift
             ;;
 
 
-        -c|--contrast)
-            CONTRAST="$2"
+        -ly|--luma_y)
+            LY="$2"
             shift 
             shift
             ;;
 
 
-        -g|--gamma)
-            GAMMA="$2"
+        -la|--luma_amount)
+            LA="$2"
             shift 
             shift
             ;;
 
 
-        -s|--saturation)
-            SATURATION="$2"
+        -cx|--chroma_x)
+            CX="$2"
             shift 
             shift
             ;;
 
 
-        -w|--weight)
-            WEIGHT="$2"
+        -cy|--chroma_y)
+            CY="$2"
+            shift 
+            shift
+            ;;
+
+
+        -ca|--chroma_amount)
+            CA="$2"
+            shift 
+            shift
+            ;;
+            
+
+        -ax|--alpha_x)
+            AX="$2"
+            shift 
+            shift
+            ;;
+
+
+        -ay|--alpha_y)
+            AY="$2"
+            shift 
+            shift
+            ;;
+
+
+        -aa|--alpha_amount)
+            AA="$2"
             shift 
             shift
             ;;
@@ -163,18 +212,18 @@ function arguments()
 function main()
 {
 
-    printf "This will alter the colour parameters of the video.\n"
+    printf "This will sharpen/blur the video.\n"
 
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    printf "🎨 Changing the colour of the video.\n" "$LUT_FILE" 
+    printf "🎨 Changing the sharpness of the video.\n" "$LUT_FILE" 
 
     # https://ffmpeg.org/ffmpeg-filters.html#eq
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
-        eq=brightness=${BRIGHTNESS}:contrast=${CONTRAST}:gamma=${GAMMA}:saturation=${SATURATION}:gamma_weight=${WEIGHT} \
+        unsharp=${LX}:${LY}:${LA}:${CX}:${CY}:${CA}:${AX}:${AY}:${AA} \
         -c:a copy ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
