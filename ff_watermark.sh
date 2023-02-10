@@ -5,6 +5,8 @@
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 
+# https://www.bannerbear.com/blog/how-to-add-watermark-to-videos-using-ffmpeg/
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                       Set Defaults                       │
 # ╰──────────────────────────────────────────────────────────╯
@@ -48,6 +50,7 @@ usage()
         printf "\tThe name of the output file.\n\n"
 
         printf " -w | --watermark <WATERMARK_FILE>\n"
+        printf "\tNote that you CAN use videos as the watermark.\n"
         printf "\tImage to use for the watermark.\n\n"
 
         printf " -x | --xpixels <PIXELS>\n"
@@ -87,6 +90,8 @@ usage()
         printf "Full-size semi-transparent watermark:\n"
         printf "ff_watermark -i input.mp4 -w watermark.png -s 1 -a 0.5\n\n"
 
+        printf "Small, transparent bottom-right positioned Video as a watermark:\n"
+        printf "ff_watermark -i input.mp4 -w watermark_video.mp4 -s 0.3 -x \"(W-w)\" -y \"(H-h)\" -a 0.5\n\n"
         exit 1
     fi
 }

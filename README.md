@@ -1,4 +1,4 @@
-# FFMPEG Video Automator
+# FFMPEG Util scripts and Templates
 
 This is a collection of scripts to automate simple video editing tasks.
 
@@ -6,61 +6,163 @@ The idea is that they can be chained together for more complex video effects and
 
 These are all based on BASH and FFMPEG.
 
-## Utils
+
+## Utility Scripts
+
+Current list of scripts and their purposes.
+
+| Script               | Description                                                  |
+| -------------------- | ------------------------------------------------------------ |
+| `ff_append.sh`       | This will concatenate two videos together and re-encode them |
+| `ff_aspect_ratio.sh` | Changes the container metadata's Display Aspect Ratio (DAR)  |
+| `ff_blur.sh`         | Simple blur function using an unsharp mask                   |
+| `ff_colour.sh`       | Change brightness, contrast, gamma, saturation of video      |
+| `ff_concat.sh`       | Concatenate multiple videos together                         |
+| `ff_lut.sh`          | Apply a 3DL/Cube LUT file to a video                         |
+| `ff_rotate.sh`       | Rotate a video in 90 degree increments                       |
+| `ff_sharpen.sh`      | Simple sharpen function using an unsharp mask                |
+| `ff_to_landscape.sh` | Rotate a portrait video to landscape                         |
+| `ff_to_portrait.sh`  | Rotate a landscape video to portrait                         |
+| `ff_unsharp.sh`      | Use an unsharp mask to blur/sharpen luma,gamma,alpha         |
+| `ff_watermark.sh`    | Overlay a watermark image/video                              |
+| `ff_flip.sh`    | Horizontally and/or vertically flip the video                              |
 
 
 
-## Explanation of FFMPEG flags and simple tasks
 
-Below is a list of simple tasks and flags to use to accomplish them.
+### `ff_append.sh`
 
-### Trim
+#### Description
+This will append two files together while re-encoding them to be the same codec. Good if you need to change the codec of the video by transcoding them. Note the `ff_concat.sh` script is better if you do not need to transcode.
 
-Where to start the offset marker (`-ss`) and record or transcode “duration” time (`-t`) in seconds of audio/video
+#### Flags
+```bash
+Flags:
+ -f | --first <FIRST_INPUT_FILE>
+        The name of the first input file.
+
+ -s | --second <SECOND_INPUT_FILE>
+        The name of the second input file.
+
+ -o | --output <OUTPUT_FILE>
+        Default is output_appended.mp4
+        The name of the output file.
+
+ -l | --loglevel <LOGLEVEL>
+        The FFMPEG loglevel to use. Default is 'error' only.
+        Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
 ```
--ss time_off -t duration 
 
-eg.
+#### Example
 
-ffmpeg -ss 0 -t 60
+```bash
+./ff_append.sh -f landscape2.mp4 -s landscape.mp4 -o out.mp4
 ```
-This will cut everything other than the first 0 to 60 seconds.
 
 
 
 
-### Full Example
+### `ff_aspect_ratio.sh`
 
-``` bash
-ffmpeg \
-     -sameq -ss 0 -t 60              # Trim to 60secs.
-     -i input.m4v \                  # INPUT File 0
-     -framerate 30 \                 # Framerate of image to 30fps
-     -loop 1 \                       # Loop frame once only (because it's an image.)
-     -i watermark/ldnpk_white.png \  # INPUT File 1
+#### Description
 
-    -filter_complex "[1:v] fade=out:st=3:d=1:alpha=1 [ov]; [0:v][ov] overlay=0:0 [v]" \
-     # 1. 
-     # [1:v]        Filter input 1 (image) : v (video channel)
-     # [fade=out]   fade-out filter 
-     # st=3         (st)arts at 3 seconds, 
-     # d=1          (d)uration of 1 second, 
-     # alpha=1      (alpha) channel on. 
-     
-     # [ov];        set [o]utput [v]ideo as [ov] and end with semicolon.
+#### Flags
 
-     # 2. 
-     # [0:v]        Filter input 0 (the video) : v (video channel)
-     # [ov]         And use the previously created [ov]
-     # overlay=0:0  overlay at row 0, column 0 
-     # [v]          output video as [v].
+#### Example
 
-     -map "[v]" \                    # Map the filter output [v] to output.
-     -map 0:a \                      # Map input 0 audio to output.
-     -s 1080x608 \                   # Instagram 1.78 aspect ratio
-     -c:v libx264 \                  # Scale to 1280x720.
-     -c:a copy \                     # copy to output, don't overwrite.
-     -r 30 \                         # covert to 30fps
-     -shortest output.mov            # Finish encoding when the shortest input stream ends - which should be the video.
-     -nostdin                        # https://stackoverflow.com/questions/13995715/bash-while-loop-wait-until-task-has-completed
-```
+
+### `ff_blur.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
+
+
+### `ff_colour.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
+
+
+### `ff_concat.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
+
+
+
+### `ff_lut.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
+
+
+
+### `ff_rotate.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
+
+
+
+### `ff_sharpen.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
+
+
+
+### `ff_to_landscape.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
+
+
+
+### `ff_to_portrait.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
+
+
+
+### `ff_unsharp.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
+
+
+
+### `ff_watermark.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
