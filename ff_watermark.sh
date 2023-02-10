@@ -24,6 +24,7 @@ XPIXELS="10"
 YPIXELS="10"
 LOGLEVEL="error"
 SCALE="0.2" 
+ALPHA="1" 
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -32,7 +33,7 @@ SCALE="0.2"
 usage()
 {
     if [ "$#" -lt 2 ]; then
-        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> -w <WATERMARK_FILE> [-x <PIXELS>] [-y <PIXELS>] [-s <SCALE>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
+        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> -w <WATERMARK_FILE> [-x <PIXELS>] [-y <PIXELS>] [-s <SCALE>] [-a <ALPHA>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
         printf "Overlay a watermark on the video.\n\n"
@@ -65,6 +66,9 @@ usage()
         printf " -s | --scale <SCALE>\n"
         printf "\tSize of the watermark in relation to the height of the video. Default is 0.2 (1/5th height)\n\n"
 
+        printf " -a | --alpha <ALPHA>\n"
+        printf "\tTransparency (alpha channel) of the watermark. From 0 to 1. Default is 1.\n\n"
+
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
         printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n\n"
@@ -79,6 +83,9 @@ usage()
 
         printf "Full-size watermark:\n"
         printf "ff_watermark -i input.mp4 -w watermark.png -s 1\n\n"
+
+        printf "Full-size semi-transparent watermark:\n"
+        printf "ff_watermark -i input.mp4 -w watermark.png -s 1 -a 0.5\n\n"
 
         exit 1
     fi
@@ -138,6 +145,13 @@ function arguments()
             ;;
 
 
+        -a|--alpha)
+            ALPHA="$2"
+            shift 
+            shift
+            ;;
+
+
         -l|--loglevel)
             LOGLEVEL="$2"
             shift 
@@ -183,7 +197,7 @@ function main()
 
     printf "🎨 Overlaying the watermark.\n" "$LUT_FILE" 
 
-    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i ${WATERMARK_FILE} -filter_complex "[1]format=rgba,colorchannelmixer=aa=0.3[logo];[0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}" ${OUTPUT_FILENAME}
+    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i ${WATERMARK_FILE} -filter_complex "[1]format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}" ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
 
