@@ -183,7 +183,7 @@ function main()
 
     printf "🎨 Overlaying the watermark.\n" "$LUT_FILE" 
 
-    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i ${WATERMARK_FILE} -filter_complex "[1][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}" ${OUTPUT_FILENAME}
+    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i ${WATERMARK_FILE} -filter_complex "[1]format=rgba,colorchannelmixer=aa=0.3[logo];[0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}" ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
 
