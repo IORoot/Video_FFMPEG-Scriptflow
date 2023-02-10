@@ -2,10 +2,9 @@
 
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │      Change the video FPS (Frames per second) without changing the time      │
+# │             Make a group of videos fit to a specific time length             │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
-
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                       Set Defaults                       │
@@ -21,8 +20,9 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╰──────────────────────────────────────────────────────────╯
 
 OUTPUT_FILENAME="output_fps.mp4"
-FPS="30"
+SECONDS="60"
 LOGLEVEL="error" 
+TMP_FILE="/tmp/tmp_ffmpeg_length_list.txt"                  # define temporary file
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -31,10 +31,10 @@ LOGLEVEL="error"
 usage()
 {
     if [ "$#" -lt 2 ]; then
-        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> [-f <FPS>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
+        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE>... [-s <SECONDS>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Change the FPS of a video without changing the length..\n\n"
+        printf "Trim multiple input videos to fit a specific length of time.\n\n"
 
         printf "Flags:\n"
 
@@ -47,9 +47,10 @@ usage()
         printf "\tThe name of the output file.\n\n"
 
 
-        printf " -f | --fps <FPS>\n"
-        printf "\tThe frames per second the video should be converted to. The default value is 30.\n"
-        printf "\tThe length of the video will not change, but frames will either be added or removed.\n\n"
+        printf " -s | --seconds <SECONDS>\n"
+        printf "\tThe length of the output video. Default is 60 seconds. (60) \n"
+        printf "\tIf all the input videos are less that the target, the video length will be the sum of all the input videos.\n"
+        printf "\tThe input videos will have an equal amount trimmed from the front and back of each to fit the length.\n\n"
 
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -58,6 +59,30 @@ usage()
 
         exit 1
     fi
+}
+
+function setup()
+{
+    # delete any existing temp file.
+    rm -f ${TMP_FILE} 
+}
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │     Write the absolute path into the temporary file      │
+# ╰──────────────────────────────────────────────────────────╯
+function write_to_temp()
+{
+    FILE=$1
+
+    # get absolute path of file.
+    REAL_PATH=$(realpath ${FILE})
+
+    # print to screen
+    printf "➡️  file: %s\n" "${REAL_PATH}"
+
+    # print line into temp file.
+    printf "%s\n" "${REAL_PATH}" >> ${TMP_FILE}
 }
 
 
@@ -73,7 +98,7 @@ function arguments()
 
 
         -i|--input)
-            INPUT_FILENAME="$2"
+            write_to_temp $2
             shift
             shift
             ;;
@@ -86,8 +111,8 @@ function arguments()
             ;;
 
 
-        -f|--fps)
-            FPS="$2"
+        -s|--seconds)
+            SECONDS="$2"
             shift 
             shift
             ;;
@@ -124,21 +149,36 @@ function arguments()
 function main()
 {
 
-    printf "This will alter the FPS of the video.\n"
+    printf "This will output a video of %s seconds.\n" "${SECONDS}"
 
-    if [[ -z "${INPUT_FILENAME}" ]]; then 
-        printf "❌ No input file specified. Exiting.\n"
-        exit 1
-    fi
+    FILE_COUNT=$(wc -l < ${TMP_FILE})
 
-    printf "🏎️ Changing the FPS of the video.\n"
+    # Define the total accumulative time
+    TOTAL_DURATION=0
 
-    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf fps=${FPS} ${OUTPUT_FILENAME}
+    # Loop through each line in the temporary list of input files.
+    while read FILE; do
+        # echo ${FILE}
+        FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${FILE})
+        # convert float to int ${STR%.*} AND add to TOTAL time.
+        TOTAL_DURATION="$(($TOTAL_DURATION + ${FILE_DURATION%.*}))" 
+    done < ${TMP_FILE}
+
+    # Get how much time to trim off videos.
+    TOTAL_TRIM_TIME="$(($SECONDS - $TOTAL_DURATION))"
+
+    printf "Number of files: %s\n" "${FILE_COUNT}"
+    printf "Time to remove from videos: %s\n" "${TOTAL_TRIM_TIME}"
+
+    printf "🏎️  Trimming all input videos to fit the specified time.\n"
+
+    # ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf fps=${FPS} ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
 
 }
 
 usage $@
+setup
 arguments $@
 main $@

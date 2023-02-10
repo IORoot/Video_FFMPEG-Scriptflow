@@ -18,14 +18,19 @@ Current list of scripts and their purposes.
 | `ff_blur.sh`         | Simple blur function using an unsharp mask                   |
 | `ff_colour.sh`       | Change brightness, contrast, gamma, saturation of video      |
 | `ff_concat.sh`       | Concatenate multiple videos together                         |
+| `ff_cut.sh`          | Cut video from start time to end time.                                                             |
+| `ff_flip.sh`         | Horizontally and/or vertically flip the video                |
+| `ff_fps.sh`          | Alter the FPS with changing length of video                  |
+| `ff_length.sh`       |                      |
 | `ff_lut.sh`          | Apply a 3DL/Cube LUT file to a video                         |
 | `ff_rotate.sh`       | Rotate a video in 90 degree increments                       |
+| `ff_scale.sh`        | Change the width and height of the video                     |
 | `ff_sharpen.sh`      | Simple sharpen function using an unsharp mask                |
+| `ff_stack.sh`        |                                                              |
 | `ff_to_landscape.sh` | Rotate a portrait video to landscape                         |
 | `ff_to_portrait.sh`  | Rotate a landscape video to portrait                         |
 | `ff_unsharp.sh`      | Use an unsharp mask to blur/sharpen luma,gamma,alpha         |
 | `ff_watermark.sh`    | Overlay a watermark image/video                              |
-| `ff_flip.sh`    | Horizontally and/or vertically flip the video                              |
 
 
 
@@ -160,6 +165,17 @@ Flags:
 
 
 ### `ff_watermark.sh`
+
+#### Description
+
+#### Flags
+
+#### Example
+
+
+
+
+### `ff_flip.sh`
 
 #### Description
 

@@ -1,10 +1,11 @@
 #!/bin/bash
-
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │      Change the video FPS (Frames per second) without changing the time      │
+# │                         Cut video to specific length                         │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
+
+# https://stackoverflow.com/questions/18444194/cutting-the-videos-based-on-start-and-end-time-using-ffmpeg
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -20,8 +21,9 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
 
-OUTPUT_FILENAME="output_fps.mp4"
-FPS="30"
+OUTPUT_FILENAME="output_cut.mp4"
+START="00:00:00"
+END="00:00:10"
 LOGLEVEL="error" 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -31,10 +33,10 @@ LOGLEVEL="error"
 usage()
 {
     if [ "$#" -lt 2 ]; then
-        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> [-f <FPS>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
+        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> [-s <START>] [-e <END>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Change the FPS of a video without changing the length..\n\n"
+        printf "Change the length of the video.\n\n"
 
         printf "Flags:\n"
 
@@ -47,9 +49,12 @@ usage()
         printf "\tThe name of the output file.\n\n"
 
 
-        printf " -f | --fps <FPS>\n"
-        printf "\tThe frames per second the video should be converted to. The default value is 30.\n"
-        printf "\tThe length of the video will not change, but frames will either be added or removed.\n\n"
+        printf " -s | --start <TIMESTAMP>\n"
+        printf "\tWhen to start the cut. Format is HH:MM:SS. Default is the beginning of the video. 00:00:00.\n\n"
+
+
+        printf " -e | --end <TIMESTAMP>\n"
+        printf "\tWhen to finish the cut. Format is HH:MM:SS. Default is 10 seconds into the video. 00:00:10.\n\n"
 
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -86,8 +91,16 @@ function arguments()
             ;;
 
 
-        -f|--fps)
-            FPS="$2"
+        -s|--start)
+            START="$2"
+            shift 
+            shift
+            ;;
+
+
+
+        -e|--end)
+            END="$2"
             shift 
             shift
             ;;
@@ -124,16 +137,16 @@ function arguments()
 function main()
 {
 
-    printf "This will alter the FPS of the video.\n"
+    printf "This will cut the video.\n"
 
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    printf "🏎️ Changing the FPS of the video.\n"
+    printf "✂️ Cut the length of the video.\n"
 
-    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf fps=${FPS} ${OUTPUT_FILENAME}
+    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -ss ${START} -to ${END} ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
 

@@ -1,11 +1,9 @@
 #!/bin/bash
-
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │      Change the video FPS (Frames per second) without changing the time      │
+# │         Trim a video to it's middle part. Remove start / end equally         │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
-
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                       Set Defaults                       │
@@ -20,9 +18,9 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
 
-OUTPUT_FILENAME="output_fps.mp4"
-FPS="30"
-LOGLEVEL="error" 
+OUTPUT_FILENAME="output_middle.mp4"
+TRIM="1"
+LOGLEVEL="error"                 # define temporary file
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -31,10 +29,11 @@ LOGLEVEL="error"
 usage()
 {
     if [ "$#" -lt 2 ]; then
-        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> [-f <FPS>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
+        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> [-t <TRIM>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Change the FPS of a video without changing the length..\n\n"
+        printf "For MACOS This requires coreutils run: brew install coreutils.\n\n"
+        printf "Trim input video from start and end by a number of seconds.\n\n"
 
         printf "Flags:\n"
 
@@ -47,9 +46,8 @@ usage()
         printf "\tThe name of the output file.\n\n"
 
 
-        printf " -f | --fps <FPS>\n"
-        printf "\tThe frames per second the video should be converted to. The default value is 30.\n"
-        printf "\tThe length of the video will not change, but frames will either be added or removed.\n\n"
+        printf " -t | --trim <TRIM>\n"
+        printf "\tNumber of seconds to remove from the start and end of video. Default is 1 second. (1) \n\n"
 
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -59,6 +57,7 @@ usage()
         exit 1
     fi
 }
+
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -86,8 +85,8 @@ function arguments()
             ;;
 
 
-        -f|--fps)
-            FPS="$2"
+        -t|--trim)
+            TRIM="$2"
             shift 
             shift
             ;;
@@ -124,18 +123,28 @@ function arguments()
 function main()
 {
 
-    printf "This will alter the FPS of the video.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    printf "🏎️ Changing the FPS of the video.\n"
+    printf "This will remove %s seconds from front and end of video.\n" "${TRIM}"
 
-    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf fps=${FPS} ${OUTPUT_FILENAME}
+    FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${INPUT_FILENAME})
+    printf "⏲️ Original File duration: %s\n" "${FILE_DURATION}"
 
-    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+    HALF_TRIM_FROM_START=$(echo "scale=4; ${TRIM} / 2" | bc | awk '{printf "%f", $0}')      # send to 'bc' command for floating numbers. Awk used to add leading '0' if less than 1.
+    START=$(gdate -d@${HALF_TRIM_FROM_START} -u +%H:%M:%S.%N)                               # convert to timestamp
+
+    HALF_TRIM_FROM_END=$(echo "scale=4; ${FILE_DURATION} - ${HALF_TRIM_FROM_START}" | bc | awk '{printf "%f", $0}')
+    END=$(gdate -d@${HALF_TRIM_FROM_END} -u +%H:%M:%S.%N)
+
+    printf "🏎️  Trimming input video to fit the specified time.\n"
+
+    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -ss ${START} -to ${END} ${OUTPUT_FILENAME}
+
+    NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
+    printf "✅ New video created: %s. ⏲️  new duration: %s\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
 
 }
 
