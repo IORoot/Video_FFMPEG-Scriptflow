@@ -1,7 +1,7 @@
 #!/bin/bash
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │             Add padding around the video with a specific colour              │
+# │                                Crop the video                                │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 
@@ -18,13 +18,12 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
 
-OUTPUT_FILENAME="output_pad.mp4"
+OUTPUT_FILENAME="output_crop.mp4"
 LOGLEVEL="error" 
-WIDTH="iw"
-HEIGHT="ih*2"
-XPIXELS="(ow-iw)/2"
-YPIXELS="(oh-ih)/2"
-COLOUR="#fb923c"
+WIDTH="300"
+HEIGHT="300"
+XPIXELS="(iw-ow)/2"
+YPIXELS="(ih-oh)/2"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -50,19 +49,19 @@ usage()
 
 
         printf " -w | --width <WIDTH>\n"
-        printf "\tWidth of the output video. Default: Same as input video.\n\n"
+        printf "\tWidth of the output video. Default: 600px.\n\n"
 
 
         printf " -h | --height <HEIGHT>\n"
-        printf "\tHeight of the output video. Default: 2x input video height.\n\n"
+        printf "\tHeight of the output video. Default: 600px.\n\n"
 
 
         printf " -x | --xpixels <PIXELS>\n"
-        printf "\tWhere to position the video in the frame on X-Axis from left.\n\n"
+        printf "\tWhere to position the video in the frame on X-Axis from left. Default center: (iw-ow)/2\n\n"
 
 
         printf " -y | --ypixels <PIXELS>\n"
-        printf "\tWhere to position the video in the frame on Y-Axis from top.\n\n"
+        printf "\tWhere to position the video in the frame on Y-Axis from top. Default center: (ih-oh)/2\n\n"
         printf "\tThe width, height, x and y parameters also have access to the following variables:\n"
         printf "\t- iw : The input video's width.\n"
         printf "\t- ih : The input video's height.\n"
@@ -72,24 +71,9 @@ usage()
         printf "\tThe center of the screen on x-axis is 'x=(ow-iw)/2\n\n"
 
 
-        printf " -c | --colour <COLOUR>\n"
-        printf "\tColour to use for the padding. See https://ffmpeg.org/ffmpeg-utils.html#color-syntax\n"
-        printf "\tCan use a word 'Aqua, Beige, Cyan, etc...', the word 'random' or hex code : RRGGBB[AA] \n\n"
-
-
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
         printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n\n"
-
-        printf "Examples:\n\n"
-        printf "\tPadding all around the video.\n"
-        printf "\t./ff_pad.sh -i input.mp4 -h 'ih*2' -w 'iw*2'\n\n"
-
-        printf "\tVideo Pad white background.\n"
-        printf "\t./ff_pad.sh -i input.mp4 -h 'ih*2' -c white\n\n"
-
-        printf "\tMake black bars..\n"
-        printf "\t/ff_pad.sh -i input.mp4 -w iw -h ih+100 -y '(oh-ih)/2' -x '(ow-iw)/2' -c #000000\n"
 
         exit 1
     fi
@@ -149,13 +133,6 @@ function arguments()
             ;;
 
 
-        -c|--colour)
-            COLOUR="$2"
-            shift 
-            shift
-            ;;
-
-
         -l|--loglevel)
             LOGLEVEL="$2"
             shift 
@@ -187,16 +164,16 @@ function arguments()
 function main()
 {
 
-    printf "This will cut the video.\n"
+    printf "This will crop the video.\n"
 
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    printf "🔳 Create a pad around the video.\n"
+    printf "🌾 Crop around the video.\n"
 
-    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:${XPIXELS}:${YPIXELS}:color=${COLOUR}" ${OUTPUT_FILENAME}
+    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "crop=w=${WIDTH}:h=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}" ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
 
