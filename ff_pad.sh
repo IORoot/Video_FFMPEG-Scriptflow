@@ -36,7 +36,7 @@ usage()
         printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Change the length of the video.\n\n"
+        printf "Create padding around the edges of the video.\n\n"
 
         printf "Flags:\n"
 
