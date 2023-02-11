@@ -37,7 +37,7 @@ Current list of scripts and their purposes.
 | `ff_watermark.sh`    | Overlay a watermark image/video                                  |
 
 
----
+
 
 ## Script Details
 
