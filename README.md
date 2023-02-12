@@ -46,6 +46,17 @@ Current list of scripts and their purposes.
 #### Description
 This will append two files together while re-encoding them to be the same codec. Good if you need to change the codec of the video by transcoding them. Note the `ff_concat.sh` script is better if you do not need to transcode.
 
+```mermaid
+
+graph LR
+	first["-f First.mp4"]
+	second["-s Second.mp4"]
+	output["Output.mp4"]
+
+	first-->output
+	second-->output
+```
+
 #### Flags
 ```bash
 Flags:
