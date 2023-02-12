@@ -48,13 +48,15 @@ This will append two files together while re-encoding them to be the same codec.
 
 ```mermaid
 
-graph LR
-	first["-f First.mp4"]
-	second["-s Second.mp4"]
-	output["Output.mp4"]
+graph TB
+	first["-f first.mp4"]
+	second["-s second.mp4"]
+	output["output.mp4"]
+	reencode["Re-Encode"]
 
-	first-->output
-	second-->output
+	first-->reencode
+	second-->reencode
+	reencode-->output
 ```
 
 #### Flags
@@ -90,6 +92,16 @@ Flags:
 
 This will alter the container metadata (DAR) of the video to the new aspect ratio.
 
+```mermaid
+
+graph LR
+	input["-i input.mp4</br>(16:9 ratio)"]
+	aspect["--aspect 1:1</br>(change to 1:1 ratio)"]
+	output["output.mp4"]
+
+	input-->aspect-->output
+```
+
 #### Flags
 
 ```
@@ -115,6 +127,17 @@ This will alter the container metadata (DAR) of the video to the new aspect rati
 #### Description
 
 Simple version of unsharp mask.
+
+```mermaid
+
+graph LR
+	input["-i input.mp4"]
+	pixels["--pixels 7</br>(Use a 7x7 pixel square for detection)"]
+	sharpen["--sharpen 3.2</br>(Using the 7x7 grid, sharpen by 3.2)"]
+	output["output.mp4"]
+
+	input-->pixels-->sharpen-->output
+```
 
 #### Flags
 ```
@@ -143,6 +166,20 @@ Simple version of unsharp mask.
 #### Description
 
 Change the Brightness, Contrast, Gamma, Gamma-Weight and Saturation of a video.
+
+```mermaid
+
+graph LR
+	input["-i input.mp4"]
+	brightness["--brightness 0.33</br>(Increase brightness by 33%)"]
+	contrast["--contrast 40</br>(Increase contrast by 4%)"]
+	gamma["--gamma 5.0</br>(Increase gamma by 50%)"]
+	weight["--weight 0.2</br>(Increase gamma weight by 20%)"]
+	saturation["--saturation 1.0</br>(Increase saturation by 0.33%)"]
+	output["output.mp4"]
+
+	input-->brightness-->contrast-->gamma-->weight-->saturation-->output
+```
 
 #### Flags
 
@@ -181,6 +218,24 @@ Change the Brightness, Contrast, Gamma, Gamma-Weight and Saturation of a video.
 
 Concatenate multiple videos into one output video.
 
+```mermaid
+
+graph TB
+	one["-i one.mp4"]
+	two["-i two.mp4"]
+	three["-i three.mp4"]
+	four["-i four.mp4"]
+	five["-i five.mp4"]
+	output["output.mp4"]
+
+	one-->output
+	two-->output
+	three-->output
+	four-->output
+	five-->output
+```
+
+
 #### Flags
 ```
  -o | --output <OUTPUT_FILE>
@@ -202,6 +257,19 @@ Concatenate multiple videos into one output video.
 #### Description
 
 Crop video to specific size
+
+```mermaid
+
+graph LR
+	input["-i input.mp4<br/>(1920x1080)"]
+	width["-w 720<br/>Width of new frame"]
+	height["-h 720<br/>Height of new frame"]
+	xpixels["-x (iw-ow)/2<br/>Put video horizontally in center of frame"]
+	ypixels["-y (ih-oh)/2<br/>Put video vertically in center of frame"]
+	output["output.mp4"]
+
+	input-->width-->height-->xpixels-->ypixels-->output
+```
 
 #### Flags
 
