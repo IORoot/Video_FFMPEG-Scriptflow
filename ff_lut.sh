@@ -136,7 +136,7 @@ function main()
     printf "🎨 LUT File %s being applied to video.\n" "$LUT_FILE" 
 
     # https://ffmpeg.org/ffmpeg-filters.html#lut3d-1
-    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf lut3d=${LUT_FILE} -shortest ${OUTPUT_FILENAME}
+    ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf lut3d=${LUT_FILE} -shortest ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
 
