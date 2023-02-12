@@ -315,13 +315,16 @@ function main()
     if (( $(echo "$TOTAL_DURATION < $DURATION" | bc -l) )); then
         while read -r FILE; do
             write_to_list $FILE ${TMP_TRIMMED_LIST}
+            
         done < ${TMP_FILE}
     fi
 
+    echo "🚨 Ensure all files in list are of same format."
+
     # ╭──────────────────────────────────────────────────────────╮
-    # │  Concat all files together to make approx output video.   │
+    # │  Concat all files together to make approx output video.  │
     # ╰──────────────────────────────────────────────────────────╯
-    ffmpeg -v ${LOGLEVEL} -f concat -safe 0 -i ${TMP_TRIMMED_LIST} -c copy approx_${OUTPUT_FILENAME}
+    ffmpeg -y -v ${LOGLEVEL} -f concat -safe 0 -i ${TMP_TRIMMED_LIST} -c copy approx_${OUTPUT_FILENAME}
 
 
     # ╭──────────────────────────────────────────────────────────╮
@@ -329,7 +332,7 @@ function main()
     # ╰──────────────────────────────────────────────────────────╯
 
     FINALEND=$(gdate -d@${DURATION} -u +%H:%M:%S) 
-    ffmpeg  -v ${LOGLEVEL} -i approx_${OUTPUT_FILENAME} -ss 00:00:00 -to ${FINALEND} ${OUTPUT_FILENAME}
+    ffmpeg -y -v ${LOGLEVEL} -i approx_${OUTPUT_FILENAME} -ss 00:00:00 -to ${FINALEND} ${OUTPUT_FILENAME}
     NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
     printf "✅ New video created: %s. ⏲️  new duration: %s\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
 

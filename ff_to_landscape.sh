@@ -141,7 +141,7 @@ function main()
         # ╰──────────────────────────────────────────────────────────╯
         printf "🏞️  Landscape video detected (%sx%s). 👤 Converting to (%sx%s) portrait.\n" "$WIDTH" "$HEIGHT" "$HEIGHT" "$WIDTH"
 
-        ffmpeg -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" $OUTPUT_FILENAME
+        ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" $OUTPUT_FILENAME
 
         printf "✅ Portrait video (%sx%s) created: %s\n" "$HEIGHT" "$WIDTH" "$OUTPUT_FILENAME"
     fi

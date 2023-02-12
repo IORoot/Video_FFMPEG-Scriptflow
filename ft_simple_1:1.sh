@@ -156,6 +156,24 @@ function main()
     fi
 
 
+
+    # ╭──────────────────────────────────────────────────────────╮
+    # │         Check each video to convert to landscape         │
+    # ╰──────────────────────────────────────────────────────────╯
+
+    # NOT WORKING - ff_to_landsacpe is not outputting correct file and causing output file to lock up.
+
+    # for FILE in ${FOLDER}/*
+    # do
+    #     mv $FILE /tmp/temp.mp4
+    #     ./ff_to_landscape.sh -i /tmp/temp.mp4 -o $FILE
+    #     if [ ! -f "$FILE" ]; then
+    #         mv /tmp/temp.mp4 $FILE
+    #     fi
+    #     rm -f /tmp/temp.mp4
+    # done
+
+
     # ╭──────────────────────────────────────────────────────────╮
     # │               Read folder for input files                │
     # ╰──────────────────────────────────────────────────────────╯
@@ -167,13 +185,6 @@ function main()
     do
         INPUT_FILE_LIST="${INPUT_FILE_LIST}-i $FILE "
     done
-
-
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │         Check each video to convert to landscape         │
-    # ╰──────────────────────────────────────────────────────────╯
-
 
 
 
@@ -217,6 +228,7 @@ function main()
     # │                        Add a LUT                         │
     # ╰──────────────────────────────────────────────────────────╯
 
+    
 }
 
 
