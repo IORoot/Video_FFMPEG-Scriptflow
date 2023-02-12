@@ -59,6 +59,8 @@ graph TB
 	reencode-->output
 ```
 
+![append](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/append.svg)
+
 #### Flags
 ```bash
 Flags:
@@ -101,6 +103,8 @@ graph LR
 
 	input-->aspect-->output
 ```
+
+![aspect_ratio](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/aspect_ratio.svg)
 
 #### Flags
 
@@ -235,6 +239,8 @@ graph TB
 	five-->output
 ```
 
+![concat](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/concat.svg)
+
 
 #### Flags
 ```
@@ -316,6 +322,8 @@ graph LR
 
 Change the length of the video.
 
+![cut](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/cut.svg)
+
 #### Flags
 
 ```
@@ -338,11 +346,14 @@ Change the length of the video.
 ```
 
 
+
 ### `ff_flip.sh`
 
 #### Description
 
 Flip video horizontally and/or vertically.
+
+![flip](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/flip.svg)
 
 #### Flags
 
@@ -366,11 +377,14 @@ Flip video horizontally and/or vertically.
 ```
 
 
+
 ### `ff_fps.sh`
 
 #### Description
 
 Change the FPS of a video without changing the length.
+
+![fps](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/fps.svg)
 
 #### Flags
 ```
@@ -397,6 +411,8 @@ Change the FPS of a video without changing the length.
 #### Description
 
 Trim input videos by a percentage on start and end to get output video to correct duration.
+
+![grouptime](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/grouptime.svg)
 
 #### Flags
 ```
@@ -447,6 +463,8 @@ Apply a 3DL/Cube Look-Up Table (LUT) file to a video.
 
 Trim input video from start and end by a number of seconds.
 
+![middle](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/middle.svg)
+
 #### Flags
 ```
  -i | --input <INPUT_FILE>
@@ -469,6 +487,8 @@ Trim input video from start and end by a number of seconds.
 #### Description
 
 Create padding around the edges of the video.
+
+![pad](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/pad.svg)
 
 #### Flags
 ```
@@ -529,6 +549,8 @@ Make black bars..
 
 Rotate a video.
 
+![rotate](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/rotate.svg)
+
 #### Flags
 
 ```
@@ -548,6 +570,8 @@ output_rotate.mp4 (default)
 #### Description
 
 Change the scale (Width/Height) of a video.
+
+![scale](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/scale.svg)
 
 #### Flags
 
@@ -605,6 +629,8 @@ Simple version of unsharp mask.
 #### Description
 
 Add text (with background box) on top of the video.
+
+![text](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/text.svg)
 
 #### Flags
 ```
@@ -690,6 +716,8 @@ Create thumbnails representative of the video.
 
 Convert a portrait video to landscape.
 
+![to_landscape](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/to_landscape.svg)
+
 #### Flags
 
 ```
@@ -718,6 +746,8 @@ Convert a portrait video to landscape.
 #### Description
 
 Convert a landscape video to portrait.
+
+![to_portrait](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/to_portrait.svg)
 
 #### Flags
 ```
@@ -799,6 +829,8 @@ Uses an unsharp mask to alter the luma,chroma and alpha of a video.
 #### Description
 
 Overlay a watermark on the video.
+
+![watermark](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/watermark.svg)
 
 #### Flags
 ```
