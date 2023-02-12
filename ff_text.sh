@@ -21,7 +21,7 @@ cd "$(dirname "$0")"                                        # Change to the scri
 OUTPUT_FILENAME="output_text.mp4"
 LOGLEVEL="error" 
 
-TEXT="EXAMPLE"
+TEXTFILE="./text.txt"
 FONT="/System/Library/Fonts/HelveticaNeue.ttc"
 COLOUR="WHITE"
 SIZE="24"
@@ -30,6 +30,7 @@ BOXCOLOUR="black"
 BOXBORDER="5"
 XPIXELS="(w-tw)/2"
 YPIXELS="(h-th)/2"
+LINESPACING="5"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -54,8 +55,8 @@ usage()
         printf "\tThe name of the output file.\n\n"
 
 
-        printf " -t | --text <TEXT>\n"
-        printf "\tText to write over video. Default: EXAMPLE.\n\n"
+        printf " -t | --textfile <TEXTFILE>\n"
+        printf "\tFile containing Text to write over video. Default: ./text.txt\n\n"
 
 
         printf " -f | --font <FONT>\n"
@@ -132,8 +133,8 @@ function arguments()
             ;;
 
 
-        -t|--text)
-            TEXT="$2"
+        -t|--textfile)
+            TEXTFILE="$2"
             shift 
             shift
             ;;
@@ -233,9 +234,59 @@ function main()
         exit 1
     fi
 
-    printf "✍️  Writing the text '%s' on the video.\n" "${TEXT}"
+    printf "✍️  Writing the text from file '%s' on the video.\n" "${TEXTFILE}"
 
-    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "drawtext=fontfile=${FONT}:text=${TEXT}:fontcolor=${COLOUR}:fontsize=${SIZE}:box=${BOX}:boxcolor=${BOXCOLOUR}:boxborderw=${BOXBORDER}:x=${XPIXELS}:y=${YPIXELS}" ${OUTPUT_FILENAME}
+
+    # printf "TEXT:%s\n" "${TEXT}"
+    # printf "FONT:%s\n" "${FONT}"
+    # printf "COLOUR:%s\n" "${COLOUR}"
+    # printf "SIZE:%s\n" "${SIZE}"
+    # printf "BOX:%s\n" "${BOX}"
+    # printf "BOXCOLOUR:%s\n" "${BOXCOLOUR}"
+    # printf "BOXBORDER:%s\n" "${SIZE}"
+    # printf "XPIXELS:%s\n" "${XPIXELS}"
+    # printf "YPIXELS:%s\n" "${YPIXELS}"
+
+
+    # Number of lines in text file.
+    # wc -l doesn't work without newlines.
+    LINECOUNT=$(grep -c "" ${TEXTFILE})
+    if [ ${LINECOUNT} -eq 0 ]; then LINECOUNT=1; fi
+
+    COMMAND=""
+    LOOP=0
+
+    # ${YPIXELS} = ((h-${ORIGINAL_HEIGHT})/4)-(th/2)
+    #   height - original height = whitespace
+    #   whitespace / 4 is half whitespace of top / bottom.
+    #   minus half text height (th/2) = middle of top whitespace
+    #   = middle of top whitespace
+    
+    # Add space for each extra line
+    # + ((${LOOP} * (lh + (2*${BOXBORDER}))) 
+    #   (${LOOP} * lh)
+    #   Add double borders (top/bottom)
+    #   ${YPIXELS} + (${LOOP} * ( lh + (2*${BOXBORDER}) ) )
+    
+    # Center multilines.
+    # - ( lh * ${LINECOUNT}) + (${LOOP} * ${LINESPACING}))
+    #   lh / 2 for half a line
+    #   * number of lines -1
+    #
+    #   - ((lh/2) * (${LINECOUNT}-1))
+
+    # plus Extra spacer.
+    # + (${LOOP} * ${LINESPACING})
+    
+    while IFS= read -r LINE || [ -n "$LINE" ]; 
+    do
+        COMMAND="${COMMAND}drawtext=fontfile=${FONT}:text=${LINE}:line_spacing=30:fontcolor=${COLOUR}:fontsize=${SIZE}:box=${BOX}:boxcolor=${BOXCOLOUR}:boxborderw=${BOXBORDER}:x=${XPIXELS}:y=${YPIXELS} + (${LOOP} * ( lh + (2*${BOXBORDER}) ) ) - ((lh/2) * (${LINECOUNT}-1) + ${LINESPACING}) + (${LOOP} * ${LINESPACING}),"
+        LOOP=$(( ${LOOP} + 1 ))
+    done < "${TEXTFILE}"
+
+    
+
+    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "[IN] ${COMMAND%,} [OUT]" ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
 

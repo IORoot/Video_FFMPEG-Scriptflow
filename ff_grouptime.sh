@@ -340,8 +340,11 @@ function main()
     rm -f ${TMP_FILE}
 
     while read -r TRIMMED_FILE; do
-        TMP=${TRIMMED_FILE#*\'} # remove up to single quote
-        rm -f ${TMP%?} # remove last character
+
+        if [[ "${TRIMMED_FILE}" == *"${TMP_SUFFIX}"* ]]; then
+            TMP=${TRIMMED_FILE#*\'} # remove up to single quote
+            rm -f ${TMP%?} # remove last character
+        fi
     done < ${TMP_TRIMMED_LIST}
 
     rm -f ${TMP_TRIMMED_LIST}

@@ -27,9 +27,22 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
 
+
+TEXT_COLOUR="#FFFFFF"
+TEXT_BACKGROUND="#000000"
+PADDING_BACKGROUND="#FFFFFF"
+
 OUTPUT_FILENAME="processed_simple_pad.mp4"
 LOGLEVEL="error" 
+TEXT_TOP_FILE="text_top.txt"
+TEXT_BOTTOM_FILE="text_bottom.txt"
+
 GROUPTIME_TEMP_FILE="temp_grouptime.mp4"
+PAD_TEMP_FILE="temp_pad.mp4"
+TEXTTOP_TEMP_FILE="temp_texttop.mp4"
+TEXTBOTTOM_TEMP_FILE="temp_textbottom.mp4"
+
+
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -47,6 +60,12 @@ usage()
 
         printf " -f | --folder <FOLDER>\n"
         printf "\tThe path to the folder of video clips.\n\n"
+
+        printf " -t | --toptextfile <TEXTFILE>\n"
+        printf "\tFile containing Text to add onto the top of the video. Default : text_top.txt\n\n"
+
+        printf " -b | --bottomtextfile <TEXTFILE>\n"
+        printf "\tFile containing Text to add below the video. DEFAULT: text_bottom.txt\n\n"
 
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
@@ -74,6 +93,20 @@ function arguments()
 
         -f|--folder)
             FOLDER="$2"
+            shift
+            shift
+            ;;
+
+
+        -t|--toptextfile)
+            TEXT_TOP_FILE="$2"
+            shift
+            shift
+            ;;
+
+
+        -b|--bottomtextfile)
+            TEXT_BOTTOM_FILE="$2"
             shift
             shift
             ;;
@@ -122,24 +155,82 @@ function main()
         exit 1
     fi
 
-    printf "1️⃣  Read folder for files.\n"
+
+    # ╭──────────────────────────────────────────────────────────╮
+    # │               Read folder for input files                │
+    # ╰──────────────────────────────────────────────────────────╯
+
+    printf "\n1️⃣  Read folder for files.\n"
 
     INPUT_FILE_LIST=""
     for FILE in ${FOLDER}/*
     do
         INPUT_FILE_LIST="${INPUT_FILE_LIST}-i $FILE "
     done
-    # printf "%s\n" "${INPUT_FILE_LIST}"
 
 
-    printf "2️⃣  Use ff_grouptime.sh to create video of 60sec.\n"
+
+    # ╭──────────────────────────────────────────────────────────╮
+    # │         Check each video to convert to landscape         │
+    # ╰──────────────────────────────────────────────────────────╯
+
+
+
+
+    # ╭──────────────────────────────────────────────────────────╮
+    # │              Group videos into single file               │
+    # ╰──────────────────────────────────────────────────────────╯
+    printf "\n2️⃣  Use ff_grouptime.sh to create video of 60sec.\n\n"
 
     ./ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE}
 
-    printf "✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
+    ORIGINAL_HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${GROUPTIME_TEMP_FILE})
+
+
+
+
+    # ╭──────────────────────────────────────────────────────────╮
+    # │                      Make video 1:1                      │
+    # ╰──────────────────────────────────────────────────────────╯
+    printf "\n3️⃣  Use ff_pad.sh to make height same as width. 1:1 ratio.\n\n"
+
+    ./ff_pad.sh -i ${GROUPTIME_TEMP_FILE} -h iw -c "${PADDING_BACKGROUND}" -o ${PAD_TEMP_FILE}
+
+
+
+
+    # ╭──────────────────────────────────────────────────────────╮
+    # │           Add Text to top and bottom of video            │
+    # ╰──────────────────────────────────────────────────────────╯
+
+    printf "\n3️⃣  Use ff_text.sh to add the top text.\n\n"
+
+    ./ff_text.sh -i ${PAD_TEMP_FILE} -t ${TEXT_TOP_FILE} -c "${TEXT_COLOUR}" -s 80 -p "${TEXT_BACKGROUND}" -r 20 -y "((h-${ORIGINAL_HEIGHT})/4)-(th/2)" -o ${TEXTTOP_TEMP_FILE}
+    
+    ./ff_text.sh -i ${TEXTTOP_TEMP_FILE} -t ${TEXT_BOTTOM_FILE} -c "${TEXT_COLOUR}" -s 40 -p "${TEXT_BACKGROUND}" -r 20 -y "(((h-${ORIGINAL_HEIGHT})/4)*3)-(th/2)+${ORIGINAL_HEIGHT}" -o ${TEXTBOTTOM_TEMP_FILE}
+
+    printf "\n\n✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
+
+
+
+    # ╭──────────────────────────────────────────────────────────╮
+    # │                        Add a LUT                         │
+    # ╰──────────────────────────────────────────────────────────╯
 
 }
 
+
+
+function cleanup()
+{
+    rm -f ${GROUPTIME_TEMP_FILE}
+    rm -f ${PAD_TEMP_FILE}
+    rm -f ${TEXTTOP_TEMP_FILE}
+    # rm -f ${TEXTBOTTOM_TEMP_FILE}
+}
+
+cleanup
 usage $@
 arguments $@
 main $@
+cleanup

@@ -194,7 +194,7 @@ function main()
         exit 1
     fi
 
-    printf "🔳 Create a pad around the video.\n"
+    printf "🔳 Creating a pad around the video.\n"
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:${XPIXELS}:${YPIXELS}:color=${COLOUR}" ${OUTPUT_FILENAME}
 
