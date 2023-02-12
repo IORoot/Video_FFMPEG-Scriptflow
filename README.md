@@ -46,19 +46,6 @@ Current list of scripts and their purposes.
 #### Description
 This will append two files together while re-encoding them to be the same codec. Good if you need to change the codec of the video by transcoding them. Note the `ff_concat.sh` script is better if you do not need to transcode.
 
-```mermaid
-
-graph TB
-	first["-f first.mp4"]
-	second["-s second.mp4"]
-	output["output.mp4"]
-	reencode["Re-Encode"]
-
-	first-->reencode
-	second-->reencode
-	reencode-->output
-```
-
 ![append](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/append.svg)
 
 #### Flags
@@ -93,16 +80,6 @@ Flags:
 #### Description
 
 This will alter the container metadata (DAR) of the video to the new aspect ratio.
-
-```mermaid
-
-graph LR
-	input["-i input.mp4</br>(16:9 ratio)"]
-	aspect["--aspect 1:1</br>(change to 1:1 ratio)"]
-	output["output.mp4"]
-
-	input-->aspect-->output
-```
 
 ![aspect_ratio](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/aspect_ratio.svg)
 
@@ -221,23 +198,6 @@ graph LR
 #### Description
 
 Concatenate multiple videos into one output video.
-
-```mermaid
-
-graph TB
-	one["-i one.mp4"]
-	two["-i two.mp4"]
-	three["-i three.mp4"]
-	four["-i four.mp4"]
-	five["-i five.mp4"]
-	output["output.mp4"]
-
-	one-->output
-	two-->output
-	three-->output
-	four-->output
-	five-->output
-```
 
 ![concat](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/concat.svg)
 
