@@ -233,7 +233,7 @@ function main()
         
         FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${FILE})
 
-        printf "📁 File %-60s ⏲️ %s\n" "${FILE}" "${FILE_DURATION}"
+        printf "📁 File %-60s ⏲️  %s\n" "${FILE}" "${FILE_DURATION}"
 
         TOTAL_DURATION=$(echo "scale=4; ${TOTAL_DURATION} + ${FILE_DURATION}" | bc | awk '{printf "%f", $0}')
 
@@ -338,6 +338,12 @@ function main()
     # ╰──────────────────────────────────────────────────────────╯
     rm -f ${TMP_SUFFIX}_*
     rm -f ${TMP_FILE}
+
+    while read -r TRIMMED_FILE; do
+        TMP=${TRIMMED_FILE#*\'} # remove up to single quote
+        rm -f ${TMP%?} # remove last character
+    done < ${TMP_TRIMMED_LIST}
+
     rm -f ${TMP_TRIMMED_LIST}
     rm -f approx_${OUTPUT_FILENAME}
 
