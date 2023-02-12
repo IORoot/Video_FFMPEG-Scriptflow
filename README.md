@@ -272,7 +272,6 @@ graph LR
 ```
 
 ![crop](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/crop.svg)
-<img src="https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/crop.svg">
 
 
 #### Flags
