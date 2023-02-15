@@ -222,6 +222,7 @@ function main()
     # │    Step 1 - find full duration of all clips together.    │
     # ╰──────────────────────────────────────────────────────────╯
     while read FILE; do
+
         
         FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${FILE})
 
@@ -268,7 +269,6 @@ function main()
     #printf "🧮 1%% of amount to remove = %s percent\n" "${ONE_PERCENT_TO_REMOVE}"
 
 
-
     # ╭──────────────────────────────────────────────────────────────────────────────╮
     # │ For each file calculate the percentage it takes up and the amount to remove  │
     # ╰──────────────────────────────────────────────────────────────────────────────╯
@@ -311,11 +311,15 @@ function main()
         done < ${TMP_FILE}
     fi
 
+
+
+
     # Only run this if the clips are less than duration required.
     if (( $(echo "$TOTAL_DURATION < $DURATION" | bc -l) )); then
 
         LOOP=1
         while read -r FILE; do
+
             # Create Intermediates
             ffmpeg -y -v ${LOGLEVEL} -i /${FILE} -c copy /tmp/intermediate${LOOP}.ts
             PIPE="$PIPE/tmp/intermediate${LOOP}.ts|"
@@ -323,6 +327,8 @@ function main()
 
         done < ${TMP_FILE}
     fi
+
+
 
     # ╭──────────────────────────────────────────────────────────╮
     # │  Concat all files together to make approx output video.  │

@@ -32,6 +32,7 @@ Current list of scripts and their purposes.
 | `ff_grouptime.sh`    | Proportionally trims and concats videos to target video duration |
 | `ff_lut.sh`          | Apply a 3DL/Cube LUT file to a video                             |
 | `ff_middle.sh`       | Remove equal number of seconds from start and end of video       |
+| `ff_mov_to_mp4.sh`   | Convert an iPhone quicktime MOV to MP4 file                      |
 | `ff_pad.sh`          | Add a background padding around the video                        |
 | `ff_rotate.sh`       | Rotate a video in 90 degree increments                           |
 | `ff_scale.sh`        | Change the width and height of the video                         |
