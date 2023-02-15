@@ -450,6 +450,37 @@ Trim input video from start and end by a number of seconds.
         Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
 ```
 
+
+### `ff_mov_to_mp4.sh`
+
+#### Description
+
+Convert an Apple Quicktime MOV file into an H264 MP4 file. Useful when grouping/appending/concating multiple files.
+
+```mermaid
+
+graph LR
+	input["-i input.mov"]
+	output["output.mp4"]
+
+	input-->output
+```
+
+#### Flags
+```
+ -i | --input <INPUT_FILE>
+        The name of an input file.
+
+ -o | --output <OUTPUT_FILE>
+        Default is output_mov.mp4
+        The name of the output file.
+
+ -l | --loglevel <LOGLEVEL>
+        The FFMPEG loglevel to use. Default is 'error' only.
+        Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
+```
+
+
 ### `ff_pad.sh`
 
 #### Description
