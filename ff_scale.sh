@@ -36,7 +36,7 @@ usage()
         printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> [-w <WIDTH>] [-h <HEIGHT>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Change the scale (Width/hEIGHT) of a video.\n\n"
+        printf "Change the scale (Width/Height) of a video.\n\n"
 
         printf "Flags:\n"
 
@@ -146,7 +146,7 @@ function main()
 
     printf "📐 Changing the size of the video.\n"
 
-    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT} ${OUTPUT_FILENAME}
+    ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT} ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
 

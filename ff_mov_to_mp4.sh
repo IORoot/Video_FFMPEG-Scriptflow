@@ -19,7 +19,7 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
 OUTPUT_FILENAME="output_mov.mp4"
-
+LOGLEVEL="error"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -117,7 +117,7 @@ function main()
         exit 1
     fi
 
-    printf "📽️ Converting MOV to MP4 🎥.\n"
+    printf "📽️  Converting MOV to MP4 🎥.\n"
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vcodec h264 -acodec mp2 ${OUTPUT_FILENAME}
 
@@ -126,5 +126,5 @@ function main()
 }
 
 usage $@
-arguments $@
+arguments "$@"
 main $@

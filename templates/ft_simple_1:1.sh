@@ -41,6 +41,9 @@ CURRENT_DIRECTORY=$(pwd)
 LUT="/Users/andypearson/Code/ffmpeg_utils/lib/luts/Circinus.cube"
 WATERMARK="/Users/andypearson/Code/ffmpeg_utils/lib/watermarks/ldnpk_white.png"
 
+MAX_WIDTH="848"
+MAX_HEIGHT="480"
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                     Temporary Files                      │
 # ╰──────────────────────────────────────────────────────────╯
@@ -181,20 +184,40 @@ function main()
     fi
 
 
+    # ╭──────────────────────────────────────────────────────────╮
+    # │                 Rescale video if too big                 │
+    # ╰──────────────────────────────────────────────────────────╯
+
+    printf "\n1️⃣  Rescale big videos.\n"
+
+    for FILE in ${FOLDER}/*
+    do
+        if [ -d "$FILE" ]; then continue; fi
+
+        if [ "${FILE: -4}" == ".mov" ];then
+
+            FILENAME=$(realpath $FILE)
+            NO_EXTENSION=${FILENAME%????}
+
+            ../ff_scale.sh -i ${FILENAME} -o ${NO_EXTENSION}.mp4 -w $MAX_WIDTH -h $MAX_HEIGHT
+
+            mkdir -p $FOLDER/original
+            mv $FILENAME $(dirname $FILENAME)/original/$(basename $FILENAME)
+
+        fi
+
+    done
+
 
     # ╭──────────────────────────────────────────────────────────╮
     # │         Check each video to convert to landscape         │
     # ╰──────────────────────────────────────────────────────────╯
 
-    # NOT WORKING - ff_to_landsacpe is not outputting correct file and causing output file to lock up.
+    printf "\n1️⃣  Convert portrait videos to landscape.\n"
 
     for FILE in ${FOLDER}/*
     do
-        # Exclude folders
-        if [ -d "$FILE" ]; then
-            echo "folder. skipping."
-            continue
-        fi
+        if [ -d "$FILE" ]; then continue; fi
 
         IFS=
         # Measure Height/width against each other
@@ -214,7 +237,6 @@ function main()
             mkdir -p $FOLDER/original
             mv $FILE $FOLDER/original/$(basename $FILE)
 
-            ls ${LANDSCAPE_TEMP_FILE}
             ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $FILENAME
         fi
 
