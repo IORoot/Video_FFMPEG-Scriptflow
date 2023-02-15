@@ -337,7 +337,7 @@ function cleanup()
     rm -f ${TEXT_TOP_TEMP_FILE}
     rm -f ${TEXT_BOTTOM_TEMP_FILE}
     rm -f ${WATERMARK_TEMP_FILE}
-    # rm -f ${LANDSCAPE_TEMP_FILE}
+    rm -f ${LANDSCAPE_TEMP_FILE}
 }
 
 cleanup
