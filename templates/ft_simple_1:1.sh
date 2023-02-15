@@ -213,7 +213,7 @@ function main()
     # │         Check each video to convert to landscape         │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n1️⃣  Convert portrait videos to landscape.\n"
+    printf "\n2️⃣  Convert portrait videos to landscape.\n"
 
     for FILE in ${FOLDER}/*
     do
@@ -247,7 +247,7 @@ function main()
     # │               Read folder for input files                │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n1️⃣  Read folder for files.\n"
+    printf "\n3️⃣  Read folder for files.\n"
 
     INPUT_FILE_LIST=""
     for FILE in ${FOLDER}/*
@@ -261,7 +261,7 @@ function main()
     # ╭──────────────────────────────────────────────────────────╮
     # │              Group videos into single file               │
     # ╰──────────────────────────────────────────────────────────╯
-    printf "\n2️⃣  Use ff_grouptime.sh to create video of 60sec.\n\n"
+    printf "\n4️⃣  Use ff_grouptime.sh to create video of 60sec.\n\n"
 
     ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE}
 
@@ -277,14 +277,14 @@ function main()
     # ╭──────────────────────────────────────────────────────────╮
     # │                        Apply LUT                         │
     # ╰──────────────────────────────────────────────────────────╯
-    printf "\n3️⃣  Use ff_lut.sh to add colour grading.\n\n"
+    printf "\n5️⃣  Use ff_lut.sh to add colour grading.\n\n"
     ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t $(realpath ${LUT}) -o ${LUT_TEMP_FILE}
 
 
     # ╭──────────────────────────────────────────────────────────╮
     # │                      Make video 1:1                      │
     # ╰──────────────────────────────────────────────────────────╯
-    printf "\n4️⃣  Use ff_pad.sh to make height same as width. 1:1 ratio.\n\n"
+    printf "\n6️⃣  Use ff_pad.sh to make height same as width. 1:1 ratio.\n\n"
 
     ../ff_pad.sh -i ${LUT_TEMP_FILE} -h iw -c "${PADDING_BACKGROUND}" -o ${PAD_TEMP_FILE}
 
@@ -294,7 +294,7 @@ function main()
     # │                 Add Text to top of video                 │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n5️⃣  Use ff_text.sh to add the top text.\n\n"
+    printf "\n7️⃣  Use ff_text.sh to add the top text.\n\n"
     printf "Addings: %s\n" "${TEXT_TOP}"
     ../ff_text.sh -i ${PAD_TEMP_FILE} -T "${TEXT_TOP}" -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 60 -o ${TEXT_TOP_TEMP_FILE}
 
@@ -302,7 +302,7 @@ function main()
     # │             Add watermark to bottom of video             │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n6️⃣  Use ff_watermark.sh to add the bottom logo.\n\n"
+    printf "\n8️⃣  Use ff_watermark.sh to add the bottom logo.\n\n"
 
     ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE}  -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE}
 
@@ -310,7 +310,7 @@ function main()
     # │               Add text to bottom of video                │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n7️⃣  Use ff_text.sh to add the bottom text.\n\n"
+    printf "\n9️⃣  Use ff_text.sh to add the bottom text.\n\n"
 
     ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -T "${TEXT_BOTTOM}" -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE}
 
