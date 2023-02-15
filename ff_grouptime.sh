@@ -69,11 +69,11 @@ cd "$(dirname "$0")"                                        # Change to the scri
 
 TMP_FILE="/tmp/tmp_ffmpeg_grouptime_list.txt" 
 TMP_SUFFIX="trimmed" 
-TMP_TRIMMED_LIST="/tmp/tmp_ffmpeg_grouptime_trimmed_list.txt"
 INTERMEDIATE_FILENAME="/tmp/intermediate.mp4"
 OUTPUT_FILENAME="output_grouptime.mp4"
 DURATION="60"
-LOGLEVEL="error"                 # define temporary file
+LOGLEVEL="error"  
+PIPE="concat:"               # define temporary file
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -116,8 +116,14 @@ usage()
 # ╰──────────────────────────────────────────────────────────╯
 function write_to_temp()
 {
+
     FILE=$1
     TMP=$2
+
+    # Exclude folders
+    if [ -d "$FILE" ]; then
+        return
+    fi
 
     # get absolute path of file.
     REAL_PATH=$(realpath ${FILE})
@@ -129,27 +135,12 @@ function write_to_temp()
     printf "%s\n" "${REAL_PATH}" >> ${TMP}
 }
 
-function write_to_list()
-{
-    FILE=$1
-    TMP=$2
-
-    # get absolute path of file.
-    REAL_PATH=$(realpath ${FILE})
-
-    # print to screen
-    # printf "➡️  file: %s\n" "${REAL_PATH}"
-
-    # print line into temp file.
-    printf "file '%s'\n" "${REAL_PATH}" >> ${TMP}
-}
 
 
 function setup()
 {
     # delete any existing temp file.
     rm -f ${TMP_FILE} 
-    rm -f ${TMP_TRIMMED_LIST} 
 }
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -281,8 +272,10 @@ function main()
     # ╭──────────────────────────────────────────────────────────────────────────────╮
     # │ For each file calculate the percentage it takes up and the amount to remove  │
     # ╰──────────────────────────────────────────────────────────────────────────────╯
-
     if (( $(echo "$TOTAL_DURATION > $DURATION" |bc -l) )); then
+
+        LOOP=1
+
         while read -r FILE; do
 
             # printf "FILE is %s\n" "${FILE}"
@@ -302,30 +295,39 @@ function main()
 
             END=$(gdate -d@${HALF_FROM_END} -u +%H:%M:%S.%N)
 
-            # printf "🏎️  Trimming input video by %s from start and end.\n" "${HALF_AMOUNT_TO_REMOVE}"
-
             NEW_BASEPATH=$(dirname ${FILE})
             NEW_BASENAME=$(basename ${FILE})
+
             ffmpeg  -v ${LOGLEVEL} -i ${FILE} -ss ${START} -to ${END} ${NEW_BASEPATH}/${TMP_SUFFIX}_${NEW_BASENAME} < /dev/null
 
-            write_to_list ${NEW_BASEPATH}/${TMP_SUFFIX}_${NEW_BASENAME} ${TMP_TRIMMED_LIST}    # create list of trimmed files.
+            # Create intermediate files
+            ffmpeg -y -v ${LOGLEVEL} -i ${NEW_BASEPATH}/${TMP_SUFFIX}_${NEW_BASENAME} -c copy /tmp/intermediate${LOOP}.ts
+
+            PIPE="$PIPE/tmp/intermediate${LOOP}.ts|"
+
+            # Iterate.
+            LOOP=$(( $LOOP + 1 ))
 
         done < ${TMP_FILE}
     fi
 
+    # Only run this if the clips are less than duration required.
     if (( $(echo "$TOTAL_DURATION < $DURATION" | bc -l) )); then
+
+        LOOP=1
         while read -r FILE; do
-            write_to_list $FILE ${TMP_TRIMMED_LIST}
-            
+            # Create Intermediates
+            ffmpeg -y -v ${LOGLEVEL} -i /${FILE} -c copy /tmp/intermediate${LOOP}.ts
+            PIPE="$PIPE/tmp/intermediate${LOOP}.ts|"
+            LOOP=$(( $LOOP + 1 ))
+
         done < ${TMP_FILE}
     fi
-
-    echo "🚨 Ensure all files in list are of same format."
 
     # ╭──────────────────────────────────────────────────────────╮
     # │  Concat all files together to make approx output video.  │
     # ╰──────────────────────────────────────────────────────────╯
-    ffmpeg -y -v ${LOGLEVEL} -f concat -safe 0 -i ${TMP_TRIMMED_LIST} -c copy ${INTERMEDIATE_FILENAME}
+    ffmpeg -y -v ${LOGLEVEL} -i "${PIPE%?}" -c copy ${INTERMEDIATE_FILENAME}
 
 
     # ╭──────────────────────────────────────────────────────────╮
@@ -342,18 +344,8 @@ function main()
     # ╰──────────────────────────────────────────────────────────╯
     rm -f ${TMP_SUFFIX}_*
     rm -f ${TMP_FILE}
-
-    while read -r TRIMMED_FILE; do
-
-        if [[ "${TRIMMED_FILE}" == *"${TMP_SUFFIX}"* ]]; then
-            TMP=${TRIMMED_FILE#*\'} # remove up to single quote
-            rm -f ${TMP%?} # remove last character
-        fi
-    done < ${TMP_TRIMMED_LIST}
-
-    rm -f ${TMP_TRIMMED_LIST}
     rm -f ${INTERMEDIATE_FILENAME}
-
+    rm -f /tmp/intermediate*.ts
 }
 
 usage $@

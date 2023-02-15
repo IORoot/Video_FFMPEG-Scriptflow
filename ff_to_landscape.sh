@@ -131,6 +131,9 @@ function main()
     WIDTH=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=width -of csv=p=0 ${INPUT_FILENAME})
     HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${INPUT_FILENAME})
 
+    WIDTH=$(echo ${WIDTH} | tr ',' '\n')
+    HEIGHT=$(echo ${HEIGHT} | tr ',' '\n')
+    
     # If width is greater than height, it's already landscape.
     if [ "$WIDTH" -gt "$HEIGHT" ];then
         printf "❌ Already landscape (%sx%s)\n" "$WIDTH" "$HEIGHT"
@@ -139,9 +142,14 @@ function main()
         # ╭──────────────────────────────────────────────────────────╮
         # │    Step 2. rotate video 90 degrees counter clockwise.    │
         # ╰──────────────────────────────────────────────────────────╯
+
+        echo "INPUT_FILENAME: $INPUT_FILENAME"
+        echo "OUTPUT_FILENAME: $OUTPUT_FILENAME"
+
         printf "🏞️  Landscape video detected (%sx%s). 👤 Converting to (%sx%s) portrait.\n" "$WIDTH" "$HEIGHT" "$HEIGHT" "$WIDTH"
 
         ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" $OUTPUT_FILENAME
+        # ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -map_metadata 0 -metadata:s:v rotate="90" -codec copy $OUTPUT_FILENAME
 
         printf "✅ Portrait video (%sx%s) created: %s\n" "$HEIGHT" "$WIDTH" "$OUTPUT_FILENAME"
     fi
