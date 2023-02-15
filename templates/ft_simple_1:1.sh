@@ -24,24 +24,27 @@ cd "$(dirname "$0")"                                        # Change to the scri
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │                        VARIABLES                         │
+# │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
-
-
+TEXT_TOP="YOUTH CLASS"
+TEXT_BOTTOM="londonparkour.com/classes"
 TEXT_COLOUR="#FFFFFF"
 TEXT_BACKGROUND="#000000"
 PADDING_BACKGROUND="#FFFFFF"
-
 OUTPUT_FILENAME="processed_simple_pad.mp4"
 LOGLEVEL="error" 
-TEXT_TOP_FILE="text_top.txt"
-TEXT_BOTTOM_FILE="text_bottom.txt"
+CURRENT_DIRECTORY=$(pwd)
+LUT="/Users/andypearson/Code/ffmpeg_utils/lib/luts/Circinus.cube"
+WATERMARK="/Users/andypearson/Code/ffmpeg_utils/lib/watermarks/ldnpk_black_solid.png"
 
-GROUPTIME_TEMP_FILE="temp_grouptime.mp4"
-LUT_TEMP_FILE="temp_lut.mp4"
-PAD_TEMP_FILE="temp_pad.mp4"
-TEXTTOP_TEMP_FILE="temp_texttop.mp4"
-TEXTBOTTOM_TEMP_FILE="temp_textbottom.mp4"
+# ╭──────────────────────────────────────────────────────────╮
+# │                     Temporary Files                      │
+# ╰──────────────────────────────────────────────────────────╯
+TEXT_TOP_TEMP_FILE="/tmp/temp_text_top.mp4"
+TEXT_BOTTOM_TEMP_FILE="/tmp/temp_text_bottom.mp4"
+GROUPTIME_TEMP_FILE="/tmp/temp_grouptime.mp4"
+LUT_TEMP_FILE="/tmp/temp_lut.mp4"
+PAD_TEMP_FILE="/tmp/temp_pad.mp4"
 
 
 
@@ -66,17 +69,11 @@ usage()
         printf " -f | --folder <FOLDER>\n"
         printf "\tThe path to the folder of video clips.\n\n"
 
-        printf " -t | --toptextfile <TEXTFILE>\n"
-        printf "\tFile containing Text to add onto the top of the video. Default : text_top.txt\n\n"
+        printf " -t | --texttop \"<TEXT>\"\n"
+        printf "\tText to write on top of video.\n\n"
 
-        printf " -T | --texttop \"<TEXT>\"\n"
-        printf "\tSingle line of text to write on top of video. Overrides --toptextfile \n\n"
-
-        printf " -b | --bottomtextfile <TEXTFILE>\n"
-        printf "\tFile containing Text to add below the video. DEFAULT: text_bottom.txt\n\n"
-
-        printf " -B | --textbottom \"<TEXT>\"\n"
-        printf "\tSingle line of text to write on bottom of video. Overrides --bottomtextfile\n\n"
+        printf " -b | --textbottom \"<TEXT>\"\n"
+        printf "\tText to write on bottom of video.\n\n"
 
         printf " -p | --pat <PAT>\n"
         printf "\tThe Github Personal Access Token. DEFAULT: GITHUB_AUTOFLIP_PAT.txt\n\n"
@@ -112,28 +109,15 @@ function arguments()
             ;;
 
 
-        -t|--toptextfile)
-            TEXT_TOP_FILE="$2"
-            shift
-            shift
-            ;;
 
-
-        -T|--texttop)
+        -t|--texttop)
             TEXT_TOP="$2"
             shift
             shift
             ;;
 
 
-        -b|--bottomtextfile)
-            TEXT_BOTTOM_FILE="$2"
-            shift
-            shift
-            ;;
-
-
-        -B|--textbottom)
+        -b|--textbottom)
             TEXT_BOTTOM="$2"
             shift
             shift
@@ -218,7 +202,8 @@ function main()
     INPUT_FILE_LIST=""
     for FILE in ${FOLDER}/*
     do
-        INPUT_FILE_LIST="${INPUT_FILE_LIST}-i $FILE "
+        ABSOLUTE_PATH=$(realpath ${FILE})
+        INPUT_FILE_LIST="${INPUT_FILE_LIST}-i $ABSOLUTE_PATH "
     done
 
 
@@ -243,7 +228,8 @@ function main()
     # │                        Apply LUT                         │
     # ╰──────────────────────────────────────────────────────────╯
     printf "\n3️⃣  Use ff_lut.sh to add colour grading.\n\n"
-    ../ff_lut.sh -i ${GROUPTIME_TEMP_FILE} -t ./luts/Circinus.cube -o ${LUT_TEMP_FILE}
+    ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t $(realpath ${LUT}) -o ${LUT_TEMP_FILE}
+
 
     # ╭──────────────────────────────────────────────────────────╮
     # │                      Make video 1:1                      │
@@ -259,22 +245,8 @@ function main()
     # ╰──────────────────────────────────────────────────────────╯
 
     printf "\n5️⃣  Use ff_text.sh to add the top text.\n\n"
-
-    if [[ ! -z ${TEXT_TOP} ]]; then
-        printf "%s" "${TEXT_TOP}" > 
-    fi
-
-    ../ff_text.sh -i ${PAD_TEMP_FILE} -t ${TEXT_TOP_FILE} -c "${TEXT_COLOUR}" -s 50 -p "${TEXT_BACKGROUND}" -r 20 -y "((h-${ORIGINAL_HEIGHT})/4)-(th/2)" -o ${TEXTTOP_TEMP_FILE}
-    
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │               Add text to bottom of video                │
-    # ╰──────────────────────────────────────────────────────────╯
-
-    printf "\n6️⃣  Use ff_text.sh to add the bottom text.\n\n"
-
-    ../ff_text.sh -i ${TEXTTOP_TEMP_FILE} -t ${TEXT_BOTTOM_FILE} -c "#000000" -s 40 -p "#ffffff" -r 10 -y "(((h-${ORIGINAL_HEIGHT})/4)*3)-(th/2)+${ORIGINAL_HEIGHT}" -o ${TEXTBOTTOM_TEMP_FILE}
-
+    printf "Addings: %s\n" "${TEXT_TOP}"
+    ../ff_text.sh -i ${PAD_TEMP_FILE} -T "${TEXT_TOP}" -c "${TEXT_COLOUR}" -s 50 -p "${TEXT_BACKGROUND}" -r 20 -y "((h-${ORIGINAL_HEIGHT})/4)-(th/2)" -o ${TEXT_TOP_TEMP_FILE}
 
     # ╭──────────────────────────────────────────────────────────╮
     # │             Add watermark to bottom of video             │
@@ -283,10 +255,23 @@ function main()
 
 
     # ╭──────────────────────────────────────────────────────────╮
+    # │               Add text to bottom of video                │
+    # ╰──────────────────────────────────────────────────────────╯
+
+    printf "\n6️⃣  Use ff_text.sh to add the bottom text.\n\n"
+
+    ../ff_text.sh -i ${TEXT_TOP_TEMP_FILE} -T "${TEXT_BOTTOM}" -c "#000000" -s 40 -p "#ffffff" -r 10 -y "(((h-${ORIGINAL_HEIGHT})/4)*3)-(th/2)+${ORIGINAL_HEIGHT}" -o ${TEXT_BOTTOM_TEMP_FILE}
+
+
+
+
+
+
+    # ╭──────────────────────────────────────────────────────────╮
     # │                   Copy to output file                    │
     # ╰──────────────────────────────────────────────────────────╯
 
-    mv ${TEXTBOTTOM_TEMP_FILE} ${OUTPUT_FILENAME}
+    mv ${TEXT_BOTTOM_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
 
 
     printf "\n\n✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
@@ -298,14 +283,14 @@ function main()
 function cleanup()
 {
     rm -f ${GROUPTIME_TEMP_FILE}
-    # rm -f ${LUT_TEMP_FILE}
+    rm -f ${LUT_TEMP_FILE}
     rm -f ${PAD_TEMP_FILE}
-    rm -f ${TEXTTOP_TEMP_FILE}
-    rm -f ${TEXTBOTTOM_TEMP_FILE}
+    rm -f ${TEXT_TOP_TEMP_FILE}
+    rm -f ${TEXT_BOTTOM_TEMP_FILE}
 }
 
 cleanup
 usage $@
-arguments $@
+arguments "$@"
 main $@
 cleanup
