@@ -6,6 +6,13 @@ The idea is that they can be chained together for more complex video effects and
 
 These are all based on BASH and FFMPEG.
 
+## Setup
+
+Either update your $PATH to include this folder or create a link in `/usr/local/bin` to each script.
+
+```
+PATH=$PATH:$(pwd)
+```
 
 ## Utility Scripts
 
@@ -46,7 +53,7 @@ Current list of scripts and their purposes.
 #### Description
 This will append two files together while re-encoding them to be the same codec. Good if you need to change the codec of the video by transcoding them. Note the `ff_concat.sh` script is better if you do not need to transcode.
 
-![append](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/append.svg)
+![append](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/append.svg)
 
 #### Flags
 ```bash
@@ -81,7 +88,7 @@ Flags:
 
 This will alter the container metadata (DAR) of the video to the new aspect ratio.
 
-![aspect_ratio](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/aspect_ratio.svg)
+![aspect_ratio](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/aspect_ratio.svg)
 
 #### Flags
 
@@ -199,7 +206,7 @@ graph LR
 
 Concatenate multiple videos into one output video.
 
-![concat](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/concat.svg)
+![concat](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/concat.svg)
 
 
 #### Flags
@@ -237,7 +244,7 @@ graph LR
 	input-->width-->height-->xpixels-->ypixels-->output
 ```
 
-![crop](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/crop.svg)
+![crop](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/crop.svg)
 
 
 #### Flags
@@ -282,7 +289,7 @@ graph LR
 
 Change the length of the video.
 
-![cut](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/cut.svg)
+![cut](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/cut.svg)
 
 #### Flags
 
@@ -313,7 +320,7 @@ Change the length of the video.
 
 Flip video horizontally and/or vertically.
 
-![flip](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/flip.svg)
+![flip](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/flip.svg)
 
 #### Flags
 
@@ -344,7 +351,7 @@ Flip video horizontally and/or vertically.
 
 Change the FPS of a video without changing the length.
 
-![fps](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/fps.svg)
+![fps](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/fps.svg)
 
 #### Flags
 ```
@@ -372,7 +379,7 @@ Change the FPS of a video without changing the length.
 
 Trim input videos by a percentage on start and end to get output video to correct duration.
 
-![grouptime](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/grouptime.svg)
+![grouptime](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/grouptime.svg)
 
 #### Flags
 ```
@@ -423,7 +430,7 @@ Apply a 3DL/Cube Look-Up Table (LUT) file to a video.
 
 Trim input video from start and end by a number of seconds.
 
-![middle](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/middle.svg)
+![middle](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/middle.svg)
 
 #### Flags
 ```
@@ -448,7 +455,7 @@ Trim input video from start and end by a number of seconds.
 
 Create padding around the edges of the video.
 
-![pad](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/pad.svg)
+![pad](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/pad.svg)
 
 #### Flags
 ```
@@ -509,7 +516,7 @@ Make black bars..
 
 Rotate a video.
 
-![rotate](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/rotate.svg)
+![rotate](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/rotate.svg)
 
 #### Flags
 
@@ -531,7 +538,7 @@ output_rotate.mp4 (default)
 
 Change the scale (Width/Height) of a video.
 
-![scale](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/scale.svg)
+![scale](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/scale.svg)
 
 #### Flags
 
@@ -590,7 +597,7 @@ Simple version of unsharp mask.
 
 Add text (with background box) on top of the video.
 
-![text](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/text.svg)
+![text](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/text.svg)
 
 #### Flags
 ```
@@ -676,7 +683,7 @@ Create thumbnails representative of the video.
 
 Convert a portrait video to landscape.
 
-![to_landscape](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/to_landscape.svg)
+![to_landscape](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/to_landscape.svg)
 
 #### Flags
 
@@ -707,7 +714,7 @@ Convert a portrait video to landscape.
 
 Convert a landscape video to portrait.
 
-![to_portrait](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/to_portrait.svg)
+![to_portrait](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/to_portrait.svg)
 
 #### Flags
 ```
@@ -790,7 +797,7 @@ Uses an unsharp mask to alter the luma,chroma and alpha of a video.
 
 Overlay a watermark on the video.
 
-![watermark](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/docs/images/watermark.svg)
+![watermark](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/watermark.svg)
 
 #### Flags
 ```

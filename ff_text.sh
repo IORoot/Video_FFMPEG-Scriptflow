@@ -22,6 +22,7 @@ OUTPUT_FILENAME="output_text.mp4"
 LOGLEVEL="error" 
 
 TEXTFILE="./text.txt"
+TEMP_TEXTFILE="/tmp/text.txt"
 FONT="/System/Library/Fonts/HelveticaNeue.ttc"
 COLOUR="WHITE"
 SIZE="24"
@@ -57,6 +58,10 @@ usage()
 
         printf " -t | --textfile <TEXTFILE>\n"
         printf "\tFile containing Text to write over video. Default: ./text.txt\n\n"
+
+
+        printf " -T | --text <TEXT>\n"
+        printf "\tText to write over video. Overrides --textfile\n\n"
 
 
         printf " -f | --font <FONT>\n"
@@ -140,6 +145,13 @@ function arguments()
             ;;
 
 
+        -T|--text)
+            TEXT="$2"
+            shift 
+            shift
+            ;;
+
+
         -f|--font)
             FONT="$2"
             shift 
@@ -218,6 +230,10 @@ function arguments()
 
 }
 
+function cleanup()
+{
+    rm ${TEMP_TEXTFILE}
+}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
@@ -227,14 +243,12 @@ function arguments()
 function main()
 {
 
-    printf "This will crop the video.\n"
+    printf "This will add text over the video.\n"
 
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
-
-    printf "✍️  Writing the text from file '%s' on the video.\n" "${TEXTFILE}"
 
 
     # printf "TEXT:%s\n" "${TEXT}"
@@ -247,6 +261,13 @@ function main()
     # printf "XPIXELS:%s\n" "${XPIXELS}"
     # printf "YPIXELS:%s\n" "${YPIXELS}"
 
+
+    if [ ! -z ${TEXT} ]; then
+        echo -e ${TEXT} > ${TEMP_TEXTFILE}
+        TEXTFILE=${TEMP_TEXTFILE}
+    fi
+
+    printf "✍️  Writing the text from file '%s' on the video.\n" "${TEXTFILE}"
 
     # Number of lines in text file.
     # wc -l doesn't work without newlines.
@@ -295,3 +316,4 @@ function main()
 usage $@
 arguments $@
 main $@
+cleanup

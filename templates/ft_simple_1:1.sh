@@ -8,7 +8,7 @@
 
 # 
 
-printf "🚨 Rule 1. This is just a wrapper for all the '../ff_*' scripts. This does not repeat code.\n"
+printf "🚨 Rule 1. This is just a wrapper for all the './ff_*' scripts. This does not repeat code.\n"
 printf "🚨 Rule 2. The input folder must ONLY contain the videos you wish to use.\n"
 printf "\n"
 
@@ -55,6 +55,10 @@ usage()
         printf "ℹ️  Usage:\n $0 -f <FOLDER> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
+        printf "🚨 PLEASE NOTE - THIS USES AUTOFLIP - WHICH REQUIRES A GITHUB PAT TO BE DEFINED.\n"
+        printf "This is defined as variable GITHUB_AUTOFLIP_PAT and set so the github.com/ioroot/AI__AutoFlip\n"
+        printf "Github action can be run via a webhook.\n\n"
+
         printf "Use on a folder of video clips. Will concat, pad and add text\n\n"
 
         printf "Flags:\n"
@@ -65,8 +69,17 @@ usage()
         printf " -t | --toptextfile <TEXTFILE>\n"
         printf "\tFile containing Text to add onto the top of the video. Default : text_top.txt\n\n"
 
+        printf " -T | --texttop \"<TEXT>\"\n"
+        printf "\tSingle line of text to write on top of video. Overrides --toptextfile \n\n"
+
         printf " -b | --bottomtextfile <TEXTFILE>\n"
         printf "\tFile containing Text to add below the video. DEFAULT: text_bottom.txt\n\n"
+
+        printf " -B | --textbottom \"<TEXT>\"\n"
+        printf "\tSingle line of text to write on bottom of video. Overrides --bottomtextfile\n\n"
+
+        printf " -p | --pat <PAT>\n"
+        printf "\tThe Github Personal Access Token. DEFAULT: GITHUB_AUTOFLIP_PAT.txt\n\n"
 
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
@@ -106,9 +119,30 @@ function arguments()
             ;;
 
 
+        -T|--texttop)
+            TEXT_TOP="$2"
+            shift
+            shift
+            ;;
+
+
         -b|--bottomtextfile)
             TEXT_BOTTOM_FILE="$2"
             shift
+            shift
+            ;;
+
+
+        -B|--textbottom)
+            TEXT_BOTTOM="$2"
+            shift
+            shift
+            ;;
+
+
+        -p|--pat)
+            GITHUB_AUTOFLIP_PAT="$2"
+            shift 
             shift
             ;;
 
@@ -194,9 +228,14 @@ function main()
     # ╰──────────────────────────────────────────────────────────╯
     printf "\n2️⃣  Use ff_grouptime.sh to create video of 60sec.\n\n"
 
-    ./ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE}
+    ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE}
 
     ORIGINAL_HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${GROUPTIME_TEMP_FILE})
+
+
+    # ╭──────────────────────────────────────────────────────────╮
+    # │                Run AUTOFLIP Github Action                │
+    # ╰──────────────────────────────────────────────────────────╯
 
 
 
@@ -204,28 +243,43 @@ function main()
     # │                        Apply LUT                         │
     # ╰──────────────────────────────────────────────────────────╯
     printf "\n3️⃣  Use ff_lut.sh to add colour grading.\n\n"
-    ./ff_lut.sh -i ${GROUPTIME_TEMP_FILE} -t ./luts/Circinus.cube -o ${LUT_TEMP_FILE}
+    ../ff_lut.sh -i ${GROUPTIME_TEMP_FILE} -t ./luts/Circinus.cube -o ${LUT_TEMP_FILE}
 
     # ╭──────────────────────────────────────────────────────────╮
     # │                      Make video 1:1                      │
     # ╰──────────────────────────────────────────────────────────╯
     printf "\n4️⃣  Use ff_pad.sh to make height same as width. 1:1 ratio.\n\n"
 
-    ./ff_pad.sh -i ${LUT_TEMP_FILE} -h iw -c "${PADDING_BACKGROUND}" -o ${PAD_TEMP_FILE}
+    ../ff_pad.sh -i ${LUT_TEMP_FILE} -h iw -c "${PADDING_BACKGROUND}" -o ${PAD_TEMP_FILE}
 
 
 
     # ╭──────────────────────────────────────────────────────────╮
-    # │           Add Text to top and bottom of video            │
+    # │                 Add Text to top of video                 │
     # ╰──────────────────────────────────────────────────────────╯
 
     printf "\n5️⃣  Use ff_text.sh to add the top text.\n\n"
 
-    ./ff_text.sh -i ${PAD_TEMP_FILE} -t ${TEXT_TOP_FILE} -c "${TEXT_COLOUR}" -s 50 -p "${TEXT_BACKGROUND}" -r 20 -y "((h-${ORIGINAL_HEIGHT})/4)-(th/2)" -o ${TEXTTOP_TEMP_FILE}
+    if [[ ! -z ${TEXT_TOP} ]]; then
+        printf "%s" "${TEXT_TOP}" > 
+    fi
+
+    ../ff_text.sh -i ${PAD_TEMP_FILE} -t ${TEXT_TOP_FILE} -c "${TEXT_COLOUR}" -s 50 -p "${TEXT_BACKGROUND}" -r 20 -y "((h-${ORIGINAL_HEIGHT})/4)-(th/2)" -o ${TEXTTOP_TEMP_FILE}
     
+
+    # ╭──────────────────────────────────────────────────────────╮
+    # │               Add text to bottom of video                │
+    # ╰──────────────────────────────────────────────────────────╯
+
     printf "\n6️⃣  Use ff_text.sh to add the bottom text.\n\n"
 
-    ./ff_text.sh -i ${TEXTTOP_TEMP_FILE} -t ${TEXT_BOTTOM_FILE} -c "${TEXT_COLOUR}" -s 40 -p "${TEXT_BACKGROUND}" -r 10 -y "(((h-${ORIGINAL_HEIGHT})/4)*3)-(th/2)+${ORIGINAL_HEIGHT}" -o ${TEXTBOTTOM_TEMP_FILE}
+    ../ff_text.sh -i ${TEXTTOP_TEMP_FILE} -t ${TEXT_BOTTOM_FILE} -c "#000000" -s 40 -p "#ffffff" -r 10 -y "(((h-${ORIGINAL_HEIGHT})/4)*3)-(th/2)+${ORIGINAL_HEIGHT}" -o ${TEXTBOTTOM_TEMP_FILE}
+
+
+    # ╭──────────────────────────────────────────────────────────╮
+    # │             Add watermark to bottom of video             │
+    # ╰──────────────────────────────────────────────────────────╯
+
 
 
     # ╭──────────────────────────────────────────────────────────╮
@@ -244,7 +298,7 @@ function main()
 function cleanup()
 {
     rm -f ${GROUPTIME_TEMP_FILE}
-    rm -f ${LUT_TEMP_FILE}
+    # rm -f ${LUT_TEMP_FILE}
     rm -f ${PAD_TEMP_FILE}
     rm -f ${TEXTTOP_TEMP_FILE}
     rm -f ${TEXTBOTTOM_TEMP_FILE}
