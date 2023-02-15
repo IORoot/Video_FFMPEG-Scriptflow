@@ -70,6 +70,7 @@ cd "$(dirname "$0")"                                        # Change to the scri
 TMP_FILE="/tmp/tmp_ffmpeg_grouptime_list.txt" 
 TMP_SUFFIX="trimmed" 
 TMP_TRIMMED_LIST="/tmp/tmp_ffmpeg_grouptime_trimmed_list.txt"
+INTERMEDIATE_FILENAME="/tmp/intermediate.mp4"
 OUTPUT_FILENAME="output_grouptime.mp4"
 DURATION="60"
 LOGLEVEL="error"                 # define temporary file
@@ -324,7 +325,7 @@ function main()
     # ╭──────────────────────────────────────────────────────────╮
     # │  Concat all files together to make approx output video.  │
     # ╰──────────────────────────────────────────────────────────╯
-    ffmpeg -y -v ${LOGLEVEL} -f concat -safe 0 -i ${TMP_TRIMMED_LIST} -c copy approx_${OUTPUT_FILENAME}
+    ffmpeg -y -v ${LOGLEVEL} -f concat -safe 0 -i ${TMP_TRIMMED_LIST} -c copy ${INTERMEDIATE_FILENAME}
 
 
     # ╭──────────────────────────────────────────────────────────╮
@@ -332,7 +333,7 @@ function main()
     # ╰──────────────────────────────────────────────────────────╯
 
     FINALEND=$(gdate -d@${DURATION} -u +%H:%M:%S) 
-    ffmpeg -y -v ${LOGLEVEL} -i approx_${OUTPUT_FILENAME} -ss 00:00:00 -to ${FINALEND} ${OUTPUT_FILENAME}
+    ffmpeg -y -v ${LOGLEVEL} -i ${INTERMEDIATE_FILENAME} -ss 00:00:00 -to ${FINALEND} ${OUTPUT_FILENAME}
     NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
     printf "✅ New video created: %s. ⏲️  new duration: %s\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
 
@@ -351,7 +352,7 @@ function main()
     done < ${TMP_TRIMMED_LIST}
 
     rm -f ${TMP_TRIMMED_LIST}
-    rm -f approx_${OUTPUT_FILENAME}
+    rm -f ${INTERMEDIATE_FILENAME}
 
 }
 

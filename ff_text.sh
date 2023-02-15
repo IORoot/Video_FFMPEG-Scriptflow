@@ -262,8 +262,9 @@ function main()
     # printf "YPIXELS:%s\n" "${YPIXELS}"
 
 
-    if [ ! -z ${TEXT} ]; then
-        echo -e ${TEXT} > ${TEMP_TEXTFILE}
+    if [ ! -z "${TEXT}" ]; then
+        printf "TEXT IS:\n ${TEXT}\n"
+        echo -e "${TEXT}" > ${TEMP_TEXTFILE}
         TEXTFILE=${TEMP_TEXTFILE}
     fi
 
@@ -314,6 +315,6 @@ function main()
 }
 
 usage $@
-arguments $@
+arguments "$@"
 main $@
 cleanup
