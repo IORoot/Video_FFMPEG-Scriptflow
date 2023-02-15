@@ -50,6 +50,7 @@ GROUPTIME_TEMP_FILE="/tmp/temp_grouptime.mp4"
 LUT_TEMP_FILE="/tmp/temp_lut.mp4"
 PAD_TEMP_FILE="/tmp/temp_pad.mp4"
 WATERMARK_TEMP_FILE="/tmp/temp_watermark.mp4"
+LANDSCAPE_TEMP_FILE="/tmp/temp_landscape.mp4"
 
 
 
@@ -187,15 +188,37 @@ function main()
 
     # NOT WORKING - ff_to_landsacpe is not outputting correct file and causing output file to lock up.
 
-    # for FILE in ${FOLDER}/*
-    # do
-    #     mv $FILE /tmp/temp.mp4
-    #     ./ff_to_landscape.sh -i /tmp/temp.mp4 -o $FILE
-    #     if [ ! -f "$FILE" ]; then
-    #         mv /tmp/temp.mp4 $FILE
-    #     fi
-    #     rm -f /tmp/temp.mp4
-    # done
+    for FILE in ${FOLDER}/*
+    do
+        # Exclude folders
+        if [ -d "$FILE" ]; then
+            echo "folder. skipping."
+            continue
+        fi
+
+        IFS=
+        # Measure Height/width against each other
+        WIDTH=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=width -of csv=p=0 ${FILE})
+        HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${FILE})
+
+        WIDTH=$(echo ${WIDTH} | tr ',' '\n')
+        HEIGHT=$(echo ${HEIGHT} | tr ',' '\n')
+
+        # If width is greater than height, it's already landscape.
+        if [[ $WIDTH -gt $HEIGHT ]];then
+            printf "❌ Already landscape (%sx%s). Skip to next video.\n" "$WIDTH" "$HEIGHT"
+        else
+            FILENAME=$(realpath $FILE)
+
+            cp $FILE ${LANDSCAPE_TEMP_FILE}
+            mkdir -p $FOLDER/original
+            mv $FILE $FOLDER/original/$(basename $FILE)
+
+            ls ${LANDSCAPE_TEMP_FILE}
+            ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $FILENAME
+        fi
+
+    done
 
 
     # ╭──────────────────────────────────────────────────────────╮
@@ -208,7 +231,7 @@ function main()
     for FILE in ${FOLDER}/*
     do
         ABSOLUTE_PATH=$(realpath ${FILE})
-        INPUT_FILE_LIST="${INPUT_FILE_LIST}-i $ABSOLUTE_PATH "
+        INPUT_FILE_LIST="${INPUT_FILE_LIST} -i $ABSOLUTE_PATH "
     done
 
 
@@ -251,7 +274,7 @@ function main()
 
     printf "\n5️⃣  Use ff_text.sh to add the top text.\n\n"
     printf "Addings: %s\n" "${TEXT_TOP}"
-    ../ff_text.sh -i ${PAD_TEMP_FILE} -T "${TEXT_TOP}" -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 20 -y 60 -o ${TEXT_TOP_TEMP_FILE}
+    ../ff_text.sh -i ${PAD_TEMP_FILE} -T "${TEXT_TOP}" -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 60 -o ${TEXT_TOP_TEMP_FILE}
 
     # ╭──────────────────────────────────────────────────────────╮
     # │             Add watermark to bottom of video             │
@@ -292,6 +315,7 @@ function cleanup()
     rm -f ${TEXT_TOP_TEMP_FILE}
     rm -f ${TEXT_BOTTOM_TEMP_FILE}
     rm -f ${WATERMARK_TEMP_FILE}
+    # rm -f ${LANDSCAPE_TEMP_FILE}
 }
 
 cleanup
