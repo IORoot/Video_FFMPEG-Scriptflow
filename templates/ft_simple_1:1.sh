@@ -27,15 +27,19 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
 TEXT_TOP="YOUTH CLASS"
+TEXT_TOP_COLOUR="#000000"
+TEXT_TOP_BACKGROUND="#FFFFFF"
+
 TEXT_BOTTOM="londonparkour.com/classes"
-TEXT_COLOUR="#FFFFFF"
-TEXT_BACKGROUND="#000000"
-PADDING_BACKGROUND="#FFFFFF"
+TEXT_BOTTOM_COLOUR="#FFFFFF"
+TEXT_BOTTOM_BACKGROUND="#E86546"
+
+PADDING_BACKGROUND="#E86546"
 OUTPUT_FILENAME="processed_simple_pad.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
 LUT="/Users/andypearson/Code/ffmpeg_utils/lib/luts/Circinus.cube"
-WATERMARK="/Users/andypearson/Code/ffmpeg_utils/lib/watermarks/ldnpk_black_solid.png"
+WATERMARK="/Users/andypearson/Code/ffmpeg_utils/lib/watermarks/ldnpk_white.png"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                     Temporary Files                      │
@@ -45,6 +49,7 @@ TEXT_BOTTOM_TEMP_FILE="/tmp/temp_text_bottom.mp4"
 GROUPTIME_TEMP_FILE="/tmp/temp_grouptime.mp4"
 LUT_TEMP_FILE="/tmp/temp_lut.mp4"
 PAD_TEMP_FILE="/tmp/temp_pad.mp4"
+WATERMARK_TEMP_FILE="/tmp/temp_watermark.mp4"
 
 
 
@@ -246,29 +251,28 @@ function main()
 
     printf "\n5️⃣  Use ff_text.sh to add the top text.\n\n"
     printf "Addings: %s\n" "${TEXT_TOP}"
-    ../ff_text.sh -i ${PAD_TEMP_FILE} -T "${TEXT_TOP}" -c "${TEXT_COLOUR}" -s 50 -p "${TEXT_BACKGROUND}" -r 20 -y "((h-${ORIGINAL_HEIGHT})/4)-(th/2)" -o ${TEXT_TOP_TEMP_FILE}
+    ../ff_text.sh -i ${PAD_TEMP_FILE} -T "${TEXT_TOP}" -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 20 -y 60 -o ${TEXT_TOP_TEMP_FILE}
 
     # ╭──────────────────────────────────────────────────────────╮
     # │             Add watermark to bottom of video             │
     # ╰──────────────────────────────────────────────────────────╯
 
+    printf "\n6️⃣  Use ff_watermark.sh to add the bottom logo.\n\n"
 
+    ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE}  -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE}
 
     # ╭──────────────────────────────────────────────────────────╮
     # │               Add text to bottom of video                │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n6️⃣  Use ff_text.sh to add the bottom text.\n\n"
+    printf "\n7️⃣  Use ff_text.sh to add the bottom text.\n\n"
 
-    ../ff_text.sh -i ${TEXT_TOP_TEMP_FILE} -T "${TEXT_BOTTOM}" -c "#000000" -s 40 -p "#ffffff" -r 10 -y "(((h-${ORIGINAL_HEIGHT})/4)*3)-(th/2)+${ORIGINAL_HEIGHT}" -o ${TEXT_BOTTOM_TEMP_FILE}
-
-
-
+    ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -T "${TEXT_BOTTOM}" -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE}
 
 
 
     # ╭──────────────────────────────────────────────────────────╮
-    # │                   Copy to output file                    │
+    # │                   Move to output file                    │
     # ╰──────────────────────────────────────────────────────────╯
 
     mv ${TEXT_BOTTOM_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
@@ -287,6 +291,7 @@ function cleanup()
     rm -f ${PAD_TEMP_FILE}
     rm -f ${TEXT_TOP_TEMP_FILE}
     rm -f ${TEXT_BOTTOM_TEMP_FILE}
+    rm -f ${WATERMARK_TEMP_FILE}
 }
 
 cleanup
