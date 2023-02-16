@@ -278,6 +278,8 @@ function main()
 
         while read -r FILE; do
 
+            FILE="/${FILE}" # missing /
+
             # printf "FILE is %s\n" "${FILE}"
             FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${FILE})
             # printf "FILE_DURATION is %s\n" "${FILE_DURATION}"
@@ -298,11 +300,16 @@ function main()
             NEW_BASEPATH=$(dirname ${FILE})
             NEW_BASENAME=$(basename ${FILE})
 
-            ffmpeg  -v ${LOGLEVEL} -i ${FILE} -ss ${START} -to ${END} ${NEW_BASEPATH}/${TMP_SUFFIX}_${NEW_BASENAME} < /dev/null
+            # Trim file to desired length. (remove start and end portions)
+            ffmpeg -y -v ${LOGLEVEL} -i ${FILE} -ss ${START} -to ${END} ${NEW_BASEPATH}/${TMP_SUFFIX}_${NEW_BASENAME} < /dev/null
 
             # Create intermediate files
             ffmpeg -y -v ${LOGLEVEL} -i ${NEW_BASEPATH}/${TMP_SUFFIX}_${NEW_BASENAME} -c copy /tmp/intermediate${LOOP}.ts
 
+            # Remove the trimmed file
+            rm -f ${NEW_BASEPATH}/${TMP_SUFFIX}_${NEW_BASENAME}
+
+            # Append to the pipe
             PIPE="$PIPE/tmp/intermediate${LOOP}.ts|"
 
             # Iterate.
@@ -336,6 +343,7 @@ function main()
     ffmpeg -y -v ${LOGLEVEL} -i "${PIPE%?}" -c copy ${INTERMEDIATE_FILENAME}
 
 
+
     # ╭──────────────────────────────────────────────────────────╮
     # │                    Trim to exact time                    │
     # ╰──────────────────────────────────────────────────────────╯
@@ -344,6 +352,8 @@ function main()
     ffmpeg -y -v ${LOGLEVEL} -i ${INTERMEDIATE_FILENAME} -ss 00:00:00 -to ${FINALEND} ${OUTPUT_FILENAME}
     NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
     printf "✅ New video created: %s. ⏲️  new duration: %s\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
+
+
 
     # ╭──────────────────────────────────────────────────────────╮
     # │                         Cleanup                          │
