@@ -86,6 +86,13 @@ jobs:
             mkdir -p ./rclone
             cd ./rclone
             echo "${{secrets.RCLONE_CONF}}" > ./rclone.conf
+            head -n 1 ./rclone.conf
+            head -n 2 ./rclone.conf
+            head -n 10 ./rclone.conf
+            tail -n 1 ./rclone.conf
+            tail -n 2 ./rclone.conf
+            tail -n 10 ./rclone.conf
+            cat ./rclone.conf
 
 
       - name: rclone video from google drive
