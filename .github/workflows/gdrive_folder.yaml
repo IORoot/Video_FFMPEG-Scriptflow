@@ -96,10 +96,11 @@ jobs:
 
       - name: rclone video from google drive
         run: |
-            export RCLONE_CONFIG="/tmp/rclone/rclone.conf"
-            mkdir /raw_videos
-            rclone --config /tmp/rclone/rclone.conf copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} /raw_videos
-            ls -la /raw_videos
+            export RCLONE_CONFIG="$(pwd)/rclone.conf"
+            cd ..
+            mkdir -p ./raw_videos
+            rclone --config ./rclone/rclone.conf copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
+            ls -la ./raw_videos
 
 
       - name: run ffmpeg template
