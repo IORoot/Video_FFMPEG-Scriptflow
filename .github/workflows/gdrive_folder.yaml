@@ -77,12 +77,15 @@ jobs:
 
 
       - name: setup rClone config
+        env:
+          RCLONE_CONF: ${{secrets.RCLONE_CONF}}
         run: |
           sudo mkdir -p /tmp/rclone
           cd /tmp/rclone
+          touch ./rclone.conf
           ls -la
           pwd
-          sudo echo "${{ secrets.RCLONE_CONF }}" > /tmp/rclone/rclone.conf
+          sudo echo "${RCLONE_CONF}" >> /tmp/rclone/rclone.conf
           cat /tmp/rclone/rclone.conf || true
 
 
