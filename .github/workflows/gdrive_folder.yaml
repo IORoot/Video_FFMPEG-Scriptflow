@@ -68,7 +68,7 @@ jobs:
         run: |
           sudo add-apt-repository ppa:savoury1/ffmpeg5
           sudo apt-get update 
-          sudo apt-get install --no-install-recommends ffmpeg rclone
+          sudo apt-get install ffmpeg rclone
           ffmpeg -version || true
 
 
