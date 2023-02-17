@@ -79,17 +79,11 @@ jobs:
         uses: actions/checkout@v3
 
 
-      - name: Setup Rclone
-        uses: AnimMouse/setup-rclone@v1
-        with:
-          rclone_config: ${{ secrets.RCLONE_CONFIG }}
+      # - name: Setup Rclone
+      #   uses: AnimMouse/setup-rclone@v1
+      #   with:
+      #     rclone_config: ${{ secrets.RCLONE_CONFIG }}
 
-
-      # - name: rclone video from google drive
-      #   run: |
-      #       mkdir -p ./raw_videos
-      #       rclone --auth-no-open-browser config reconnect GDrive:
-      #       rclone copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
 
       - name: rclone
         uses: wei/rclone@v1
@@ -101,10 +95,11 @@ jobs:
 
       - name: run ffmpeg template
         run: |
-            ffmpeg -version || true
+            ls -la ./raw_videos
             ./ff_lut.sh || true
             cd ./templates
             ls -la
+            ./ft_simple_1-1.sh || true
 
             
 
