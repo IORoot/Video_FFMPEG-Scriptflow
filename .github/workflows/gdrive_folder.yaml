@@ -73,16 +73,16 @@ jobs:
       - name: install dependencies
         run: |
           sudo apt-get update 
-          sudo apt-get install ffmpeg rclone
+          sudo apt-get install --no-install-recommends ffmpeg rclone
 
 
       - name: setup rClone config
         env:
           RCLONE_CONFIG: ${{ secrets.RCLONE_CONF }}
         run: |
-            mkdir -p /root/.config/rclone
+            sudo mkdir -p /root/.config/rclone
             cd /root/.config/rclone
-            echo "${RCLONE_CONFIG}" > rclone.conf
+            sudo echo "${RCLONE_CONFIG}" > rclone.conf
             ls -la
             pwd
             cat /root/.config/rclone/rclone.conf || true
