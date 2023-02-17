@@ -232,9 +232,9 @@ function main()
         else
             FILENAME=$(realpath $FILE)
 
-            cp $FILE ${LANDSCAPE_TEMP_FILE}
-            mkdir -p $FOLDER/original
-            mv $FILE $FOLDER/original/$(basename $FILE)
+            # cp $FILE ${LANDSCAPE_TEMP_FILE}
+            # mkdir -p $FOLDER/original
+            # mv $FILE $FOLDER/original/$(basename $FILE)
 
             ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $FILENAME
         fi
