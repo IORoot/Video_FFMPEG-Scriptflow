@@ -99,3 +99,8 @@ jobs:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
           args: copy ./processed_videos GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER}/processed
+
+
+      - name: Update google sheet with processed video folder
+        run: |
+          curl "https://script.google.com/macros/s/AKfycbxevPP0pw6m6Lx2pht7yqBsgRJqIN7LQ1pi6Ea_XeEXIC-31FD49mSN7b1_QDF3B3Z1/exec?folder=%22${GDRIVE_FOLDER}%22"
