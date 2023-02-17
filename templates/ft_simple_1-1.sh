@@ -231,20 +231,9 @@ function main()
             printf "❌ Already landscape (%sx%s). Skip to next video.\n" "$WIDTH" "$HEIGHT"
         else
             FILENAME=$(realpath $FILE)
-
-            whoami
-            pwd
+            cp $FILENAME ${LANDSCAPE_TEMP_FILE}
             ls -la
-            echo "FILE: $FILE"
-            echo "FILENAME: $FILENAME"
-            cp $FILENAME ${LANDSCAPE_TEMP_FILE} || true
-            echo "sudo"
-            sudo cp $FILENAME ${LANDSCAPE_TEMP_FILE} || true
-            ls -la
-            # mkdir -p $FOLDER/original
-            # mv $FILE $FOLDER/original/$(basename $FILE)
-
-            ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $FILENAME
+            ../ff_to_landscape.sh -i  $(realpath${LANDSCAPE_TEMP_FILE}) -o $FILENAME
         fi
 
     done
