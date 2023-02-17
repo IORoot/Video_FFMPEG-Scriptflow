@@ -37,8 +37,8 @@ PADDING_BACKGROUND="#E86546"
 OUTPUT_FILENAME="processed_simple_pad.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
-LUT="../luts/Circinus.cube"
-WATERMARK="../watermarks/ldnpk_white.png"
+LUT="Circinus.cube"
+WATERMARK="ldnpk_white.png"
 
 MAX_WIDTH="848"
 MAX_HEIGHT="480"
@@ -303,7 +303,7 @@ function main()
 
     printf "\n8️⃣  Use ff_watermark.sh to add the bottom logo.\n\n"
 
-    ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE}  -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE}
+    ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE}  -w $(realpath ${WATERMARK}) -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE}
 
     # ╭──────────────────────────────────────────────────────────╮
     # │               Add text to bottom of video                │
