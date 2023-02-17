@@ -92,11 +92,11 @@ jobs:
       #       rclone copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
 
       - name: rclone
-            uses: wei/rclone@v1
-            env:
-              RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-            with:
-              args: copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
+        uses: wei/rclone@v1
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+        with:
+          args: copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
 
 
       - name: run ffmpeg template
