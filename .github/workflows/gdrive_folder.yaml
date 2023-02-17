@@ -88,15 +88,11 @@ jobs:
       - name: rclone video from google drive
         run: |
             mkdir -p ./raw_videos
-            pwd
-            ls -la
             rclone copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
 
 
       - name: run ffmpeg template
         run: |
-            cd /usr/local/lib/
-            ls -la
             ffmpeg -version || true
             
 
