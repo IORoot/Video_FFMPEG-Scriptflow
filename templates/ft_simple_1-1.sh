@@ -238,6 +238,7 @@ function main()
             echo "FILE: $FILE"
             echo "FILENAME: $FILENAME"
             cp $FILENAME ${LANDSCAPE_TEMP_FILE} || true
+            echo "sudo"
             sudo cp $FILENAME ${LANDSCAPE_TEMP_FILE} || true
             ls -la
             # mkdir -p $FOLDER/original
