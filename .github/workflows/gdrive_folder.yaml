@@ -80,18 +80,19 @@ jobs:
         env:
           RCLONE_CONFIG: ${{ secrets.RCLONE_CONF }}
         run: |
-            sudo mkdir -p /root/.config/rclone
-            cd /root/.config/rclone
-            sudo echo "${RCLONE_CONFIG}" > rclone.conf
+            sudo mkdir -p /tmp/rclone
+            cd /tmp/rclone
+            echo "${RCLONE_CONFIG}" > rclone.conf
             ls -la
             pwd
-            cat /root/.config/rclone/rclone.conf || true
+            cat /tmp/rclone/rclone.conf || true
 
 
       - name: rclone video from google drive
         run: |
+            export RCLONE_CONFIG="/tmp/rclone/rclone.conf"
             mkdir /raw_videos
-            rclone copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} /raw_videos
+            rclone --config /tmp/rclone/rclone.conf copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} /raw_videos
             ls -la /raw_videos
 
       - name: checkout
