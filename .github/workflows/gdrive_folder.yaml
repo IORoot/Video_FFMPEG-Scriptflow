@@ -66,9 +66,10 @@ jobs:
 
       - name: install dependencies
         run: |
+          sudo add-apt-repository ppa:savoury1/ffmpeg4
           sudo add-apt-repository ppa:savoury1/ffmpeg5
           sudo apt-get update 
-          sudo apt-get install ffmpeg rclone
+          sudo apt-get install --no-install-recommends ffmpeg rclone
           ffmpeg -version || true
 
 
