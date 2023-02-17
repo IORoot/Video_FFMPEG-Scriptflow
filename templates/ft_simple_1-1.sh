@@ -22,7 +22,6 @@ set -o pipefail                                             # pipeline fails on 
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
 cd "$(dirname "$0")"                                        # Change to the script folder.
 
-
 # ╭──────────────────────────────────────────────────────────╮
 # │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
@@ -38,8 +37,8 @@ PADDING_BACKGROUND="#E86546"
 OUTPUT_FILENAME="processed_simple_pad.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
-LUT="/Users/andypearson/Code/ffmpeg_utils/lib/luts/Circinus.cube"
-WATERMARK="/Users/andypearson/Code/ffmpeg_utils/lib/watermarks/ldnpk_white.png"
+LUT="../luts/Circinus.cube"
+WATERMARK="../watermarks/ldnpk_white.png"
 
 MAX_WIDTH="848"
 MAX_HEIGHT="480"
