@@ -236,8 +236,9 @@ function main()
             pwd
             ls -la
             echo "FILE: $FILE"
-            cp $FILE ${LANDSCAPE_TEMP_FILE} || true
-            sudo cp $FILE ${LANDSCAPE_TEMP_FILE} 
+            echo "FILENAME: $FILENAME"
+            cp $FILENAME ${LANDSCAPE_TEMP_FILE} || true
+            sudo cp $FILENAME ${LANDSCAPE_TEMP_FILE} || true
             ls -la
             # mkdir -p $FOLDER/original
             # mv $FILE $FOLDER/original/$(basename $FILE)
