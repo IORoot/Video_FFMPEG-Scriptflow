@@ -94,6 +94,10 @@ jobs:
       - name: run ffmpeg template
         run: |
             ffmpeg -version || true
+            ./ff_lut.sh || true
+            cd ./templates
+            ls -la
+
             
 
       # - name: Copy Video to Server
