@@ -232,8 +232,7 @@ function main()
         else
             FILENAME=$(realpath $FILE)
             cp $FILENAME ${LANDSCAPE_TEMP_FILE}
-            ls -la
-            ../ff_to_landscape.sh -i  $(realpath${LANDSCAPE_TEMP_FILE}) -o $FILENAME
+            ../ff_to_landscape.sh -i  $(realpath ${LANDSCAPE_TEMP_FILE}) -o $FILENAME
         fi
 
     done
