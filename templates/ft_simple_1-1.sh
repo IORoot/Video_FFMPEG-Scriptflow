@@ -46,13 +46,13 @@ MAX_HEIGHT="480"
 # ╭──────────────────────────────────────────────────────────╮
 # │                     Temporary Files                      │
 # ╰──────────────────────────────────────────────────────────╯
-TEXT_TOP_TEMP_FILE="./temp_text_top.mp4"
-TEXT_BOTTOM_TEMP_FILE="./temp_text_bottom.mp4"
-GROUPTIME_TEMP_FILE="./temp_grouptime.mp4"
-LUT_TEMP_FILE="./temp_lut.mp4"
-PAD_TEMP_FILE="./temp_pad.mp4"
-WATERMARK_TEMP_FILE="./temp_watermark.mp4"
-LANDSCAPE_TEMP_FILE="./temp_landscape.mp4"
+TEXT_TOP_TEMP_FILE="temp_text_top.mp4"
+TEXT_BOTTOM_TEMP_FILE="temp_text_bottom.mp4"
+GROUPTIME_TEMP_FILE="temp_grouptime.mp4"
+LUT_TEMP_FILE="temp_lut.mp4"
+PAD_TEMP_FILE="temp_pad.mp4"
+WATERMARK_TEMP_FILE="temp_watermark.mp4"
+LANDSCAPE_TEMP_FILE="temp_landscape.mp4"
 
 
 
@@ -232,11 +232,15 @@ function main()
         else
             FILENAME=$(realpath $FILE)
 
-            mv $FILE ${LANDSCAPE_TEMP_FILE}
+
+            pwd
+            ls -la
+            cp $FILE ${LANDSCAPE_TEMP_FILE} || true
+            sudo cp $FILE ${LANDSCAPE_TEMP_FILE} 
             # mkdir -p $FOLDER/original
             # mv $FILE $FOLDER/original/$(basename $FILE)
 
-            ../ff_to_landscape.sh -i ${FILE} -o $FILENAME
+            ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $FILENAME
         fi
 
     done
