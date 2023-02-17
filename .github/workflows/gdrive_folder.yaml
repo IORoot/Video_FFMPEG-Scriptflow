@@ -33,7 +33,7 @@ env:
   # │        1. Get Data from CURL request and webhook         │
   # │            2. or Get URL from commit message             │
   # ╰──────────────────────────────────────────────────────────╯
-  GDRIVE_FOLDER_PREFIX:     "/SocialExporter/videos/"
+  GDRIVE_FOLDER_PREFIX:     "/SocialExporter/videos"
   GDRIVE_FOLDER:            ${{ github.event.client_payload.GDRIVE_FOLDER }} 
   
 
