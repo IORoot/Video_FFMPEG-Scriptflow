@@ -135,11 +135,13 @@ function main()
         exit 1
     fi
 
+    REAL_LUT_FOLDER=$(realpath ${LUT_FOLDER})
+    REAL_LUT_FILE="${REAL_LUT_FOLDER}/${LUT_FILE}"
 
-    printf "🎨 LUT File %s being applied to video.\n" "$LUT_FILE" 
+    printf "🎨 LUT File %s being applied to video.\n" "$FILE" 
 
     # https://ffmpeg.org/ffmpeg-filters.html#lut3d-1
-    ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf lut3d="${LUT_FOLDER}/${LUT_FILE}" -shortest ${OUTPUT_FILENAME}
+    ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf lut3d="${REAL_LUT_FILE}" -shortest ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
 

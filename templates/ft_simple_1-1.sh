@@ -277,7 +277,7 @@ function main()
     # │                        Apply LUT                         │
     # ╰──────────────────────────────────────────────────────────╯
     printf "\n5️⃣  Use ff_lut.sh to add colour grading.\n\n"
-    ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t $(realpath ${LUT}) -o ${LUT_TEMP_FILE}
+    ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE}
 
 
     # ╭──────────────────────────────────────────────────────────╮
@@ -303,7 +303,7 @@ function main()
 
     printf "\n8️⃣  Use ff_watermark.sh to add the bottom logo.\n\n"
 
-    ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE}  -w $(realpath ${WATERMARK}) -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE}
+    ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE}  -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE}
 
     # ╭──────────────────────────────────────────────────────────╮
     # │               Add text to bottom of video                │

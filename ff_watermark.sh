@@ -201,9 +201,12 @@ function main()
         exit 1
     fi
 
-    printf "🎨 Overlaying the watermark.\n" "$LUT_FILE" 
+    REAL_WATERMARK_FOLDER=$(realpath ${WATERMARK_FOLDER})
+    REAL_WATERMARK_FILE="${REAL_WATERMARK_FOLDER}/${WATERMARK_FILE}"
 
-    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FOLDER}/${WATERMARK_FILE}" -filter_complex "[1]format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}" ${OUTPUT_FILENAME}
+    printf "🎨 Overlaying the watermark.\n" "$WATERMARK_FILE" 
+
+    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${REAL_WATERMARK_FILE}" -filter_complex "[1]format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}" ${OUTPUT_FILENAME}
 
     printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
 
