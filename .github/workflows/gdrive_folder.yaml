@@ -79,13 +79,10 @@ jobs:
         uses: actions/checkout@v3
 
 
-      - name: setup rClone config
-        env:
-          RCLONE_CONF: ${{secrets.RCLONE_CONF}}
-        run: |
-            mkdir -p ./rclone
-            cd ./rclone
-            echo "${{secrets.RCLONE_CONF}}" > ./rclone.conf
+      - name: Setup Rclone
+        uses: AnimMouse/setup-rclone@v1
+        with:
+          rclone_config: ${{ secrets.RCLONE_CONFIG }}
 
 
       - name: rclone video from google drive
