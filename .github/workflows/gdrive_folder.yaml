@@ -75,18 +75,23 @@ jobs:
           sudo apt-get update 
           sudo apt-get install --no-install-recommends ffmpeg rclone
 
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
 
       - name: setup rClone config
         env:
           RCLONE_CONF: ${{secrets.RCLONE_CONF}}
         run: |
-          sudo mkdir -p /tmp/rclone
-          cd /tmp/rclone
+          pwd
+          mkdir -p ./rclone
+          ls -la
+          cd ./rclone
           touch ./rclone.conf
           ls -la
           pwd
-          sudo echo "${RCLONE_CONF}" >> /tmp/rclone/rclone.conf
-          cat /tmp/rclone/rclone.conf || true
+          sudo echo "${RCLONE_CONF}" >> ./rclone.conf
+          cat ./rclone.conf || true
 
 
       - name: rclone video from google drive
@@ -96,13 +101,6 @@ jobs:
             rclone --config /tmp/rclone/rclone.conf copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} /raw_videos
             ls -la /raw_videos
 
-      - name: checkout
-        run: |
-            cd /usr/local/lib/
-            ls -la
-
-      - name: Checkout
-        uses: actions/checkout@v3
 
       - name: run ffmpeg template
         run: |
