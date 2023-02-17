@@ -232,11 +232,13 @@ function main()
         else
             FILENAME=$(realpath $FILE)
 
-
+            whoami
             pwd
             ls -la
+            echo "FILE: $FILE"
             cp $FILE ${LANDSCAPE_TEMP_FILE} || true
             sudo cp $FILE ${LANDSCAPE_TEMP_FILE} 
+            ls -la
             # mkdir -p $FOLDER/original
             # mv $FILE $FOLDER/original/$(basename $FILE)
 
