@@ -90,7 +90,7 @@ jobs:
             mkdir -p ./raw_videos
             pwd
             ls -la
-            rclone --config "/home/runner/work/ffmpeg__bash-scripts/ffmpeg__bash-scripts/rclone/rclone.conf" copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
+            rclone copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
 
 
       - name: run ffmpeg template
