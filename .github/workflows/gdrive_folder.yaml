@@ -86,22 +86,14 @@ jobs:
             mkdir -p ./rclone
             cd ./rclone
             echo "${{secrets.RCLONE_CONF}}" > ./rclone.conf
-            head -n 1 ./rclone.conf
-            head -n 2 ./rclone.conf
-            head -n 10 ./rclone.conf
-            tail -n 1 ./rclone.conf
-            tail -n 2 ./rclone.conf
-            tail -n 10 ./rclone.conf
-            cat ./rclone.conf
 
 
       - name: rclone video from google drive
         run: |
+            mkdir -p ./raw_videos
             pwd
             ls -la
-            mkdir -p ./raw_videos
-            rclone --config /home/runner/work/ffmpeg__bash-scripts/ffmpeg__bash-scripts/rclone/rclone.conf copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
-            ls -la ./raw_videos
+            rclone --config "/home/runner/work/ffmpeg__bash-scripts/ffmpeg__bash-scripts/rclone/rclone.conf" copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
 
 
       - name: run ffmpeg template
