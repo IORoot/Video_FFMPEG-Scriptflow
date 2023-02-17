@@ -291,11 +291,20 @@ function main()
 
             printf "📄 File %s is %s%% of the total. Removing %ss from start & end.\n" "${FILE}" "${PERCENTAGE_OF_TOTAL}" "${HALF_AMOUNT_TO_REMOVE}"
 
-            START=$(gdate -d@${HALF_AMOUNT_TO_REMOVE} -u +%H:%M:%S.%N)   # convert to timestamp
+            if ! command -v gdate &> /dev/null; then
+                START=$(date -d@${HALF_AMOUNT_TO_REMOVE} -u +%H:%M:%S.%N)   # convert to timestamp
+            else
+                START=$(gdate -d@${HALF_AMOUNT_TO_REMOVE} -u +%H:%M:%S.%N)   # convert to timestamp
+            fi
 
             HALF_FROM_END=$(echo "scale=4; ${FILE_DURATION} - ${HALF_AMOUNT_TO_REMOVE}" | bc | awk '{printf "%f", $0}')
 
-            END=$(gdate -d@${HALF_FROM_END} -u +%H:%M:%S.%N)
+            if ! command -v gdate &> /dev/null; then
+                END=$(date -d@${HALF_FROM_END} -u +%H:%M:%S.%N)
+            else
+                END=$(gdate -d@${HALF_FROM_END} -u +%H:%M:%S.%N)
+            fi
+
 
             NEW_BASEPATH=$(dirname ${FILE})
             NEW_BASENAME=$(basename ${FILE})
@@ -347,8 +356,11 @@ function main()
     # ╭──────────────────────────────────────────────────────────╮
     # │                    Trim to exact time                    │
     # ╰──────────────────────────────────────────────────────────╯
-
-    FINALEND=$(gdate -d@${DURATION} -u +%H:%M:%S) 
+    if ! command -v gdate &> /dev/null; then
+        FINALEND=$(date -d@${DURATION} -u +%H:%M:%S) 
+    else
+        FINALEND=$(gdate -d@${DURATION} -u +%H:%M:%S) 
+    fi
     ffmpeg -y -v ${LOGLEVEL} -i ${INTERMEDIATE_FILENAME} -ss 00:00:00 -to ${FINALEND} ${OUTPUT_FILENAME}
     NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
     printf "✅ New video created: %s. ⏲️  new duration: %s\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
