@@ -87,10 +87,10 @@ jobs:
 
       - name: run ffmpeg template
         run: |
-            ls -la ./raw_videos
+            ls -la ./raw_videos/raw
             mkdir -p ./processed_videos
             cd ./templates
-            ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4
+            sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4
 
             
       - name: rclone
