@@ -46,6 +46,7 @@ MAX_HEIGHT="480"
 # ╭──────────────────────────────────────────────────────────╮
 # │                     Temporary Files                      │
 # ╰──────────────────────────────────────────────────────────╯
+TEMP_FOLDER="/tmp"
 TEXT_TOP_TEMP_FILE="temp_text_top.mp4"
 TEXT_BOTTOM_TEMP_FILE="temp_text_bottom.mp4"
 GROUPTIME_TEMP_FILE="temp_grouptime.mp4"
@@ -218,10 +219,12 @@ function main()
     do
         if [ -d "$FILE" ]; then continue; fi
 
+        REAL_FILE=$(realpath $FILE)
+
         IFS=
         # Measure Height/width against each other
-        WIDTH=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=width -of csv=p=0 ${FILE})
-        HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${FILE})
+        WIDTH=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=width -of csv=p=0 ${REAL_FILE})
+        HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${REAL_FILE})
 
         WIDTH=$(echo ${WIDTH} | tr ',' '\n')
         HEIGHT=$(echo ${HEIGHT} | tr ',' '\n')
@@ -230,9 +233,16 @@ function main()
         if [[ $WIDTH -gt $HEIGHT ]];then
             printf "❌ Already landscape (%sx%s). Skip to next video.\n" "$WIDTH" "$HEIGHT"
         else
-            FILENAME=$(realpath $FILE)
-            cp $FILENAME ${LANDSCAPE_TEMP_FILE}
-            ../ff_to_landscape.sh -i  $(realpath ${LANDSCAPE_TEMP_FILE}) -o $FILENAME
+            pwd
+            touch /tmp/test_in_temp.mp4 || true
+            printf "move to /tmp \n"
+            mv $REAL_FILE /tmp/${LANDSCAPE_TEMP_FILE} || true 
+
+            printf "running ff_to_landscape.sh on %s\n" "$REAL_FILE"
+            ../ff_to_landscape.sh -i  $(realpath ${LANDSCAPE_TEMP_FILE}) -o $REAL_FILE
+
+            printf "cleanup and remove /tmp/%s \n" "${LANDSCAPE_TEMP_FILE}"
+            rm /tmp/${LANDSCAPE_TEMP_FILE}
         fi
 
     done
