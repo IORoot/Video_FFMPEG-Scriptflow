@@ -47,13 +47,13 @@ MAX_HEIGHT="480"
 # │                     Temporary Files                      │
 # ╰──────────────────────────────────────────────────────────╯
 TEMP_FOLDER="/tmp"
-TEXT_TOP_TEMP_FILE="temp_text_top.mp4"
-TEXT_BOTTOM_TEMP_FILE="temp_text_bottom.mp4"
-GROUPTIME_TEMP_FILE="temp_grouptime.mp4"
-LUT_TEMP_FILE="temp_lut.mp4"
-PAD_TEMP_FILE="temp_pad.mp4"
-WATERMARK_TEMP_FILE="temp_watermark.mp4"
-LANDSCAPE_TEMP_FILE="temp_landscape.mp4"
+TEXT_TOP_TEMP_FILE="${TEMP_FOLDER}/temp_text_top.mp4"
+TEXT_BOTTOM_TEMP_FILE="${TEMP_FOLDER}/temp_text_bottom.mp4"
+GROUPTIME_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime.mp4"
+LUT_TEMP_FILE="${TEMP_FOLDER}/temp_lut.mp4"
+PAD_TEMP_FILE="${TEMP_FOLDER}/temp_pad.mp4"
+WATERMARK_TEMP_FILE="${TEMP_FOLDER}/temp_watermark.mp4"
+LANDSCAPE_TEMP_FILE="${TEMP_FOLDER}/temp_landscape.mp4"
 
 
 
@@ -233,8 +233,8 @@ function main()
         if [[ $WIDTH -gt $HEIGHT ]];then
             printf "❌ Already landscape (%sx%s). Skip to next video.\n" "$WIDTH" "$HEIGHT"
         else
-            mv $REAL_FILE ${TEMP_FOLDER}/${LANDSCAPE_TEMP_FILE} || true 
-            ../ff_to_landscape.sh -i  ${TEMP_FOLDER}/${LANDSCAPE_TEMP_FILE} -o $REAL_FILE
+            mv $REAL_FILE ${LANDSCAPE_TEMP_FILE}
+            ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $REAL_FILE
             rm /tmp/${LANDSCAPE_TEMP_FILE}
         fi
 
