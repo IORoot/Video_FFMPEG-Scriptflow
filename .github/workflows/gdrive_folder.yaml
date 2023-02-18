@@ -82,7 +82,7 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
+          args: copy GDrive:${GDRIVE_FOLDER_PREFIX}/${GDRIVE_FOLDER} ./raw_videos
 
 
         # Use sudo otherwise permissions to /tmp won't work in runner
