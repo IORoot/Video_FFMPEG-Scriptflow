@@ -26,7 +26,7 @@ env:
   # ╭──────────────────────────────────────────────────────────╮
   # │                Target Google Sheet Script                │
   # ╰──────────────────────────────────────────────────────────╯
-  SHEETS: "https://script.google.com/macros/s/AKfycbwrzBUwTlj7gOJ87U0D0hQnkiRMMEwphLz-MPNw2mYrZw0FBEEOkTHkGp6QsQgKqRCK/exec"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycby_YpxiwxHks6BjizIK6BUjHXYQEJVzs3kVtWrZrDgr4KbqVrJrcW63TbOb8-AaZc0xdQ/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                        Video URL                         │
@@ -48,29 +48,20 @@ jobs:
 
   build:
 
-
     runs-on: ubuntu-latest
     container:
       
     steps:
 
+
       # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#repository_dispatch
       # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-a-repository-dispatch-event
-      - name: Test the repository_dispatch fields
-        run: |
-            echo "GDRIVE_FOLDER: ${GDRIVE_FOLDER}/raw"
-            echo "TARGET_OUTPUT_FOLDER: ${GDRIVE_FOLDER}/processed"
-            echo "TEMPLATE: ${TEMPLATE}"
-            
-
-
       - name: install dependencies
         run: |
           sudo add-apt-repository ppa:savoury1/ffmpeg4
           sudo add-apt-repository ppa:savoury1/ffmpeg5
           sudo apt-get update 
           sudo apt-get install --no-install-recommends ffmpeg rclone
-          ffmpeg -version || true
 
 
       - name: Checkout Repo
@@ -88,12 +79,14 @@ jobs:
         # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
         run: |
-            ls -la ./raw_videos/raw
             mkdir -p ./processed_videos
             cd ./templates
             sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4
             cd ..
+            ls -la 
+            ls -la ./processed_videos
             
+
       - name: rclone
         uses: wei/rclone@v1
         env:
@@ -104,4 +97,4 @@ jobs:
 
       - name: Update google sheet with processed video folder
         run: |
-          curl "https://script.google.com/macros/s/AKfycbxevPP0pw6m6Lx2pht7yqBsgRJqIN7LQ1pi6Ea_XeEXIC-31FD49mSN7b1_QDF3B3Z1/exec?folder=%22${GDRIVE_FOLDER}%22"
+          curl "${{ env.APPS_SCRIPT }}?folder=%22${GDRIVE_FOLDER}%22"
