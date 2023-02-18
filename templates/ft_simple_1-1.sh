@@ -233,10 +233,12 @@ function main()
         if [[ $WIDTH -gt $HEIGHT ]];then
             printf "❌ Already landscape (%sx%s). Skip to next video.\n" "$WIDTH" "$HEIGHT"
         else
-            pwd
             touch /tmp/test_in_temp.mp4 || true
             printf "move to /tmp \n"
             mv $REAL_FILE /tmp/${LANDSCAPE_TEMP_FILE} || true 
+
+            ls -la /
+            ls -la /tmp
 
             printf "running ff_to_landscape.sh on %s\n" "$REAL_FILE"
             ../ff_to_landscape.sh -i  $(realpath ${LANDSCAPE_TEMP_FILE}) -o $REAL_FILE
