@@ -235,7 +235,7 @@ function main()
         else
             mv $REAL_FILE ${LANDSCAPE_TEMP_FILE}
             ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $REAL_FILE
-            rm /tmp/${LANDSCAPE_TEMP_FILE}
+            rm ${LANDSCAPE_TEMP_FILE}
         fi
 
     done

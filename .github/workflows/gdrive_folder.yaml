@@ -90,6 +90,8 @@ jobs:
             ls -la ./raw_videos/raw
             mkdir -p ./processed_videos
             cd ./templates
+
+          # Use sudo otherwise permissions to /tmp won't work in runner
             sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4
 
             
