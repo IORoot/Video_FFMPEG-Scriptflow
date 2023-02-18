@@ -92,7 +92,7 @@ jobs:
             mkdir -p ./processed_videos
             cd ./templates
             sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4
-
+            cd ..
             
       - name: rclone
         uses: wei/rclone@v1
