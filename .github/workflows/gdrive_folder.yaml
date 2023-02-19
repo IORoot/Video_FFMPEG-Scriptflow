@@ -85,10 +85,11 @@ jobs:
         # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
         run: |
-            TEXT_TOP=$(echo ${{ env.TEXT_TOP_B64 }} | base64 --decode)
+            echo "londonparkour.com/classes" > ./text_bottom.txt
+            echo ${{ env.TEXT_TOP_B64 }} | base64 --decode > ./text_top.txt
             mkdir -p ./processed_videos
             cd ./templates
-            sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "${{ env.TEXT_TOP }}"
+            sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "./text_top.txt"
 
       - name: rclone
         uses: wei/rclone@v1
