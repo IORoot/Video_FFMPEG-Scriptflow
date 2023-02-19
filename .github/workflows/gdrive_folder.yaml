@@ -50,7 +50,7 @@ env:
   # │                      - Server name                       │
   # │                     - Target folder.                     │
   # ╰──────────────────────────────────────────────────────────╯
-  SERVER:               'https://londonparkour.com'
+  SERVER:               'londonparkour.com'
   TARGET_ROOT_FOLDER:   '/var/www/vhosts/media.londonparkour.com/processed'
 
 
