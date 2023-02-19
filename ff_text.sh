@@ -232,7 +232,11 @@ function arguments()
 
 function cleanup()
 {
-    rm ${TEMP_TEXTFILE}
+    if test -f "${TEMP_TEXTFILE}"; then
+        echo "Deleting ${TEMP_TEXTFILE}."
+        rm -f ${TEMP_TEXTFILE}
+    fi
+    
 }
 
 # ╭──────────────────────────────────────────────────────────╮
