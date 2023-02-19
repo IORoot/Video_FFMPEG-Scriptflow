@@ -26,7 +26,7 @@ env:
   # ╭──────────────────────────────────────────────────────────╮
   # │                Target Google Sheet Script                │
   # ╰──────────────────────────────────────────────────────────╯
-  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbz9VeSUe_l5JdSxBcSROUPm3M5_YI5Jb3nWrTtI0RuQpIQhnnUnQrDlYXD883xokil1Uw/exec"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbxvLwy-nBlclExAVruQwISFUswsYH6fN0kyxgYMZKNKup9yasX-ey3HZ8l5NEjPswrDCA/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                        Video URL                         │
@@ -35,7 +35,7 @@ env:
   # ╰──────────────────────────────────────────────────────────╯
   GDRIVE_FOLDER_PREFIX:     "/SocialExporter/videos"
   GDRIVE_FOLDER:            ${{ github.event.client_payload.GDRIVE_FOLDER }}
-  
+  PROCESSED_FOLDER:         "/SocialExporter/videos${{ github.event.client_payload.GDRIVE_FOLDER }}/processed"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                Aspect Ratio to output as.                │
@@ -92,7 +92,9 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: copy ./processed_videos GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER}/processed
+          args: copy ./processed_videos GDrive:${{ env.PROCESSED_FOLDER }}
+          # args: copy ./processed_videos GDrive:/SocialExporter/videos/2023-02-19/training/0/processed
+          # args: copy ./processed_videos GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER}/processed
 
 
       - name: Update google sheet with processed video folder
