@@ -46,7 +46,7 @@ env:
   # ╭──────────────────────────────────────────────────────────╮
   # │                    Text for Template                     │
   # ╰──────────────────────────────────────────────────────────╯
-  TEXT:                 ${{ github.event.client_payload.TEXT }}
+  TEXT_TOP:             ${{ github.event.client_payload.TEXT_TOP }}
 
 jobs:
 
@@ -85,7 +85,7 @@ jobs:
         run: |
             mkdir -p ./processed_videos
             cd ./templates
-            sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t 
+            sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t ${{ env.TEXT_TOP }}
 
       - name: rclone
         uses: wei/rclone@v1
