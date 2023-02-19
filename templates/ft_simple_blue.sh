@@ -26,15 +26,15 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
 TEXT_TOP_FILE="text_top.txt"
-TEXT_TOP_COLOUR="#000000"
-TEXT_TOP_BACKGROUND="#FFFFFF"
+TEXT_TOP_COLOUR="#FFFFFF"
+TEXT_TOP_BACKGROUND="#0EA5E9"
 
 TEXT_BOTTOM_FILE="text_bottom.txt"
 TEXT_BOTTOM_COLOUR="#FFFFFF"
-TEXT_BOTTOM_BACKGROUND="#E86546"
+TEXT_BOTTOM_BACKGROUND="#0EA5E9"
 
-PADDING_BACKGROUND="#E86546"
-OUTPUT_FILENAME="processed_simple_pad.mp4"
+PADDING_BACKGROUND="#0EA5E9"
+OUTPUT_FILENAME="processed_simple_blue.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
 LUT="Circinus.cube"
