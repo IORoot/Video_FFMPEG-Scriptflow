@@ -45,6 +45,14 @@ env:
   TEXT_TOP_B64:         ${{ github.event.client_payload.TEXT_TOP }}
 
 
+  # ╭──────────────────────────────────────────────────────────╮
+  # │              Where to upload the result to.              │
+  # │                      - Server name                       │
+  # │                     - Target folder.                     │
+  # ╰──────────────────────────────────────────────────────────╯
+  SERVER:               'londonparkour.com'
+  TARGET_ROOT_FOLDER:   '/var/www/vhosts/media.londonparkour.com/processed'
+
 
 jobs:
 
@@ -67,7 +75,7 @@ jobs:
           sudo add-apt-repository ppa:savoury1/ffmpeg4
           sudo add-apt-repository ppa:savoury1/ffmpeg5
           sudo apt-get update 
-          sudo apt-get install --no-install-recommends ffmpeg rclone
+          sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass
 
 
       - name: Checkout Repo
@@ -91,12 +99,27 @@ jobs:
             cd ./templates
             sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "./text_top.txt"
 
+
       - name: rclone
         uses: wei/rclone@v1
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
           args: copy ./processed_videos GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER}/processed
+
+
+      - name: Copy Video to Server
+        run: |
+          mkdir ~/.ssh
+          ssh-keyscan -H ${{env.SERVER}} >> ~/.ssh/known_hosts
+
+          SOURCE_DIR="./processed_videos"
+          TARGET_DIR="${TARGET_ROOT_FOLDER}/${GDRIVE_FOLDER}/processed"
+
+          echo "SOURCE DIR: ${SOURCE_DIR}"
+          echo "TARGET DIR: ${TARGET_DIR}"
+
+          sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SOURCE_DIR} ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
 
 
       - name: Update google sheet with processed video folder
