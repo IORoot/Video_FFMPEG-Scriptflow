@@ -24,7 +24,7 @@ env:
   # ╭──────────────────────────────────────────────────────────╮
   # │                Target Google Sheet Script                │
   # ╰──────────────────────────────────────────────────────────╯
-  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbwWQATxLb_2qzAF6_l4YnxNgZwo0YemfdgPoR7BU8SBUcOxnJfEBQUnkBWM3H2oRXQ/exec"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbzkiOV0VXJ4YGkoan_pZ8cyBtzXeZl7PScicjs0RwDB2r5vHtOsHnQayZAJHxFhtsqthQ/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                        Video URL                         │
@@ -114,7 +114,7 @@ jobs:
           ssh-keyscan -H ${{env.SERVER}} >> ~/.ssh/known_hosts
 
           SOURCE_DIR="./processed_videos/processed.mp4"
-          TARGET_DIR="${TARGET_ROOT_FOLDER}${GDRIVE_FOLDER}/processed"
+          TARGET_DIR="${TARGET_ROOT_FOLDER}${GDRIVE_FOLDER}"
 
           echo "SOURCE DIR: ${SOURCE_DIR}"
           echo "TARGET DIR: ${TARGET_DIR}"
