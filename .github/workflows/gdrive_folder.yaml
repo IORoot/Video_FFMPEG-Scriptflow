@@ -114,11 +114,12 @@ jobs:
           ssh-keyscan -H ${{env.SERVER}} >> ~/.ssh/known_hosts
 
           SOURCE_DIR="./processed_videos"
-          TARGET_DIR="${TARGET_ROOT_FOLDER}/${GDRIVE_FOLDER}/processed"
+          TARGET_DIR="${TARGET_ROOT_FOLDER}${GDRIVE_FOLDER}/processed"
 
           echo "SOURCE DIR: ${SOURCE_DIR}"
           echo "TARGET DIR: ${TARGET_DIR}"
 
+          sshpass -p '${{secrets.SSH_PASS}}' ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -c "mkdir -p ${TARGET_DIR}"
           sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SOURCE_DIR} ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
 
 
