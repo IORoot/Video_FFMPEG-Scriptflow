@@ -97,7 +97,7 @@ jobs:
             echo ${{ env.TEXT_TOP_B64 }} | base64 --decode > ./text_top.txt
             mkdir -p ./processed_videos
             cd ./templates
-            sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "./text_top.txt"
+            sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "./text_top.txt"
 
 
       - name: rclone
