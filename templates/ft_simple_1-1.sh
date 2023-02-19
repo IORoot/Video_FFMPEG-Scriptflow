@@ -25,11 +25,11 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
-TEXT_TOP="YOUTH CLASS"
+TEXT_TOP_FILE="text_top.txt"
 TEXT_TOP_COLOUR="#000000"
 TEXT_TOP_BACKGROUND="#FFFFFF"
 
-TEXT_BOTTOM="londonparkour.com/classes"
+TEXT_BOTTOM_FILE="text_bottom.txt"
 TEXT_BOTTOM_COLOUR="#FFFFFF"
 TEXT_BOTTOM_BACKGROUND="#E86546"
 
@@ -78,11 +78,11 @@ usage()
         printf " -f | --folder <FOLDER>\n"
         printf "\tThe path to the folder of video clips.\n\n"
 
-        printf " -t | --texttop \"<TEXT>\"\n"
-        printf "\tText to write on top of video.\n\n"
+        printf " -t | --textfile \"<TEXTFILE>\"\n"
+        printf "\tText file with contents to write on top of video.\n\n"
 
-        printf " -b | --textbottom \"<TEXT>\"\n"
-        printf "\tText to write on bottom of video.\n\n"
+        printf " -b | --textfilebottom \"<TEXTFILE>\"\n"
+        printf "\tText file with contents to write on bottom of video.\n\n"
 
         printf " -p | --pat <PAT>\n"
         printf "\tThe Github Personal Access Token. DEFAULT: GITHUB_AUTOFLIP_PAT.txt\n\n"
@@ -120,14 +120,14 @@ function arguments()
 
 
         -t|--texttop)
-            TEXT_TOP="$2"
+            TEXT_TOP_FILE="$2"
             shift
             shift
             ;;
 
 
         -b|--textbottom)
-            TEXT_BOTTOM="$2"
+            TEXT_BOTTOM_FILE="$2"
             shift
             shift
             ;;
@@ -294,7 +294,7 @@ function main()
 
     printf "\n7️⃣  Use ff_text.sh to add the top text.\n\n"
     printf "Addings: %s\n" "${TEXT_TOP}"
-    ../ff_text.sh -i ${PAD_TEMP_FILE} -T "${TEXT_TOP}" -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 60 -o ${TEXT_TOP_TEMP_FILE}
+    ../ff_text.sh -i ${PAD_TEMP_FILE} -t "${TEXT_TOP_FILE}" -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 60 -o ${TEXT_TOP_TEMP_FILE}
 
     # ╭──────────────────────────────────────────────────────────╮
     # │             Add watermark to bottom of video             │
@@ -310,7 +310,7 @@ function main()
 
     printf "\n9️⃣  Use ff_text.sh to add the bottom text.\n\n"
 
-    ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -T "${TEXT_BOTTOM}" -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE}
+    ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -t "${TEXT_BOTTOM_FILE}" -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE}
 
 
 

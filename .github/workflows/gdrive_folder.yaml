@@ -21,12 +21,10 @@ on:
     types: gdrive_video_convert
 
 env:
-
-
   # ╭──────────────────────────────────────────────────────────╮
   # │                Target Google Sheet Script                │
   # ╰──────────────────────────────────────────────────────────╯
-  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbxvLwy-nBlclExAVruQwISFUswsYH6fN0kyxgYMZKNKup9yasX-ey3HZ8l5NEjPswrDCA/exec"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbx_oaULIc-lDjPuvmJDD9NGRVLwkL3LbzTLI0lzPEL7iILTiQqsJyMhHJHaN3kHXQSwbg/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                        Video URL                         │
@@ -41,11 +39,12 @@ env:
   # ╰──────────────────────────────────────────────────────────╯
   TEMPLATE:             ${{ github.event.client_payload.TEMPLATE }}
 
-
   # ╭──────────────────────────────────────────────────────────╮
   # │                    Text for Template                     │
   # ╰──────────────────────────────────────────────────────────╯
-  TEXT_TOP:             ${{ github.event.client_payload.TEXT_TOP }}
+  TEXT_TOP_B64:         ${{ github.event.client_payload.TEXT_TOP }}
+
+
 
 jobs:
 
@@ -56,6 +55,10 @@ jobs:
       
     steps:
 
+      - name: list variables
+        run: |
+          env
+          echo "TEXT_TOP: ${TEXT_TOP}"
 
       # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#repository_dispatch
       # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-a-repository-dispatch-event
@@ -82,9 +85,10 @@ jobs:
         # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
         run: |
+            TEXT_TOP=$(echo ${{ env.TEXT_TOP_B64 }} | base64 --decode)
             mkdir -p ./processed_videos
             cd ./templates
-            sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t ${{ env.TEXT_TOP }}
+            sudo ./ft_simple_1-1.sh -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "${{ env.TEXT_TOP }}"
 
       - name: rclone
         uses: wei/rclone@v1
