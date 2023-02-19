@@ -24,7 +24,7 @@ env:
   # ╭──────────────────────────────────────────────────────────╮
   # │                Target Google Sheet Script                │
   # ╰──────────────────────────────────────────────────────────╯
-  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbx_oaULIc-lDjPuvmJDD9NGRVLwkL3LbzTLI0lzPEL7iILTiQqsJyMhHJHaN3kHXQSwbg/exec"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbwWQATxLb_2qzAF6_l4YnxNgZwo0YemfdgPoR7BU8SBUcOxnJfEBQUnkBWM3H2oRXQ/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                        Video URL                         │
