@@ -38,7 +38,7 @@ OUTPUT_FILENAME="processed_simple_blue.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
 LUT="Circinus.cube"
-WATERMARK="ldnpk_white.png"
+WATERMARK="./lib/watermarks/ldnpk_white.png"
 
 MAX_WIDTH="848"
 MAX_HEIGHT="480"
@@ -67,8 +67,6 @@ usage()
         printf "ℹ️  Usage:\n $0 -f <FOLDER> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "🚨 PLEASE NOTE - THIS USES AUTOFLIP - WHICH REQUIRES A GITHUB PAT TO BE DEFINED.\n"
-        printf "This is defined as variable GITHUB_AUTOFLIP_PAT and set so the github.com/ioroot/AI__AutoFlip\n"
         printf "Github action can be run via a webhook.\n\n"
 
         printf "Use on a folder of video clips. Will concat, pad and add text\n\n"
@@ -83,9 +81,6 @@ usage()
 
         printf " -b | --textfilebottom \"<TEXTFILE>\"\n"
         printf "\tText file with contents to write on bottom of video.\n\n"
-
-        printf " -p | --pat <PAT>\n"
-        printf "\tThe Github Personal Access Token. DEFAULT: GITHUB_AUTOFLIP_PAT.txt\n\n"
 
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
@@ -129,13 +124,6 @@ function arguments()
         -b|--textbottom)
             TEXT_BOTTOM_FILE="$2"
             shift
-            shift
-            ;;
-
-
-        -p|--pat)
-            GITHUB_AUTOFLIP_PAT="$2"
-            shift 
             shift
             ;;
 

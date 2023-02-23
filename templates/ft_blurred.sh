@@ -1,12 +1,13 @@
 #!/bin/bash
+
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │               Template : Concatenated Portrait Video add Text                │
-# │           (No content-aware editing. clips must total under 60sec)           │
+# │                              TEMPLATE : Blurred                              │
+# │         Background is a magnified version of main video and Blurred.         │
+# │                           Size is 1:1 at 1080x1080                           │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 
-# 
 
 printf "🚨 Rule 1. This is just a wrapper for all the './ff_*' scripts. This does not repeat code.\n"
 printf "🚨 Rule 2. The input folder must ONLY contain the videos you wish to use.\n"
@@ -25,16 +26,7 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
-TEXT_TOP_FILE="text_top.txt"
-TEXT_TOP_COLOUR="#000000"
-TEXT_TOP_BACKGROUND="#FFFFFF"
-
-TEXT_BOTTOM_FILE="text_bottom.txt"
-TEXT_BOTTOM_COLOUR="#FFFFFF"
-TEXT_BOTTOM_BACKGROUND="#E86546"
-
-PADDING_BACKGROUND="#E86546"
-OUTPUT_FILENAME="processed_simple_orange.mp4"
+OUTPUT_FILENAME="processed_blurred.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
 LUT="Circinus.cube"
@@ -47,14 +39,16 @@ MAX_HEIGHT="480"
 # │                     Temporary Files                      │
 # ╰──────────────────────────────────────────────────────────╯
 TEMP_FOLDER="/tmp"
-TEXT_TOP_TEMP_FILE="${TEMP_FOLDER}/temp_text_top.mp4"
-TEXT_BOTTOM_TEMP_FILE="${TEMP_FOLDER}/temp_text_bottom.mp4"
+LANDSCAPE_TEMP_FILE="${TEMP_FOLDER}/temp_landscape.mp4"
 GROUPTIME_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime.mp4"
 LUT_TEMP_FILE="${TEMP_FOLDER}/temp_lut.mp4"
-PAD_TEMP_FILE="${TEMP_FOLDER}/temp_pad.mp4"
 WATERMARK_TEMP_FILE="${TEMP_FOLDER}/temp_watermark.mp4"
-LANDSCAPE_TEMP_FILE="${TEMP_FOLDER}/temp_landscape.mp4"
 
+BG_COPY_TEMP="${TEMP_FOLDER}/temp_BG_copy.mp4"
+BG_SCALE_TEMP="${TEMP_FOLDER}/temp_BG_scale.mp4"
+BG_CROP_TEMP="${TEMP_FOLDER}/temp_BG_crop.mp4"
+BG_BLUR_TEMP="${TEMP_FOLDER}/temp_BG_blur.mp4"
+BG_WATERMARK_TEMP="${TEMP_FOLDER}/temp_BG_watermark.mp4"
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -67,7 +61,7 @@ usage()
         printf "ℹ️  Usage:\n $0 -f <FOLDER> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Github action can be run via a webhook.\n\n"
+        printf "🚨 PLEASE NOTE - THIS USES AUTOFLIP - WHICH REQUIRES A GITHUB PAT TO BE DEFINED.\n"
 
         printf "Use on a folder of video clips. Will concat, pad and add text\n\n"
 
@@ -75,12 +69,6 @@ usage()
 
         printf " -f | --folder <FOLDER>\n"
         printf "\tThe path to the folder of video clips.\n\n"
-
-        printf " -t | --textfile \"<TEXTFILE>\"\n"
-        printf "\tText file with contents to write on top of video.\n\n"
-
-        printf " -b | --textfilebottom \"<TEXTFILE>\"\n"
-        printf "\tText file with contents to write on bottom of video.\n\n"
 
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
@@ -108,21 +96,6 @@ function arguments()
 
         -f|--folder)
             FOLDER="$2"
-            shift
-            shift
-            ;;
-
-
-
-        -t|--texttop)
-            TEXT_TOP_FILE="$2"
-            shift
-            shift
-            ;;
-
-
-        -b|--textbottom)
-            TEXT_BOTTOM_FILE="$2"
             shift
             shift
             ;;
@@ -254,11 +227,6 @@ function main()
     ORIGINAL_HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${GROUPTIME_TEMP_FILE})
 
 
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                Run AUTOFLIP Github Action                │
-    # ╰──────────────────────────────────────────────────────────╯
-
-
 
     # ╭──────────────────────────────────────────────────────────╮
     # │                        Apply LUT                         │
@@ -267,22 +235,17 @@ function main()
     ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE}
 
 
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                      Make video 1:1                      │
-    # ╰──────────────────────────────────────────────────────────╯
-    printf "\n6️⃣  Use ff_pad.sh to make height same as width. 1:1 ratio.\n\n"
-
-    ../ff_pad.sh -i ${LUT_TEMP_FILE} -h iw -c "${PADDING_BACKGROUND}" -o ${PAD_TEMP_FILE}
-
-
 
     # ╭──────────────────────────────────────────────────────────╮
-    # │                 Add Text to top of video                 │
+    # │                Make copy to blur and crop                │
     # ╰──────────────────────────────────────────────────────────╯
+    printf "\n6️⃣  Make copy, blur and crop.\n\n"
+    cp $(realpath ${LUT_TEMP_FILE}) ${BG_COPY_TEMP}
+    ../ff_scale.sh -i $(realpath ${BG_COPY_TEMP}) -o ${BG_SCALE_TEMP} -w 1920 -h 1080
+    ../ff_crop.sh -i $(realpath ${BG_SCALE_TEMP}) -o ${BG_CROP_TEMP}  -w 1080 -h 1080
+    ../ff_blur.sh -i $(realpath ${BG_CROP_TEMP})  -o ${BG_BLUR_TEMP}  -s 20
+    ../ff_watermark.sh -i $(realpath ${BG_BLUR_TEMP}) -o ${BG_WATERMARK_TEMP} -w $(realpath ${LUT_TEMP_FILE}) -x "(W-w)/2" -y "(H-h)/2" -s 0.56
 
-    printf "\n7️⃣  Use ff_text.sh to add the top text.\n\n"
-    printf "Addings: %s\n" "${TEXT_TOP}"
-    ../ff_text.sh -i ${PAD_TEMP_FILE} -t "${TEXT_TOP_FILE}" -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 60 -o ${TEXT_TOP_TEMP_FILE}
 
     # ╭──────────────────────────────────────────────────────────╮
     # │             Add watermark to bottom of video             │
@@ -290,15 +253,7 @@ function main()
 
     printf "\n8️⃣  Use ff_watermark.sh to add the bottom logo.\n\n"
 
-    ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE}  -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE}
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │               Add text to bottom of video                │
-    # ╰──────────────────────────────────────────────────────────╯
-
-    printf "\n9️⃣  Use ff_text.sh to add the bottom text.\n\n"
-
-    ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -t "${TEXT_BOTTOM_FILE}" -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE}
+    ../ff_watermark.sh -i ${BG_WATERMARK_TEMP} -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE}
 
 
 
@@ -306,7 +261,7 @@ function main()
     # │                   Move to output file                    │
     # ╰──────────────────────────────────────────────────────────╯
 
-    mv ${TEXT_BOTTOM_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
+    mv ${WATERMARK_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
 
 
     printf "\n\n✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
@@ -317,13 +272,15 @@ function main()
 
 function cleanup()
 {
+    rm -f ${LANDSCAPE_TEMP_FILE}
     rm -f ${GROUPTIME_TEMP_FILE}
     rm -f ${LUT_TEMP_FILE}
-    rm -f ${PAD_TEMP_FILE}
-    rm -f ${TEXT_TOP_TEMP_FILE}
-    rm -f ${TEXT_BOTTOM_TEMP_FILE}
     rm -f ${WATERMARK_TEMP_FILE}
-    rm -f ${LANDSCAPE_TEMP_FILE}
+    rm -f ${BG_COPY_TEMP}
+    rm -f ${BG_SCALE_TEMP}
+    rm -f ${BG_CROP_TEMP}
+    rm -f ${BG_BLUR_TEMP}
+    rm -f ${BG_WATERMARK_TEMP}
 }
 
 cleanup
