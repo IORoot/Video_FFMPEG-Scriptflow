@@ -128,3 +128,10 @@ jobs:
       - name: Update google sheet with processed video folder
         run: |
           curl "${{ env.APPS_SCRIPT }}?folder=%22${GDRIVE_FOLDER}%22"
+
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: ':rocket: Video Processed with ${TEMPLATE}. http://media.londonparkour.com/videos${GDRIVE_FOLDER}/processed/processed.mp4'
