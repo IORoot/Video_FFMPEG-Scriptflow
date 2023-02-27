@@ -134,4 +134,4 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: ':rocket: Video Processed with ${{env.TEMPLATE}}. http://media.londonparkour.com/videos${{env.GDRIVE_FOLDER}}/processed/processed.mp4'
+          SLACK_MESSAGE: ':rocket: Video Processed with ${{env.TEMPLATE}}. http://media.londonparkour.com/processed${{env.GDRIVE_FOLDER}}/processed.mp4'
