@@ -1,2 +1,228 @@
 #!/bin/bash
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                                                              │
+# │                       Create a stack or grid of videos                       │
+# │                                                                              │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
 
+# ╭──────────────────────────────────────────────────────────╮
+# │                       Set Defaults                       │
+# ╰──────────────────────────────────────────────────────────╯
+
+set -o errexit                                              # If a command fails bash exits.
+set -o pipefail                                             # pipeline fails on one command.
+if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
+cd "$(dirname "$0")"                                        # Change to the script folder.
+
+# ╭──────────────────────────────────────────────────────────╮
+# │                        VARIABLES                         │
+# ╰──────────────────────────────────────────────────────────╯
+VERTICAL=''
+HORIZONTAL=''
+GRID=''
+
+TMP_FILE="/tmp/tmp_ffmpeg_stack_list.txt" 
+OUTPUT_FILENAME="output_stack.mp4"
+WIDTH="1920"
+HEIGHT="1080"
+LOGLEVEL="error" 
+
+# ╭──────────────────────────────────────────────────────────╮
+# │                          Usage.                          │
+# ╰──────────────────────────────────────────────────────────╯
+
+usage()
+{
+    if [ "$#" -lt 3 ]; then
+        printf "ℹ️ Usage:\n $0 -v -h -g -i <INPUT_FILE> [-w <WIDTH>] [-h <HEIGHT>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
+
+        printf "Summary:\n"
+        printf "Stack or grid multiple videos together. Videos have to be same dimensions.\n\n"
+
+        printf "Flags:\n"
+
+        printf " -v | --vertical\n"
+        printf "\tCreates a vertical stack of 2 inputs, one video on top of the other.\n\n"
+
+        printf " -h | --horizontal\n"
+        printf "\tCreates a horizontal stack of 2 inputs, one video next to the other.\n\n"
+
+        printf " -g | --grid\n"
+        printf "\tCreates a 2x2 stack of four input videos.\n\n"
+
+        printf " -i | --input <INPUT_FILE>\n"
+        printf "\tThe name of any input files.\n\n"
+
+        printf " -o | --output <OUTPUT_FILE>\n"
+        printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
+        printf "\tThe name of the output file.\n\n"
+
+
+        printf " -l | --loglevel <LOGLEVEL>\n"
+        printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
+        printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n"
+
+        exit 1
+    fi
+}
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │         Take the arguments from the command line         │
+# ╰──────────────────────────────────────────────────────────╯
+function arguments()
+{
+    POSITIONAL_ARGS=()
+
+    while [[ $# -gt 0 ]]; do
+    case $1 in
+
+
+        -i|--input)
+            write_to_temp $2 ${TMP_FILE}
+            shift
+            shift
+            ;;
+
+
+        -o|--output)
+            OUTPUT_FILENAME="$2"
+            shift 
+            shift
+            ;;
+
+
+        -v|--vertical)
+            VERTICAL="TRUE"
+            shift
+            ;;
+
+
+        -h|--horizontal)
+            HORIZONTAL="TRUE"
+            shift 
+            ;;
+
+
+        -g|--grid)
+            GRID="TRUE"
+            shift
+            ;;
+
+
+        -l|--loglevel)
+            LOGLEVEL="$2"
+            shift 
+            shift
+            ;;
+
+
+        -*|--*)
+            echo "Unknown option $1"
+            exit 1
+            ;;
+
+
+        *)
+            POSITIONAL_ARGS+=("$1") # save positional arg back onto variable
+            shift                   # remove argument and shift past it.
+            ;;
+    esac
+    done
+
+}
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │     Write the absolute path into the temporary file      │
+# ╰──────────────────────────────────────────────────────────╯
+function write_to_temp()
+{
+
+    FILE=$1
+    TMP=$2
+
+    # Exclude folders
+    if [ -d "$FILE" ]; then
+        return
+    fi
+
+    # get absolute path of file.
+    REAL_PATH=$(realpath ${FILE})
+
+    # print line into temp file.
+    printf "%s\n" "${REAL_PATH}" >> ${TMP}
+}
+
+# ╭──────────────────────────────────────────────────────────╮
+# │                                                          │
+# │                      Main Function                       │
+# │                                                          │
+# ╰──────────────────────────────────────────────────────────╯
+function main()
+{
+
+    printf "This will stack the video inputs.\n"
+
+    if [[ ! -s "${TMP_FILE}" ]]; then
+        printf "❌ No inputs specified. Exiting.\n"
+        exit 1
+    fi
+
+
+    printf "📚 Stacking input videos.\n"
+
+    INPUT_FILE_LIST=""
+    while read FILE; do
+        ABSOLUTE_PATH=$(realpath ${FILE})
+        INPUT_FILE_LIST="${INPUT_FILE_LIST} -i $ABSOLUTE_PATH "
+    done < ${TMP_FILE}
+
+
+    NUMBER_OF_LINES=$(wc -l < ${TMP_FILE} | xargs)
+
+
+    if [ "${VERTICAL}" == "TRUE" ]; then
+        if [ $NUMBER_OF_LINES -lt 2 ]; then
+            echo "Not enough inputs, need 2, got ${NUMBER_OF_LINES}. exiting."
+            exit 1
+        fi
+        ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex vstack=inputs=2 ${OUTPUT_FILENAME}
+    fi
+
+    if [ "${HORIZONTAL}" == "TRUE" ]; then
+        if [ $NUMBER_OF_LINES -lt 2 ]; then
+            echo "Not enough inputs, need 2, got ${NUMBER_OF_LINES}. exiting."
+            exit 1
+        fi
+        ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex hstack=inputs=2 ${OUTPUT_FILENAME}
+    fi
+
+    if [ "${GRID}" == "TRUE" ]; then
+        if [ $NUMBER_OF_LINES -lt 4 ]; then
+            echo "Not enough inputs, need 4, got ${NUMBER_OF_LINES}. exiting."
+            exit 1
+        fi
+        ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex "[0:v][1:v][2:v][3:v]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[v]" -map "[v]" ${OUTPUT_FILENAME}
+    fi
+
+    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+
+}
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │                         Cleanup                          │
+# ╰──────────────────────────────────────────────────────────╯
+function cleanup()
+{
+    rm -f ${TMP_FILE}
+}
+
+
+
+cleanup
+usage "$@"
+arguments "$@"
+main "$@"
+cleanup
