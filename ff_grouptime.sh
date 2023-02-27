@@ -223,7 +223,6 @@ function main()
     # ╰──────────────────────────────────────────────────────────╯
     while read FILE; do
 
-        
         FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${FILE})
 
         printf "📁 File %-60s ⏲️  %s\n" "${FILE}" "${FILE_DURATION}"

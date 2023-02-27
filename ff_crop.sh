@@ -49,11 +49,11 @@ usage()
 
 
         printf " -w | --width <WIDTH>\n"
-        printf "\tWidth of the output video. Default: 600px.\n\n"
+        printf "\tWidth of the output video. Default: 300px.\n\n"
 
 
         printf " -h | --height <HEIGHT>\n"
-        printf "\tHeight of the output video. Default: 600px.\n\n"
+        printf "\tHeight of the output video. Default: 300px.\n\n"
 
 
         printf " -x | --xpixels <PIXELS>\n"
