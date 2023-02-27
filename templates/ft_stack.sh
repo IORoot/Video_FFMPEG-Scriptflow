@@ -1,12 +1,10 @@
 #!/bin/bash
-
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │                               TEMPLATE : GRID                                │
-# │                        Creates a 2x2 grid of videos.                         │
+# │                               TEMPLATE : STACK                               │
+# │                        One video on top of the other                         │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
-
 
 printf "🚨 Rule 1. This is just a wrapper for all the './ff_*' scripts. This does not repeat code.\n"
 printf "🚨 Rule 2. The input folder must ONLY contain the videos you wish to use.\n"
@@ -25,7 +23,7 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
-OUTPUT_FILENAME="processed_grid.mp4"
+OUTPUT_FILENAME="processed_stack.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
 LUT="Circinus.cube"
@@ -43,13 +41,6 @@ LANDSCAPE_TEMP_FILE="${TEMP_FOLDER}/temp_landscape.mp4"
 
 GROUPTIME_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime.mp4"
 GROUPTIME_REVERSED_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime_reversed.mp4"
-GROUPTIME_SKIPONE_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime_skipone.mp4"
-GROUPTIME_EVENODDS_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime_evenodds.mp4"
-
-GROUPTIME_TEMP_CROPPED_FILE="${TEMP_FOLDER}/temp_grouptime_cropped.mp4"
-GROUPTIME_REVERSED_TEMP_CROPPED_FILE="${TEMP_FOLDER}/temp_grouptime_reversed_cropped.mp4"
-GROUPTIME_SKIPONE_TEMP_CROPPED_FILE="${TEMP_FOLDER}/temp_grouptime_skipone_cropped.mp4"
-GROUPTIME_EVENODDS_TEMP_CROPPED_FILE="${TEMP_FOLDER}/temp_grouptime_evenodds_cropped.mp4"
 
 STACK_TEMP_FILE="${TEMP_FOLDER}/temp_stack.mp4"
 
@@ -69,7 +60,7 @@ usage()
         printf "ℹ️  Usage:\n $0 -f <FOLDER> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Use on a folder of video clips. Will concat, pad and add text\n\n"
+        printf "Use on a folder of video clips. Will stack one video on top of the other.\n\n"
 
         printf "Flags:\n"
 
@@ -231,7 +222,6 @@ function main()
         ABSOLUTE_PATH=$(realpath ${FILE})
         INPUT_FILE_LIST="${INPUT_FILE_LIST} -i $ABSOLUTE_PATH "
     done
-
     ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE}
 
 
@@ -249,67 +239,7 @@ function main()
         ABSOLUTE_PATH=$(realpath ${FILE})
         INPUT_FILE_LIST_REVERSED="${INPUT_FILE_LIST_REVERSED} -i $ABSOLUTE_PATH "
     done
-
     ../ff_grouptime.sh ${INPUT_FILE_LIST_REVERSED} -d 60 -o ${GROUPTIME_REVERSED_TEMP_FILE}
-
-
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │          SKIP FIRST ONE VIDEOS THEN LOOP BACK            │
-    # ╰──────────────────────────────────────────────────────────╯
-
-    printf "\n✅  Use ff_grouptime.sh to create video of 60sec (shift1).\n\n"
-
-    # Start at file 5.
-    INPUT_FILE_LIST_SKIPONE=""
-    for FILE in $(ls -1 ${FOLDER}/* | sed '1,1d')
-    do
-        ABSOLUTE_PATH=$(realpath ${FILE})
-        INPUT_FILE_LIST_SKIPONE="${INPUT_FILE_LIST_SKIPONE} -i $ABSOLUTE_PATH "
-    done
-    # Add the first four to the end
-    for FILE in $(ls -1 ${FOLDER}/* | head -1)
-    do
-        ABSOLUTE_PATH=$(realpath ${FILE})
-        INPUT_FILE_LIST_SKIPONE="${INPUT_FILE_LIST_SKIPONE} -i $ABSOLUTE_PATH "
-    done
-
-    ../ff_grouptime.sh ${INPUT_FILE_LIST_SKIPONE} -d 60 -o ${GROUPTIME_SKIPONE_TEMP_FILE}
-
-
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                   EVEN THEN ODD FILES                    │
-    # ╰──────────────────────────────────────────────────────────╯
-
-    printf "\n✅ Use ff_grouptime.sh to create video of 60sec (even/odd).\n\n"
-
-    # Start at file 5.
-    INPUT_FILE_LIST_EVENODDS=""
-    for FILE in $(ls -1 ${FOLDER}/* | sed -n 'n;p')
-    do
-        ABSOLUTE_PATH=$(realpath ${FILE})
-        INPUT_FILE_LIST_EVENODDS="${INPUT_FILE_LIST_EVENODDS} -i $ABSOLUTE_PATH "
-    done
-    # Add the first four to the end
-    for FILE in $(ls -1 ${FOLDER}/* | sed -n 'p;n')
-    do
-        ABSOLUTE_PATH=$(realpath ${FILE})
-        INPUT_FILE_LIST_EVENODDS="${INPUT_FILE_LIST_EVENODDS} -i $ABSOLUTE_PATH "
-    done
-
-    ../ff_grouptime.sh ${INPUT_FILE_LIST_EVENODDS} -d 60 -o ${GROUPTIME_EVENODDS_TEMP_FILE}
-
-
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                  Crop the videos to 1:1                  │
-    # ╰──────────────────────────────────────────────────────────╯
-    printf "\n✅ Use ff_crop.sh to make the videos 1:1.\n\n"
-    ../ff_crop.sh -i ${GROUPTIME_TEMP_FILE} -o ${GROUPTIME_TEMP_CROPPED_FILE} -w 480 -h 480 
-    ../ff_crop.sh -i ${GROUPTIME_REVERSED_TEMP_FILE} -o ${GROUPTIME_REVERSED_TEMP_CROPPED_FILE} -w 480 -h 480 
-    ../ff_crop.sh -i ${GROUPTIME_SKIPONE_TEMP_FILE} -o ${GROUPTIME_SKIPONE_TEMP_CROPPED_FILE} -w 480 -h 480 
-    ../ff_crop.sh -i ${GROUPTIME_EVENODDS_TEMP_FILE} -o ${GROUPTIME_EVENODDS_TEMP_CROPPED_FILE} -w 480 -h 480 
 
 
 
@@ -317,7 +247,7 @@ function main()
     # │                    Stack them videos!                    │
     # ╰──────────────────────────────────────────────────────────╯
     printf "\n✅ Use ff_stack.sh to create the grid.\n\n"
-    ../ff_stack.sh -i ${GROUPTIME_TEMP_CROPPED_FILE} -i ${GROUPTIME_REVERSED_TEMP_CROPPED_FILE} -i ${GROUPTIME_SKIPONE_TEMP_CROPPED_FILE} -i ${GROUPTIME_EVENODDS_TEMP_CROPPED_FILE} -g -o ${STACK_TEMP_FILE}
+    ../ff_stack.sh -i ${GROUPTIME_TEMP_FILE} -i ${GROUPTIME_REVERSED_TEMP_FILE} -v -o ${STACK_TEMP_FILE}
 
 
 
@@ -351,12 +281,6 @@ function cleanup()
     rm -f ${LANDSCAPE_TEMP_FILE}
     rm -f ${GROUPTIME_TEMP_FILE}
     rm -f ${GROUPTIME_REVERSED_TEMP_FILE}
-    rm -f ${GROUPTIME_SKIPONE_TEMP_FILE}
-    rm -f ${GROUPTIME_EVENODDS_TEMP_FILE}
-    rm -f ${GROUPTIME_TEMP_CROPPED_FILE}
-    rm -f ${GROUPTIME_REVERSED_TEMP_CROPPED_FILE}
-    rm -f ${GROUPTIME_SKIPONE_TEMP_CROPPED_FILE}
-    rm -f ${GROUPTIME_EVENODDS_TEMP_CROPPED_FILE}
     rm -f ${LUT_TEMP_FILE}
     rm -f ${WATERMARK_TEMP_FILE}
     rm -f ${STACK_TEMP_FILE}
