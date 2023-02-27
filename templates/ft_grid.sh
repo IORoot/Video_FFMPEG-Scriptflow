@@ -38,12 +38,20 @@ MAX_HEIGHT="480"
 # │                     Temporary Files                      │
 # ╰──────────────────────────────────────────────────────────╯
 TEMP_FOLDER="/tmp"
+
 LANDSCAPE_TEMP_FILE="${TEMP_FOLDER}/temp_landscape.mp4"
 
 GROUPTIME_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime.mp4"
 GROUPTIME_REVERSED_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime_reversed.mp4"
 GROUPTIME_SKIPONE_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime_skipone.mp4"
 GROUPTIME_EVENODDS_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime_evenodds.mp4"
+
+GROUPTIME_TEMP_CROPPED_FILE="${TEMP_FOLDER}/temp_grouptime_cropped.mp4"
+GROUPTIME_REVERSED_TEMP_CROPPED_FILE="${TEMP_FOLDER}/temp_grouptime_reversed_cropped.mp4"
+GROUPTIME_SKIPONE_TEMP_CROPPED_FILE="${TEMP_FOLDER}/temp_grouptime_skipone_cropped.mp4"
+GROUPTIME_EVENODDS_TEMP_CROPPED_FILE="${TEMP_FOLDER}/temp_grouptime_evenodds_cropped.mp4"
+
+STACK_TEMP_FILE="${TEMP_FOLDER}/temp_stack.mp4"
 
 LUT_TEMP_FILE="${TEMP_FOLDER}/temp_lut.mp4"
 
@@ -156,7 +164,7 @@ function main()
     # │         Check each video to convert to landscape         │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n1️⃣  Convert portrait videos to landscape.\n"
+    printf "\n✅ Convert portrait videos to landscape.\n"
 
     for FILE in ${FOLDER}/*
     do
@@ -189,7 +197,7 @@ function main()
     # │                 Rescale video if too big                 │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n2️⃣  Rescale big videos.\n"
+    printf "\n✅ Rescale big videos.\n"
 
     for FILE in ${FOLDER}/*
     do
@@ -217,7 +225,7 @@ function main()
     # │               Read folder for input files                │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n4️⃣  Use ff_grouptime.sh to create video of 60sec.\n\n"
+    printf "\n✅ Use ff_grouptime.sh to create video of 60sec.\n\n"
 
     INPUT_FILE_LIST=""
     for FILE in ${FOLDER}/*
@@ -234,7 +242,7 @@ function main()
     # │                      REVERSE ORDER                       │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n4️⃣  Use ff_grouptime.sh to create video of 60sec (reversed).\n\n"
+    printf "\n✅  Use ff_grouptime.sh to create video of 60sec (reversed).\n\n"
 
     IFS=$'\n'
     INPUT_FILE_LIST_REVERSED=""
@@ -242,7 +250,6 @@ function main()
     do
         ABSOLUTE_PATH=$(realpath ${FILE})
         INPUT_FILE_LIST_REVERSED="${INPUT_FILE_LIST_REVERSED} -i $ABSOLUTE_PATH "
-        echo ${INPUT_FILE_LIST_REVERSED}
     done
 
     ../ff_grouptime.sh ${INPUT_FILE_LIST_REVERSED} -d 60 -o ${GROUPTIME_REVERSED_TEMP_FILE}
@@ -253,7 +260,7 @@ function main()
     # │          SKIP FIRST ONE VIDEOS THEN LOOP BACK            │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n4️⃣  Use ff_grouptime.sh to create video of 60sec (shift1).\n\n"
+    printf "\n✅  Use ff_grouptime.sh to create video of 60sec (shift1).\n\n"
 
     # Start at file 5.
     INPUT_FILE_LIST_SKIPONE=""
@@ -277,7 +284,7 @@ function main()
     # │                   EVEN THEN ODD FILES                    │
     # ╰──────────────────────────────────────────────────────────╯
 
-    printf "\n4️⃣  Use ff_grouptime.sh to create video of 60sec (even/odd).\n\n"
+    printf "\n✅ Use ff_grouptime.sh to create video of 60sec (even/odd).\n\n"
 
     # Start at file 5.
     INPUT_FILE_LIST_EVENODDS=""
@@ -297,39 +304,44 @@ function main()
 
 
 
+    # ╭──────────────────────────────────────────────────────────╮
+    # │                  Crop the videos to 1:1                  │
+    # ╰──────────────────────────────────────────────────────────╯
+    printf "\n✅ Use ff_crop.sh to make the videos 1:1.\n\n"
+    ../ff_crop.sh -i ${GROUPTIME_TEMP_FILE} -o ${GROUPTIME_TEMP_CROPPED_FILE} -w 480 -h 480 
+    ../ff_crop.sh -i ${GROUPTIME_REVERSED_TEMP_FILE} -o ${GROUPTIME_REVERSED_TEMP_CROPPED_FILE} -w 480 -h 480 
+    ../ff_crop.sh -i ${GROUPTIME_SKIPONE_TEMP_FILE} -o ${GROUPTIME_SKIPONE_TEMP_CROPPED_FILE} -w 480 -h 480 
+    ../ff_crop.sh -i ${GROUPTIME_EVENODDS_TEMP_FILE} -o ${GROUPTIME_EVENODDS_TEMP_CROPPED_FILE} -w 480 -h 480 
 
 
 
+    # ╭──────────────────────────────────────────────────────────╮
+    # │                    Stack them videos!                    │
+    # ╰──────────────────────────────────────────────────────────╯
+    printf "\n✅ Use ff_stack.sh to create the grid.\n\n"
+    ../ff_stack.sh -i ${GROUPTIME_TEMP_CROPPED_FILE} -i ${GROUPTIME_REVERSED_TEMP_CROPPED_FILE} -i ${GROUPTIME_SKIPONE_TEMP_CROPPED_FILE} -i ${GROUPTIME_EVENODDS_TEMP_CROPPED_FILE} -g -o ${STACK_TEMP_FILE}
 
 
 
     # # ╭──────────────────────────────────────────────────────────╮
     # # │                        Apply LUT                         │
     # # ╰──────────────────────────────────────────────────────────╯
-    # printf "\n5️⃣  Use ff_lut.sh to add colour grading.\n\n"
-    # ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE}
+    printf "\n✅ Use ff_lut.sh to add colour grading.\n\n"
+    ../ff_lut.sh -i $(realpath ${STACK_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE}
 
 
 
+    # ╭──────────────────────────────────────────────────────────╮
+    # │             Add watermark to center of video             │
+    # ╰──────────────────────────────────────────────────────────╯
+    printf "\n✅ Use ff_watermark.sh to add the center logo.\n\n"
+    ../ff_watermark.sh -i ${STACK_TEMP_FILE} -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)/2" -o ${WATERMARK_TEMP_FILE}
 
 
-    # # ╭──────────────────────────────────────────────────────────╮
-    # # │             Add watermark to bottom of video             │
-    # # ╰──────────────────────────────────────────────────────────╯
-
-    # printf "\n8️⃣  Use ff_watermark.sh to add the bottom logo.\n\n"
-
-    # ../ff_watermark.sh -i ${BG_WATERMARK_TEMP} -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE}
-
-
-
-    # # ╭──────────────────────────────────────────────────────────╮
-    # # │                   Move to output file                    │
-    # # ╰──────────────────────────────────────────────────────────╯
-
-    # mv ${WATERMARK_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
-
-
+    # ╭──────────────────────────────────────────────────────────╮
+    # │                   Move to output file                    │
+    # ╰──────────────────────────────────────────────────────────╯
+    mv ${WATERMARK_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
     printf "\n\n✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
 
 }
@@ -339,12 +351,18 @@ function main()
 function cleanup()
 {
     rm -f ${LANDSCAPE_TEMP_FILE}
-    # rm -f ${GROUPTIME_TEMP_FILE}
-    # rm -f ${GROUPTIME_REVERSED_TEMP_FILE}
-    # rm -f ${GROUPTIME_SKIPONE_TEMP_FILE}
-    # rm -f ${GROUPTIME_EVENODDS_TEMP_FILE}
+    rm -f ${GROUPTIME_TEMP_FILE}
+    rm -f ${GROUPTIME_REVERSED_TEMP_FILE}
+    rm -f ${GROUPTIME_SKIPONE_TEMP_FILE}
+    rm -f ${GROUPTIME_EVENODDS_TEMP_FILE}
+    rm -f ${GROUPTIME_TEMP_CROPPED_FILE}
+    rm -f ${GROUPTIME_REVERSED_TEMP_CROPPED_FILE}
+    rm -f ${GROUPTIME_SKIPONE_TEMP_CROPPED_FILE}
+    rm -f ${GROUPTIME_EVENODDS_TEMP_CROPPED_FILE}
     rm -f ${LUT_TEMP_FILE}
     rm -f ${WATERMARK_TEMP_FILE}
+    rm -f ${STACK_TEMP_FILE}
+
 }
 
 cleanup
