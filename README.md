@@ -6,6 +6,97 @@ The idea is that they can be chained together for more complex video effects and
 
 These are all based on BASH and FFMPEG.
 
+<!-- TOC -->
+
+- [FFMPEG Util scripts and Templates](#ffmpeg-util-scripts-and-templates)
+    - [Setup](#setup)
+    - [Utility Scripts](#utility-scripts)
+    - [Script Details](#script-details)
+        - [ff_append.sh](#ff_appendsh)
+            - [Description](#description)
+            - [Flags](#flags)
+            - [Example](#example)
+        - [ff_aspect_ratio.sh](#ff_aspect_ratiosh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_blur.sh](#ff_blursh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_colour.sh](#ff_coloursh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_concat.sh](#ff_concatsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_crop.sh](#ff_cropsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_cut.sh](#ff_cutsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_flip.sh](#ff_flipsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_fps.sh](#ff_fpssh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_grouptime.sh](#ff_grouptimesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_lut.sh](#ff_lutsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_middle.sh](#ff_middlesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_mov_to_mp4.sh](#ff_mov_to_mp4sh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_pad.sh](#ff_padsh)
+            - [Description](#description)
+            - [Flags](#flags)
+            - [Examples](#examples)
+        - [ff_rotate.sh](#ff_rotatesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_scale.sh](#ff_scalesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_sharpen.sh](#ff_sharpensh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_stack.sh](#ff_stacksh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_text.sh](#ff_textsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_thumbnail.sh](#ff_thumbnailsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_to_landscape.sh](#ff_to_landscapesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_to_portrait.sh](#ff_to_portraitsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_unsharp.sh](#ff_unsharpsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_watermark.sh](#ff_watermarksh)
+            - [Description](#description)
+            - [Flags](#flags)
+            - [Examples](#examples)
+    - [Templates](#templates)
+        - [ft_blurred.sh](#ft_blurredsh)
+        - [ft_grid.sh](#ft_gridsh)
+        - [ft_simple_blue.sh](#ft_simple_bluesh)
+        - [ft_simple_orange.sh](#ft_simple_orangesh)
+        - [ft_stack.sh](#ft_stacksh)
+    - [Changelog](#changelog)
+
+<!-- /TOC -->
+
 ## Setup
 
 Either update your $PATH to include this folder or create a link in `/usr/local/bin` to each script.
@@ -623,6 +714,38 @@ Simple version of unsharp mask.
 ```
 
 
+
+### `ff_stack.sh`
+
+#### Description
+
+Stack multiple videos. Either two vertically, two horizontally or four in a 2x2 grid.
+
+![stack](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/stack.svg)
+
+#### Flags
+
+```
+ -i | --input <INPUT_FILE>
+        The name of an input file.
+
+ -o | --output <OUTPUT_FILE>
+        Default is output_sharpen.mp4
+        The name of the output file.
+
+ -h | --horizontal
+
+ -v | --vertical
+
+ -g | --grid
+
+ -l | --loglevel <LOGLEVEL>
+        The FFMPEG loglevel to use. Default is 'error' only.
+        Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
+```
+
+
+
 ### `ff_text.sh`
 
 #### Description
@@ -889,3 +1012,46 @@ Full-size semi-transparent watermark:
 Small, transparent bottom-right positioned Video as a watermark:
 
        ff_watermark -i input.mp4 -w watermark_video.mp4 -s 0.3 -x "(W-w)" -y "(H-h)" -a 0.5
+
+
+## Templates
+
+The `/template` folder holds wrapper scripts that chain a bunch of these utility scripts together and apply them to an entire folder of videos.
+
+The idea is that you have a bunch of videos you wish to merge together, concat, pad, colour, lut, etc... These template do that.
+
+### `ft_blurred.sh`
+
+![blurred](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/blurred.jpg)
+
+This creates a one minute, 1:1 square aspect ratio, video based off a folder of videos. It uses a blurred and enlarged version of the video as the background padding.
+
+### `ft_grid.sh`
+
+![grid](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/grid.jpg)
+
+A 2x2 grid of grouped videos in four different orders. Has a watermark.
+
+### `ft_simple_blue.sh`
+
+![simple_blue](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/simple_blue.png)
+
+Square 1:1 video with a blue padding on top and bottom. Includes text on top and a watermark on the bottom.
+
+### `ft_simple_orange.sh`
+
+![simple_orange](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/simple_orange.png)
+
+Square 1:1 video with a orange padding on top and bottom. Includes text on top and a watermark on the bottom.
+
+### `ft_stack.sh`
+
+![stacked](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/stacked.jpg)
+
+Two vertically stacked videos on top of each other in a square 1:! aspect ratio video.
+
+## Changelog
+
+v1 - 2023-02-10 : Initial
+
+v2 - 2023-02-28 : Added ff_stack.sh, TOC and templates.
