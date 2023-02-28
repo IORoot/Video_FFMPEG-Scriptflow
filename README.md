@@ -77,6 +77,7 @@ Current list of scripts and their purposes.
 | `ff_rotate.sh`       | Rotate a video in 90 degree increments                           |
 | `ff_scale.sh`        | Change the width and height of the video                         |
 | `ff_sharpen.sh`      | Simple sharpen function using an unsharp mask                    |
+| `ff_stack.sh`        | Align two videos vertically, horizontally or in a 2x2 grid.      |
 | `ff_text.sh`         | Add text (with background box) on top of the video               |
 | `ff_thumbnail.sh`    | Create thumbnail(s) from the video                               |
 | `ff_to_landscape.sh` | Rotate a portrait video to landscape                             |
