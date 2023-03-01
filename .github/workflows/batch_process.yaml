@@ -64,7 +64,7 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: lsjson GDrive:/SocialExporter/batch_queue > ./folderlist.json
+          args: lsjson GDrive:/SocialExporter/batch_queue > ./folderlist.json && echo ./folderlist.json
 
         # Create a matrix of folders in /SocialExporter/batch_queue
       - name: Generate Matrix
