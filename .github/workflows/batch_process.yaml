@@ -55,15 +55,14 @@ jobs:
 # matrix={
 #   "include":[
 #     {
-#       "project":"foo",
-#       "config":"Debug"
+#       "project":"foo"
 #     },
 #     {
-#       "project":"bar",
-#       "config":"Release"
+#       "project":"bar"
 #     }
 #   ]
 # }
+# echo "matrix={\"include\":[{\"project\":\"foo\"},{\"project\":\"bar\"}]}" >> $GITHUB_OUTPUT
 
   job1:
     runs-on: ubuntu-latest
@@ -80,10 +79,15 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: lsf GDrive:/SocialExporter/batch_queue | tr -d '//' > ./folderlist.json
+          args: lsf GDrive:/SocialExporter/batch_queue | tr -d '//' > ./folderlist.txt
 
       - id: set-matrix
-        run: echo "matrix={\"include\":[{\"project\":\"foo\"},{\"project\":\"bar\"}]}" >> $GITHUB_OUTPUT
+        run: |
+          echo "matrix={\"include\":[" > ./matrix_file.txt
+          cat ./folderlist.txt | while read LINE; do echo "{\"project\":\"$LINE\"}," >> ./matrix_file.txt ;done
+          echo "]}" >> ./matrix_file.txt
+          cat ./matrix_file.txt
+          cat ./matrix_file.txt >> $GITHUB_OUTPUT
   
 
 
@@ -95,7 +99,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(needs.job1.outputs.matrix) }}
     steps:
-      - name: Matrix => (${{ matrix.project }}
+      - name: Matrix Echo
         run: |
           echo ${{ matrix.project }}
 
