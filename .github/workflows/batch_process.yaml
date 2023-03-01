@@ -112,7 +112,7 @@ jobs:
 
     strategy:
       matrix:
-        FOLDER: [ ${{ fromJSON(needs.folder_matrix.outputs.FOLDER_MATRIX) }} ]
+        FOLDER: ${{ fromJSON(needs.folder_matrix.outputs.FOLDER_MATRIX) }}
 
     steps:
 
