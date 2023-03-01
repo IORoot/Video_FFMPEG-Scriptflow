@@ -1,0 +1,150 @@
+name: GDrive Batch Processing 
+
+
+# Run with a CURL request:
+# 
+# curl                                                            \                                    
+# -X POST                                                         \                                   
+# -H "Accept: application/vnd.github+json"                        \                  
+# -H "Authorization: Bearer GITHUB_PAT_KEY"                       \                  
+# -H "X-GitHub-Api-Version: 2022-11-28"                           \                    
+#     https://api.github.com/repos/ioroot/ffmpeg__bash-scripts/dispatches \         
+#     -d '{"event_type":"run_autoflip","client_payload":{         \         
+#             "GDRIVE_FOLDER":  "FOLDER/IN/GDRIVE/TO/USE",        \            
+#         }                                                       \
+
+
+on:
+
+  # Via a webhook
+  repository_dispatch:
+    types: gdrive_batch_process
+
+  workflow_dispatch:
+
+env:
+
+  # ╭──────────────────────────────────────────────────────────╮
+  # │           Update Video Sheet with full new row           │
+  # │                   including video_url                    │
+  # ╰──────────────────────────────────────────────────────────╯
+  # Google AppsScript Name: "Insert Video Sheet Row"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbxk4T_9A5eSPvH9BEVww_Pl9CgLw8QEyCrWlFstOJrOABFaJWNOEcFU684vbh8ueXI8iA/exec"
+
+  # ╭──────────────────────────────────────────────────────────╮
+  # │                  Google Drive Variables                  │
+  # ╰──────────────────────────────────────────────────────────╯
+  GDRIVE_SOURCE_FOLDER:     "/SocialExporter/batch_queue"
+  GDRIVE_TARGET_FOLDER:     "/SocialExporter/videos"
+  CONFIG_FILE_NAME:         "config.json"
+
+  # ╭──────────────────────────────────────────────────────────╮
+  # │              Where to upload the result to.              │
+  # │                      - Server name                       │
+  # │                     - Target folder.                     │
+  # ╰──────────────────────────────────────────────────────────╯
+  SERVER:                   "londonparkour.com"
+  TARGET_FOLDER:            "/var/www/vhosts/media.londonparkour.com/processed"
+
+
+jobs:
+
+  folder_matrix:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: install dependencies
+        run: |
+          sudo apt-get update 
+          sudo apt-get install --no-install-recommends rclone jq
+
+
+        # Create a matrix of folders in /SocialExporter/batch_queue
+      - name: Generate Matrix
+        id: generate-matrix
+        run: |
+          rclone lsjson GDrive:/SocialExporter/batch_queue | | jq -c '[.[].Name]' > ./folderlist.json
+          echo "FOLDER_MATRIX=$(echo ./folderlist.json)" >> $GITHUB_ENV
+
+
+  my_echo:
+    runs-on: ubuntu-latest
+    needs:
+      - folder_matrix
+    steps:
+      - name: Echo folder_matrix
+        run: echo "${{ toJSON( env.FOLDER_MATRIX ) }}"
+
+
+  # build:
+
+  #   runs-on: ubuntu-latest
+  #   container:
+      
+  #   steps:
+
+  #     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#repository_dispatch
+  #     # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-a-repository-dispatch-event
+  #     - name: install dependencies
+  #       run: |
+  #         sudo add-apt-repository ppa:savoury1/ffmpeg4
+  #         sudo add-apt-repository ppa:savoury1/ffmpeg5
+  #         sudo apt-get update 
+  #         sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass
+
+
+  #     - name: Checkout Repo
+  #       uses: actions/checkout@v3
+
+
+  #     - name: rclone
+  #       uses: wei/rclone@v1
+  #       env:
+  #         RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+  #       with:
+  #         args: copy GDrive:${GDRIVE_SOURCE_FOLDER} ./batch_queue
+
+
+  #       # Use sudo otherwise permissions to /tmp won't work in runner
+  #     - name: loop folders and run ffmpeg template on each
+  #       run: |
+  #           echo "londonparkour.com/classes" > ./text_bottom.txt
+  #           echo ${{ env.TEXT_TOP_B64 }} | base64 --decode > ./text_top.txt
+  #           mkdir -p ./processed_videos
+  #           cd ./templates
+  #           sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "./text_top.txt"
+
+
+  #     - name: rclone
+  #       uses: wei/rclone@v1
+  #       env:
+  #         RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+  #       with:
+  #         args: copy ./processed_videos GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER}/processed
+
+
+  #     - name: Copy Video to Server
+  #       run: |
+  #         mkdir ~/.ssh
+  #         ssh-keyscan -H ${{env.SERVER}} >> ~/.ssh/known_hosts
+
+  #         SOURCE_DIR="./processed_videos/processed.mp4"
+  #         TARGET_DIR="${TARGET_ROOT_FOLDER}${GDRIVE_FOLDER}"
+
+  #         echo "SOURCE DIR: ${SOURCE_DIR}"
+  #         echo "TARGET DIR: ${TARGET_DIR}"
+
+  #         sshpass -p '${{secrets.SSH_PASS}}' ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{secrets.SSH_USER}}@${{env.SERVER}} "mkdir -p ${TARGET_DIR}"
+  #         sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SOURCE_DIR} ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
+
+
+  #     - name: Update google sheet with processed video folder
+  #       run: |
+  #         curl "${{ env.APPS_SCRIPT }}?folder=%22${GDRIVE_FOLDER}%22"
+
+
+  #     - name: Slack Notification
+  #       uses: rtCamp/action-slack-notify@v2
+  #       env:
+  #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  #         SLACK_MESSAGE: ':rocket: Video Processed with ${{env.TEMPLATE}}. http://media.londonparkour.com/processed${{env.GDRIVE_FOLDER}}/processed.mp4'

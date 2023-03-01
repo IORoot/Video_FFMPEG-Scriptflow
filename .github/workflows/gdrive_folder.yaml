@@ -24,6 +24,7 @@ env:
   # ╭──────────────────────────────────────────────────────────╮
   # │                Target Google Sheet Script                │
   # ╰──────────────────────────────────────────────────────────╯
+  # Google AppsScript Name: "Update Video Sheet"
   APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbxk4T_9A5eSPvH9BEVww_Pl9CgLw8QEyCrWlFstOJrOABFaJWNOEcFU684vbh8ueXI8iA/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
@@ -80,14 +81,6 @@ jobs:
 
       - name: Checkout Repo
         uses: actions/checkout@v3
-
-
-      - name: rclone
-        uses: wei/rclone@v1
-        env:
-          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-        with:
-          args: copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
 
 
         # Use sudo otherwise permissions to /tmp won't work in runner
