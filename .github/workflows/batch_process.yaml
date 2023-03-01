@@ -77,8 +77,7 @@ jobs:
       - name: Generate Matrix
         id: generatematrix
         run: |
-          echo "SOURCE_FOLDER=abc" >> $GITHUB_OUTPUT
-          echo "SOURCE_FOLDER=efg" >> $GITHUB_OUTPUT
+          echo "SOURCE_FOLDER={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> $GITHUB_OUTPUT
 
     outputs:
       FOLDER_MATRIX: ${{ toJSON(steps.generatematrix.outputs.SOURCE_FOLDER) }}
