@@ -103,7 +103,6 @@ jobs:
     container:
 
     needs:
-      - my_echo
       - folder_matrix
 
     strategy:
