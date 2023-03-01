@@ -59,12 +59,19 @@ jobs:
           sudo apt-get install --no-install-recommends rclone jq
 
 
+      - name: rclone
+        uses: wei/rclone@v1
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+        with:
+          args: lsjson GDrive:/SocialExporter/batch_queue > ./folderlist.json
+
         # Create a matrix of folders in /SocialExporter/batch_queue
       - name: Generate Matrix
         id: generate-matrix
         run: |
-          rclone lsjson GDrive:/SocialExporter/batch_queue | jq -c '[.[].Name]' > ./folderlist.json
-          echo "FOLDER_MATRIX=$(echo ./folderlist.json)" >> $GITHUB_ENV
+          cat ./folderlist.json | jq -c '[.[].Name]' > ./folder_matrix.json
+          echo "FOLDER_MATRIX=$(echo ./folder_matrix.json)" >> $GITHUB_ENV
 
 
   my_echo:
