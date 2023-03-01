@@ -120,7 +120,7 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: copy GDrive:${GDRIVE_SOURCE_FOLDER} ./batch_queue
+          args: copy GDrive:${GDRIVE_SOURCE_FOLDER}/${{ matrix.project }} ./batch_queue
 
 
       - name: list contents of folders
@@ -128,6 +128,8 @@ jobs:
           ls -la
           ls -la ./batch_queue
 
+
+      # READ JSON CONFIG
 
 
 
