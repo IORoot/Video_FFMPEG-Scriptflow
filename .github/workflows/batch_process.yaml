@@ -64,14 +64,15 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: lsjson GDrive:/SocialExporter/batch_queue > ./folderlist.json && echo ./folderlist.json
+          args: lsjson GDrive:/SocialExporter/batch_queue > ./folderlist.json && echo "FOLDER_LIST=$(echo ./folderlist.json)" >> $GITHUB_ENV
 
         # Create a matrix of folders in /SocialExporter/batch_queue
       - name: Generate Matrix
         id: generate-matrix
         run: |
-          cat ./folderlist.json | jq -c '[.[].Name]' > ./folder_matrix.json
-          echo "FOLDER_MATRIX=$(echo ./folder_matrix.json)" >> $GITHUB_ENV
+          echo "FOLDER_MATRIX=$(echo ${{ env.FOLDER_LIST }} | jq -c '[.[].Name]')" >> $GITHUB_ENV
+
+
 
 
   my_echo:
