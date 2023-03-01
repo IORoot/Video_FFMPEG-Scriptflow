@@ -89,6 +89,7 @@ jobs:
           cat ./matrix_file.txt
           cat ./matrix_file.txt >> $GITHUB_OUTPUT
   
+          echo "matrix={\"include\":[{\"project\":\"foo\"},{\"project\":\"bar\"}]}" 
 
 
 
