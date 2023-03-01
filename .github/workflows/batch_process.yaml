@@ -83,9 +83,9 @@ jobs:
 
       - id: set-matrix
         run: |
-          echo "matrix={\"include\":[" > ./matrix_file.txt
-          cat ./folderlist.txt | while read LINE; do echo "{\"project\":\"$LINE\"}," >> ./matrix_file.txt ;done
-          echo "]}" >> ./matrix_file.txt
+          printf "matrix={\"include\":[" > ./matrix_file.txt
+          cat ./folderlist.txt | while read LINE; do printf "{\"project\":\"%s\"}," $LINE >> ./matrix_file.txt ;done
+          printf "]}" >> ./matrix_file.txt
           cat ./matrix_file.txt
           cat ./matrix_file.txt >> $GITHUB_OUTPUT
   
