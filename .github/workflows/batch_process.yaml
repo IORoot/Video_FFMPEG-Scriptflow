@@ -78,15 +78,15 @@ jobs:
 
 
 
-  my_echo:
-    runs-on: ubuntu-latest
-    needs:
-      - folder_matrix
-    steps:
-      - env:
-          FOLDER_MATRIX: ${{needs.folder_matrix.outputs.FOLDER_MATRIX}}
-      - name: Echo folder_matrix
-        run: echo "${{ toJSON( env.FOLDER_MATRIX ) }}"
+  # my_echo:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - folder_matrix
+  #   steps:
+  #     - env:
+  #         FOLDER_MATRIX: ${{needs.folder_matrix.outputs.FOLDER_MATRIX}}
+  #     - name: Echo folder_matrix
+  #       run: echo "${{ toJSON( env.FOLDER_MATRIX ) }}"
 
 
   # build:
