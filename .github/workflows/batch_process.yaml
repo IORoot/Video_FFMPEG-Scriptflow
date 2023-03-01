@@ -49,75 +49,90 @@ env:
 
 jobs:
 
-  folder_matrix:
+  job1:
     runs-on: ubuntu-latest
-
-    steps:
-
-      - name: install dependencies
-        run: |
-          sudo apt-get update 
-          sudo apt-get install --no-install-recommends jq
-
-
-      - name: rclone
-        uses: wei/rclone@v1
-        env:
-          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-        with:
-          args: lsf GDrive:/SocialExporter/batch_queue | tr -d '//' > ./folderlist.json
-
-
-
-        # cat ./folderlist.json | jq -c '[.[].Name]' > ./foldermatrix.json    
-        # TEMP_FOLDER_MATRIX=$(cat ./foldermatrix.json )
-        # echo "FOLDER_MATRIX=$( echo ${TEMP_FOLDER_MATRIX//\"/\\\"} )" >> $GITHUB_OUTPUT
-
-        # Create a matrix of folders in /SocialExporter/batch_queue
-      - name: Generate Matrix
-        id: generatematrix
-        run: |
-          echo "SOURCE_FOLDER={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> $GITHUB_OUTPUT
-
     outputs:
-      FOLDER_MATRIX: ${{ toJSON(steps.generatematrix.outputs.SOURCE_FOLDER) }}
-
-
-
-
-
-
-  my_echo:
-    runs-on: ubuntu-latest
-    needs:
-      - folder_matrix
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-  
-      - name: Echo folder_matrix
-        env:
-          FOLDER_MATRIX: ${{needs.folder_matrix.outputs.FOLDER_MATRIX}}
-        run: echo ${{ fromJSON( env.FOLDER_MATRIX ) }}
-
-
-
-
-  batch_ffmpeg:
-
+      - id: set-matrix
+        run: echo "matrix={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> $GITHUB_OUTPUT
+  job2:
+    needs: job1
     runs-on: ubuntu-latest
-    container:
-
-    needs:
-      - folder_matrix
-
     strategy:
-      matrix:
-        FOLDER: ${{ fromJSON(needs.folder_matrix.outputs.FOLDER_MATRIX) }}
-
+      matrix: ${{ fromJSON(needs.job1.outputs.matrix) }}
     steps:
+      - run: build
 
-      - name: Matrix => (${{ matrix.FOLDER }}
-        run: |
-          echo ${{ matrix.FOLDER }}
+  # folder_matrix:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+
+  #     - name: install dependencies
+  #       run: |
+  #         sudo apt-get update 
+  #         sudo apt-get install --no-install-recommends jq
+
+
+  #     - name: rclone
+  #       uses: wei/rclone@v1
+  #       env:
+  #         RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+  #       with:
+  #         args: lsf GDrive:/SocialExporter/batch_queue | tr -d '//' > ./folderlist.json
+
+
+
+  #       # cat ./folderlist.json | jq -c '[.[].Name]' > ./foldermatrix.json    
+  #       # TEMP_FOLDER_MATRIX=$(cat ./foldermatrix.json )
+  #       # echo "FOLDER_MATRIX=$( echo ${TEMP_FOLDER_MATRIX//\"/\\\"} )" >> $GITHUB_OUTPUT
+
+  #       # Create a matrix of folders in /SocialExporter/batch_queue
+  #     - name: Generate Matrix
+  #       id: generatematrix
+  #       run: |
+  #         echo "SOURCE_FOLDER={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> $GITHUB_OUTPUT
+
+  #   outputs:
+  #     FOLDER_MATRIX: ${{ toJSON(steps.generatematrix.outputs.SOURCE_FOLDER) }}
+
+
+
+
+
+
+  # my_echo:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - folder_matrix
+  #   steps:
+  
+  #     - name: Echo folder_matrix
+  #       env:
+  #         FOLDER_MATRIX: ${{needs.folder_matrix.outputs.FOLDER_MATRIX}}
+  #       run: echo ${{ fromJSON( env.FOLDER_MATRIX ) }}
+
+
+
+
+  # batch_ffmpeg:
+
+  #   runs-on: ubuntu-latest
+  #   container:
+
+  #   needs:
+  #     - folder_matrix
+
+  #   strategy:
+  #     matrix:
+  #       FOLDER: ${{ fromJSON(needs.folder_matrix.outputs.FOLDER_MATRIX) }}
+
+  #   steps:
+
+  #     - name: Matrix => (${{ matrix.FOLDER }}
+  #       run: |
+  #         echo ${{ matrix.FOLDER }}
 
       # - name: install dependencies
       #   run: |
