@@ -71,15 +71,10 @@ jobs:
       - name: Generate Matrix
         id: generate-matrix
         run: |
-          cat ./folderlist.json
-          echo "---"
-          echo "${{ env.FOLDER_LIST }}"
-          echo "---"
           cat ./folderlist.json | jq -c '[.[].Name]' > ./foldermatrix.json
-          echo "---"
-          cat ./foldermatrix.json
-          echo "---"
-          echo "FOLDER_MATRIX=$(cat ./foldermatrix.json )" >> $GITHUB_OUTPUT
+          TEMP_FOLDER_MATRIX=$(cat ./foldermatrix.json )
+          echo ${TEMP_FOLDER_MATRIX//\"/\\\"}  
+          echo "FOLDER_MATRIX=$( echo ${TEMP_FOLDER_MATRIX//\"/\\\"} )" >> $GITHUB_OUTPUT
 
     outputs:
       FOLDER_MATRIX: ${{ toJSON(steps.generate-matrix.outputs.FOLDER_MATRIX) }}
