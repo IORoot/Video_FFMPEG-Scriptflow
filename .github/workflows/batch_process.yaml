@@ -70,7 +70,7 @@ jobs:
       - name: Generate Matrix
         id: generate-matrix
         run: |
-          echo '${{ env.FOLDER_LIST }}' | jq -c '[.[].Name] | .[]' | tr -d '"' > ./foldermatrix.json
+          echo '${{ env.FOLDER_LIST }}' | jq -c '[.[].Name]' | tr -d '"' > ./foldermatrix.json
           cat ./foldermatrix.json
           echo "FOLDER_MATRIX=$(cat ./foldermatrix.json)" >> $GITHUB_ENV
 
