@@ -73,7 +73,7 @@ jobs:
         run: |
           echo '${{ env.FOLDER_LIST }}' | jq -c '[.[].Name]' > ./foldermatrix.json
           cat ./foldermatrix.json
-          echo 'FOLDER_MATRIX=$(cat ./foldermatrix.json )' >> $GITHUB_OUTPUT
+          echo "FOLDER_MATRIX=$(cat ./foldermatrix.json )" >> $GITHUB_OUTPUT
 
     outputs:
       FOLDER_MATRIX: ${{ toJSON(steps.generate-matrix.outputs.FOLDER_MATRIX) }}
