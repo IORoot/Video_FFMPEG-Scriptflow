@@ -64,7 +64,7 @@ jobs:
 # }
 # echo "matrix={\"include\":[{\"project\":\"foo\"},{\"project\":\"bar\"}]}" >> $GITHUB_OUTPUT
 
-  job1:
+  create_matrix:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -79,141 +79,67 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: lsf GDrive:/SocialExporter/batch_queue | tr -d '//' > ./folderlist.txt
+          args: lsf GDrive:${GDRIVE_SOURCE_FOLDER} | tr -d '//' > ./folderlist.txt
 
       - id: set-matrix
         run: |
           printf "matrix={\"include\":[" > ./matrix_file.txt
           cat ./folderlist.txt | while read LINE; do printf "{\"project\":\"%s\"}," $LINE >> ./matrix_file.txt ;done
           printf "]}" >> ./matrix_file.txt
-          cat ./matrix_file.txt
           cat ./matrix_file.txt >> $GITHUB_OUTPUT
-  
-          echo "matrix={\"include\":[{\"project\":\"foo\"},{\"project\":\"bar\"}]}" 
 
 
 
 
-  job2:
-    needs: job1
+  run_ffmpeg:
+    needs: create_matrix
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJSON(needs.job1.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.create_matrix.outputs.matrix) }}
     steps:
+
       - name: Matrix Echo
         run: |
           echo ${{ matrix.project }}
 
 
+      - name: install dependencies
+        run: |
+          sudo add-apt-repository ppa:savoury1/ffmpeg4
+          sudo add-apt-repository ppa:savoury1/ffmpeg5
+          sudo apt-get update 
+          sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass
+
+
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+
+      - name: rclone
+        uses: wei/rclone@v1
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+        with:
+          args: copy GDrive:${GDRIVE_SOURCE_FOLDER} ./batch_queue
+
+
+      - name: list contents of folders
+        run: |
+          ls -la
+          ls -la ./batch_queue
 
 
 
 
 
-
-  # folder_matrix:
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-
-  #     - name: install dependencies
-  #       run: |
-  #         sudo apt-get update 
-  #         sudo apt-get install --no-install-recommends jq
-
-
-  #     - name: rclone
-  #       uses: wei/rclone@v1
-  #       env:
-  #         RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-  #       with:
-  #         args: lsf GDrive:/SocialExporter/batch_queue | tr -d '//' > ./folderlist.json
-
-
-
-  #       # cat ./folderlist.json | jq -c '[.[].Name]' > ./foldermatrix.json    
-  #       # TEMP_FOLDER_MATRIX=$(cat ./foldermatrix.json )
-  #       # echo "FOLDER_MATRIX=$( echo ${TEMP_FOLDER_MATRIX//\"/\\\"} )" >> $GITHUB_OUTPUT
-
-  #       # Create a matrix of folders in /SocialExporter/batch_queue
-  #     - name: Generate Matrix
-  #       id: generatematrix
-  #       run: |
-  #         echo "SOURCE_FOLDER={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> $GITHUB_OUTPUT
-
-  #   outputs:
-  #     FOLDER_MATRIX: ${{ toJSON(steps.generatematrix.outputs.SOURCE_FOLDER) }}
-
-
-
-
-
-
-  # my_echo:
-  #   runs-on: ubuntu-latest
-  #   needs:
-  #     - folder_matrix
-  #   steps:
-  
-  #     - name: Echo folder_matrix
-  #       env:
-  #         FOLDER_MATRIX: ${{needs.folder_matrix.outputs.FOLDER_MATRIX}}
-  #       run: echo ${{ fromJSON( env.FOLDER_MATRIX ) }}
-
-
-
-
-  # batch_ffmpeg:
-
-  #   runs-on: ubuntu-latest
-  #   container:
-
-  #   needs:
-  #     - folder_matrix
-
-  #   strategy:
-  #     matrix:
-  #       FOLDER: ${{ fromJSON(needs.folder_matrix.outputs.FOLDER_MATRIX) }}
-
-  #   steps:
-
-  #     - name: Matrix => (${{ matrix.FOLDER }}
-  #       run: |
-  #         echo ${{ matrix.FOLDER }}
-
-
-
-
-
-
-      # - name: install dependencies
+      # # Use sudo otherwise permissions to /tmp won't work in runner
+      # - name: loop folders and run ffmpeg template on each
       #   run: |
-      #     sudo add-apt-repository ppa:savoury1/ffmpeg4
-      #     sudo add-apt-repository ppa:savoury1/ffmpeg5
-      #     sudo apt-get update 
-      #     sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass
-
-
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@v3
-
-
-  #     - name: rclone
-  #       uses: wei/rclone@v1
-  #       env:
-  #         RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-  #       with:
-  #         args: copy GDrive:${GDRIVE_SOURCE_FOLDER} ./batch_queue
-
-
-  #       # Use sudo otherwise permissions to /tmp won't work in runner
-  #     - name: loop folders and run ffmpeg template on each
-  #       run: |
-  #           echo "londonparkour.com/classes" > ./text_bottom.txt
-  #           echo ${{ env.TEXT_TOP_B64 }} | base64 --decode > ./text_top.txt
-  #           mkdir -p ./processed_videos
-  #           cd ./templates
-  #           sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "./text_top.txt"
+      #       echo "londonparkour.com/classes" > ./text_bottom.txt
+      #       echo ${{ env.TEXT_TOP_B64 }} | base64 --decode > ./text_top.txt
+      #       mkdir -p ./processed_videos
+      #       cd ./templates
+      #       sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "./text_top.txt"
 
 
   #     - name: rclone
