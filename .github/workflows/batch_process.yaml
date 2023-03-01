@@ -56,7 +56,7 @@ jobs:
       - name: install dependencies
         run: |
           sudo apt-get update 
-          sudo apt-get install --no-install-recommends rclone jq
+          sudo apt-get install --no-install-recommends jq
 
 
       - name: rclone
@@ -64,12 +64,13 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: lsjson GDrive:/SocialExporter/batch_queue > ./folderlist.json && echo "FOLDER_LIST=$(echo ./folderlist.json)" >> $GITHUB_ENV
+          args: lsjson GDrive:/SocialExporter/batch_queue > ./folderlist.json && echo "FOLDER_LIST=$(cat ./folderlist.json)" >> $GITHUB_ENV
 
         # Create a matrix of folders in /SocialExporter/batch_queue
       - name: Generate Matrix
         id: generate-matrix
         run: |
+          echo ${{ env.FOLDER_LIST }}
           echo "FOLDER_MATRIX=$(echo ${{ env.FOLDER_LIST }} | jq -c '[.[].Name]')" >> $GITHUB_ENV
 
 
