@@ -51,8 +51,7 @@ jobs:
 
   folder_matrix:
     runs-on: ubuntu-latest
-    outputs:
-      FOLDER_MATRIX: ${{ steps.generate-matrix.outputs.FOLDER_MATRIX }}
+
     steps:
 
       - name: install dependencies
@@ -72,9 +71,15 @@ jobs:
       - name: Generate Matrix
         id: generate-matrix
         run: |
-          echo '${{ env.FOLDER_LIST }}' | jq -c '[.[].Name]' | tr -d '"' > ./foldermatrix.json
+          echo '${{ env.FOLDER_LIST }}' | jq -c '[.[].Name]' > ./foldermatrix.json
           cat ./foldermatrix.json
           echo FOLDER_MATRIX=$(cat ./foldermatrix.json) >> "$GITHUB_OUTPUT"
+
+    outputs:
+      FOLDER_MATRIX: ${{ toJSON(steps.generate-matrix.outputs.FOLDER_MATRIX) }}
+
+
+
 
 
 
@@ -88,6 +93,8 @@ jobs:
         env:
           FOLDER_MATRIX: ${{needs.folder_matrix.outputs.FOLDER_MATRIX}}
         run: echo ${{ toJSON( env.FOLDER_MATRIX ) }}
+
+
 
 
   batch_ffmpeg:
