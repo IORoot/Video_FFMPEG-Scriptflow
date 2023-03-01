@@ -65,19 +65,23 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: lsjson GDrive:/SocialExporter/batch_queue > ./folderlist.json && echo "FOLDER_LIST=$(cat ./folderlist.json)" >> $GITHUB_ENV
+          args: lsf GDrive:/SocialExporter/batch_queue | tr -d '//' > ./folderlist.json
+
+
+
+        # cat ./folderlist.json | jq -c '[.[].Name]' > ./foldermatrix.json    
+        # TEMP_FOLDER_MATRIX=$(cat ./foldermatrix.json )
+        # echo "FOLDER_MATRIX=$( echo ${TEMP_FOLDER_MATRIX//\"/\\\"} )" >> $GITHUB_OUTPUT
 
         # Create a matrix of folders in /SocialExporter/batch_queue
       - name: Generate Matrix
-        id: generate-matrix
+        id: generatematrix
         run: |
-          cat ./folderlist.json | jq -c '[.[].Name]' > ./foldermatrix.json
-          TEMP_FOLDER_MATRIX=$(cat ./foldermatrix.json )
-          echo ${TEMP_FOLDER_MATRIX//\"/\\\"}  
-          echo "FOLDER_MATRIX=$( echo ${TEMP_FOLDER_MATRIX//\"/\\\"} )" >> $GITHUB_OUTPUT
+          echo "SOURCE_FOLDER=abc" >> $GITHUB_OUTPUT
+          echo "SOURCE_FOLDER=efg" >> $GITHUB_OUTPUT
 
     outputs:
-      FOLDER_MATRIX: ${{ toJSON(steps.generate-matrix.outputs.FOLDER_MATRIX) }}
+      FOLDER_MATRIX: ${{ toJSON(steps.generatematrix.outputs.SOURCE_FOLDER) }}
 
 
 
