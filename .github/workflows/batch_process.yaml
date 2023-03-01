@@ -90,21 +90,31 @@ jobs:
         run: echo "${{ toJSON( env.FOLDER_MATRIX ) }}"
 
 
-  # build:
+  batch_ffmpeg:
 
-  #   runs-on: ubuntu-latest
-  #   container:
-      
-  #   steps:
+    runs-on: ubuntu-latest
+    container:
 
-  #     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#repository_dispatch
-  #     # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-a-repository-dispatch-event
-  #     - name: install dependencies
-  #       run: |
-  #         sudo add-apt-repository ppa:savoury1/ffmpeg4
-  #         sudo add-apt-repository ppa:savoury1/ffmpeg5
-  #         sudo apt-get update 
-  #         sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass
+    needs:
+      - my_echo
+      - folder_matrix
+
+    strategy:
+      matrix:
+        FOLDER: ${{ fromJSON(needs.folder_matrix.outputs.FOLDER_MATRIX) }}
+
+    steps:
+
+      - name: Matrix => (${{ matrix.FOLDER }}
+        run: |
+          echo ${{ matrix.FOLDER }}
+
+      # - name: install dependencies
+      #   run: |
+      #     sudo add-apt-repository ppa:savoury1/ffmpeg4
+      #     sudo add-apt-repository ppa:savoury1/ffmpeg5
+      #     sudo apt-get update 
+      #     sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass
 
 
   #     - name: Checkout Repo
