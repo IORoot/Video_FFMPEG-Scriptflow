@@ -74,7 +74,7 @@ jobs:
         run: |
           echo '${{ env.FOLDER_LIST }}' | jq -c '[.[].Name]' | tr -d '"' > ./foldermatrix.json
           cat ./foldermatrix.json
-          echo "FOLDER_MATRIX=$(cat ./foldermatrix.json)" >> "$GITHUB_OUTPUT"
+          echo FOLDER_MATRIX=$(cat ./foldermatrix.json) >> "$GITHUB_OUTPUT"
 
 
 
@@ -87,7 +87,7 @@ jobs:
       - name: Echo folder_matrix
         env:
           FOLDER_MATRIX: ${{needs.folder_matrix.outputs.FOLDER_MATRIX}}
-        run: echo "${{ toJSON( env.FOLDER_MATRIX ) }}"
+        run: echo ${{ toJSON( env.FOLDER_MATRIX ) }}
 
 
   batch_ffmpeg:
