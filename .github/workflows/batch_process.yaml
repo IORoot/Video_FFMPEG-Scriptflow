@@ -63,7 +63,7 @@ jobs:
       - name: Generate Matrix
         id: generate-matrix
         run: |
-          rclone lsjson GDrive:/SocialExporter/batch_queue | | jq -c '[.[].Name]' > ./folderlist.json
+          rclone lsjson GDrive:/SocialExporter/batch_queue | jq -c '[.[].Name]' > ./folderlist.json
           echo "FOLDER_MATRIX=$(echo ./folderlist.json)" >> $GITHUB_ENV
 
 
