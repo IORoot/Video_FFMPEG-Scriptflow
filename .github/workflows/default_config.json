@@ -1,6 +1,6 @@
 {
-    "template": "ft_simple_orange.sh",
+    "template": "ft_blurred.sh",
     "schedule": "TRUE",
-    "text_top": "",
+    "text_top": "Highlights!",
     "text_low": "LondonParkour.com"
 }
