@@ -51,19 +51,6 @@ jobs:
 
 
 
-
-# matrix={
-#   "include":[
-#     {
-#       "project":"foo"
-#     },
-#     {
-#       "project":"bar"
-#     }
-#   ]
-# }
-# echo "matrix={\"include\":[{\"project\":\"foo\"},{\"project\":\"bar\"}]}" >> $GITHUB_OUTPUT
-
   create_matrix:
     runs-on: ubuntu-latest
     outputs:
@@ -123,33 +110,34 @@ jobs:
           args: copy GDrive:${GDRIVE_SOURCE_FOLDER}/${{ matrix.project }} ./batch_queue
 
 
-      - name: list contents of folders
-        run: |
+      - name: read config.json
+        continue-on-error: true
+        run |
+          cd ./batch_queue/${{ matrix.project }}
           ls -la
-          ls -la ./batch_queue
+          if [ ! -f "./config.json"]; then cp ../.github/workflows/default_config.json ./config.json; fi
+          TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' )   >> $GITHUB_ENV
+          SCHEDULE=$(cat ./config.json | jq -c '.schedule // "TRUE"' )                  >> $GITHUB_ENV
+          TEXT_TOP=$(cat ./config.json | jq -c '.text-top // ""' ) > ./text_top.txt
+          TEXT_LOW=$(cat ./config.json | jq -c '.text-low // ""' ) > ./text_low.txt
 
+      # Use sudo otherwise permissions to /tmp won't work in runner
+      - name: loop folders and run ffmpeg template on each
+        run: |
+          env
+          cd ${GITHUB_WORKSPACE}
+          echo "TEMPLATE:$TEMPLATE"
+          mkdir -p ./processed_videos
+          cd ./templates
+          sudo ./${{ env.TEMPLATE }} -f ../batch_queue/${{ matrix.project }} -o ../processed_videos/processed.mp4 -t "../batch_queue/${{ matrix.project }}/text_top.txt" -b "../batch_queue/${{ matrix.project }}/text_low.txt"
+          cd ${GITHUB_WORKSPACE}
 
-      # READ JSON CONFIG
-
-
-
-
-      # # Use sudo otherwise permissions to /tmp won't work in runner
-      # - name: loop folders and run ffmpeg template on each
-      #   run: |
-      #       echo "londonparkour.com/classes" > ./text_bottom.txt
-      #       echo ${{ env.TEXT_TOP_B64 }} | base64 --decode > ./text_top.txt
-      #       mkdir -p ./processed_videos
-      #       cd ./templates
-      #       sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "./text_top.txt"
-
-
-  #     - name: rclone
-  #       uses: wei/rclone@v1
-  #       env:
-  #         RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-  #       with:
-  #         args: copy ./processed_videos GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER}/processed
+      - name: rclone
+        uses: wei/rclone@v1
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+        with:
+          args: copy ./processed_videos GDrive:${GDRIVE_TARGET_FOLDER}/processed
 
 
   #     - name: Copy Video to Server
