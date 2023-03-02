@@ -154,7 +154,7 @@ jobs:
         with:
           payload: |
             {
-              "text": ":rocket: Single Video Processed. http://media.londonparkour.com/processed${{ env.GDRIVE_FOLDER }}/processed.mp4",
+              "text": ":rocket: Single Video Processed. http://media.londonparkour.com/processed${{ env.GDRIVE_FOLDER }}/processed.mp4"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
