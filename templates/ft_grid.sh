@@ -121,6 +121,13 @@ function arguments()
             ;;
 
 
+        -b|--bottomtext)
+            # NOT USED IN THIS TEMPLATE
+            shift
+            shift
+            ;;
+            
+
         -l|--loglevel)
             LOGLEVEL="$2"
             shift 
