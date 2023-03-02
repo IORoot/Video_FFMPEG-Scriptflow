@@ -186,7 +186,7 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: moveto GDrive:${GDRIVE_TARGET_FOLDER}/${{ matrix.project }} gdRIVE:${GDRIVE_ARCHIVE_FOLDER}/${{ matrix.project }}
+          args: moveto GDrive:${GDRIVE_TARGET_FOLDER}/${{ matrix.project }} GDrive:${GDRIVE_ARCHIVE_FOLDER}/${{ matrix.project }}
 
 
       - name: Send custom JSON data to Slack workflow
