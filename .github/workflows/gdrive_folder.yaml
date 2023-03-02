@@ -25,7 +25,7 @@ env:
   # │                Target Google Sheet Script                │
   # ╰──────────────────────────────────────────────────────────╯
   # Google AppsScript Name: "Update Video Sheet"
-  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbyVMW6iJEzEcwaSdD5v6eoJa-u2IHOmLcLpLExa7J4GfYS7AoUys72A_Z_f99A1tU0x/exec"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbzSV1swXbr8TxVwHLSupJILazM6oavNnM0LkZmkC8BMjtgMl_mnjZqigvm83-V5xd1P/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                        Video URL                         │
