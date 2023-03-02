@@ -1,6 +1,7 @@
 {
     "template": "ft_blurred.sh",
     "schedule": "TRUE",
+    "category": "youthwest",
     "text_top": "Highlights!",
     "text_low": "LondonParkour.com"
 }
