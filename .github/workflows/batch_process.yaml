@@ -126,22 +126,22 @@ jobs:
       - name: run ffmpeg template
         run: |
           cd ${GITHUB_WORKSPACE}
-          TEMPLATE=$(cat ./raw_videos/config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
-          mkdir -p ./processed_videos
+          TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
+          mkdir -p ./processed_video
 
           cd ./templates
-          sudo ./$TEMPLATE -f ../raw_videos -o ../processed_videos/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
-          
+          sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
+
           cd ${GITHUB_WORKSPACE}
           ls -la
-          ls -la ./processed_videos/processed.mp4
+          ls -la ./processed_video/processed.mp4
 
       - name: rclone
         uses: wei/rclone@v1
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: copy ./processed_videos GDrive:${GDRIVE_TARGET_FOLDER}/processed
+          args: copy ./processed_video GDrive:${GDRIVE_TARGET_FOLDER}/processed
 
 
   #     - name: Copy Video to Server
@@ -159,11 +159,11 @@ jobs:
   #         sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SOURCE_DIR} ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
 
 
-      - name: Update google sheet with processed video folder
-        run: |
-          TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' )"
-          SCHEDULE=$(cat ./config.json | jq -c '.schedule // "TRUE"' )"
-          curl "${{ env.APPS_SCRIPT }}?folder=%22${GDRIVE_FOLDER}%22"
+      # - name: Update google sheet with processed video folder
+      #   run: |
+      #     TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' )"
+      #     SCHEDULE=$(cat ./config.json | jq -c '.schedule // "TRUE"' )"
+      #     curl "${{ env.APPS_SCRIPT }}?folder=%22${GDRIVE_FOLDER}%22"
 
 
   #     - name: Slack Notification
