@@ -7,7 +7,7 @@
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 
 # 
-
+printf "🎬 Running $0\n"
 printf "🚨 Rule 1. This is just a wrapper for all the './ff_*' scripts. This does not repeat code.\n"
 printf "🚨 Rule 2. The input folder must ONLY contain the videos you wish to use.\n"
 printf "\n"

@@ -126,13 +126,14 @@ jobs:
       - name: run ffmpeg template
         run: |
           cd ${GITHUB_WORKSPACE}
-          pwd
-          ls -la
           cat ./config.json | sudo jq -c '.text_top' > ./text_top.txt
           cat ./config.json | sudo jq -c '.text_low' > ./text_low.txt
-          
-          TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
           mkdir -p ./processed_video
+
+          pwd
+          ls -la
+
+          TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
 
           cd ./templates
           pwd
