@@ -112,6 +112,9 @@ jobs:
 
       - name: read config.json
         run: |
+          ls -la
+          cd ./batch_queue
+          ls -la
           cd ./batch_queue/${{ matrix.project }}
           ls -la
           if [ ! -f "./config.json"]; then cp ../../.github/workflows/default_config.json ./config.json; fi
