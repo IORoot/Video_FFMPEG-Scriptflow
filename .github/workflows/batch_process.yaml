@@ -35,7 +35,7 @@ env:
   # │                  Google Drive Variables                  │
   # ╰──────────────────────────────────────────────────────────╯
   GDRIVE_SOURCE_FOLDER:     "/SocialExporter/batch_queue"
-  GDRIVE_TARGET_FOLDER:     "/SocialExporter/videos"
+  GDRIVE_TARGET_FOLDER:     "/SocialExporter/videos/batch_processed"
   CONFIG_FILE_NAME:         "config.json"
 
   # ╭──────────────────────────────────────────────────────────╮
@@ -149,7 +149,7 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: copy ./processed_video GDrive:${GDRIVE_TARGET_FOLDER}/processed
+          args: copy ./processed_video GDrive:${GDRIVE_TARGET_FOLDER}/${{ matrix.project }}
 
 
   #     - name: Copy Video to Server
