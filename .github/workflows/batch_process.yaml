@@ -123,14 +123,14 @@ jobs:
       # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
         run: |
-          env
+          # env
           cd ${GITHUB_WORKSPACE}
 
-          TEMPLATE=$(cat ./config.json | sudo jq -c '.template // "ft_simple_orange.sh"' )"
+          TEMPLATE=$(cat ./raw_videos/config.json | jq -c '.template // "ft_simple_orange.sh"' )"
           echo "TEMPLATE:$TEMPLATE"
           
           mkdir -p ./processed_videos
-          
+
           cd ./templates
           sudo ./${{ env.TEMPLATE }} -f ../raw_videos/${{ matrix.project }} -o ../processed_videos/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
           cd ${GITHUB_WORKSPACE}
