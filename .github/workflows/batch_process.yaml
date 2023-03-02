@@ -29,7 +29,7 @@ env:
   # │                   including video_url                    │
   # ╰──────────────────────────────────────────────────────────╯
   # Google AppsScript Name: "Insert Video Sheet Row"
-  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbxxz9S-RlZuEpud7lsBcib9KAsB75NA_hoRvxjhghEAN1Jr62mMbrOxTSk83TGqgYcx/exec"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbzSV1swXbr8TxVwHLSupJILazM6oavNnM0LkZmkC8BMjtgMl_mnjZqigvm83-V5xd1P/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                  Google Drive Variables                  │
