@@ -107,7 +107,7 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: copy GDrive:${GDRIVE_SOURCE_FOLDER}/${{ matrix.project }} ./batch_queue
+          args: copy GDrive:${{ env.GDRIVE_SOURCE_FOLDER }}/${{ matrix.project }} ./batch_queue
 
 
       - name: read config.json
