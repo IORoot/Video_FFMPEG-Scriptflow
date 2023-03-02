@@ -133,6 +133,8 @@ jobs:
           cd ./templates
           sudo ./$TEMPLATE -f ../raw_videos/${{ matrix.project }} -o ../processed_videos/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
           cd ${GITHUB_WORKSPACE}
+          ls -la
+          ls -la ./processed_videos/processed.mp4
 
       - name: rclone
         uses: wei/rclone@v1
