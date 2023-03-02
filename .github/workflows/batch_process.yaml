@@ -107,17 +107,15 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: copy GDrive:${{ env.GDRIVE_SOURCE_FOLDER }}/${{ matrix.project }} ./batch_queue
+          args: copy GDrive:${{ env.GDRIVE_SOURCE_FOLDER }}/${{ matrix.project }} ./raw_videos
 
 
       - name: read config.json
         run: |
           ls -la
-          cd ./batch_queue
+          cd ./raw_videos
           ls -la
-          cd ./batch_queue/${{ matrix.project }}
-          ls -la
-          if [ ! -f "./config.json"]; then cp ../../.github/workflows/default_config.json ./config.json; fi
+          if [ ! -f "./config.json"]; then cp ../.github/workflows/default_config.json ./config.json; fi
           ls -la
           cat ./config.json
           TEXT_TOP=$(cat ./config.json | jq -c '.text-top // ""' ) > ./text_top.txt
@@ -131,7 +129,7 @@ jobs:
           echo "TEMPLATE:$TEMPLATE"
           mkdir -p ./processed_videos
           cd ./templates
-          sudo ./${{ env.TEMPLATE }} -f ../batch_queue/${{ matrix.project }} -o ../processed_videos/processed.mp4 -t "../batch_queue/${{ matrix.project }}/text_top.txt" -b "../batch_queue/${{ matrix.project }}/text_low.txt"
+          sudo ./${{ env.TEMPLATE }} -f ../raw_videos/${{ matrix.project }} -o ../processed_videos/processed.mp4 -t "../raw_videos/${{ matrix.project }}/text_top.txt" -b "../raw_videos/${{ matrix.project }}/text_low.txt"
           cd ${GITHUB_WORKSPACE}
 
       - name: rclone
