@@ -116,6 +116,8 @@ jobs:
           if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
           sudo mv ./config.json ../
           cd ../
+          sudo touch ./text_top.txt
+          sudo touch ./text_low.txt
           cat ./config.json
           cat ./config.json | jq -c '.text_top'
           cat ./config.json | sudo jq -c '.text_top' > ./text_top.txt
@@ -126,14 +128,17 @@ jobs:
       - name: run ffmpeg template
         run: |
           cd ${GITHUB_WORKSPACE}
+          pwd
+          ls -la
           TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
           mkdir -p ./processed_video
 
           cd ./templates
+          pwd
+          ls -la
           sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
 
           cd ${GITHUB_WORKSPACE}
-          ls -la
           ls -la ./processed_video/processed.mp4
 
       - name: rclone
