@@ -36,6 +36,7 @@ env:
   # ╰──────────────────────────────────────────────────────────╯
   GDRIVE_SOURCE_FOLDER:     "/SocialExporter/batch_queue"
   GDRIVE_TARGET_FOLDER:     "/SocialExporter/videos/batch_processed"
+  GDRIVE_ARCHIVE_FOLDER:     "/SocialExporter/batch_archive"
   CONFIG_FILE_NAME:         "config.json"
 
   # ╭──────────────────────────────────────────────────────────╮
@@ -180,19 +181,12 @@ jobs:
           curl "${{ env.APPS_SCRIPT }}?category=%22${CATEGORY}%22&auto_schedule=%22${SCHEDULE}%22&video_url=%22${VIDEOURL}%22"
 
 
-      # - name: rclone delete source videos
-      #   uses: wei/rclone@v1
-      #   env:
-      #     RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-      #   with:
-      #     args: copy ./processed_video GDrive:${GDRIVE_TARGET_FOLDER}/${{ matrix.project }}
-
-
-      # - name: Slack Notification
-      #   uses: rtCamp/action-slack-notify@v2
-      #   env:
-      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      #     SLACK_MESSAGE: ':rocket: Batch Video Processed. http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4'
+      - name: rclone archive videos
+        uses: wei/rclone@v1
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+        with:
+          args: moveto GDrive:${GDRIVE_TARGET_FOLDER}/${{ matrix.project }} gdRIVE:${GDRIVE_ARCHIVE_FOLDER}/${{ matrix.project }}
 
 
       - name: Send custom JSON data to Slack workflow

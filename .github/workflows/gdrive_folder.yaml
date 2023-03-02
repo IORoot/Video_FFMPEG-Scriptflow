@@ -141,13 +141,6 @@ jobs:
 
 
 
-      # - name: Slack Notification
-      #   uses: rtCamp/action-slack-notify@v2
-      #   env:
-      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      #     SLACK_MESSAGE: ':rocket: Video Processed with ${{env.TEMPLATE}}. http://media.londonparkour.com/processed${{env.GDRIVE_FOLDER}}/processed.mp4'
-
-
       - name: Send custom JSON data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.23.0
