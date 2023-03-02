@@ -64,10 +64,14 @@ jobs:
       
     steps:
 
+
+
       - name: list variables
         run: |
           env
           echo "TEXT_TOP_B64: ${{ env.TEXT_TOP_B64 }}"
+
+
 
       # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#repository_dispatch
       # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-a-repository-dispatch-event
@@ -83,6 +87,16 @@ jobs:
         uses: actions/checkout@v3
 
 
+
+      - name: rclone
+        uses: wei/rclone@v1
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+        with:
+          args: copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
+
+
+
         # Use sudo otherwise permissions to /tmp won't work in runner
         # 
         # NOTE - Some templates DON'T use the -t flag. DO Include it in the template, just do nothing.
@@ -95,12 +109,14 @@ jobs:
             sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "./text_top.txt"
 
 
+
       - name: rclone
         uses: wei/rclone@v1
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
           args: copy ./processed_videos GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER}/processed
+
 
 
       - name: Copy Video to Server
@@ -118,9 +134,11 @@ jobs:
           sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SOURCE_DIR} ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
 
 
+
       - name: Update google sheet with processed video folder
         run: |
           curl "${{ env.APPS_SCRIPT }}?folder=%22${GDRIVE_FOLDER}%22"
+
 
 
       - name: Slack Notification
