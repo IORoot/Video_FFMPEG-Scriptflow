@@ -112,11 +112,8 @@ jobs:
 
       - name: read config.json
         run: |
-          ls -la
           cd ./raw_videos
-          ls -la
           if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
-          ls -la
           cat ./config.json
           cat ./config.json | jq -c '.text_top'
           cat ./config.json | sudo jq -c '.text_top' > ../text_top.txt
@@ -128,8 +125,12 @@ jobs:
         run: |
           env
           cd ${GITHUB_WORKSPACE}
+
+          TEMPLATE=$(cat ./config.json | sudo jq -c '.template // "ft_simple_orange.sh"' )"
           echo "TEMPLATE:$TEMPLATE"
+          
           mkdir -p ./processed_videos
+          
           cd ./templates
           sudo ./${{ env.TEMPLATE }} -f ../raw_videos/${{ matrix.project }} -o ../processed_videos/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
           cd ${GITHUB_WORKSPACE}
