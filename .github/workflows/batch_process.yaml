@@ -128,19 +128,15 @@ jobs:
           cd ${GITHUB_WORKSPACE}
           mkdir -p ./processed_video
 
-          cat ./config.json | sudo jq -c '.text_top' > ./text_top.txt
-          cat ./config.json | sudo jq -c '.text_low' > ./text_low.txt
+          cat ./config.json | sudo jq -c '.text_top' | tr -d '"' > ./text_top.txt
+          cat ./config.json | sudo jq -c '.text_low' | tr -d '"' > ./text_low.txt
           cat ./text_top.txt
           cat ./text_low.txt
 
-          
           TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
 
           cd ./templates
-          pwd
-          ls -la
           sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
-
           cd ${GITHUB_WORKSPACE}
 
 
