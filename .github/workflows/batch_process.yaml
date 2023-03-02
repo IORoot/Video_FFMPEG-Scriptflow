@@ -116,13 +116,13 @@ jobs:
           cd ./batch_queue/${{ matrix.project }}
           ls -la
           if [ ! -f "./config.json"]; then cp ../.github/workflows/default_config.json ./config.json; fi
-          TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' )   >> $GITHUB_ENV
-          SCHEDULE=$(cat ./config.json | jq -c '.schedule // "TRUE"' )                  >> $GITHUB_ENV
+          echo "TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' )"   >> $GITHUB_ENV
+          echo "SCHEDULE=$(cat ./config.json | jq -c '.schedule // "TRUE"' )"                  >> $GITHUB_ENV
           TEXT_TOP=$(cat ./config.json | jq -c '.text-top // ""' ) > ./text_top.txt
           TEXT_LOW=$(cat ./config.json | jq -c '.text-low // ""' ) > ./text_low.txt
 
       # Use sudo otherwise permissions to /tmp won't work in runner
-      - name: loop folders and run ffmpeg template on each
+      - name: run ffmpeg template
         run: |
           env
           cd ${GITHUB_WORKSPACE}
