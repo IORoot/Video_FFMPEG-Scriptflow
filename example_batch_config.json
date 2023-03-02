@@ -1,6 +1,6 @@
 {
     "template": "ft_blurred.sh",
     "schedule": "TRUE",
-    "text-top": "",
-    "text-low": "LondonParkour.com"
+    "text_top": "",
+    "text_low": "LondonParkour.com"
 }

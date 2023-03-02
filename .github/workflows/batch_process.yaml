@@ -118,10 +118,10 @@ jobs:
           if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
           ls -la
           cat ./config.json
-          sudo cat ./config.json | jq -c '.text-top'
-          sudo cat ./config.json | jq -c '.text-top' > ./text_top.txt
-          sudo cat ./config.json | jq -c '.text-low'
-          sudo cat ./config.json | jq -c '.text-low' > ./text_low.txt
+          sudo cat ./config.json | jq -c '.text_top'
+          sudo cat ./config.json | jq -c '.text_top' > ./text_top.txt
+          sudo cat ./config.json | jq -c '.text_low'
+          sudo cat ./config.json | jq -c '.text_low' > ./text_low.txt
 
       # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
