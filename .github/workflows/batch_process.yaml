@@ -131,7 +131,7 @@ jobs:
           mkdir -p ./processed_videos
 
           cd ./templates
-          sudo ./$TEMPLATE -f ../raw_videos/${{ matrix.project }} -o ../processed_videos/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
+          sudo ./$TEMPLATE -f ../raw_videos -o ../processed_videos/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
           cd ${GITHUB_WORKSPACE}
           ls -la
           ls -la ./processed_videos/processed.mp4
