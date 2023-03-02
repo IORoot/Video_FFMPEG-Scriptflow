@@ -114,24 +114,24 @@ jobs:
         run: |
           cd ./raw_videos
           if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
+          sudo mv ./config.json ../
+          cd ../
           cat ./config.json
           cat ./config.json | jq -c '.text_top'
-          cat ./config.json | sudo jq -c '.text_top' > ../text_top.txt
+          cat ./config.json | sudo jq -c '.text_top' > ./text_top.txt
           cat ./config.json | jq -c '.text_low'
-          cat ./config.json | sudo jq -c '.text_low' > ../text_low.txt
+          cat ./config.json | sudo jq -c '.text_low' > ./text_low.txt
 
       # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
         run: |
           cd ${GITHUB_WORKSPACE}
-
           TEMPLATE=$(cat ./raw_videos/config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
-          echo "TEMPLATE:$TEMPLATE"
-          
           mkdir -p ./processed_videos
 
           cd ./templates
           sudo ./$TEMPLATE -f ../raw_videos -o ../processed_videos/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
+          
           cd ${GITHUB_WORKSPACE}
           ls -la
           ls -la ./processed_videos/processed.mp4
