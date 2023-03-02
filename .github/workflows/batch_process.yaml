@@ -188,8 +188,21 @@ jobs:
       #     args: copy ./processed_video GDrive:${GDRIVE_TARGET_FOLDER}/${{ matrix.project }}
 
 
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
+      # - name: Slack Notification
+      #   uses: rtCamp/action-slack-notify@v2
+      #   env:
+      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      #     SLACK_MESSAGE: ':rocket: Batch Video Processed. http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4'
+
+
+      - name: Send custom JSON data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          payload: |
+            {
+              "text": ":rocket: Batch Video Processed. http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4",
+            }
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: ':rocket: Batch Video Processed. http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4'
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
