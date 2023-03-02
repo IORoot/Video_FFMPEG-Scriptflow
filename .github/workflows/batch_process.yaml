@@ -125,13 +125,13 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
 
-          TEMPLATE=$(cat ./raw_videos/config.json | jq -c '.template // "ft_simple_orange.sh"' )
+          TEMPLATE=$(cat ./raw_videos/config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
           echo "TEMPLATE:$TEMPLATE"
           
           mkdir -p ./processed_videos
 
           cd ./templates
-          sudo ./${{ env.TEMPLATE }} -f ../raw_videos/${{ matrix.project }} -o ../processed_videos/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
+          sudo ./$TEMPLATE -f ../raw_videos/${{ matrix.project }} -o ../processed_videos/processed.mp4 -t "../text_top.txt" -b "../text_low.txt"
           cd ${GITHUB_WORKSPACE}
 
       - name: rclone
