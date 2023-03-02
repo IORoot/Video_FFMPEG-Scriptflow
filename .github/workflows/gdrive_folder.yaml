@@ -44,7 +44,7 @@ env:
   # │                    Text for Template                     │
   # ╰──────────────────────────────────────────────────────────╯
   TEXT_TOP_B64:         ${{ github.event.client_payload.TEXT_TOP }}
-
+  TEXT_BOTTOM:          "londonparkour.com/classes"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │              Where to upload the result to.              │
@@ -102,11 +102,11 @@ jobs:
         # NOTE - Some templates DON'T use the -t flag. DO Include it in the template, just do nothing.
       - name: run ffmpeg template
         run: |
-            echo "londonparkour.com/classes" > ./text_bottom.txt
+            echo "${{ env.TEXT_BOTTOM }}" > ./text_bottom.txt
             echo ${{ env.TEXT_TOP_B64 }} | base64 --decode > ./text_top.txt
             mkdir -p ./processed_videos
             cd ./templates
-            sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t "./text_top.txt"
+            sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t $(realpath ../text_top.txt) -b $(realpath ../text_bottom.txt)
 
 
 
@@ -141,8 +141,21 @@ jobs:
 
 
 
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
+      # - name: Slack Notification
+      #   uses: rtCamp/action-slack-notify@v2
+      #   env:
+      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      #     SLACK_MESSAGE: ':rocket: Video Processed with ${{env.TEMPLATE}}. http://media.londonparkour.com/processed${{env.GDRIVE_FOLDER}}/processed.mp4'
+
+
+      - name: Send custom JSON data to Slack workflow
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          payload: |
+            {
+              "text": ":rocket: Single Video Processed with ${{env.TEMPLATE}}. http://media.londonparkour.com/processed${{env.GDRIVE_FOLDER}}/processed.mp4",
+            }
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: ':rocket: Video Processed with ${{env.TEMPLATE}}. http://media.londonparkour.com/processed${{env.GDRIVE_FOLDER}}/processed.mp4'
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
