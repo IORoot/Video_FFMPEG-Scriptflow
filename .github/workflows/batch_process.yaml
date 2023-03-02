@@ -115,7 +115,7 @@ jobs:
           ls -la
           cd ./raw_videos
           ls -la
-          if [ ! -f "./config.json" ]; then cp ../.github/workflows/default_config.json ./config.json; fi
+          if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
           ls -la
           cat ./config.json
           sudo cat ./config.json | jq -c '.text-top // ""'
