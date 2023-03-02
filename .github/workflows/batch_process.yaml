@@ -125,7 +125,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
 
-          TEMPLATE=$(cat ./raw_videos/config.json | jq -c '.template' )"
+          TEMPLATE=$(cat ./raw_videos/config.json | jq -c '.template // "ft_simple_orange.sh"' )
           echo "TEMPLATE:$TEMPLATE"
           
           mkdir -p ./processed_videos
