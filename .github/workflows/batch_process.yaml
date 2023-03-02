@@ -29,7 +29,7 @@ env:
   # │                   including video_url                    │
   # ╰──────────────────────────────────────────────────────────╯
   # Google AppsScript Name: "Insert Video Sheet Row"
-  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbxk4T_9A5eSPvH9BEVww_Pl9CgLw8QEyCrWlFstOJrOABFaJWNOEcFU684vbh8ueXI8iA/exec"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbxxz9S-RlZuEpud7lsBcib9KAsB75NA_hoRvxjhghEAN1Jr62mMbrOxTSk83TGqgYcx/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                  Google Drive Variables                  │
@@ -107,7 +107,7 @@ jobs:
 
 
 
-      - name: rclone
+      - name: rclone copy to runner
         uses: wei/rclone@v1
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
@@ -147,7 +147,7 @@ jobs:
 
 
 
-      - name: rclone
+      - name: rclone copy result back to google drive
         uses: wei/rclone@v1
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
@@ -171,11 +171,21 @@ jobs:
           sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SOURCE_DIR} ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
 
 
-      # - name: Update google sheet with processed video folder
-      #   run: |
-      #     TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' )"
-      #     SCHEDULE=$(cat ./config.json | jq -c '.schedule // "TRUE"' )"
-      #     curl "${{ env.APPS_SCRIPT }}?folder=%22${GDRIVE_FOLDER}%22"
+
+      - name: Update google sheet with processed video folder
+        run: |
+          CATEGORY=$(cat ./config.json | sudo jq -c '.category' | tr -d '"' )
+          SCHEDULE=$(cat ./config.json | sudo jq -c '.schedule' | tr -d '"' )
+          VIDEOURL="http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4"
+          curl "${{ env.APPS_SCRIPT }}?category=%22${CATEGORY}%22&auto_schedule=%22${SCHEDULE}%22&video_url=%22${VIDEOURL}%22"
+
+
+      # - name: rclone delete source videos
+      #   uses: wei/rclone@v1
+      #   env:
+      #     RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+      #   with:
+      #     args: copy ./processed_video GDrive:${GDRIVE_TARGET_FOLDER}/${{ matrix.project }}
 
 
       - name: Slack Notification
