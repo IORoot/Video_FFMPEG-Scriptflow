@@ -283,7 +283,7 @@ function main()
     if [ -f "${TEXT_TOP_FILE}"]; then
         printf "\n7️⃣  Use ff_text.sh to add the top text.\n\n"
         printf "Addings: %s\n" "${TEXT_TOP}"
-        ../ff_text.sh -i ${PAD_TEMP_FILE} -t "${TEXT_TOP_FILE}" -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 60 -o ${TEXT_TOP_TEMP_FILE}
+        ../ff_text.sh -i ${PAD_TEMP_FILE} -t $(realpath ${TEXT_TOP_FILE}) -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 60 -o ${TEXT_TOP_TEMP_FILE}
     else
         printf "\nskipping ff_text.sh to add the top text. no file found.\n\n"
         cp ${PAD_TEMP_FILE} ${TEXT_TOP_TEMP_FILE}
@@ -302,7 +302,7 @@ function main()
 
     if [ -f "${TEXT_BOTTOM_FILE}"]; then
         printf "\n9️⃣  Use ff_text.sh to add the bottom text.\n\n"
-        ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -t "${TEXT_BOTTOM_FILE}" -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE}
+        ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -t $(realpath ${TEXT_BOTTOM_FILE}) -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE}
     else
         printf "\nskipping ff_text.sh to add the top text. no file found.\n\n"
         cp ${WATERMARK_TEMP_FILE} ${TEXT_BOTTOM_TEMP_FILE}
