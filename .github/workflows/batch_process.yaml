@@ -111,13 +111,12 @@ jobs:
 
 
       - name: read config.json
-        continue-on-error: true
         run: |
           cd ./batch_queue/${{ matrix.project }}
           ls -la
-          if [ ! -f "./config.json"]; then cp ../.github/workflows/default_config.json ./config.json; fi
-          echo "TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' )"   >> $GITHUB_ENV
-          echo "SCHEDULE=$(cat ./config.json | jq -c '.schedule // "TRUE"' )"                  >> $GITHUB_ENV
+          if [ ! -f "./config.json"]; then cp ../../.github/workflows/default_config.json ./config.json; fi
+          ls -la
+          cat ./config.json
           TEXT_TOP=$(cat ./config.json | jq -c '.text-top // ""' ) > ./text_top.txt
           TEXT_LOW=$(cat ./config.json | jq -c '.text-low // ""' ) > ./text_low.txt
 
@@ -155,9 +154,11 @@ jobs:
   #         sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SOURCE_DIR} ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
 
 
-  #     - name: Update google sheet with processed video folder
-  #       run: |
-  #         curl "${{ env.APPS_SCRIPT }}?folder=%22${GDRIVE_FOLDER}%22"
+      - name: Update google sheet with processed video folder
+        run: |
+          TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' )"
+          SCHEDULE=$(cat ./config.json | jq -c '.schedule // "TRUE"' )"
+          curl "${{ env.APPS_SCRIPT }}?folder=%22${GDRIVE_FOLDER}%22"
 
 
   #     - name: Slack Notification
