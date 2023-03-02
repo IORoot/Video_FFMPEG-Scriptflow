@@ -136,7 +136,7 @@ jobs:
           TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
 
           cd ./templates
-          sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -t ../text_top.txt -b ../text_low.txt
+          sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -t $(realpath ../text_top.txt) -b  $(realpath ../text_low.txt)
           cd ${GITHUB_WORKSPACE}
 
 
