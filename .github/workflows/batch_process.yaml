@@ -186,7 +186,7 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: moveto GDrive:${GDRIVE_TARGET_FOLDER}/${{ matrix.project }} GDrive:${GDRIVE_ARCHIVE_FOLDER}/${{ matrix.project }}
+          args: moveto GDrive:${GDRIVE_SOURCE_FOLDER}/${{ matrix.project }} GDrive:${GDRIVE_ARCHIVE_FOLDER}/${{ matrix.project }}
 
 
       - name: rclone purge source videos
