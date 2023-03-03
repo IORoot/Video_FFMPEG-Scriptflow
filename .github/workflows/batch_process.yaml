@@ -67,7 +67,7 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: lsf GDrive:${GDRIVE_SOURCE_FOLDER} | tr -d '//' > ./folderlist.txt
+          args: lsf GDrive:${GDRIVE_SOURCE_FOLDER} | tr -d '//' | head -n 18 > ./folderlist.txt
 
       - id: set-matrix
         run: |
@@ -187,14 +187,6 @@ jobs:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
           args: moveto GDrive:${GDRIVE_SOURCE_FOLDER}/${{ matrix.project }} GDrive:${GDRIVE_ARCHIVE_FOLDER}/${{ matrix.project }}
-
-
-      - name: rclone purge source videos
-        uses: wei/rclone@v1
-        env:
-          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-        with:
-          args: purge GDrive:${GDRIVE_SOURCE_FOLDER}/${{ matrix.project }}
 
 
       - name: Send custom JSON data to Slack workflow
