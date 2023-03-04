@@ -124,7 +124,7 @@ jobs:
           mkdir ~/.ssh
           ssh-keyscan -H ${{env.SERVER}} >> ~/.ssh/known_hosts
 
-          SOURCE_DIR="./processed_videos/processed.mp4"
+          SOURCE_DIR="./processed_videos"
           TARGET_DIR="${TARGET_ROOT_FOLDER}${GDRIVE_FOLDER}"
 
           echo "SOURCE DIR: ${SOURCE_DIR}"

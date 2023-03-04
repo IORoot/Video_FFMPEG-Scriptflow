@@ -277,10 +277,13 @@ function main()
     # ╰──────────────────────────────────────────────────────────╯
 
     mv ${WATERMARK_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
-
-
     printf "\n\n✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
 
+    # ╭──────────────────────────────────────────────────────────╮
+    # │                 Create a Thumbnail image                 │
+    # ╰──────────────────────────────────────────────────────────╯
+    ../ff_text.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${CURRENT_DIRECTORY}/thumbnail.jpg -c 1
+    mv ${CURRENT_DIRECTORY}/thumbnail-01.jpg ${CURRENT_DIRECTORY}/thumbnail.jpg
 }
 
 
