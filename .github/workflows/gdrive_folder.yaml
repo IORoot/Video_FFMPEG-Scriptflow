@@ -131,7 +131,8 @@ jobs:
           echo "TARGET DIR: ${TARGET_DIR}"
 
           sshpass -p '${{secrets.SSH_PASS}}' ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{secrets.SSH_USER}}@${{env.SERVER}} "mkdir -p ${TARGET_DIR}"
-          sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SOURCE_DIR} ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
+          cd ${SOURCE_DIR}
+          sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null * ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
 
 
 
