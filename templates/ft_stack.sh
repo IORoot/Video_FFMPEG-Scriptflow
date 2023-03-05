@@ -283,7 +283,7 @@ function main()
     # ╭──────────────────────────────────────────────────────────╮
     # │                 Create a Thumbnail image                 │
     # ╰──────────────────────────────────────────────────────────╯
-    ../ff_text.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${CURRENT_DIRECTORY}/thumbnail.jpg -c 1
+    ../ff_thumbnail.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${CURRENT_DIRECTORY}/thumbnail.jpg -c 1
     mv ${CURRENT_DIRECTORY}/thumbnail-01.jpg ${CURRENT_DIRECTORY}/thumbnail.jpg
 }
 
