@@ -116,7 +116,7 @@ jobs:
           sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp
           sudo chmod a+rx ./yt-dlp
           sudo ./yt-dlp ${{ env.YOUTUBE_AUDIO_PLAYLIST }} --playlist-random --max-downloads 1 --restrict-filenames --trim-filenames 20 --extract-audio --audio-format mp3 --postprocessor-args "-ss 00:00:00.00 -t 00:01:00.00" --output music.mp3 --force-overwrites || true
-          sudo ffmpeg -i processed.mp4 -i music.mp3 -filter_complex amix=weights="60 1" -map 0:v -map 0:a -map 1:a -shortest output.mp4 || true
+          sudo ffmpeg -i processed.mp4 -i music.mp3 -filter_complex amix=weights="30 1" -map 0:v -map 0:a -map 1:a -shortest output.mp4 || true
           sudo mv -f output.mp4 processed.mp4
           rm ./yt-dlp
           rm ./music.mp3
