@@ -321,7 +321,7 @@ function main()
     # ╭──────────────────────────────────────────────────────────╮
     # │                 Create a Thumbnail image                 │
     # ╰──────────────────────────────────────────────────────────╯
-    ../ff_thumbnail.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${CURRENT_DIRECTORY}/thumbnail.jpg -c 1
+    ../ff_thumbnail.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${CURRENT_DIRECTORY}/../processed_video/thumbnail.jpg -c 1
 
 }
 
