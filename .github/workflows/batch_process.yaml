@@ -195,7 +195,7 @@ jobs:
         with:
           payload: |
             {
-              "text": ":rocket: Batch Video Processed. http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4"
+              "text": ":clapper: Batch Video Processed. http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
