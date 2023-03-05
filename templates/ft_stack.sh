@@ -166,6 +166,7 @@ function main()
     for FILE in ${FOLDER}/*
     do
         if [ -d "$FILE" ]; then continue; fi
+        if [[ "$FILE" == *"config.json"* ]]; then continue; fi
 
         REAL_FILE=$(realpath $FILE)
 
@@ -284,7 +285,7 @@ function main()
     # │                 Create a Thumbnail image                 │
     # ╰──────────────────────────────────────────────────────────╯
     ../ff_thumbnail.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${CURRENT_DIRECTORY}/thumbnail.jpg -c 1
-    mv ${CURRENT_DIRECTORY}/thumbnail-01.jpg ${CURRENT_DIRECTORY}/thumbnail.jpg
+
 }
 
 
