@@ -144,6 +144,8 @@ jobs:
 
           cd ./templates
           sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -t $(realpath ../text_top.txt) -b  $(realpath ../text_low.txt)
+          ls -la
+          ls -la ../processed_video
           cd ${GITHUB_WORKSPACE}
 
 
