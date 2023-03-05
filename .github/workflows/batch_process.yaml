@@ -155,10 +155,10 @@ jobs:
       - name: download music and overlay
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
+          sudo yt-dlp -vU
           sudo yt-dlp ${{ env.YOUTUBE_AUDIO_PLAYLIST }} --playlist-random --max-downloads 1 --restrict-filenames --trim-filenames 20 --extract-audio --audio-format mp3 --postprocessor-args "-ss 00:00:00.00 -t 00:01:00.00" --output music.mp3 --force-overwrites
           sudo ffmpeg -i processed.mp4 -i music.mp3 -map 0 -map 1:a -c:v copy -shortest output.mp4
           sudo mv -f output.mp4 processed.mp4
-          sudo rm music.mp3
 
 
 
