@@ -48,6 +48,8 @@ env:
   TARGET_ROOT_FOLDER:       "/var/www/vhosts/media.londonparkour.com/processed/batch_processed"
 
 
+  YOUTUBE_AUDIO_PLAYLIST:   "https://www.youtube.com/playlist?list=PLzCxunOM5WFLOaTRCzeGrODz8TWaLrbhv"
+
 jobs:
 
 
@@ -96,10 +98,11 @@ jobs:
 
       - name: install dependencies
         run: |
+          sudo add-apt-repository ppa:yt-dlp/stable
           sudo add-apt-repository ppa:savoury1/ffmpeg4
           sudo add-apt-repository ppa:savoury1/ffmpeg5
           sudo apt-get update 
-          sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass
+          sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass yt-dlp
 
 
 
@@ -146,7 +149,16 @@ jobs:
           sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -t $(realpath ../text_top.txt) -b  $(realpath ../text_low.txt)
           ls -la
           ls -la ../processed_video
-          cd ${GITHUB_WORKSPACE}
+
+
+
+      - name: download music and overlay
+        run: |
+          cd ${GITHUB_WORKSPACE}/processed_video
+          sudo yt-dlp ${{ env.YOUTUBE_AUDIO_PLAYLIST }} --playlist-random --max-downloads 1 --restrict-filenames --trim-filenames 20 --extract-audio --audio-format mp3 --postprocessor-args "-ss 00:00:00.00 -t 00:01:00.00" --output music.mp3 --force-overwrites
+          sudo ffmpeg -i processed.mp4 -i music.mp3 -map 0 -map 1:a -c:v copy -shortest output.mp4
+          sudo mv -f output.mp4 processed.mp4
+          sudo rm music.mp3
 
 
 
