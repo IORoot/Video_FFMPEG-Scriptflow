@@ -55,7 +55,7 @@ env:
   TARGET_ROOT_FOLDER:   '/var/www/vhosts/media.londonparkour.com/processed'
 
 
-  YOUTUBE_AUDIO_PLAYLIST:   "https://www.youtube.com/playlist?list=PLKCo4y0JbV2Y41gOPI3pkn7nTyfUccd9n"
+  YOUTUBE_AUDIO_PLAYLIST:   "https://www.youtube.com/playlist?list=PLzCxunOM5WFIBEfixsIWyqPpaABQ5S8HD"
 
 jobs:
 
