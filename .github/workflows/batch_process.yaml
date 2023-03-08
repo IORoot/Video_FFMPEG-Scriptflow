@@ -36,7 +36,7 @@ env:
   # ╰──────────────────────────────────────────────────────────╯
   GDRIVE_SOURCE_FOLDER:     "/SocialExporter/batch_queue"
   GDRIVE_TARGET_FOLDER:     "/SocialExporter/videos/batch_processed"
-  GDRIVE_ARCHIVE_FOLDER:     "/SocialExporter/batch_archive"
+  GDRIVE_ARCHIVE_FOLDER:    "/SocialExporter/batch_archive"
   CONFIG_FILE_NAME:         "config.json"
 
   # ╭──────────────────────────────────────────────────────────╮
@@ -101,7 +101,7 @@ jobs:
           sudo add-apt-repository ppa:savoury1/ffmpeg4
           sudo add-apt-repository ppa:savoury1/ffmpeg5
           sudo apt-get update 
-          sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass
+          sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass sed
 
 
 
@@ -137,8 +137,8 @@ jobs:
           cd ${GITHUB_WORKSPACE}
           mkdir -p ./processed_video
 
-          cat ./config.json | sudo jq -c '.text_top' | tr -d '"' > ./text_top.txt
-          cat ./config.json | sudo jq -c '.text_low' | tr -d '"' > ./text_low.txt
+          cat ./config.json | sudo jq -c '.text_top' | tr -d '"' | sed 's/\\n/\n/g' > ./text_top.txt
+          cat ./config.json | sudo jq -c '.text_low' | tr -d '"' | sed 's/\\n/\n/g' > ./text_low.txt
           cat ./text_top.txt
           cat ./text_low.txt
 
