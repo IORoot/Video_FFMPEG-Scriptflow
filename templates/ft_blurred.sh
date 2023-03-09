@@ -31,7 +31,7 @@ OUTPUT_FILENAME="processed_blurred.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
 LUT="Circinus.cube"
-WATERMARK="./lib/watermarks/youth_class_848x848_blue.png"
+WATERMARK="./lib/watermarks/youth_class_1080x1080.png"
 
 MAX_WIDTH="848"
 MAX_HEIGHT="480"
@@ -268,7 +268,7 @@ function main()
 
     printf "\n8️⃣  Use ff_watermark.sh to add the bottom logo.\n\n"
 
-    ../ff_watermark.sh -i ${BG_WATERMARK_TEMP} -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)/2" -o ${WATERMARK_TEMP_FILE}
+    ../ff_watermark.sh -i ${BG_WATERMARK_TEMP} -w ${WATERMARK} -s 1 -x "(W-w)/2" -y "(H-h)/2" -o ${WATERMARK_TEMP_FILE}
 
 
 
