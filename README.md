@@ -1,4 +1,37 @@
-# FFMPEG Util scripts and Templates
+
+<div id="top"></div>
+
+<div align="center">
+
+
+<img src="https://svg-rewriter.sachinraja.workers.dev/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40mdi%2Fsvg%406.7.96%2Fsvg%2Fvideo-box.svg&fill=%234cae4c&width=200px&height=200px" style="width:200px;"/>
+
+<h3 align="center">FFMPEG Util scripts and Templates</h3>
+
+<p align="center">
+    Simple wrapper scripts for FFMPEG.
+</p>    
+</div>
+
+##  1. <a name='TableofContents'></a>Table of Contents
+
+
+* 1. [Table of Contents](#TableofContents)
+* 2. [About The Project](#AboutTheProject)
+	* 2.1. [Built With](#BuiltWith)
+	* 2.2. [Installation](#Installation)
+* 3. [Usage](#Usage)
+* 4. [ Customising](#Customising)
+* 5. [Troubleshooting](#Troubleshooting)
+* 6. [Contributing](#Contributing)
+* 7. [License](#License)
+* 8. [Contact](#Contact)
+* 9. [Changelog](#Changelog)
+	* 9.1. [Version 0.0.1](#Version0.0.1)
+
+
+
+##  2. <a name='AboutTheProject'></a>About The Project
 
 This is a collection of scripts to automate simple video editing tasks.
 
@@ -6,55 +39,37 @@ The idea is that they can be chained together for more complex video effects and
 
 These are all based on BASH and FFMPEG.
 
-<!-- TOC depthto:3 -->
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-- [FFMPEG Util scripts and Templates](#ffmpeg-util-scripts-and-templates)
-    - [Setup](#setup)
-    - [Utility Scripts](#utility-scripts)
-    - [Script Details](#script-details)
-        - [ff_append.sh](#ff_appendsh)
-        - [ff_aspect_ratio.sh](#ff_aspect_ratiosh)
-        - [ff_blur.sh](#ff_blursh)
-        - [ff_colour.sh](#ff_coloursh)
-        - [ff_concat.sh](#ff_concatsh)
-        - [ff_crop.sh](#ff_cropsh)
-        - [ff_cut.sh](#ff_cutsh)
-        - [ff_flip.sh](#ff_flipsh)
-        - [ff_fps.sh](#ff_fpssh)
-        - [ff_grouptime.sh](#ff_grouptimesh)
-        - [ff_lut.sh](#ff_lutsh)
-        - [ff_middle.sh](#ff_middlesh)
-        - [ff_mov_to_mp4.sh](#ff_mov_to_mp4sh)
-        - [ff_pad.sh](#ff_padsh)
-        - [ff_rotate.sh](#ff_rotatesh)
-        - [ff_scale.sh](#ff_scalesh)
-        - [ff_sharpen.sh](#ff_sharpensh)
-        - [ff_stack.sh](#ff_stacksh)
-        - [ff_text.sh](#ff_textsh)
-        - [ff_thumbnail.sh](#ff_thumbnailsh)
-        - [ff_to_landscape.sh](#ff_to_landscapesh)
-        - [ff_to_portrait.sh](#ff_to_portraitsh)
-        - [ff_unsharp.sh](#ff_unsharpsh)
-        - [ff_watermark.sh](#ff_watermarksh)
-    - [Templates](#templates)
-        - [ft_blurred.sh](#ft_blurredsh)
-        - [ft_grid.sh](#ft_gridsh)
-        - [ft_simple_blue.sh](#ft_simple_bluesh)
-        - [ft_simple_orange.sh](#ft_simple_orangesh)
-        - [ft_stack.sh](#ft_stacksh)
-    - [Changelog](#changelog)
 
-<!-- /TOC -->
+###  2.1. <a name='BuiltWith'></a>Built With
 
-## Setup
+This project was built with the following frameworks, technologies and software.
 
-Either update your $PATH to include this folder or create a link in `/usr/local/bin` to each script.
+* [JQ](https://stedolan.github.io/jq/)
 
-```
-PATH=$PATH:$(pwd)
-```
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-## Utility Scripts
+
+###  2.2. <a name='Installation'></a>Installation
+
+These are the steps to get up and running with this theme.
+
+1. Clone the repo
+    ```sh
+    git clone https://github.com/IORoot/ffmpeg__bash-scripts 
+    ```
+2. Either update your $PATH to include this folder or create a link in `/usr/local/bin` to each script.
+  ```
+  PATH=$PATH:$(pwd)
+  ```
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+##  3. <a name='Usage'></a>Usage
+
 
 Current list of scripts and their purposes.
 
@@ -1000,8 +1015,77 @@ Square 1:1 video with a orange padding on top and bottom. Includes text on top a
 
 Two vertically stacked videos on top of each other in a square 1:! aspect ratio video.
 
-## Changelog
 
-v1 - 2023-02-10 : Initial
+##  4. <a name='Customising'></a> Customising
 
-v2 - 2023-02-28 : Added ff_stack.sh, TOC and templates.
+Fork and use Pull Requests.
+
+##  5. <a name='Troubleshooting'></a>Troubleshooting
+
+Please use the Issues tab.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+##  6. <a name='Contributing'></a>Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue.
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
+##  7. <a name='License'></a>License
+
+Distributed under the MIT License.
+
+MIT License
+
+Copyright (c) 2022 Andy Pearson
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
+
+##  8. <a name='Contact'></a>Contact
+
+Author Link: [https://github.com/IORoot](https://github.com/IORoot)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+##  9. <a name='Changelog'></a>Changelog
+
+###  9.1. <a name='Version0.0.1'></a>Version 1.0.0
+
+- Initial
+
+### 9.2. Version 1.0.1
+
+- Added config-file abilities. Used by templates.
