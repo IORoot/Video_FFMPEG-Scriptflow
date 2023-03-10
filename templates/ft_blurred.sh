@@ -8,12 +8,7 @@
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 
-
 printf "🎬 Running $0\n"
-printf "🚨 Rule 1. This is just a wrapper for all the './ff_*' scripts. This does not repeat code.\n"
-printf "🚨 Rule 2. The input folder must ONLY contain the videos you wish to use.\n"
-printf "\n"
-
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                       Set Defaults                       │
@@ -79,7 +74,18 @@ usage()
 
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
-        printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n"
+        printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n\n"
+
+        printf "List of config.json script names to use:\n"
+        printf " - ff_scale1\n"
+        printf " - ff_grouptime\n"
+        printf " - ff_lut\n"
+        printf " - ff_scale2\n"
+        printf " - ff_crop\n"
+        printf " - ff_blur\n"
+        printf " - ff_watermark1\n"
+        printf " - ff_watermark2\n"
+        printf " - ff_thumbnail\n"
 
         exit 1
     fi
@@ -155,45 +161,6 @@ function arguments()
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │               Check for any dependencies                 │
-# ╰──────────────────────────────────────────────────────────╯
-function dependencies()
-{
-    if ! command -v jq &> /dev/null
-    then
-        printf "JQ is a dependency and could not be found. Please install JQ for JSON parsing. Exiting.\n"
-        exit
-    else
-        printf "🖇️  JQ found. Continuing.\n"
-    fi
-}
-
-
-
-# ╭──────────────────────────────────────────────────────────╮
-# │            Config file overrides any settings            │
-# ╰──────────────────────────────────────────────────────────╯
-function read_config()
-{
-    if [ -z ${CONFIG_FILE+x} ]; then return 0; fi
-    printf "\n🎛️  Reading Config.\n"
-
-    
-    # ff_scale
-    # ff_to_landscape
-    # ff_grouptime
-    # ff_lut
-    # ff_background
-    # ff_watermark
-    # ff_thumbnail
-    # ff_text
-    # ff_text
-
-
-}
-
-
-# ╭──────────────────────────────────────────────────────────╮
 # │             Test if file is a movie or not               │
 # ╰──────────────────────────────────────────────────────────╯
 function is_movie_file()
@@ -212,7 +179,7 @@ function is_movie_file()
 # ╰──────────────────────────────────────────────────────────╯
 function ff_scale()
 {
-    printf "\n1️⃣  Rescale big videos.\n"
+    CONFIG_FILE="ff_scale1.json"
 
     for FILE in ${FOLDER}/*
     do
@@ -224,7 +191,7 @@ function ff_scale()
             FILENAME=$(realpath $FILE)
             NO_EXTENSION=${FILENAME%????}
 
-            ../ff_scale.sh -i ${FILENAME} -o ${NO_EXTENSION}.mp4 -w $MAX_WIDTH -h $MAX_HEIGHT
+            ../ff_scale.sh -i ${FILENAME} -o ${NO_EXTENSION}.mp4 -w $MAX_WIDTH -h $MAX_HEIGHT -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
 
             mkdir -p $FOLDER/original
             mv $FILENAME $(dirname $FILENAME)/original/$(basename $FILENAME)
@@ -241,7 +208,7 @@ function ff_scale()
 # ╰──────────────────────────────────────────────────────────╯
 function ff_to_landscape()
 {
-    printf "\n2️⃣  Convert portrait videos to landscape.\n"
+    CONFIG_FILE="ff_to_landscape.json"
 
     for FILE in ${FOLDER}/*
     do
@@ -263,7 +230,7 @@ function ff_to_landscape()
             printf "❌ Already landscape (%sx%s). Skip to next video.\n" "$WIDTH" "$HEIGHT"
         else
             mv $REAL_FILE ${LANDSCAPE_TEMP_FILE}
-            ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $REAL_FILE
+            ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $REAL_FILE -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
             rm ${LANDSCAPE_TEMP_FILE}
         fi
 
@@ -277,7 +244,6 @@ function ff_to_landscape()
 # ╰──────────────────────────────────────────────────────────╯
 function read_input_folder()
 {
-    printf "\n3️⃣  Read folder for files.\n"
     INPUT_FILE_LIST=""
     for FILE in ${FOLDER}/*
     do
@@ -293,9 +259,9 @@ function read_input_folder()
 # ╰──────────────────────────────────────────────────────────╯
 function ff_grouptime()
 {
-    printf "\n4️⃣  Use ff_grouptime.sh to create video of 60sec.\n\n"
+    CONFIG_FILE="ff_grouptime.json"
 
-    ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE}
+    ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE} -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
 
     ORIGINAL_HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${GROUPTIME_TEMP_FILE})
 }
@@ -307,8 +273,8 @@ function ff_grouptime()
 # ╰──────────────────────────────────────────────────────────╯
 function ff_lut()
 {
-    printf "\n5️⃣  Use ff_lut.sh to add colour grading.\n\n"
-    ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE}
+    CONFIG_FILE="ff_lut.json"
+    ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE} -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
 }
 
 
@@ -318,12 +284,18 @@ function ff_lut()
 # ╰──────────────────────────────────────────────────────────╯
 function ff_background()
 {
-    printf "\n6️⃣  Make copy, blur and crop.\n\n"
     cp $(realpath ${LUT_TEMP_FILE}) ${BG_COPY_TEMP}
-    ../ff_scale.sh -i $(realpath ${BG_COPY_TEMP}) -o ${BG_SCALE_TEMP} -w 1920 -h 1080
-    ../ff_crop.sh -i $(realpath ${BG_SCALE_TEMP}) -o ${BG_CROP_TEMP}  -w 1080 -h 1080
-    ../ff_blur.sh -i $(realpath ${BG_CROP_TEMP})  -o ${BG_BLUR_TEMP}  -s 20
-    ../ff_watermark.sh -i $(realpath ${BG_BLUR_TEMP}) -o ${BG_WATERMARK_TEMP} -w $(realpath ${LUT_TEMP_FILE}) -x "(W-w)/2" -y "(H-h)/2" -s 0.56
+    CONFIG_FILE="ff_scale2.json"
+    ../ff_scale.sh -i $(realpath ${BG_COPY_TEMP}) -o ${BG_SCALE_TEMP} -w 1920 -h 1080 -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+
+    CONFIG_FILE="ff_crop.json"
+    ../ff_crop.sh -i $(realpath ${BG_SCALE_TEMP}) -o ${BG_CROP_TEMP}  -w 1080 -h 1080 -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+
+    CONFIG_FILE="ff_blur.json"
+    ../ff_blur.sh -i $(realpath ${BG_CROP_TEMP})  -o ${BG_BLUR_TEMP}  -s 20 -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+
+    CONFIG_FILE="ff_watermark1.json"
+    ../ff_watermark.sh -i $(realpath ${BG_BLUR_TEMP}) -o ${BG_WATERMARK_TEMP} -w ${LUT_TEMP_FILE} -x "(W-w)/2" -y "(H-h)/2" -s 0.56 -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
 }
 
 
@@ -332,8 +304,8 @@ function ff_background()
 # ╰──────────────────────────────────────────────────────────╯
 function ff_watermark()
 {
-    printf "\n8️⃣  Use ff_watermark.sh to add the bottom logo.\n\n"
-    ../ff_watermark.sh -i ${BG_WATERMARK_TEMP} -w ${WATERMARK} -s 1 -x "(W-w)/2" -y "(H-h)/2" -o ${WATERMARK_TEMP_FILE}
+    CONFIG_FILE="ff_watermark2.json"
+    ../ff_watermark.sh -i ${BG_WATERMARK_TEMP} -w ${WATERMARK} -s 1 -x "(W-w)/2" -y "(H-h)/2" -o ${WATERMARK_TEMP_FILE} -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
 }
 
 
@@ -343,7 +315,7 @@ function ff_watermark()
 function output_file()
 {
     mv ${WATERMARK_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
-    printf "\n\n✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
+    printf "🎬 Video created: %s\n" "$OUTPUT_FILENAME"
 }
 
 
@@ -352,9 +324,9 @@ function output_file()
 # ╰──────────────────────────────────────────────────────────╯
 function ff_thumbnail()
 {
-    # get output folder 
+    CONFIG_FILE="ff_thumbnail.json"
     OUTPUT_FOLDER=$(realpath $(dirname ${OUTPUT_FILENAME}))
-    ../ff_thumbnail.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${OUTPUT_FOLDER}/thumbnail.jpg -c 1
+    ../ff_thumbnail.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${OUTPUT_FOLDER}/thumbnail.jpg -c 1 -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
     mv ${OUTPUT_FOLDER}/thumbnail-01.jpg ${OUTPUT_FOLDER}/thumbnail.jpg
 }
 
@@ -374,25 +346,50 @@ function main()
     fi
 
     ff_scale
-
     ff_to_landscape
-
     read_input_folder
-
     ff_grouptime
-
     ff_lut
-
     ff_background
-
     ff_watermark
-
     output_file
-
     ff_thumbnail
 
 }
 
+
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │            Config file overrides any settings            │
+# ╰──────────────────────────────────────────────────────────╯
+function read_config()
+{
+    
+    # Check if config has been set.
+    if [ -z ${CONFIG_FILE+x} ]; then return 0; fi
+    
+    # Check dependencies
+    if ! command -v jq &> /dev/null; then
+        printf "JQ is a dependency and could not be found. Please install JQ for JSON parsing. Exiting.\n"
+        exit
+    fi
+
+    # Get a list of all the scripts - Any duplicates must have digits after their name. ff_scale1, ff_scale2, etc...
+    LIST_OF_SCRIPT_NAMES=$(cat ${CONFIG_FILE} | jq 'to_entries[] | select(.key|startswith("ff")) | .key' | xargs )
+    ARRAY_OF_STRING_NAMES=($LIST_OF_SCRIPT_NAMES)
+
+    # Loop through each script settings and create a config file for each one.
+    for ff_script_name in "${ARRAY_OF_STRING_NAMES[@]}"
+    do
+        # Get contents of the settings to insert into the config file.
+        SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$ff_script_name" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value' )
+
+        # Create temp config files
+        printf "%s\n" "${SCRIPT_CONTENTS}" > ${TEMP_FOLDER}/temp_config_$ff_script_name.json
+    done
+
+}
 
 
 function cleanup()
@@ -406,10 +403,10 @@ function cleanup()
     rm -f ${BG_CROP_TEMP}
     rm -f ${BG_BLUR_TEMP}
     rm -f ${BG_WATERMARK_TEMP}
+    rm -f ${TEMP_FOLDER}/temp_config_ff*
 }
 
 cleanup
-dependencies
 usage $@
 arguments "$@"
 read_config "$@"
