@@ -191,7 +191,9 @@ function ff_scale()
             FILENAME=$(realpath $FILE)
             NO_EXTENSION=${FILENAME%????}
 
-            ../ff_scale.sh -i ${FILENAME} -o ${NO_EXTENSION}.mp4 -w $MAX_WIDTH -h $MAX_HEIGHT -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+            if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+            ../ff_scale.sh -i ${FILENAME} -o ${NO_EXTENSION}.mp4 -w $MAX_WIDTH -h $MAX_HEIGHT $CONFIG_FLAG
+            unset CONFIG_FLAG
 
             mkdir -p $FOLDER/original
             mv $FILENAME $(dirname $FILENAME)/original/$(basename $FILENAME)
@@ -230,7 +232,9 @@ function ff_to_landscape()
             printf "❌ Already landscape (%sx%s). Skip to next video.\n" "$WIDTH" "$HEIGHT"
         else
             mv $REAL_FILE ${LANDSCAPE_TEMP_FILE}
-            ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $REAL_FILE -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+            if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+            ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $REAL_FILE $CONFIG_FLAG
+            unset CONFIG_FLAG
             rm ${LANDSCAPE_TEMP_FILE}
         fi
 
@@ -261,8 +265,9 @@ function ff_grouptime()
 {
     CONFIG_FILE="ff_grouptime.json"
 
-    ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE} -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
-
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE} $CONFIG_FLAG
+    unset CONFIG_FLAG
     ORIGINAL_HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${GROUPTIME_TEMP_FILE})
 }
 
@@ -274,7 +279,9 @@ function ff_grouptime()
 function ff_lut()
 {
     CONFIG_FILE="ff_lut.json"
-    ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE} -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE} ${CONFIG_FLAG}
+    unset CONFIG_FLAG
 }
 
 
@@ -286,16 +293,24 @@ function ff_background()
 {
     cp $(realpath ${LUT_TEMP_FILE}) ${BG_COPY_TEMP}
     CONFIG_FILE="ff_scale2.json"
-    ../ff_scale.sh -i $(realpath ${BG_COPY_TEMP}) -o ${BG_SCALE_TEMP} -w 1920 -h 1080 -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_scale.sh -i $(realpath ${BG_COPY_TEMP}) -o ${BG_SCALE_TEMP} -w 1920 -h 1080 $CONFIG_FLAG
+    unset CONFIG_FLAG
 
     CONFIG_FILE="ff_crop.json"
-    ../ff_crop.sh -i $(realpath ${BG_SCALE_TEMP}) -o ${BG_CROP_TEMP}  -w 1080 -h 1080 -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_crop.sh -i $(realpath ${BG_SCALE_TEMP}) -o ${BG_CROP_TEMP}  -w 1080 -h 1080 $CONFIG_FLAG
+    unset CONFIG_FLAG
 
     CONFIG_FILE="ff_blur.json"
-    ../ff_blur.sh -i $(realpath ${BG_CROP_TEMP})  -o ${BG_BLUR_TEMP}  -s 20 -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_blur.sh -i $(realpath ${BG_CROP_TEMP})  -o ${BG_BLUR_TEMP}  -s 20 $CONFIG_FLAG
+    unset CONFIG_FLAG
 
     CONFIG_FILE="ff_watermark1.json"
-    ../ff_watermark.sh -i $(realpath ${BG_BLUR_TEMP}) -o ${BG_WATERMARK_TEMP} -w ${LUT_TEMP_FILE} -x "(W-w)/2" -y "(H-h)/2" -s 0.56 -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_watermark.sh -i $(realpath ${BG_BLUR_TEMP}) -o ${BG_WATERMARK_TEMP} -w ${LUT_TEMP_FILE} -x "(W-w)/2" -y "(H-h)/2" -s 0.56 $CONFIG_FLAG
+    unset CONFIG_FLAG
 }
 
 
@@ -305,7 +320,9 @@ function ff_background()
 function ff_watermark()
 {
     CONFIG_FILE="ff_watermark2.json"
-    ../ff_watermark.sh -i ${BG_WATERMARK_TEMP} -w ${WATERMARK} -s 1 -x "(W-w)/2" -y "(H-h)/2" -o ${WATERMARK_TEMP_FILE} -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_watermark.sh -i ${BG_WATERMARK_TEMP} -w ${WATERMARK} -s 1 -x "(W-w)/2" -y "(H-h)/2" -o ${WATERMARK_TEMP_FILE} $CONFIG_FLAG
+    unset CONFIG_FLAG
 }
 
 
@@ -326,7 +343,9 @@ function ff_thumbnail()
 {
     CONFIG_FILE="ff_thumbnail.json"
     OUTPUT_FOLDER=$(realpath $(dirname ${OUTPUT_FILENAME}))
-    ../ff_thumbnail.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${OUTPUT_FOLDER}/thumbnail.jpg -c 1 -C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_thumbnail.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${OUTPUT_FOLDER}/thumbnail.jpg -c 1 $CONFIG_FLAG
+    unset CONFIG_FLAG
     mv ${OUTPUT_FOLDER}/thumbnail-01.jpg ${OUTPUT_FOLDER}/thumbnail.jpg
 }
 
