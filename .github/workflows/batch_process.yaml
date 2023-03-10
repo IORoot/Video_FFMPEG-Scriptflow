@@ -124,11 +124,8 @@ jobs:
           cd ./raw_videos
           if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
           sudo mv ./config.json ../
-          cd ../
+          cd ${GITHUB_WORKSPACE}
           cat ./config.json
-          cat ./config.json | jq -c '.text_top'
-          cat ./config.json | jq -c '.text_low'
-
 
 
       # Use sudo otherwise permissions to /tmp won't work in runner
@@ -136,11 +133,9 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           mkdir -p ./processed_video
-
           TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
-
           cd ./templates
-          sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -t $(realpath ../text_top.txt) -b  $(realpath ../text_low.txt) -c ../config.json
+          sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -t $(realpath ../text_top.txt) -b  $(realpath ../text_low.txt) -c $(realpath ../config.json)
           ls -la
           ls -la ../processed_video
 
