@@ -169,8 +169,16 @@ function main()
         exit 1
     fi
 
+
+
     REAL_LUT_FOLDER=$(realpath ${LUT_FOLDER})
     REAL_LUT_FILE="${REAL_LUT_FOLDER}/${LUT_FILE}"
+
+    pwd
+    ls -la
+    echo "LUT_FOLDER:$LUT_FOLDER"
+    echo "REAL_LUT_FOLDER:$REAL_LUT_FOLDER"
+    echo "REAL_LUT_FILE:$REAL_LUT_FILE"
 
     printf "🎨 LUT File %s being applied to video. " "$FILE" 
 

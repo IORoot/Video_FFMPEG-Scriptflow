@@ -132,6 +132,8 @@ jobs:
       - name: run ffmpeg template
         run: |
           cd ${GITHUB_WORKSPACE}
+          pwd
+          ls -la
           mkdir -p ./processed_video
           TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
           cd ./templates
