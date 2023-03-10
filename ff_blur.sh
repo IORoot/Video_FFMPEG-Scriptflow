@@ -55,7 +55,7 @@ usage()
         printf " -t | --steps <AMOUNT>\n"
         printf "\tSet the number of times to apply blur. Default value is 1.\n"
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -106,7 +106,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -169,21 +169,19 @@ function read_config()
 function main()
 {
 
-    printf "This will gaussian blur the video.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    printf "🎨 Changing the blurriness of the video.\n"
+    printf "🎨 Changing the blurriness of the video. "
 
     # https://ffmpeg.org/ffmpeg-filters.html#eq
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
         "gblur=sigma=${STRENGTH}:steps=${STEPS}" \
         -c:a copy ${OUTPUT_FILENAME}
 
-    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
 

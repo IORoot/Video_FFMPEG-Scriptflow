@@ -49,7 +49,7 @@ usage()
         printf "\tTarget aspect ratio should be expressed as X:Y\n"
         printf "\tDefault is 1:1\n\n"
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -100,7 +100,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -161,15 +161,13 @@ function main()
         exit 1
     fi
 
-    printf "This will change the video file aspect ratio.\n"
-
-    printf "🚀 Changing video container to new aspect ratio.\n"
+    printf "🚀 Changing video container to new aspect ratio."
     # This only changes the container file metadata (Display Aspect Ratio (DAR)) 
     # and does NOT transcode the video file.
     # see https://superuser.com/questions/907933/correct-aspect-ratio-without-re-encoding-video-file
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -aspect ${ASPECT_RATIO} ${OUTPUT_FILENAME}
 
-    printf "✅ Video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "$OUTPUT_FILENAME"
 
 }
 

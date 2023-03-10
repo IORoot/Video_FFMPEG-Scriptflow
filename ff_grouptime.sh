@@ -102,7 +102,7 @@ usage()
         printf "\tThe final duration of the output file in seconds. Default is 60. \n\n"
 
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
 
@@ -179,7 +179,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -262,13 +262,13 @@ function main()
 
         FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${FILE})
 
-        printf "📁 File %-60s ⏲️  %s\n" "${FILE}" "${FILE_DURATION}"
+        printf "\t📁 File %-60s ⏲️  %s\n" "${FILE}" "${FILE_DURATION}"
 
         TOTAL_DURATION=$(echo "scale=4; ${TOTAL_DURATION} + ${FILE_DURATION}" | bc | awk '{printf "%f", $0}')
 
     done < ${TMP_FILE}
 
-    printf "⏳ Total Video Duration = %s\n" "${TOTAL_DURATION}"
+    printf "\t⏳ Total Video Duration = %s\n" "${TOTAL_DURATION}"
 
 
 
@@ -325,7 +325,7 @@ function main()
             # printf "AMOUNT_TO_REMOVE is %s\n" "${AMOUNT_TO_REMOVE}"
             HALF_AMOUNT_TO_REMOVE=$(echo "scale=4; ${AMOUNT_TO_REMOVE} / 2" | bc | awk '{printf "%f", $0}')
 
-            printf "📄 File %s is %s%% of the total. Removing %ss from start & end.\n" "${FILE}" "${PERCENTAGE_OF_TOTAL}" "${HALF_AMOUNT_TO_REMOVE}"
+            printf "\t📄 File %s is %s%% of the total. Removing %ss from start & end.\n" "${FILE}" "${PERCENTAGE_OF_TOTAL}" "${HALF_AMOUNT_TO_REMOVE}"
 
             if ! command -v gdate &> /dev/null; then
                 START=$(date -d@${HALF_AMOUNT_TO_REMOVE} -u +%H:%M:%S.%N)   # convert to timestamp
@@ -399,7 +399,7 @@ function main()
     fi
     ffmpeg -y -v ${LOGLEVEL} -i ${INTERMEDIATE_FILENAME} -ss 00:00:00 -to ${FINALEND} ${OUTPUT_FILENAME}
     NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
-    printf "✅ New video created: %s. ⏲️  new duration: %s\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
+    printf "✅ %s. ⏲️  new duration: %s\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
 
 
 

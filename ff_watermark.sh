@@ -72,7 +72,7 @@ usage()
         printf " -a | --alpha <ALPHA>\n"
         printf "\tTransparency (alpha channel) of the watermark. From 0 to 1. Default is 1.\n\n"
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -160,7 +160,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -224,8 +224,6 @@ function read_config()
 function main()
 {
 
-    printf "This will overlay a watermark on the video.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
@@ -236,11 +234,11 @@ function main()
         exit 1
     fi
 
-    printf "🎨 Overlaying the watermark.\n" "$WATERMARK_FILE" 
+    printf "🎨 Overlaying the watermark (%s)." "$WATERMARK_FILE" 
 
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}" ${OUTPUT_FILENAME}
 
-    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
 

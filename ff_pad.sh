@@ -77,7 +77,7 @@ usage()
         printf "\tCan use a word 'Aqua, Beige, Cyan, etc...', the word 'random' or hex code : RRGGBB[AA] \n\n"
 
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -159,7 +159,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -223,18 +223,16 @@ function read_config()
 function main()
 {
 
-    printf "This will cut the video.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    printf "🔳 Creating a pad around the video.\n"
+    printf "🔳 Creating a pad around the video. "
 
     ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:${XPIXELS}:${YPIXELS}:color=${COLOUR}" ${OUTPUT_FILENAME}
 
-    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
 

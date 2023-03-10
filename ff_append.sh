@@ -47,7 +47,7 @@ usage()
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -98,7 +98,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -161,8 +161,6 @@ function main()
         exit 1
     fi
 
-    printf "This will append the first and second files together while re-encoding them.\n"
-
     # -i ${FILE0}                   input file1 as index 0
     # -i ${FILE1}                   input file1 as index 1
     # -filter_complex               run filters
@@ -180,12 +178,12 @@ function main()
     # -map "[v]"                    map variable [v] to output
     # -map "[a]"                    map variable [a] to output
     # 
-    printf "🚀 Re-encoding and 📼 Appending videos\n"
+    printf "🚀 Re-encoding and 📼 Appending videos. "
     ffmpeg -v ${LOGLEVEL} -i ${FIRST_FILENAME} -i ${SECOND_FILENAME} \
         -filter_complex "[0:v] [0:a] [1:v] [1:a] concat=n=2:v=1:a=1 [v] [a]" \
         -map "[v]" -map "[a]" ${OUTPUT_FILENAME}
 
-    printf "✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "$OUTPUT_FILENAME"
 
 }
 

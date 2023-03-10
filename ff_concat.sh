@@ -41,7 +41,7 @@ usage()
         printf " -i | --input <INPUT_FILE>\n"
         printf "\tThe name of an input file. Specify as many as you wish.\n\n"
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -102,7 +102,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -170,9 +170,7 @@ function read_config()
 function main()
 {
 
-    printf "⬅️  Output file: %s\n" "${OUTPUT_FILENAME}"
-
-    printf "🚀 Running video concatenation\n"
+    printf "🚀 Running video concatenation. "
 
     # -v error      : Only show errors
     # -f concat     : use filter 'concat'
@@ -185,7 +183,7 @@ function main()
     # cleanup
     rm ${TMP_FILE}
 
-    printf "✅ Done.\n"
+    printf "✅ %s\n" "${OUTPUT_FILENAME}"
 }
 
 

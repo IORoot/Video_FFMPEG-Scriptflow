@@ -59,7 +59,7 @@ usage()
         printf "\tSize of the number of frames to analyse to create a thumbnail from. Each thumbnail will use the next batch.\n"
 
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -110,7 +110,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -174,14 +174,12 @@ function read_config()
 function main()
 {
 
-    printf "This will output thumbnails from the video.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    printf "🌄 Generating thumbnail.\n"
+    printf "🌄 Generating thumbnail. "
 
     # ffmpeg  -vf scale=${WIDTH}:${HEIGHT} ${OUTPUT_FILENAME}
 
@@ -199,8 +197,7 @@ function main()
 
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "thumbnail=${SAMPLE}" -frames:v ${COUNT} -vsync vfr ${DIRECTORY}/${FILENAME}-%02d.${EXTENSION}
 
-
-    printf "✅ New thumbnail created: %s\n" "${DIRECTORY}/${FILENAME}-%02d.${EXTENSION}"
+    printf "✅ %s\n" "${DIRECTORY}/${FILENAME}-%02d.${EXTENSION}"
 
 }
 

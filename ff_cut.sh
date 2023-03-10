@@ -57,7 +57,7 @@ usage()
         printf "\tWhen to finish the cut. Format is HH:MM:SS. Default is 10 seconds into the video. 00:00:10.\n\n"
 
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
 
@@ -110,7 +110,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -174,18 +174,16 @@ function read_config()
 function main()
 {
 
-    printf "This will cut the video.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    printf "✂️ Cut the length of the video.\n"
+    printf "✂️ Cut the length of the video. "
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -ss ${START} -to ${END} ${OUTPUT_FILENAME}
 
-    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
 

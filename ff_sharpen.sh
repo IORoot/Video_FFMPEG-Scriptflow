@@ -54,7 +54,7 @@ usage()
         printf "\tSet the sharpen strength. It must be a floating point number. -2.0 to 5.0. Default value is 1.0.\n"
         printf "\tNegative values will blur the input video, while positive values will sharpen it, a value of zero will disable the effect.\n\n"
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -105,7 +105,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -169,21 +169,19 @@ function read_config()
 function main()
 {
 
-    printf "This will sharpen/blur the video.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    printf "🎨 Changing the sharpness of the video.\n" "$LUT_FILE" 
+    printf "🎨 Changing the sharpness of the video. " "$LUT_FILE" 
 
     # https://ffmpeg.org/ffmpeg-filters.html#eq
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
         unsharp=${PIXEL}:${PIXEL}:${SHARPEN} \
         -c:a copy ${OUTPUT_FILENAME}
 
-    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
 

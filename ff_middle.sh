@@ -50,7 +50,7 @@ usage()
         printf "\tNumber of seconds to remove from the start and end of video. Default is 1 second. (1) \n\n"
 
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -95,7 +95,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -164,10 +164,7 @@ function main()
         exit 1
     fi
 
-    printf "This will remove %s seconds from front and end of video.\n" "${TRIM}"
-
     FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${INPUT_FILENAME})
-    printf "⏲️ Original File duration: %s\n" "${FILE_DURATION}"
 
     HALF_TRIM_FROM_START=$(echo "scale=4; ${TRIM} / 2" | bc | awk '{printf "%f", $0}')      # send to 'bc' command for floating numbers. Awk used to add leading '0' if less than 1.
     START=$(gdate -d@${HALF_TRIM_FROM_START} -u +%H:%M:%S.%N)                               # convert to timestamp
@@ -175,12 +172,12 @@ function main()
     HALF_TRIM_FROM_END=$(echo "scale=4; ${FILE_DURATION} - ${HALF_TRIM_FROM_START}" | bc | awk '{printf "%f", $0}')
     END=$(gdate -d@${HALF_TRIM_FROM_END} -u +%H:%M:%S.%N)
 
-    printf "🏎️  Trimming input video to fit the specified time.\n"
+    printf "🏎️  Trimming input video (%s) to remove %s from start and end. " "${FILE_DURATION}" "${TRIM}"
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -ss ${START} -to ${END} ${OUTPUT_FILENAME}
 
     NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
-    printf "✅ New video created: %s. ⏲️  new duration: %s\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
+    printf "✅ %s. ⏲️  new duration: %s\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
 
 }
 

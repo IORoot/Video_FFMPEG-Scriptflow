@@ -104,7 +104,7 @@ usage()
         printf "\tThe center of the screen on x-axis is 'x=(ow-iw)/2\n\n"
 
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -211,7 +211,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -283,8 +283,6 @@ function read_config()
 function main()
 {
 
-    printf "This will add text over the video.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
@@ -308,7 +306,7 @@ function main()
         TEXTFILE=${TEMP_TEXTFILE}
     fi
 
-    printf "✍️  Writing the text from file '%s' on the video.\n" "${TEXTFILE}"
+    printf "✍️  Writing the text from file '%s' on the video. " "${TEXTFILE}"
 
     # Number of lines in text file.
     # wc -l doesn't work without newlines.
@@ -351,7 +349,7 @@ function main()
 
     ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "[IN] ${COMMAND%,} [OUT]" ${OUTPUT_FILENAME}
 
-    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
 

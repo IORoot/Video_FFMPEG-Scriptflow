@@ -51,7 +51,7 @@ usage()
         printf "\tThe Look-Up-Table (LUT) should be in a 3DL/Cube format.\n"
         printf "\tthere is no default, so must be supplied.\n\n"
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -95,7 +95,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -159,8 +159,6 @@ function read_config()
 function main()
 {
 
-    printf "This will apply a 3DL LUT File to a video.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
@@ -174,12 +172,12 @@ function main()
     REAL_LUT_FOLDER=$(realpath ${LUT_FOLDER})
     REAL_LUT_FILE="${REAL_LUT_FOLDER}/${LUT_FILE}"
 
-    printf "🎨 LUT File %s being applied to video.\n" "$FILE" 
+    printf "🎨 LUT File %s being applied to video. " "$FILE" 
 
     # https://ffmpeg.org/ffmpeg-filters.html#lut3d-1
     ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf lut3d="${REAL_LUT_FILE}" -shortest ${OUTPUT_FILENAME}
 
-    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
 

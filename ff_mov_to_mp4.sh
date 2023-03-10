@@ -44,7 +44,7 @@ usage()
         printf "\tThe name of the output file.\n\n"
 
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -81,7 +81,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -146,18 +146,16 @@ function read_config()
 function main()
 {
 
-    printf "This will convert the video from MOV to MP4.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    printf "📽️  Converting MOV to MP4 🎥.\n"
+    printf "📽️  Converting MOV to MP4 🎥. "
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vcodec h264 -acodec mp2 ${OUTPUT_FILENAME}
 
-    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
 

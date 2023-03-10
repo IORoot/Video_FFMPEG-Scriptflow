@@ -46,7 +46,7 @@ usage()
         printf "\t2 = 90CounterClockwise\n"
         printf "\t3 = 90Clockwise and Vertical Flip\n\n"
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -90,7 +90,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -154,8 +154,6 @@ function read_config()
 function main()
 {
 
-    printf "This will convert a landscape video to portrait.\n"
-
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
@@ -175,11 +173,11 @@ function main()
         # ╭──────────────────────────────────────────────────────────╮
         # │    Step 2. rotate video 90 degrees counter clockwise.    │
         # ╰──────────────────────────────────────────────────────────╯
-        printf "🏞️  Landscape video detected (%sx%s). 👤 Converting to (%sx%s) portrait.\n" "$WIDTH" "$HEIGHT" "$HEIGHT" "$WIDTH"
+        printf "🏞️  Landscape video detected (%sx%s). 👤 Converting to (%sx%s) portrait. " "$WIDTH" "$HEIGHT" "$HEIGHT" "$WIDTH"
 
         ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" $OUTPUT_FILENAME
 
-        printf "✅ Portrait video (%sx%s) created: %s\n" "$HEIGHT" "$WIDTH" "$OUTPUT_FILENAME"
+        printf "✅ %s (%sx%s)\n" "$OUTPUT_FILENAME" "$HEIGHT" "$WIDTH" 
     fi
 
 }

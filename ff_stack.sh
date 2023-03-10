@@ -58,7 +58,7 @@ usage()
         printf "\tThe name of the output file.\n\n"
 
 
-        printf " -c | --config <CONFIG_FILE>\n"
+        printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
@@ -113,7 +113,7 @@ function arguments()
             ;;
 
 
-        -c|--config)
+        -C|--config)
             CONFIG_FILE="$2"
             shift 
             shift
@@ -198,7 +198,6 @@ function write_to_temp()
 function main()
 {
 
-    printf "This will stack the video inputs.\n"
 
     if [[ ! -s "${TMP_FILE}" ]]; then
         printf "❌ No inputs specified. Exiting.\n"
@@ -206,7 +205,7 @@ function main()
     fi
 
 
-    printf "📚 Stacking input videos.\n"
+    printf "📚 Stacking input videos. "
 
     INPUT_FILE_LIST=""
     while read FILE; do
@@ -242,7 +241,7 @@ function main()
         ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex "[0:v][1:v][2:v][3:v]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[v]" -map "[v]" ${OUTPUT_FILENAME}
     fi
 
-    printf "✅ New video created: %s\n" "$OUTPUT_FILENAME"
+    printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
 
