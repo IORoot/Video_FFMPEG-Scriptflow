@@ -23,6 +23,7 @@
     - [Built With](#built-with)
     - [Installation](#installation)
 - [Usage](#usage)
+- [Configs](#configs)
 - [Script Details](#script-details)
     - [ff_append.sh](#ff_appendsh)
     - [ff_aspect_ratio.sh](#ff_aspect_ratiosh)
