@@ -24,6 +24,7 @@
     - [Installation](#installation)
 - [Usage](#usage)
 - [Configs](#configs)
+- [Template Configs](#template-configs)
 - [Script Details](#script-details)
     - [ff_append.sh](#ff_appendsh)
     - [ff_aspect_ratio.sh](#ff_aspect_ratiosh)
@@ -160,6 +161,38 @@ And run like this:
 ```bash
 ./ff_scale.sh -c config.json
 ```
+
+## Template Configs
+
+The templates can also take config files with nested configs for each stage of the template.
+
+Lets say we use the `ft_blurred.sh` template. That consists of multiple calls to other `ff_` scripts.
+
+You can provide the config for each one of those scripts individually by building up the template config.
+
+The github action requires `template`, `schedule` and `category`. These are not needed other than for my pipelines.
+
+Each key has the name of the script, like `ff_lut` and then an object with each key and value.
+
+These will become an overriding `--key value` for the script.
+
+```json
+{
+    "template": "ft_blurred.sh",
+    "schedule": "NOW",
+    "category": "youtheast_thu18",
+
+    "ff_lut": {
+        "lut": "Lundmark.cube"
+    },
+
+    "ff_thumbnail": {
+        "count": "2"
+    }
+}
+```
+
+If you have multiple stages with the same name, like `ff_scale`, Then use a counter after. So, `ff_scale1` and `ff_scale2`...
 
 
 ## Script Details
