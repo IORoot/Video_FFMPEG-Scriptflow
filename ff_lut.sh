@@ -161,24 +161,16 @@ function main()
 
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
-        exit 1
+        exit 0
     fi
-
-    if [[ -z "${LUT_FILE}" ]]; then 
-        printf "❌ No LUT file specified. Exiting.\n"
-        exit 1
-    fi
-
-
 
     REAL_LUT_FOLDER=$(realpath ${LUT_FOLDER})
     REAL_LUT_FILE="${REAL_LUT_FOLDER}/${LUT_FILE}"
 
-    pwd
-    ls -la
-    echo "LUT_FOLDER:$LUT_FOLDER"
-    echo "REAL_LUT_FOLDER:$REAL_LUT_FOLDER"
-    echo "REAL_LUT_FILE:$REAL_LUT_FILE"
+    if [[ -z "${REAL_LUT_FILE}" ]]; then 
+        printf "❌ LUT file doesn't exist. Exiting.\n"
+        exit 0
+    fi
 
     printf "🎨 LUT File %s being applied to video. " "$FILE" 
 

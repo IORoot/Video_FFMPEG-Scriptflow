@@ -399,6 +399,11 @@ function main()
         exit 1
     fi
 
+    if [[ -z "${FOLDER}" ]]; then 
+        printf "❌ No LUT File. Exiting.\n"
+        exit 1
+    fi
+
     ff_scale
     ff_to_landscape
     read_input_folder
