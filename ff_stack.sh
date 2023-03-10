@@ -58,6 +58,9 @@ usage()
         printf "\tThe name of the output file.\n\n"
 
 
+        printf " -c | --config <CONFIG_FILE>\n"
+        printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
+
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
         printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n"
@@ -110,6 +113,13 @@ function arguments()
             ;;
 
 
+        -c|--config)
+            CONFIG_FILE="$2"
+            shift 
+            shift
+            ;;
+
+
         -l|--loglevel)
             LOGLEVEL="$2"
             shift 
@@ -130,6 +140,32 @@ function arguments()
     esac
     done
 
+}
+
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │        Read config-file if supplied. Requires JQ         │
+# ╰──────────────────────────────────────────────────────────╯
+function read_config()
+{
+    # Check if config has been set.
+    if [ -z ${CONFIG_FILE+x} ]; then return 0; fi
+    
+    # Check dependencies
+    if ! command -v jq &> /dev/null; then
+        printf "JQ is a dependency and could not be found. Please install JQ for JSON parsing. Exiting.\n"
+        exit
+    fi
+
+    # Read file
+    LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
+
+    # Print to screen
+    printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
+
+    # Sen to the arguments function again to override.
+    arguments $LIST_OF_INPUTS
 }
 
 
@@ -224,5 +260,6 @@ function cleanup()
 cleanup
 usage "$@"
 arguments "$@"
+read_config "$@"
 main "$@"
 cleanup

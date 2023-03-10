@@ -18,6 +18,9 @@ if [ "$#" -lt 1 ] || [ "$#" -gt 3 ]; then
     printf "\n[output file]\n"
     printf "output_rotate.mp4 (default)\n"
 
+    printf " -c | --config <CONFIG_FILE>\n"
+    printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
+
     exit 1
 fi
 
