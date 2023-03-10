@@ -5,12 +5,17 @@
 # │           (No content-aware editing. clips must total under 60sec)           │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
+# ff_scale
+# ff_to_landscape
+# ff_grouptime
+# ff_lut
+# ff_pad
+# ff_text1
+# ff_watermark
+# ff_text2
+# ff_thumbnail
 
-# 
 printf "🎬 Running $0\n"
-printf "🚨 Rule 1. This is just a wrapper for all the './ff_*' scripts. This does not repeat code.\n"
-printf "🚨 Rule 2. The input folder must ONLY contain the videos you wish to use.\n"
-printf "\n"
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -86,6 +91,9 @@ usage()
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
 
+        printf " -c | --config <CONFIG_FILE>\n"
+        printf "\A JSON configuration file for all settings.\n\n"
+
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
         printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n"
@@ -134,6 +142,13 @@ function arguments()
             ;;
 
 
+        -c|--config)
+            CONFIG_FILE="$2"
+            shift 
+            shift
+            ;;
+
+
         -l|--loglevel)
             LOGLEVEL="$2"
             shift 
@@ -156,37 +171,37 @@ function arguments()
 
 }
 
+# ╭──────────────────────────────────────────────────────────╮
+# │             Test if file is a movie or not               │
+# ╰──────────────────────────────────────────────────────────╯
+function is_movie_file()
+{
+    FILE=$1
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"; then
+        return 0
+    else
+        return 1
+    fi
+}
 
 # ╭──────────────────────────────────────────────────────────╮
-# │                                                          │
-# │                      Main Function                       │
-# │                                                          │
+# │                 Rescale video if too big                 │
 # ╰──────────────────────────────────────────────────────────╯
-function main()
+function ff_scale()
 {
-
-    if [[ -z "${FOLDER}" ]]; then 
-        printf "❌ No folder specified. Exiting.\n"
-        exit 1
-    fi
-
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                 Rescale video if too big                 │
-    # ╰──────────────────────────────────────────────────────────╯
-
-    printf "\n1️⃣  Rescale big videos.\n"
-
+    CONFIG_FILE="ff_scale.json"
     for FILE in ${FOLDER}/*
     do
         if [ -d "$FILE" ]; then continue; fi
-
+        if [ ! $(is_movie_file $FILE) ]; then continue; fi
         if [ "${FILE: -4}" == ".mov" ];then
 
             FILENAME=$(realpath $FILE)
             NO_EXTENSION=${FILENAME%????}
 
-            ../ff_scale.sh -i ${FILENAME} -o ${NO_EXTENSION}.mp4 -w $MAX_WIDTH -h $MAX_HEIGHT
+            if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+            ../ff_scale.sh -i ${FILENAME} -o ${NO_EXTENSION}.mp4 -w $MAX_WIDTH -h $MAX_HEIGHT $CONFIG_FLAG
+            unset CONFIG_FLAG
 
             mkdir -p $FOLDER/original
             mv $FILENAME $(dirname $FILENAME)/original/$(basename $FILENAME)
@@ -194,17 +209,18 @@ function main()
         fi
 
     done
+}
 
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │         Check each video to convert to landscape         │
-    # ╰──────────────────────────────────────────────────────────╯
-
-    printf "\n2️⃣  Convert portrait videos to landscape.\n"
-
+# ╭──────────────────────────────────────────────────────────╮
+# │         Check each video to convert to landscape         │
+# ╰──────────────────────────────────────────────────────────╯
+function ff_to_landscape()
+{
+    CONFIG_FILE="ff_to_landscape.json"
     for FILE in ${FOLDER}/*
     do
         if [ -d "$FILE" ]; then continue; fi
+        if [ ! $(is_movie_file $FILE) ]; then continue; fi
 
         REAL_FILE=$(realpath $FILE)
 
@@ -221,107 +237,180 @@ function main()
             printf "❌ Already landscape (%sx%s). Skip to next video.\n" "$WIDTH" "$HEIGHT"
         else
             mv $REAL_FILE ${LANDSCAPE_TEMP_FILE}
-            ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $REAL_FILE
+            if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+            ../ff_to_landscape.sh -i ${LANDSCAPE_TEMP_FILE} -o $REAL_FILE $CONFIG_FLAG
+            unset CONFIG_FLAG
             rm ${LANDSCAPE_TEMP_FILE}
         fi
 
     done
+}
 
+# ╭──────────────────────────────────────────────────────────╮
+# │               Read folder for input files                │
+# ╰──────────────────────────────────────────────────────────╯
 
-    # ╭──────────────────────────────────────────────────────────╮
-    # │               Read folder for input files                │
-    # ╰──────────────────────────────────────────────────────────╯
-
-    printf "\n3️⃣  Read folder for files.\n"
-
+function read_input_folder()
+{
     INPUT_FILE_LIST=""
     for FILE in ${FOLDER}/*
     do
+        if [ ! $(is_movie_file $FILE) ]; then continue; fi
         ABSOLUTE_PATH=$(realpath ${FILE})
         INPUT_FILE_LIST="${INPUT_FILE_LIST} -i $ABSOLUTE_PATH "
     done
+}
 
 
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │              Group videos into single file               │
-    # ╰──────────────────────────────────────────────────────────╯
-    printf "\n4️⃣  Use ff_grouptime.sh to create video of 60sec.\n\n"
-
-    ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE}
-
+# ╭──────────────────────────────────────────────────────────╮
+# │              Group videos into single file               │
+# ╰──────────────────────────────────────────────────────────╯
+function ff_grouptime()
+{
+    CONFIG_FILE="ff_grouptime.json"
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE} $CONFIG_FLAG
+    unset CONFIG_FLAG
     ORIGINAL_HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${GROUPTIME_TEMP_FILE})
 
+}
 
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                Run AUTOFLIP Github Action                │
-    # ╰──────────────────────────────────────────────────────────╯
-
-
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                        Apply LUT                         │
-    # ╰──────────────────────────────────────────────────────────╯
-    printf "\n5️⃣  Use ff_lut.sh to add colour grading.\n\n"
-    ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE}
-
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                      Make video 1:1                      │
-    # ╰──────────────────────────────────────────────────────────╯
-    printf "\n6️⃣  Use ff_pad.sh to make height same as width. 1:1 ratio.\n\n"
-
-    ../ff_pad.sh -i ${LUT_TEMP_FILE} -h iw -c "${PADDING_BACKGROUND}" -o ${PAD_TEMP_FILE}
+# ╭──────────────────────────────────────────────────────────╮
+# │                        Apply LUT                         │
+# ╰──────────────────────────────────────────────────────────╯
+function ff_lut()
+{
+    CONFIG_FILE="ff_lut.json"
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_lut.sh -i $(realpath ${GROUPTIME_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE} $CONFIG_FLAG
+    unset CONFIG_FLAG
+}
 
 
+# ╭──────────────────────────────────────────────────────────╮
+# │                      Make video 1:1                      │
+# ╰──────────────────────────────────────────────────────────╯
+function ff_pad()
+{
+    CONFIG_FILE="ff_pad.json"
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_pad.sh -i ${LUT_TEMP_FILE} -h iw -c "${PADDING_BACKGROUND}" -o ${PAD_TEMP_FILE} $CONFIG_FLAG
+    unset CONFIG_FLAG
+}
 
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                 Add Text to top of video                 │
-    # ╰──────────────────────────────────────────────────────────╯
+# ╭──────────────────────────────────────────────────────────╮
+# │                 Add Text to top of video                 │
+# ╰──────────────────────────────────────────────────────────╯
+function ff_text1()
+{
+    CONFIG_FILE="ff_text1.json"
+    if [ -f "${TEXT_TOP_FILE}" ]; then TOP_TEXT_FILE_FLAG="-t $(realpath ${TEXT_TOP_FILE})"; fi
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_text.sh -i ${PAD_TEMP_FILE} $TOP_TEXT_FILE_FLAG -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 70 -o ${TEXT_TOP_TEMP_FILE} ${CONFIG_FLAG}
+    unset CONFIG_FLAG
+}
 
-    if [ -f "${TEXT_TOP_FILE}" ]; then
-        printf "\n7️⃣  Use ff_text.sh to add the top text.\n\n"
-        printf "Addings: %s\n" "${TEXT_TOP}"
-        ../ff_text.sh -i ${PAD_TEMP_FILE} -t "$(realpath ${TEXT_TOP_FILE})" -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 70 -o ${TEXT_TOP_TEMP_FILE}
-    else
-        printf "\nskipping ff_text.sh to add the top text. no file found.\n\n"
-        cp ${PAD_TEMP_FILE} ${TEXT_TOP_TEMP_FILE}
-    fi
+# ╭──────────────────────────────────────────────────────────╮
+# │             Add watermark to bottom of video             │
+# ╰──────────────────────────────────────────────────────────╯
+function ff_watermark()
+{
+    CONFIG_FILE="ff_watermark.json"
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE}  -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE} $CONFIG_FLAG
+    unset CONFIG_FLAG
+}
 
-    # ╭──────────────────────────────────────────────────────────╮
-    # │             Add watermark to bottom of video             │
-    # ╰──────────────────────────────────────────────────────────╯
+# ╭──────────────────────────────────────────────────────────╮
+# │               Add text to bottom of video                │
+# ╰──────────────────────────────────────────────────────────╯
+function ff_text2()
+{
+    CONFIG_FILE="ff_text2.json"
+    if [ -f "${TEXT_BOTTOM_FILE}" ]; then BOTTOM_TEXT_FILE_FLAG="-t $(realpath ${TEXT_BOTTOM_FILE})"; fi
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_text.sh -i ${WATERMARK_TEMP_FILE} ${BOTTOM_TEXT_FILE_FLAG} -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE} $CONFIG_FLAG
+    unset CONFIG_FLAG
+}
 
-    printf "\n8️⃣  Use ff_watermark.sh to add the bottom logo.\n\n"
-
-    ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE}  -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE}
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │               Add text to bottom of video                │
-    # ╰──────────────────────────────────────────────────────────╯
-
-    if [ -f "${TEXT_BOTTOM_FILE}" ]; then
-        printf "\n9️⃣  Use ff_text.sh to add the bottom text.\n\n"
-        ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -t "$(realpath ${TEXT_BOTTOM_FILE})" -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE}
-    else
-        printf "\nskipping ff_text.sh to add the top text. no file found.\n\n"
-        cp ${WATERMARK_TEMP_FILE} ${TEXT_BOTTOM_TEMP_FILE}
-    fi
-
-
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                   Move to output file                    │
-    # ╰──────────────────────────────────────────────────────────╯
-
+# ╭──────────────────────────────────────────────────────────╮
+# │                   Move to output file                    │
+# ╰──────────────────────────────────────────────────────────╯
+function output_file()
+{
     mv ${TEXT_BOTTOM_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
-    printf "\n\n✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
+    printf "\n\n✅ video created: %s\n" "$OUTPUT_FILENAME"
+}
 
+# ╭──────────────────────────────────────────────────────────╮
+# │                 Create a Thumbnail image                 │
+# ╰──────────────────────────────────────────────────────────╯
+function ff_thumbnail()
+{
+    CONFIG_FILE="ff_thumbnail.json"
+    OUTPUT_FOLDER=$(realpath $(dirname ${OUTPUT_FILENAME}))
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_thumbnail.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${OUTPUT_FOLDER}/thumbnail.jpg -c 1 $CONFIG_FLAG
+    unset CONFIG_FLAG
+    mv ${OUTPUT_FOLDER}/thumbnail-01.jpg ${OUTPUT_FOLDER}/thumbnail.jpg
+}
 
-    # ╭──────────────────────────────────────────────────────────╮
-    # │                 Create a Thumbnail image                 │
-    # ╰──────────────────────────────────────────────────────────╯
-    ../ff_thumbnail.sh -i ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME} -o ${CURRENT_DIRECTORY}/../processed_video/thumbnail.jpg -c 1
-    mv ${CURRENT_DIRECTORY}/../processed_video/thumbnail-01.jpg ${CURRENT_DIRECTORY}/../processed_video/thumbnail.jpg
+# ╭──────────────────────────────────────────────────────────╮
+# │            Config file overrides any settings            │
+# ╰──────────────────────────────────────────────────────────╯
+function read_config()
+{
+    
+    # Check if config has been set.
+    if [ -z ${CONFIG_FILE+x} ]; then return 0; fi
+    
+    # Check dependencies
+    if ! command -v jq &> /dev/null; then
+        printf "JQ is a dependency and could not be found. Please install JQ for JSON parsing. Exiting.\n"
+        exit
+    fi
+
+    # Get a list of all the scripts - Any duplicates must have digits after their name. ff_scale1, ff_scale2, etc...
+    LIST_OF_SCRIPT_NAMES=$(cat ${CONFIG_FILE} | jq 'to_entries[] | select(.key|startswith("ff")) | .key' | xargs )
+    ARRAY_OF_STRING_NAMES=($LIST_OF_SCRIPT_NAMES)
+
+    # Loop through each script settings and create a config file for each one.
+    for ff_script_name in "${ARRAY_OF_STRING_NAMES[@]}"
+    do
+        # Get contents of the settings to insert into the config file.
+        SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$ff_script_name" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value' )
+
+        # Create temp config files
+        printf "%s\n" "${SCRIPT_CONTENTS}" > ${TEMP_FOLDER}/temp_config_$ff_script_name.json
+    done
+
+}
+
+# ╭──────────────────────────────────────────────────────────╮
+# │                                                          │
+# │                      Main Function                       │
+# │                                                          │
+# ╰──────────────────────────────────────────────────────────╯
+function main()
+{
+
+    if [[ -z "${FOLDER}" ]]; then 
+        printf "❌ No folder specified. Exiting.\n"
+        exit 1
+    fi
+
+    ff_scale
+    ff_to_landscape
+    read_input_folder
+    ff_grouptime
+    ff_lut
+    ff_pad
+    ff_text1
+    ff_watermark
+    ff_text2
+    output_file
+    ff_thumbnail
+
 }
 
 
@@ -335,10 +424,12 @@ function cleanup()
     rm -f ${TEXT_BOTTOM_TEMP_FILE}
     rm -f ${WATERMARK_TEMP_FILE}
     rm -f ${LANDSCAPE_TEMP_FILE}
+    rm -f ${TEMP_FOLDER}/temp_config_ff*
 }
 
 cleanup
 usage $@
 arguments "$@"
+read_config "$@"
 main $@
 cleanup

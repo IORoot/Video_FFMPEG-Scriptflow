@@ -21,7 +21,6 @@ cd "$(dirname "$0")"                                        # Change to the scri
 OUTPUT_FILENAME="output_text.mp4"
 LOGLEVEL="error" 
 
-TEXTFILE="./text.txt"
 TEMP_TEXTFILE="/tmp/text.txt"
 FONT="/System/Library/Fonts/HelveticaNeue.ttc"
 COLOUR="WHITE"
@@ -107,6 +106,7 @@ usage()
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
+
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
         printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n\n"
@@ -125,7 +125,6 @@ function arguments()
 
     while [[ $# -gt 0 ]]; do
     case $1 in
-
 
         -i|--input)
             INPUT_FILENAME="$2"
@@ -226,7 +225,8 @@ function arguments()
 
 
         -*|--*)
-            echo "Unknown option $1"
+            echo "Unknown option 1 $1"
+            echo "Unknown option 2 $2"
             exit 1
             ;;
 
@@ -243,9 +243,9 @@ function arguments()
 function cleanup()
 {
     if test -f "${TEMP_TEXTFILE}"; then
-        echo "Deleting ${TEMP_TEXTFILE}."
         rm -f ${TEMP_TEXTFILE}
     fi
+    rm -f ${PRUNED_CONFIG_FILE}
     
 }
 
@@ -264,13 +264,20 @@ function read_config()
         exit
     fi
 
+    # If there is a 'text' entry, output to the TEMP_TEXTFILE.
+    cat ${CONFIG_FILE} | jq -r 'to_entries[] | select(.key|startswith("text")) | .value | @sh' | tr -d \'\" > ${TEMP_TEXTFILE}
+    # Delete 'text' from the config file (because xargs doesn't like it)
+    PRUNED_CONFIG_FILE=/tmp/pruned_text_config_file.json
+    cat ${CONFIG_FILE} | jq -r 'del(.text)' > ${PRUNED_CONFIG_FILE}
+
     # Read file
-    LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
+    LIST_OF_INPUTS=$(cat ${PRUNED_CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs )
+
 
     # Print to screen
     printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
 
-    # Sen to the arguments function again to override.
+    # Send to the arguments function again to override.
     arguments $LIST_OF_INPUTS
 }
 
@@ -288,29 +295,19 @@ function main()
         exit 1
     fi
 
-
-    # printf "TEXT:%s\n" "${TEXT}"
-    # printf "FONT:%s\n" "${FONT}"
-    # printf "COLOUR:%s\n" "${COLOUR}"
-    # printf "SIZE:%s\n" "${SIZE}"
-    # printf "BOX:%s\n" "${BOX}"
-    # printf "BOXCOLOUR:%s\n" "${BOXCOLOUR}"
-    # printf "BOXBORDER:%s\n" "${SIZE}"
-    # printf "XPIXELS:%s\n" "${XPIXELS}"
-    # printf "YPIXELS:%s\n" "${YPIXELS}"
-
-
-    if [ ! -z "${TEXT}" ]; then
-        printf "TEXT IS:\n ${TEXT}\n"
-        echo -e "${TEXT}" > ${TEMP_TEXTFILE}
-        TEXTFILE=${TEMP_TEXTFILE}
+    # TEXTFILE is name of file containing text 
+    if test -f "${TEXTFILE}"; then
+        cp ${TEXTFILE} ${TEMP_TEXTFILE}
     fi
 
-    printf "✍️  Writing the text from file '%s' on the video. " "${TEXTFILE}"
+    # Any TEXT overrides the TEXTFILE
+    if [ ! -z "${TEXT}" ]; then
+        echo -e "${TEXT}" > ${TEMP_TEXTFILE}
+    fi
 
     # Number of lines in text file.
     # wc -l doesn't work without newlines.
-    LINECOUNT=$(grep -c "" ${TEXTFILE})
+    LINECOUNT=$(grep -c "" ${TEMP_TEXTFILE})
     if [ ${LINECOUNT} -eq 0 ]; then LINECOUNT=1; fi
 
     COMMAND=""
@@ -337,15 +334,15 @@ function main()
 
     # plus Extra spacer.
     # + (${LOOP} * ${LINESPACING})
-    
+
+    printf "🖊️ Adding Text to video. "
+
     while IFS= read -r LINE || [ -n "$LINE" ]; 
     do
         COMMAND="${COMMAND}drawtext=fontfile=${FONT}:text='${LINE}':line_spacing=30:fontcolor=${COLOUR}:fontsize=${SIZE}:box=${BOX}:boxcolor=${BOXCOLOUR}:boxborderw=${BOXBORDER}:x=${XPIXELS}:y=${YPIXELS} + (${LOOP} * ( lh + (2*${BOXBORDER}) ) ) - ((lh/2) * (${LINECOUNT}-1) + ${LINESPACING}) + (${LOOP} * ${LINESPACING}),"
         SIZE=$(( $SIZE - 4 ))
         LOOP=$(( ${LOOP} + 1 ))
-    done < "${TEXTFILE}"
-
-    
+    done < "${TEMP_TEXTFILE}"
 
     ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "[IN] ${COMMAND%,} [OUT]" ${OUTPUT_FILENAME}
 
@@ -354,7 +351,7 @@ function main()
 }
 
 usage $@
-arguments "$@"
-main $@
+arguments $@
 read_config "$@"
+main $@
 cleanup

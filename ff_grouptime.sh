@@ -399,7 +399,7 @@ function main()
     fi
     ffmpeg -y -v ${LOGLEVEL} -i ${INTERMEDIATE_FILENAME} -ss 00:00:00 -to ${FINALEND} ${OUTPUT_FILENAME}
     NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
-    printf "✅ %s. ⏲️  new duration: %s\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
+    printf "✅ new duration: ⏲️  %s\n" "${NEW_FILE_DURATION}"
 
 
 

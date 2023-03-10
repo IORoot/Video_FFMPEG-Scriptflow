@@ -7,6 +7,17 @@
 # │                           Size is 1:1 at 1080x1080                           │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
+# Script overrides:
+# ff_scale1
+# ff_to_landscape
+# ff_grouptime
+# ff_lut
+# ff_scale2
+# ff_crop
+# ff_blur
+# ff_watermark1
+# ff_watermark2
+# ff_thumbnail
 
 printf "🎬 Running $0\n"
 
@@ -185,7 +196,6 @@ function ff_scale()
     do
         if [ -d "$FILE" ]; then continue; fi
         if [ ! $(is_movie_file $FILE) ]; then continue; fi
-
         if [ "${FILE: -4}" == ".mov" ];then
 
             FILENAME=$(realpath $FILE)
