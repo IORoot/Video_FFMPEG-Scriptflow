@@ -135,6 +135,30 @@ Current list of scripts and their purposes.
 | `ff_watermark.sh`    | Overlay a watermark image/video                                  |
 
 
+## Configs
+
+You can provide any of the scripts a configuration JSON file with the `-c|--config` flag. 
+This JSON file should contain an object with the keys as the flags to the script and the values as the values you would pass on the command line.
+
+For instance, the following command:
+```bash
+./ff_scale.sh -i input_video.mp4 -o output_video.mp4 -w 1920 -h 1080 -l debug
+```
+
+Can have a config.json file that would do the same thing:
+```json
+{
+    "input": "input_video.mp4",
+    "output": "output_video.mp4",
+    "width": "1920",
+    "height": "1080",
+    "loglevel": "debug"
+}
+```
+And run like this:
+```bash
+./ff_scale.sh -c config.json
+```
 
 
 ## Script Details
