@@ -13,15 +13,16 @@
 </p>    
 </div>
 
-##  1. <a name='TableofContents'></a>Table of Contents
+##  1. Table of Contents
+
 
 <!-- TOC -->
 
-- [<a name='TableofContents'></a>Table of Contents](#a-nametableofcontentsatable-of-contents)
-- [<a name='AboutTheProject'></a>About The Project](#a-nameabouttheprojectaabout-the-project)
-    - [<a name='BuiltWith'></a>Built With](#a-namebuiltwithabuilt-with)
-    - [<a name='Installation'></a>Installation](#a-nameinstallationainstallation)
-- [<a name='Usage'></a>Usage](#a-nameusageausage)
+- [Table of Contents](#table-of-contents)
+- [About The Project](#about-the-project)
+    - [Built With](#built-with)
+    - [Installation](#installation)
+- [Usage](#usage)
 - [Script Details](#script-details)
     - [ff_append.sh](#ff_appendsh)
     - [ff_aspect_ratio.sh](#ff_aspect_ratiosh)
@@ -53,19 +54,18 @@
     - [ft_simple_blue.sh](#ft_simple_bluesh)
     - [ft_simple_orange.sh](#ft_simple_orangesh)
     - [ft_stack.sh](#ft_stacksh)
-- [<a name='Customising'></a> Customising](#a-namecustomisinga-customising)
-- [<a name='Troubleshooting'></a>Troubleshooting](#a-nametroubleshootingatroubleshooting)
-- [<a name='Contributing'></a>Contributing](#a-namecontributingacontributing)
-- [<a name='License'></a>License](#a-namelicensealicense)
-- [<a name='Contact'></a>Contact](#a-namecontactacontact)
-- [<a name='Changelog'></a>Changelog](#a-namechangelogachangelog)
-    - [<a name='Version0.0.1'></a>Version 1.0.0](#a-nameversion001aversion-100)
+- [Customising](#customising)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Changelog](#changelog)
+    - [Version 1.0.0](#version-100)
     - [Version 1.0.1](#version-101)
 
 <!-- /TOC -->
 
-
-##  2. <a name='AboutTheProject'></a>About The Project
+##  2. About The Project
 
 This is a collection of scripts to automate simple video editing tasks.
 
@@ -76,7 +76,7 @@ These are all based on BASH and FFMPEG.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-###  2.1. <a name='BuiltWith'></a>Built With
+###  2.1. Built With
 
 This project was built with the following frameworks, technologies and software.
 
@@ -85,7 +85,7 @@ This project was built with the following frameworks, technologies and software.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-###  2.2. <a name='Installation'></a>Installation
+###  2.2. Installation
 
 These are the steps to get up and running with this theme.
 
@@ -102,7 +102,7 @@ These are the steps to get up and running with this theme.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-##  3. <a name='Usage'></a>Usage
+##  3. Usage
 
 
 Current list of scripts and their purposes.
@@ -1050,18 +1050,18 @@ Square 1:1 video with a orange padding on top and bottom. Includes text on top a
 Two vertically stacked videos on top of each other in a square 1:! aspect ratio video.
 
 
-##  4. <a name='Customising'></a> Customising
+##  4.  Customising
 
 Fork and use Pull Requests.
 
-##  5. <a name='Troubleshooting'></a>Troubleshooting
+##  5. Troubleshooting
 
 Please use the Issues tab.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-##  6. <a name='Contributing'></a>Contributing
+##  6. Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -1078,7 +1078,7 @@ Don't forget to give the project a star! Thanks again!
 
 
 
-##  7. <a name='License'></a>License
+##  7. License
 
 Distributed under the MIT License.
 
@@ -1108,15 +1108,15 @@ SOFTWARE.
 
 
 
-##  8. <a name='Contact'></a>Contact
+##  8. Contact
 
 Author Link: [https://github.com/IORoot](https://github.com/IORoot)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-##  9. <a name='Changelog'></a>Changelog
+##  9. Changelog
 
-###  9.1. <a name='Version0.0.1'></a>Version 1.0.0
+###  9.1. Version 1.0.0
 
 - Initial
 
