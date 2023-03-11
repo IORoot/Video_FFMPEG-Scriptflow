@@ -1,0 +1,67 @@
+{
+
+    "template": "",
+    "schedule": "",
+    "category": "",
+    
+    "ff_to_landscape": {
+        "input": "",
+        "output": "",
+        "rotate": "",
+        "loglevel": ""
+    },
+
+    "ff_scale": {
+        "input": "",
+        "output": "",
+        "width": "",
+        "height": "",
+        "loglevel": ""
+    },
+
+    "ff_grouptime1": {
+        "input": "",
+        "output": "",
+        "duration": "",
+        "loglevel": ""
+    },
+
+    "ff_grouptime2": {
+        "input": "",
+        "output": "",
+        "duration": "",
+        "loglevel": ""
+    },
+
+    "ff_stack": {
+        "input": "",
+        "output": "",
+        "vertical": "",
+        "horizontal": "",
+        "grid": ""
+    },
+
+    "ff_lut": {
+        "input": "",
+        "output": "",
+        "lut": "",
+        "loglevel": ""
+    },
+
+    "ff_watermark": {
+        "input": "",
+        "output": "",
+        "watermark": "",
+        "xpixels": "",
+        "ypixels": "",
+        "scale": "",
+        "alpha": ""
+    },
+
+    "ff_thumbnail": {
+        "input": "",
+        "output": "",
+        "count": "",
+        "sample": ""
+    }
+}

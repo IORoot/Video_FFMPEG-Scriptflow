@@ -133,7 +133,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           mkdir -p ./processed_video
-          TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple_orange.sh"' | tr -d '"')
+          TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple.sh"' | tr -d '"')
           cd ./templates
           sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -c $(realpath ../config.json)
 

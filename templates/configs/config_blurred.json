@@ -1,0 +1,87 @@
+{
+
+    "template": "",
+    "schedule": "",
+    "category": "",
+    
+    "ff_scale1": {
+        "input": "",
+        "output": "",
+        "width": "",
+        "height": "",
+        "loglevel": ""
+    },
+
+    "ff_to_landscape": {
+        "input": "",
+        "output": "",
+        "rotate": "",
+        "loglevel": ""
+    },
+
+    "ff_grouptime": {
+        "input": "",
+        "output": "",
+        "duration": "",
+        "loglevel": ""
+    },
+
+    "ff_lut": {
+        "input": "",
+        "output": "",
+        "lut": "",
+        "loglevel": ""
+    },
+
+    "ff_scale2": {
+        "input": "",
+        "output": "",
+        "width": "",
+        "height": "",
+        "loglevel": ""
+    },
+
+    "ff_crop": {
+        "input": "",
+        "output": "",
+        "width": "",
+        "height": "",
+        "xpixels": "",
+        "ypixels": ""
+    },
+
+    "ff_blur": {
+        "input": "",
+        "output": "",
+        "strength": "",
+        "steps": ""
+    },
+
+
+    "ff_watermark1": {
+        "input": "",
+        "output": "",
+        "watermark": "",
+        "xpixels": "",
+        "ypixels": "",
+        "scale": "",
+        "alpha": ""
+    },
+
+    "ff_watermark2": {
+        "input": "",
+        "output": "",
+        "watermark": "",
+        "xpixels": "",
+        "ypixels": "",
+        "scale": "",
+        "alpha": ""
+    },
+
+    "ff_thumbnail": {
+        "input": "",
+        "output": "",
+        "count": "",
+        "sample": ""
+    }
+}

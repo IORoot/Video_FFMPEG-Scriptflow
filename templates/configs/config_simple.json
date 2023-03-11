@@ -1,0 +1,93 @@
+{
+
+    "template": "",
+    "schedule": "",
+    "category": "",
+
+    "ff_scale": {
+        "input": "",
+        "output": "",
+        "width": "",
+        "height": "",
+        "loglevel": ""
+    },
+
+    "ff_to_landscape": {
+        "input": "",
+        "output": "",
+        "rotate": "",
+        "loglevel": ""
+    },
+
+    "ff_grouptime": {
+        "input": "",
+        "output": "",
+        "duration": "",
+        "loglevel": ""
+    },
+
+    "ff_lut": {
+        "input": "",
+        "output": "",
+        "lut": "",
+        "loglevel": ""
+    },
+
+    "ff_pad": {
+        "input": "",
+        "output": "",
+        "width": "",
+        "height": "",
+        "xpixels": "",
+        "ypixels": "",
+        "colour": "",
+        "loglevel": ""
+    },
+
+    "ff_text1": {
+        "input": "",
+        "output": "",
+        "textfile": "",
+        "text": "",
+        "font": "",
+        "colour": "",
+        "size": "",
+        "box": "",
+        "boxcolour": "",
+        "boxborder": "",
+        "xpixels": "",
+        "ypixels": ""
+    },
+
+    "ff_watermark": {
+        "input": "",
+        "output": "",
+        "watermark": "",
+        "xpixels": "",
+        "ypixels": "",
+        "scale": "",
+        "alpha": ""
+    },
+
+    "ff_text2": {
+        "input": "",
+        "output": "",
+        "textfile": "",
+        "text": "",
+        "font": "",
+        "colour": "",
+        "size": "",
+        "box": "",
+        "boxcolour": "",
+        "boxborder": "",
+        "xpixels": "",
+        "ypixels": ""
+    },
+
+    "ff_thumbnail": {
+        "input": "",
+        "output": "",
+        "count": "",
+        "sample": ""
+    }
+}
