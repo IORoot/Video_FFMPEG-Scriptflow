@@ -41,10 +41,10 @@ env:
   TEMPLATE:             ${{ github.event.client_payload.TEMPLATE }}
 
   # ╭──────────────────────────────────────────────────────────╮
-  # │                    Text for Template                     │
+  # │                      Config Template                     │
   # ╰──────────────────────────────────────────────────────────╯
-  TEXT_TOP_B64:         ${{ github.event.client_payload.TEXT_TOP }}
-  TEXT_BOTTOM:          "londonparkour.com/classes"
+  CONFIG_B64:           ${{ github.event.client_payload.CONFIG }}
+
 
   # ╭──────────────────────────────────────────────────────────╮
   # │              Where to upload the result to.              │
@@ -71,7 +71,7 @@ jobs:
       - name: list variables
         run: |
           env
-          echo "TEXT_TOP_B64: ${{ env.TEXT_TOP_B64 }}"
+          echo "CONFIG_B64: ${{ env.CONFIG_B64 }}"
 
 
 
@@ -82,7 +82,7 @@ jobs:
           sudo add-apt-repository ppa:savoury1/ffmpeg4
           sudo add-apt-repository ppa:savoury1/ffmpeg5
           sudo apt-get update 
-          sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass
+          sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass jq
 
 
       - name: Checkout Repo
@@ -104,11 +104,11 @@ jobs:
         # NOTE - Some templates DON'T use the -t flag. DO Include it in the template, just do nothing.
       - name: run ffmpeg template
         run: |
-            echo "${{ env.TEXT_BOTTOM }}" > ./text_bottom.txt
-            echo ${{ env.TEXT_TOP_B64 }} | base64 --decode > ./text_top.txt
+            echo ${{ env.CONFIG_B64 }} | base64 --decode > ./config.json
+            cat ./config.json
             mkdir -p ./processed_videos
             cd ./templates
-            sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -t $(realpath ../text_top.txt) -b $(realpath ../text_bottom.txt)
+            sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -c ../config.json
 
 
 
