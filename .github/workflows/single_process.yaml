@@ -104,7 +104,7 @@ jobs:
         # NOTE - Some templates DON'T use the -t flag. DO Include it in the template, just do nothing.
       - name: run ffmpeg template
         run: |
-            echo ${{ env.CONFIG_B64 }} | base64 -d | jq 'del(..|nulls)' > ./config.json
+            echo "${{ env.CONFIG_B64 }}" | base64 -d | jq 'del(..|nulls)' > ./config.json
             cat ./config.json
             mkdir -p ./processed_videos
             cd ./templates
