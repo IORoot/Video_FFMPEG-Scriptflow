@@ -22,6 +22,7 @@ OUTPUT_FILENAME="output_text.mp4"
 LOGLEVEL="error" 
 
 TEMP_TEXTFILE="/tmp/text.txt"
+PRUNED_CONFIG_FILE="/tmp/pruned_text_config_file.json"
 FONT="/System/Library/Fonts/HelveticaNeue.ttc"
 COLOUR="WHITE"
 SIZE="24"
@@ -261,13 +262,13 @@ function read_config()
     # Check dependencies
     if ! command -v jq &> /dev/null; then
         printf "JQ is a dependency and could not be found. Please install JQ for JSON parsing. Exiting.\n"
-        exit
+        exit 0
     fi
 
     # If there is a 'text' entry, output to the TEMP_TEXTFILE.
     cat ${CONFIG_FILE} | jq -r 'to_entries[] | select(.key|startswith("text")) | .value | @sh' | tr -d \'\" > ${TEMP_TEXTFILE}
-    # Delete 'text' from the config file (because xargs doesn't like it)
-    PRUNED_CONFIG_FILE=/tmp/pruned_text_config_file.json
+
+    # Delete 'text' from the config file (because xargs doesn't like it with spaces)
     cat ${CONFIG_FILE} | jq -r 'del(.text)' > ${PRUNED_CONFIG_FILE}
 
     # Read file
@@ -290,24 +291,28 @@ function read_config()
 function main()
 {
 
+    # If there is no input video, exit error
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
 
-    # TEXTFILE is name of file containing text 
-    if test -f "${TEXTFILE}"; then
-        cp ${TEXTFILE} ${TEMP_TEXTFILE}
-    fi
-
-    # Any TEXT overrides the TEXTFILE
+    # If there in any inline TEXT been set, echo it into the TEMP_TEXTFILE
     if [ ! -z "${TEXT}" ]; then
         echo -e "${TEXT}" > ${TEMP_TEXTFILE}
     fi
 
-    # Number of lines in text file.
-    # wc -l doesn't work without newlines.
+    # If there IS a TEXTFILE, copy it to the TEMP_TEXTFILE (overwriting any inline text)
+    if test -f "${TEXTFILE}"; then
+        cp -f ${TEXTFILE} ${TEMP_TEXTFILE}
+    fi
+
+    printf "Text in the $TEMP_TEXTFILE file that will be added to the video:\n---\n%s\n---\n" "${TEMP_TEXTFILE}"
+
+    # Count Number of lines in TEMP_TEXTFILE. (wc -l doesn't work without newlines.)
     LINECOUNT=$(grep -c "" ${TEMP_TEXTFILE})
+
+    # If there is no lines in the TEMP_TEXTFILE, there is no text, so exit nice.
     if [ ${LINECOUNT} -eq 0 ]; then 
         echo "⚠️ No text, exiting 0.";
         exit 0; 
