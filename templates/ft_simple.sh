@@ -30,11 +30,9 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
-TEXT_TOP_FILE="text_top.txt"
 TEXT_TOP_COLOUR="#FFFFFF"
 TEXT_TOP_BACKGROUND="#E86546"
 
-TEXT_BOTTOM_FILE="text_bottom.txt"
 TEXT_BOTTOM_COLOUR="#FFFFFF"
 TEXT_BOTTOM_BACKGROUND="#E86546"
 
@@ -304,9 +302,8 @@ function ff_pad()
 function ff_text1()
 {
     CONFIG_FILE="ff_text1.json"
-    if [ -f "${TEXT_TOP_FILE}" ]; then TOP_TEXT_FILE_FLAG="-t $(realpath ${TEXT_TOP_FILE})"; fi
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
-    ../ff_text.sh -i ${PAD_TEMP_FILE} $TOP_TEXT_FILE_FLAG -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 70 -o ${TEXT_TOP_TEMP_FILE} ${CONFIG_FLAG}
+    ../ff_text.sh -i ${PAD_TEMP_FILE} -c "${TEXT_TOP_COLOUR}" -s 32 -p "${TEXT_TOP_BACKGROUND}" -r 10 -y 70 -o ${TEXT_TOP_TEMP_FILE} ${CONFIG_FLAG}
     unset CONFIG_FLAG
 }
 
@@ -317,7 +314,7 @@ function ff_watermark()
 {
     CONFIG_FILE="ff_watermark.json"
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
-    ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE}  -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE} $CONFIG_FLAG
+    ../ff_watermark.sh -i ${TEXT_TOP_TEMP_FILE} -w ${WATERMARK} -s 0.25 -x "(W-w)/2" -y "(H-h)" -o ${WATERMARK_TEMP_FILE} $CONFIG_FLAG
     unset CONFIG_FLAG
 }
 
@@ -327,9 +324,8 @@ function ff_watermark()
 function ff_text2()
 {
     CONFIG_FILE="ff_text2.json"
-    if [ -f "${TEXT_BOTTOM_FILE}" ]; then BOTTOM_TEXT_FILE_FLAG="-t $(realpath ${TEXT_BOTTOM_FILE})"; fi
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
-    ../ff_text.sh -i ${WATERMARK_TEMP_FILE} ${BOTTOM_TEXT_FILE_FLAG} -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE} $CONFIG_FLAG
+    ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE} $CONFIG_FLAG
     unset CONFIG_FLAG
 }
 

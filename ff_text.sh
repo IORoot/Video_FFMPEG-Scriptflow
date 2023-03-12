@@ -308,7 +308,10 @@ function main()
     # Number of lines in text file.
     # wc -l doesn't work without newlines.
     LINECOUNT=$(grep -c "" ${TEMP_TEXTFILE})
-    if [ ${LINECOUNT} -eq 0 ]; then LINECOUNT=1; fi
+    if [ ${LINECOUNT} -eq 0 ]; then 
+        echo "⚠️ No text, exiting 0.";
+        exit 0; 
+    fi
 
     COMMAND=""
     LOOP=0
