@@ -108,9 +108,9 @@ jobs:
             cat config_b64.json
             printf "%s" "${{ env.CONFIG_B64 }}" | base64 --decode --ignore-garbage | jq 'del(..|nulls)' > ./config.json
             cat ./config.json
-            mkdir -p ./processed_videos
+            mkdir -p ./processed_video
             cd ./templates
-            sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_videos/processed.mp4 -c ../config.json
+            sudo ./${{ env.TEMPLATE }} -f ../raw_videos/raw -o ../processed_video/processed.mp4 -c ../config.json
 
 
 
@@ -140,7 +140,7 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: copy ./processed_videos GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER}/processed
+          args: copy ./processed_video GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER}/processed
 
 
 
@@ -149,7 +149,7 @@ jobs:
           mkdir ~/.ssh
           ssh-keyscan -H ${{env.SERVER}} >> ~/.ssh/known_hosts
 
-          SOURCE_DIR="./processed_videos"
+          SOURCE_DIR="./processed_video"
           TARGET_DIR="${TARGET_ROOT_FOLDER}${GDRIVE_FOLDER}"
 
           echo "SOURCE DIR: ${SOURCE_DIR}"
