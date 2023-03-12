@@ -307,7 +307,19 @@ function main()
         cp -f ${TEXTFILE} ${TEMP_TEXTFILE}
     fi
 
-    printf "Text in the $TEMP_TEXTFILE file that will be added to the video:\n---\n%s\n---\n" "${TEMP_TEXTFILE}"
+    printf "Text in the %s file that will be added to the video:\n---\n%s\n---\n" "${TEMP_TEXTFILE}" "$(cat ${TEMP_TEXTFILE})"
+
+    # If the TEMP_TEXTFILE still doesn't exist, there's no text.
+    if [[ -z "${TEMP_TEXTFILE}" ]]; then 
+        printf "❌ No text file. Exiting gracefully.\n"
+        exit 0
+    fi
+
+    # If there IS a TEMP_TEXTFILE, but it's empty, there's no text.
+    if [ ! -s ${TEMP_TEXTFILE} ]; then
+        printf "❌ No text in text file specified. Exiting gracefully.\n"
+        exit 0
+    fi
 
     # Count Number of lines in TEMP_TEXTFILE. (wc -l doesn't work without newlines.)
     LINECOUNT=$(grep -c "" ${TEMP_TEXTFILE})
