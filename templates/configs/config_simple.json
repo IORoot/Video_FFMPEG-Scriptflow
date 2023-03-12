@@ -1,93 +1,93 @@
 {
 
-    "template": "",
-    "schedule": "",
-    "category": "",
+    "template": null,
+    "schedule": null,
+    "category": null,
 
     "ff_scale": {
-        "input": "",
-        "output": "",
-        "width": "",
-        "height": "",
-        "loglevel": ""
+        "input": null,
+        "output": null,
+        "width": null,
+        "height": null,
+        "loglevel": null
     },
 
     "ff_to_landscape": {
-        "input": "",
-        "output": "",
-        "rotate": "",
-        "loglevel": ""
+        "input": null,
+        "output": null,
+        "rotate": null,
+        "loglevel": null
     },
 
     "ff_grouptime": {
-        "input": "",
-        "output": "",
-        "duration": "",
-        "loglevel": ""
+        "input": null,
+        "output": null,
+        "duration": null,
+        "loglevel": null
     },
 
     "ff_lut": {
-        "input": "",
-        "output": "",
-        "lut": "",
-        "loglevel": ""
+        "input": null,
+        "output": null,
+        "lut": null,
+        "loglevel": null
     },
 
     "ff_pad": {
-        "input": "",
-        "output": "",
-        "width": "",
-        "height": "",
-        "xpixels": "",
-        "ypixels": "",
-        "colour": "",
-        "loglevel": ""
+        "input": null,
+        "output": null,
+        "width": null,
+        "height": null,
+        "xpixels": null,
+        "ypixels": null,
+        "colour": null,
+        "loglevel": null
     },
 
     "ff_text1": {
-        "input": "",
-        "output": "",
-        "textfile": "",
-        "text": "",
-        "font": "",
-        "colour": "",
-        "size": "",
-        "box": "",
-        "boxcolour": "",
-        "boxborder": "",
-        "xpixels": "",
-        "ypixels": ""
+        "input": null,
+        "output": null,
+        "textfile": null,
+        "text": null,
+        "font": null,
+        "colour": null,
+        "size": null,
+        "box": null,
+        "boxcolour": null,
+        "boxborder": null,
+        "xpixels": null,
+        "ypixels": null
     },
 
     "ff_watermark": {
-        "input": "",
-        "output": "",
-        "watermark": "",
-        "xpixels": "",
-        "ypixels": "",
-        "scale": "",
-        "alpha": ""
+        "input": null,
+        "output": null,
+        "watermark": null,
+        "xpixels": null,
+        "ypixels": null,
+        "scale": null,
+        "alpha": null
     },
 
     "ff_text2": {
-        "input": "",
-        "output": "",
-        "textfile": "",
-        "text": "",
-        "font": "",
-        "colour": "",
-        "size": "",
-        "box": "",
-        "boxcolour": "",
-        "boxborder": "",
-        "xpixels": "",
-        "ypixels": ""
+        "input": null,
+        "output": null,
+        "textfile": null,
+        "text": null,
+        "font": null,
+        "colour": null,
+        "size": null,
+        "box": null,
+        "boxcolour": null,
+        "boxborder": null,
+        "xpixels": null,
+        "ypixels": null
     },
 
     "ff_thumbnail": {
-        "input": "",
-        "output": "",
-        "count": "",
-        "sample": ""
+        "input": null,
+        "output": null,
+        "count": null,
+        "sample": null
     }
 }

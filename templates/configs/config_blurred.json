@@ -1,87 +1,87 @@
 {
 
-    "template": "",
-    "schedule": "",
-    "category": "",
+    "template": null,
+    "schedule": null,
+    "category": null,
     
     "ff_scale1": {
-        "input": "",
-        "output": "",
-        "width": "",
-        "height": "",
-        "loglevel": ""
+        "input": null,
+        "output": null,
+        "width": null,
+        "height": null,
+        "loglevel": null
     },
 
     "ff_to_landscape": {
-        "input": "",
-        "output": "",
-        "rotate": "",
-        "loglevel": ""
+        "input": null,
+        "output": null,
+        "rotate": null,
+        "loglevel": null
     },
 
     "ff_grouptime": {
-        "input": "",
-        "output": "",
-        "duration": "",
-        "loglevel": ""
+        "input": null,
+        "output": null,
+        "duration": null,
+        "loglevel": null
     },
 
     "ff_lut": {
-        "input": "",
-        "output": "",
-        "lut": "",
-        "loglevel": ""
+        "input": null,
+        "output": null,
+        "lut": null,
+        "loglevel": null
     },
 
     "ff_scale2": {
-        "input": "",
-        "output": "",
-        "width": "",
-        "height": "",
-        "loglevel": ""
+        "input": null,
+        "output": null,
+        "width": null,
+        "height": null,
+        "loglevel": null
     },
 
     "ff_crop": {
-        "input": "",
-        "output": "",
-        "width": "",
-        "height": "",
-        "xpixels": "",
-        "ypixels": ""
+        "input": null,
+        "output": null,
+        "width": null,
+        "height": null,
+        "xpixels": null,
+        "ypixels": null
     },
 
     "ff_blur": {
-        "input": "",
-        "output": "",
-        "strength": "",
-        "steps": ""
+        "input": null,
+        "output": null,
+        "strength": null,
+        "steps": null
     },
 
 
     "ff_watermark1": {
-        "input": "",
-        "output": "",
-        "watermark": "",
-        "xpixels": "",
-        "ypixels": "",
-        "scale": "",
-        "alpha": ""
+        "input": null,
+        "output": null,
+        "watermark": null,
+        "xpixels": null,
+        "ypixels": null,
+        "scale": null,
+        "alpha": null
     },
 
     "ff_watermark2": {
-        "input": "",
-        "output": "",
-        "watermark": "",
-        "xpixels": "",
-        "ypixels": "",
-        "scale": "",
-        "alpha": ""
+        "input": null,
+        "output": null,
+        "watermark": null,
+        "xpixels": null,
+        "ypixels": null,
+        "scale": null,
+        "alpha": null
     },
 
     "ff_thumbnail": {
-        "input": "",
-        "output": "",
-        "count": "",
-        "sample": ""
+        "input": null,
+        "output": null,
+        "count": null,
+        "sample": null
     }
 }
