@@ -147,6 +147,16 @@ function read_config()
 
 
 # ╭──────────────────────────────────────────────────────────╮
+# │   Exit the app by just skipping the ffmpeg processing.   │
+# │            Then copy the input to the output.            │
+# ╰──────────────────────────────────────────────────────────╯
+function exit_gracefully()
+{
+    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
+    exit 0
+}
+
+# ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
 # │                                                          │
@@ -168,6 +178,7 @@ function main()
     # If width is greater than height, it's already landscape.
     if [ "$HEIGHT" -gt "$WIDTH" ];then
         printf "❌ Already portrait (%sx%s)\n" "$WIDTH" "$HEIGHT"
+        exit_gracefully
     else
 
         # ╭──────────────────────────────────────────────────────────╮

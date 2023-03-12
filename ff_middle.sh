@@ -152,6 +152,16 @@ function read_config()
 
 
 # ╭──────────────────────────────────────────────────────────╮
+# │   Exit the app by just skipping the ffmpeg processing.   │
+# │            Then copy the input to the output.            │
+# ╰──────────────────────────────────────────────────────────╯
+function exit_gracefully()
+{
+    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
+    exit 0
+}
+
+# ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
 # │                                                          │
@@ -161,7 +171,7 @@ function main()
 
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
-        exit 1
+        exit_gracefully
     fi
 
     FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${INPUT_FILENAME})

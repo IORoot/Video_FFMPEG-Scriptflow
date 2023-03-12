@@ -147,6 +147,15 @@ function read_config()
     arguments $LIST_OF_INPUTS
 }
 
+# ╭──────────────────────────────────────────────────────────╮
+# │   Exit the app by just skipping the ffmpeg processing.   │
+# │            Then copy the input to the output.            │
+# ╰──────────────────────────────────────────────────────────╯
+function exit_gracefully()
+{
+    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
+    exit 0
+}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
@@ -158,7 +167,7 @@ function main()
 
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
-        exit 1
+        exit_gracefully
     fi
 
     printf "🚀 Changing video container to new aspect ratio."

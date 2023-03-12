@@ -178,7 +178,7 @@ function read_config()
     # Check dependencies
     if ! command -v jq &> /dev/null; then
         printf "JQ is a dependency and could not be found. Please install JQ for JSON parsing. Exiting.\n"
-        exit
+        exit_gracefully
     fi
 
     # Read file
@@ -193,6 +193,16 @@ function read_config()
 
 
 # ╭──────────────────────────────────────────────────────────╮
+# │   Exit the app by just skipping the ffmpeg processing.   │
+# │            Then copy the input to the output.            │
+# ╰──────────────────────────────────────────────────────────╯
+function exit_gracefully()
+{
+    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
+    exit 0
+}
+
+# ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
 # │                                                          │
@@ -202,7 +212,7 @@ function main()
 
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
-        exit 1
+        exit_gracefully
     fi
 
     printf "🌾 Crop around the video. "

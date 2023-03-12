@@ -274,7 +274,6 @@ function read_config()
     # Read file
     LIST_OF_INPUTS=$(cat ${PRUNED_CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs )
 
-
     # Print to screen
     printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
 
@@ -282,6 +281,16 @@ function read_config()
     arguments $LIST_OF_INPUTS
 }
 
+
+# ╭──────────────────────────────────────────────────────────╮
+# │   Exit the app by just skipping the ffmpeg processing.   │
+# │            Then copy the input to the output.            │
+# ╰──────────────────────────────────────────────────────────╯
+function exit_gracefully()
+{
+    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
+    exit 0
+}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
@@ -312,13 +321,13 @@ function main()
     # If the TEMP_TEXTFILE still doesn't exist, there's no text.
     if [[ -z "${TEMP_TEXTFILE}" ]]; then 
         printf "❌ No text file. Exiting gracefully.\n"
-        exit 0
+        exit_gracefully
     fi
 
     # If there IS a TEMP_TEXTFILE, but it's empty, there's no text.
     if [ ! -s ${TEMP_TEXTFILE} ]; then
         printf "❌ No text in text file specified. Exiting gracefully.\n"
-        exit 0
+        exit_gracefully
     fi
 
     # Count Number of lines in TEMP_TEXTFILE. (wc -l doesn't work without newlines.)
@@ -326,8 +335,8 @@ function main()
 
     # If there is no lines in the TEMP_TEXTFILE, there is no text, so exit nice.
     if [ ${LINECOUNT} -eq 0 ]; then 
-        echo "⚠️ No text, exiting 0.";
-        exit 0; 
+        echo "⚠️ exiting gracefully.";
+        exit_gracefully 
     fi
 
     COMMAND=""

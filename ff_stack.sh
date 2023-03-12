@@ -190,6 +190,18 @@ function write_to_temp()
     printf "%s\n" "${REAL_PATH}" >> ${TMP}
 }
 
+
+# ╭──────────────────────────────────────────────────────────╮
+# │   Exit the app by just skipping the ffmpeg processing.   │
+# │            Then copy the input to the output.            │
+# ╰──────────────────────────────────────────────────────────╯
+function exit_gracefully()
+{
+    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
+    exit 0
+}
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
@@ -201,7 +213,7 @@ function main()
 
     if [[ ! -s "${TMP_FILE}" ]]; then
         printf "❌ No inputs specified. Exiting.\n"
-        exit 1
+        exit_gracefully
     fi
 
 
@@ -220,7 +232,7 @@ function main()
     if [ "${VERTICAL}" == "TRUE" ]; then
         if [ $NUMBER_OF_LINES -lt 2 ]; then
             echo "Not enough inputs, need 2, got ${NUMBER_OF_LINES}. exiting."
-            exit 1
+            exit_gracefully
         fi
         ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex vstack=inputs=2 ${OUTPUT_FILENAME}
     fi
@@ -228,7 +240,7 @@ function main()
     if [ "${HORIZONTAL}" == "TRUE" ]; then
         if [ $NUMBER_OF_LINES -lt 2 ]; then
             echo "Not enough inputs, need 2, got ${NUMBER_OF_LINES}. exiting."
-            exit 1
+            exit_gracefully
         fi
         ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex hstack=inputs=2 ${OUTPUT_FILENAME}
     fi
@@ -236,7 +248,7 @@ function main()
     if [ "${GRID}" == "TRUE" ]; then
         if [ $NUMBER_OF_LINES -lt 4 ]; then
             echo "Not enough inputs, need 4, got ${NUMBER_OF_LINES}. exiting."
-            exit 1
+            exit_gracefully
         fi
         ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex "[0:v][1:v][2:v][3:v]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[v]" -map "[v]" ${OUTPUT_FILENAME}
     fi

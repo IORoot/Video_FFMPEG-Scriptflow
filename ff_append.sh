@@ -120,6 +120,18 @@ function arguments()
 
 }
 
+
+# ╭──────────────────────────────────────────────────────────╮
+# │   Exit the app by just skipping the ffmpeg processing.   │
+# │            Then copy the input to the output.            │
+# ╰──────────────────────────────────────────────────────────╯
+function exit_gracefully()
+{
+    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
+    exit 0
+}
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │        Read config-file if supplied. Requires JQ         │
 # ╰──────────────────────────────────────────────────────────╯
@@ -154,11 +166,11 @@ function main()
 
     if [[ -z "${FIRST_FILENAME}" ]]; then 
         printf "❌ No first file specified. Exiting.\n"
-        exit 1
+        exit_gracefully
     fi
     if [[ -z "${SECOND_FILENAME}" ]]; then 
         printf "❌ No second file specified. Exiting.\n"
-        exit 1
+        exit_gracefully
     fi
 
     # -i ${FILE0}                   input file1 as index 0

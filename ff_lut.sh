@@ -152,6 +152,16 @@ function read_config()
 
 
 # ╭──────────────────────────────────────────────────────────╮
+# │   Exit the app by just skipping the ffmpeg processing.   │
+# │            Then copy the input to the output.            │
+# ╰──────────────────────────────────────────────────────────╯
+function exit_gracefully()
+{
+    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
+    exit 0
+}
+
+# ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
 # │                                                          │
@@ -161,7 +171,7 @@ function main()
 
     if [[ -z "${INPUT_FILENAME}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
-        exit 0
+        exit_gracefully
     fi
 
     REAL_LUT_FOLDER=$(realpath ${LUT_FOLDER})
@@ -169,7 +179,7 @@ function main()
 
     if [[ -z "${REAL_LUT_FILE}" ]]; then 
         printf "❌ LUT file doesn't exist. Exiting.\n"
-        exit 0
+        exit_gracefully
     fi
 
     printf "🎨 LUT File %s being applied to video. " "$FILE" 
