@@ -189,7 +189,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "🌄 Generating thumbnail. "
+    printf "🌄 ff_thumbnail.sh - Generating thumbnail. "
 
     # ffmpeg  -vf scale=${WIDTH}:${HEIGHT} ${OUTPUT_FILENAME}
 

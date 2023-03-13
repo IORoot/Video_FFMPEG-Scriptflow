@@ -260,7 +260,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "✂️  This will remove a percentage of seconds from front and end of all videos.\n"
+    printf "✂️  ff_grouptime.sh - This will remove a percentage of seconds from front and end of all videos.\n"
 
 
 

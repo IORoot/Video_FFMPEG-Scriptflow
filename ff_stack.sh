@@ -217,7 +217,7 @@ function main()
     fi
 
 
-    printf "📚 Stacking input videos. "
+    printf "📚 ff_stack.sh - Stacking input videos. "
 
     INPUT_FILE_LIST=""
     while read FILE; do

@@ -192,7 +192,7 @@ function main()
         echo "INPUT_FILENAME: $INPUT_FILENAME"
         echo "OUTPUT_FILENAME: $OUTPUT_FILENAME"
 
-        printf "🏞️  Landscape video detected (%sx%s). 👤 Converting to (%sx%s) portrait. " "$WIDTH" "$HEIGHT" "$HEIGHT" "$WIDTH"
+        printf "🏞️  ff_to_landscape.sh - Landscape video detected (%sx%s). 👤 Converting to (%sx%s) portrait. " "$WIDTH" "$HEIGHT" "$HEIGHT" "$WIDTH"
 
         ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" $OUTPUT_FILENAME
 

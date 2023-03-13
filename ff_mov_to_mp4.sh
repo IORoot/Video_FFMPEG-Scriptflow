@@ -161,7 +161,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "📽️  Converting MOV to MP4 🎥. "
+    printf "📽️  ff_mov_to_mp4.sh - Converting MOV to MP4 🎥. "
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vcodec h264 -acodec mp2 ${OUTPUT_FILENAME}
 

@@ -180,7 +180,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "🏎️ Changing the FPS of video to %s. " ${FPS}
+    printf "🏎️ ff_fps.sh - Changing the FPS of video to %s. " ${FPS}
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf fps=${FPS} ${OUTPUT_FILENAME}
 

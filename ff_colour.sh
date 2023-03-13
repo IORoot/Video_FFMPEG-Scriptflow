@@ -214,7 +214,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "🎨 Changing the colour of the video. " "$LUT_FILE" 
+    printf "🎨 ff_colour.sh - Changing the colour of the video. " "$LUT_FILE" 
 
     # https://ffmpeg.org/ffmpeg-filters.html#eq
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \

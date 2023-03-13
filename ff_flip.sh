@@ -181,7 +181,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "↔️ Flipping video. " "$LUT_FILE" 
+    printf "↔️ ff_flip.sh - Flipping video. " "$LUT_FILE" 
 
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "${HORIZONTAL} ${VERTICAL}"  ${OUTPUT_FILENAME}
 

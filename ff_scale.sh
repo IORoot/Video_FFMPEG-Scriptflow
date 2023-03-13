@@ -187,7 +187,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "📐 Changing the size of the video. "
+    printf "📐 ff_scale.sh - Changing the size of the video. "
 
     ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT} ${OUTPUT_FILENAME}
 
@@ -195,7 +195,9 @@ function main()
 
 }
 
+echo "args: $@"
+
 usage "$@"
 arguments "$@"
 read_config "$@"
-main "$@"
+main $@

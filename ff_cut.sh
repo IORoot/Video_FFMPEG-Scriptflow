@@ -189,7 +189,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "✂️ Cut the length of the video. "
+    printf "✂️ ff_cut.sh - Cut the length of the video. "
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -ss ${START} -to ${END} ${OUTPUT_FILENAME}
 

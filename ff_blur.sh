@@ -185,7 +185,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "🎨 Changing the blurriness of the video. "
+    printf "🎨 ff_blur.sh - Changing the blurriness of the video. "
 
     # https://ffmpeg.org/ffmpeg-filters.html#eq
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \

@@ -170,7 +170,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "🚀 Changing video container to new aspect ratio."
+    printf "🚀 ff_aspect_ratio.sh - Changing video container to new aspect ratio."
     # This only changes the container file metadata (Display Aspect Ratio (DAR)) 
     # and does NOT transcode the video file.
     # see https://superuser.com/questions/907933/correct-aspect-ratio-without-re-encoding-video-file

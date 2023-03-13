@@ -244,7 +244,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "🎨 Overlaying the watermark (%s)." "$WATERMARK_FILE" 
+    printf "🎨 ff_watermark.sh - Overlaying the watermark (%s)." "$WATERMARK_FILE" 
 
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}" ${OUTPUT_FILENAME}
 

@@ -215,7 +215,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "🌾 Crop around the video. "
+    printf "🌾 ff_crop.sh - Crop around the video. "
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "crop=w=${WIDTH}:h=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}" ${OUTPUT_FILENAME}
 

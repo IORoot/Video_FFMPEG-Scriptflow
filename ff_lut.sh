@@ -182,7 +182,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "🎨 LUT File %s being applied to video. " "$FILE" 
+    printf "🎨 ff_lut.sh - LUT File %s being applied to video. " "$FILE" 
 
     # https://ffmpeg.org/ffmpeg-filters.html#lut3d-1
     ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf lut3d="${REAL_LUT_FILE}" -shortest ${OUTPUT_FILENAME}

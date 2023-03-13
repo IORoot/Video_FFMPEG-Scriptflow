@@ -182,7 +182,7 @@ function main()
     HALF_TRIM_FROM_END=$(echo "scale=4; ${FILE_DURATION} - ${HALF_TRIM_FROM_START}" | bc | awk '{printf "%f", $0}')
     END=$(gdate -d@${HALF_TRIM_FROM_END} -u +%H:%M:%S.%N)
 
-    printf "🏎️  Trimming input video (%s) to remove %s from start and end. " "${FILE_DURATION}" "${TRIM}"
+    printf "🏎️  ff_middle.sh - Trimming input video (%s) to remove %s from start and end. " "${FILE_DURATION}" "${TRIM}"
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -ss ${START} -to ${END} ${OUTPUT_FILENAME}
 

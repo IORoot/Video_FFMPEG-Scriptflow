@@ -362,7 +362,7 @@ function main()
     # plus Extra spacer.
     # + (${LOOP} * ${LINESPACING})
 
-    printf "🖊️ Adding Text to video. "
+    printf "🖊️ ff_text.sh - Adding Text to video. "
 
     while IFS= read -r LINE || [ -n "$LINE" ]; 
     do

@@ -180,7 +180,7 @@ function exit_gracefully()
 function main()
 {
 
-    printf "🚀 Running video concatenation. "
+    printf "🚀 ff_concat.sh - Running video concatenation. "
 
     # -v error      : Only show errors
     # -f concat     : use filter 'concat'

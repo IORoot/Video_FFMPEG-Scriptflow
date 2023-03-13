@@ -184,7 +184,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "🎨 Changing the sharpness of the video. " "$LUT_FILE" 
+    printf "🎨 ff_sharpen.sh - Changing the sharpness of the video. " "$LUT_FILE" 
 
     # https://ffmpeg.org/ffmpeg-filters.html#eq
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \

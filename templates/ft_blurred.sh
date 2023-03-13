@@ -274,7 +274,6 @@ function read_input_folder()
 function ff_grouptime()
 {
     CONFIG_FILE="ff_grouptime.json"
-
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
     ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE} $CONFIG_FLAG
     unset CONFIG_FLAG
