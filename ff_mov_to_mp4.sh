@@ -170,6 +170,6 @@ function main()
 }
 
 usage $@
-arguments "$@"
+arguments $@
 read_config "$@"
 main $@
