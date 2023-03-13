@@ -197,7 +197,7 @@ function main()
 
 echo "args: $@"
 
-usage "$@"
-arguments "$@"
+usage $@
+arguments $@
 read_config "$@"
 main $@
