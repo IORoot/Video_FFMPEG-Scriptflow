@@ -269,8 +269,8 @@ function cleanup()
 
 
 cleanup
-usage "$@"
-arguments "$@"
+usage $@
+arguments $@
 read_config "$@"
-main "$@"
+main $@
 cleanup
