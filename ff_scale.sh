@@ -144,6 +144,7 @@ function arguments()
 # ╰──────────────────────────────────────────────────────────╯
 function read_config()
 {
+
     # Check if config has been set.
     if [ -z ${CONFIG_FILE+x} ]; then return 0; fi
     
@@ -197,7 +198,10 @@ function main()
 
 echo "args: $@"
 
+echo "usage"
 usage $@
+echo "arguments"
 arguments $@
+echo "read_config"
 read_config "$@"
 main $@
