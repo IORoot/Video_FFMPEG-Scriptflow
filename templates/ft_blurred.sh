@@ -37,7 +37,7 @@ OUTPUT_FILENAME="processed_blurred.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
 LUT="Circinus.cube"
-WATERMARK="./lib/watermarks/youth_class_1080x1080.png"
+WATERMARK="./lib/watermarks/youth_box.png"
 MAX_WIDTH="848"
 MAX_HEIGHT="480"
 
