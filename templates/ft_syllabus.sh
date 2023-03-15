@@ -399,4 +399,4 @@ usage $@
 arguments $@
 read_config "$@"
 main $@
-# cleanup
+cleanup
