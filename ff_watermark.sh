@@ -72,6 +72,12 @@ usage()
         printf " -a | --alpha <ALPHA>\n"
         printf "\tTransparency (alpha channel) of the watermark. From 0 to 1. Default is 1.\n\n"
 
+        printf " -S | --start <SECONDS>\n"
+        printf "\tStart time in seconds of when to show overlay.\n"
+
+        printf " -E | --end <SECONDS>\n"
+        printf "\nEnd time in seconds of when to show overlay.\n"
+
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
@@ -155,6 +161,20 @@ function arguments()
 
         -a|--alpha)
             ALPHA="$2"
+            shift 
+            shift
+            ;;
+
+
+        -S|--start)
+            START="$2"
+            shift 
+            shift
+            ;;
+        
+        
+        -E|--end)
+            END="$2"
             shift 
             shift
             ;;
@@ -246,7 +266,11 @@ function main()
 
     printf "🎨 ff_watermark.sh - Overlaying the watermark (%s)." "$WATERMARK_FILE" 
 
-    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}" ${OUTPUT_FILENAME}
+    if [[ ! -z $START || ! -z $END ]]; then
+        ENABLE=":enable='between(t,${START},${END})"
+    fi
+
+    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}${ENABLE}" ${OUTPUT_FILENAME}
 
     printf "✅ %s\n" "${OUTPUT_FILENAME}"
 

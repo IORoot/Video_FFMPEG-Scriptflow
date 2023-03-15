@@ -189,9 +189,6 @@ function main()
         # │    Step 2. rotate video 90 degrees counter clockwise.    │
         # ╰──────────────────────────────────────────────────────────╯
 
-        echo "INPUT_FILENAME: $INPUT_FILENAME"
-        echo "OUTPUT_FILENAME: $OUTPUT_FILENAME"
-
         printf "🏞️  ff_to_landscape.sh - Landscape video detected (%sx%s). 👤 Converting to (%sx%s) portrait. " "$WIDTH" "$HEIGHT" "$HEIGHT" "$WIDTH"
 
         ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" $OUTPUT_FILENAME
