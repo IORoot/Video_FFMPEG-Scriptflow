@@ -2,6 +2,7 @@
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
 # │              Overlay a video at specific time on the video                   │
+# │              Allows for transparent videos and animations                    │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 
@@ -18,15 +19,11 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
 OUTPUT_FILENAME="output_overlay.mp4"
+OVERLAY=""
 LOGLEVEL="error"
-XPIXELS="0"
-YPIXELS="0"
-SCALE="1" 
-ALPHA="1"
 START="0"
-END="60"
+END="3"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -59,25 +56,6 @@ usage()
         printf " -E | --end <SECONDS>\n"
         printf "\nEnd time in seconds of when to show overlay.\n"
 
-        printf " -x | --xpixels <PIXELS>\n"
-        printf "\tPosition of the watermark. Number of pixels on X-Axis. Default 10.\n"
-        printf "\tThere are variables that also can be used:\n"
-        printf "\t- (W) is the width of the video\n"
-        printf "\t- (H) is the height of the video\n"
-        printf "\t- (w) is the width of the watermark\n"
-        printf "\t- (h) is the height of the watermark\n"
-        printf "\tThe following example will center the watermark:\n"
-        printf "\tff_watermark -i input.mp4 -w watermark.png -x \"(W-w)/2\" -y \"(H-h)/2\" \n\n"
-
-        printf " -y | --ypixels <PIXELS>\n"
-        printf "\tPosition of the watermark. Number of pixels on Y-Axis. Default 10.\n\n"
-
-        printf " -s | --scale <SCALE>\n"
-        printf "\tSize of the watermark in relation to the height of the video. Default is 0.2 (1/5th height)\n\n"
-
-        printf " -a | --alpha <ALPHA>\n"
-        printf "\tTransparency (alpha channel) of the watermark. From 0 to 1. Default is 1.\n\n"
-
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
@@ -85,22 +63,6 @@ usage()
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
         printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n\n"
 
-        printf "Examples:\n\n"
-
-        printf "Center large watermark:\n"
-        printf "ff_watermark -i input.mp4 -w watermark.png -s 0.4 -x \"(W-w)/2\" -y \"(H-h)/2\"\n\n"
-
-        printf "Small bottom right watermark:\n"
-        printf "ff_watermark -i input.mp4 -w watermark.png -s 0.1 -x \"(W-w)\" -y \"(H-h)\"\n\n"
-
-        printf "Full-size watermark:\n"
-        printf "ff_watermark -i input.mp4 -w watermark.png -s 1\n\n"
-
-        printf "Full-size semi-transparent watermark:\n"
-        printf "ff_watermark -i input.mp4 -w watermark.png -s 1 -a 0.5\n\n"
-
-        printf "Small, transparent bottom-right positioned Video as a watermark:\n"
-        printf "ff_watermark -i input.mp4 -w watermark_video.mp4 -s 0.3 -x \"(W-w)\" -y \"(H-h)\" -a 0.5\n\n"
         exit 0
     fi
 }
@@ -132,7 +94,7 @@ function arguments()
 
 
         -v|--overlay)
-            WATERMARK_FILE="$2"
+            OVERLAY="$2"
             shift 
             shift
             ;;
@@ -147,34 +109,6 @@ function arguments()
         
         -E|--end)
             END="$2"
-            shift 
-            shift
-            ;;
-
-
-        -x|--xpixels)
-            XPIXELS="$2"
-            shift 
-            shift
-            ;;
-
-
-        -y|--ypixels)
-            YPIXELS="$2"
-            shift 
-            shift
-            ;;
-
-
-        -s|--scale)
-            SCALE="$2"
-            shift 
-            shift
-            ;;
-
-
-        -a|--alpha)
-            ALPHA="$2"
             shift 
             shift
             ;;
@@ -259,15 +193,15 @@ function main()
         exit_gracefully
     fi
 
-    if [[ -z "${WATERMARK_FILE}" ]]; then 
-        printf "❌ No watermark file specified. Exiting.\n"
+    if [[ -z "${OVERLAY}" ]]; then 
+        printf "❌ No overlay file specified. Exiting.\n"
         exit_gracefully
     fi
 
-    printf "🎨 ff_watermark.sh - Overlaying the watermark (%s)." "$WATERMARK_FILE" 
+    printf "🎨 ff_overlay.sh - Overlaying the video (%s)." "$OVERLAY" 
 
-    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}:enable='between(t,${START},${END})'" ${OUTPUT_FILENAME}
-
+    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "movie=${OVERLAY} [a];[a]setpts=PTS-STARTPTS+${START}/TB[top]; [in][top] overlay=0:0:enable='between(t,${START},${END})' [c]" ${OUTPUT_FILENAME}
+    
     printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
