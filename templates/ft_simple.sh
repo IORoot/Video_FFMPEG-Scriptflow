@@ -325,7 +325,7 @@ function ff_text2()
 {
     CONFIG_FILE="ff_text2.json"
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
-    ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-20" -o ${TEXT_BOTTOM_TEMP_FILE} $CONFIG_FLAG
+    ../ff_text.sh -i ${WATERMARK_TEMP_FILE} -c "${TEXT_BOTTOM_COLOUR}" -s 24 -r 10 -p "${TEXT_BOTTOM_BACKGROUND}" -y "(h-th)-30" -o ${TEXT_BOTTOM_TEMP_FILE} $CONFIG_FLAG
     unset CONFIG_FLAG
 }
 
