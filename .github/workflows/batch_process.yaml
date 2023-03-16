@@ -115,13 +115,13 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: copy GDrive:${{ env.GDRIVE_SOURCE_FOLDER }}/${{ matrix.project }} ./raw_videos
+          args: copy GDrive:${{ env.GDRIVE_SOURCE_FOLDER }}/${{ matrix.project }} ./${{ matrix.project }}
 
 
 
       - name: read config.json
         run: |
-          cd ./raw_videos
+          cd ./${{ matrix.project }}
           if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
           sudo mv ./config.json ../
           cd ${GITHUB_WORKSPACE}
@@ -135,7 +135,7 @@ jobs:
           mkdir -p ./processed_video
           TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple.sh"' | tr -d '"')
           cd ./templates
-          sudo ./$TEMPLATE -f ../raw_videos -o ../processed_video/processed.mp4 -c $(realpath ../config.json)
+          sudo ./$TEMPLATE -f ../${{ matrix.project }} -o ../processed_video/processed.mp4 -c $(realpath ../config.json)
 
 
 
