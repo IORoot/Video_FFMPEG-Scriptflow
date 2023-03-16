@@ -32,6 +32,7 @@ BOXBORDER="5"
 XPIXELS="(w-tw)/2"
 YPIXELS="(h-th)/2"
 LINESPACING="5"
+REDUCTION="8"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -74,6 +75,10 @@ usage()
 
         printf " -s | --size <FONTSIZE>\n"
         printf "\tThe font size to use. Default: 24.\n\n"
+
+
+        printf " -r | --reduction <POINTS>\n"
+        printf "\tEach line will reduce the font size by this much. Default 8.\n\n"
 
 
         printf " -b | --box <BOX>\n"
@@ -171,6 +176,13 @@ function arguments()
 
         -s|--size)
             SIZE="$2"
+            shift 
+            shift
+            ;;
+
+
+        -r|--reduction)
+            REDUCTION="$2"
             shift 
             shift
             ;;
@@ -366,8 +378,8 @@ function main()
 
     while IFS= read -r LINE || [ -n "$LINE" ]; 
     do
-        COMMAND="${COMMAND}drawtext=fontfile=${FONT}:text="${LINE}":line_spacing=30:fontcolor=${COLOUR}:fontsize=${SIZE}:box=${BOX}:boxcolor=${BOXCOLOUR}:boxborderw=${BOXBORDER}:x=${XPIXELS}:y=${YPIXELS} + (${LOOP} * ( lh + (2*${BOXBORDER}) ) ) - ((lh/2) * (${LINECOUNT}-1) + ${LINESPACING}) + (${LOOP} * ${LINESPACING}),"
-        SIZE=$(( $SIZE - 4 ))
+        COMMAND="${COMMAND}drawtext=fontfile=${FONT}:text='${LINE}':line_spacing=30:fontcolor=${COLOUR}:fontsize=${SIZE}:box=${BOX}:boxcolor=${BOXCOLOUR}:boxborderw=${BOXBORDER}:x=${XPIXELS}:y=${YPIXELS} + (${LOOP} * ( lh + (2*${BOXBORDER}) ) ) - ((lh/2) * (${LINECOUNT}-1) + ${LINESPACING}) + (${LOOP} * ${LINESPACING}),"
+        SIZE=$(( $SIZE - ${REDUCTION} ))
         LOOP=$(( ${LOOP} + 1 ))
     done < "${TEMP_TEXTFILE}"
 
