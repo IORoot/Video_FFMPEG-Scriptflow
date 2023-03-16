@@ -366,7 +366,7 @@ function main()
 
     while IFS= read -r LINE || [ -n "$LINE" ]; 
     do
-        COMMAND="${COMMAND}drawtext=fontfile=${FONT}:text='${LINE}':line_spacing=30:fontcolor=${COLOUR}:fontsize=${SIZE}:box=${BOX}:boxcolor=${BOXCOLOUR}:boxborderw=${BOXBORDER}:x=${XPIXELS}:y=${YPIXELS} + (${LOOP} * ( lh + (2*${BOXBORDER}) ) ) - ((lh/2) * (${LINECOUNT}-1) + ${LINESPACING}) + (${LOOP} * ${LINESPACING}),"
+        COMMAND="${COMMAND}drawtext=fontfile=${FONT}:text="${LINE}":line_spacing=30:fontcolor=${COLOUR}:fontsize=${SIZE}:box=${BOX}:boxcolor=${BOXCOLOUR}:boxborderw=${BOXBORDER}:x=${XPIXELS}:y=${YPIXELS} + (${LOOP} * ( lh + (2*${BOXBORDER}) ) ) - ((lh/2) * (${LINECOUNT}-1) + ${LINESPACING}) + (${LOOP} * ${LINESPACING}),"
         SIZE=$(( $SIZE - 4 ))
         LOOP=$(( ${LOOP} + 1 ))
     done < "${TEMP_TEXTFILE}"

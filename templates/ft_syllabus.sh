@@ -36,35 +36,20 @@ OUTPUT_FILENAME="processed_syllabus.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
 LUT="Circinus.cube"
-WATERMARK1="./lib/watermarks/ldnpk_white.png"
-WATERMARK2="./lib/watermarks/ldnpk_black.png"
+WATERMARK2="./lib/watermarks/ldnpk_white.png"
+WATERMARK3="./lib/watermarks/ldnpk_black.png"
+WATERMARK4="./lib/watermarks/ldnpk_black.png"
 TEXT_COLOUR="#FFFFFF"
-TEXT_BACKGROUND="#111111"
+TEXT_BACKGROUND="#262626"
 MAX_WIDTH="848"
 MAX_HEIGHT="480"
-
+TEMP_FOLDER="/tmp"
 # ╭──────────────────────────────────────────────────────────╮
 # │                     Temporary Files                      │
 # ╰──────────────────────────────────────────────────────────╯
-TEMP_FOLDER="/tmp"
 
-LANDSCAPE_TEMP_FILE="${TEMP_FOLDER}/temp_landscape.mp4"
 
-GROUPTIME_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime.mp4"
-GROUPTIME_REVERSED_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime_reversed.mp4"
 
-STACK_TEMP_FILE="${TEMP_FOLDER}/temp_stack.mp4"
-
-LUT_TEMP_FILE="${TEMP_FOLDER}/temp_lut.mp4"
-
-WATERMARK1_TEMP_FILE="${TEMP_FOLDER}/temp_watermark1.mp4"
-WATERMARK2_TEMP_FILE="${TEMP_FOLDER}/temp_watermark2.mp4"
-
-TEXT_TEMP_FILE="${TEMP_FOLDER}/temp_text.mp4"
-
-IMAGE_TEMP_FILE="${TEMP_FOLDER}/temp_image.mp4"
-
-CONCAT_TEMP_FILE="${TEMP_FOLDER}/temp_concat.mp4"
 
 
 
@@ -172,6 +157,8 @@ function is_movie_file()
     fi
 }
 
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                 Rescale video if too big                 │
 # ╰──────────────────────────────────────────────────────────╯
@@ -201,9 +188,9 @@ function ff_scale()
 # ╭──────────────────────────────────────────────────────────╮
 # │               Read folder for input files                │
 # ╰──────────────────────────────────────────────────────────╯
-function ff_grouptime1()
+function ff_grouptime()
 {
-    CONFIG_FILE="ff_grouptime1.json"
+    CONFIG_FILE="ff_grouptime.json"
     INPUT_FILE_LIST=""
     for FILE in ${FOLDER}/*
     do
@@ -216,62 +203,54 @@ function ff_grouptime1()
     ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE} $CONFIG_FLAG
     unset CONFIG_FLAG
 }
-
-# ╭──────────────────────────────────────────────────────────╮
-# │                      REVERSE ORDER                       │
-# ╰──────────────────────────────────────────────────────────╯
-
-function ff_grouptime2()
-{
-    CONFIG_FILE="ff_grouptime2.json"
-    IFS=$'\n'
-    INPUT_FILE_LIST_REVERSED=""
-    for FILE in $(ls -1 ${FOLDER}/* | sort -r)
-    do
-        if [ ! $(is_movie_file $FILE) ]; then continue; fi
-        if [ "${FILE: -4}" == ".png" ];then continue; fi
-        ABSOLUTE_PATH=$(realpath ${FILE})
-        INPUT_FILE_LIST_REVERSED="${INPUT_FILE_LIST_REVERSED} -i $ABSOLUTE_PATH "
-    done
-    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
-    ../ff_grouptime.sh ${INPUT_FILE_LIST_REVERSED} -d 60 -o ${GROUPTIME_REVERSED_TEMP_FILE} $CONFIG_FLAG
-    unset CONFIG_FLAG
-}
-
-# ╭──────────────────────────────────────────────────────────╮
-# │                    Stack them videos!                    │
-# ╰──────────────────────────────────────────────────────────╯
-function ff_stack()
-{
-    CONFIG_FILE="ff_stack.json"
-    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
-    ../ff_stack.sh -i ${GROUPTIME_TEMP_FILE} -i ${GROUPTIME_REVERSED_TEMP_FILE} -v -o ${STACK_TEMP_FILE} $CONFIG_FLAG
-    unset CONFIG_FLAG
-}
+GROUPTIME_TEMP_FILE="${TEMP_FOLDER}/temp_grouptime.mp4"
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │                        Apply LUT                         │
+# │                Make copy to blur and crop                │
 # ╰──────────────────────────────────────────────────────────╯
-function ff_lut()
+function ff_background()
 {
-    CONFIG_FILE="ff_lut.json"
+    cp $(realpath ${GROUPTIME_TEMP_FILE}) ${BG_COPY_TEMP}
+    CONFIG_FILE="ff_scale2.json"
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
-    ../ff_lut.sh -i $(realpath ${STACK_TEMP_FILE}) -t ${LUT} -o ${LUT_TEMP_FILE} $CONFIG_FLAG
+    ../ff_scale.sh -i $(realpath ${BG_COPY_TEMP}) -o ${BG_SCALE_TEMP} -w 1920 -h 1080 $CONFIG_FLAG
+    unset CONFIG_FLAG
+
+    CONFIG_FILE="ff_crop.json"
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_crop.sh -i $(realpath ${BG_SCALE_TEMP}) -o ${BG_CROP_TEMP}  -w 1080 -h 1080 $CONFIG_FLAG
+    unset CONFIG_FLAG
+
+    CONFIG_FILE="ff_blur.json"
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_blur.sh -i $(realpath ${BG_CROP_TEMP})  -o ${BG_BLUR_TEMP}  -s 20 $CONFIG_FLAG
+    unset CONFIG_FLAG
+
+    CONFIG_FILE="ff_watermark1.json"
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_watermark.sh -i $(realpath ${BG_BLUR_TEMP}) -o ${BG_WATERMARK_TEMP} -w ${GROUPTIME_TEMP_FILE} -x "(W-w)/2" -y "(H-h)/2" -s 0.56 $CONFIG_FLAG
     unset CONFIG_FLAG
 }
+BG_COPY_TEMP="${TEMP_FOLDER}/temp_BG_copy.mp4"
+BG_SCALE_TEMP="${TEMP_FOLDER}/temp_BG_scale.mp4"
+BG_CROP_TEMP="${TEMP_FOLDER}/temp_BG_crop.mp4"
+BG_BLUR_TEMP="${TEMP_FOLDER}/temp_BG_blur.mp4"
+BG_WATERMARK_TEMP="${TEMP_FOLDER}/temp_BG_watermark.mp4"
 
 
 # ╭──────────────────────────────────────────────────────────╮
 # │         Add glyph to bottom right corner of video        │
 # ╰──────────────────────────────────────────────────────────╯
-function ff_watermark1()
+function ff_watermark2()
 {
-    CONFIG_FILE="ff_watermark1.json"
+    CONFIG_FILE="ff_watermark2.json"
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
-    ../ff_watermark.sh -i ${STACK_TEMP_FILE} -w ${WATERMARK1} -s 0.2 -x "(W-w)" -y "(H-h)" -o ${WATERMARK1_TEMP_FILE} $CONFIG_FLAG
+    ../ff_watermark.sh -i ${BG_WATERMARK_TEMP} -w ${WATERMARK2} -s 0.2 -x "(W-w)" -y "(H-h)" -o ${WATERMARK2_TEMP_FILE} $CONFIG_FLAG
     unset CONFIG_FLAG
 }
+WATERMARK2_TEMP_FILE="${TEMP_FOLDER}/temp_watermark2.mp4"
+
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                 Add Text to top of video                 │
@@ -280,21 +259,36 @@ function ff_text()
 {
     CONFIG_FILE="ff_text.json"
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
-    ../ff_text.sh -i ${WATERMARK1_TEMP_FILE} -c "${TEXT_COLOUR}" -s 24 -r 10 -p "${TEXT_BACKGROUND}" -y "(h-th)-60" -o ${TEXT_TEMP_FILE} ${CONFIG_FLAG}
+    ../ff_text.sh -i ${WATERMARK2_TEMP_FILE} -c "${TEXT_COLOUR}" -s 36 -r 10 -p "${TEXT_BACKGROUND}" -y "(h-th)-100" -o ${TEXT_TEMP_FILE} ${CONFIG_FLAG}
     unset CONFIG_FLAG
 }
+TEXT_TEMP_FILE="${TEMP_FOLDER}/temp_text.mp4"
 
 
 # ╭──────────────────────────────────────────────────────────╮
 # │               Overlay the isometric image                │
 # ╰──────────────────────────────────────────────────────────╯
-function ff_watermark2()
+function ff_watermark3()
 {
-    CONFIG_FILE="ff_watermark2.json"
+    CONFIG_FILE="ff_watermark3.json"
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
-    ../ff_watermark.sh -i ${TEXT_TEMP_FILE} -w ${WATERMARK2} -s 0.8 -S 0 -E 2 -o ${WATERMARK2_TEMP_FILE} $CONFIG_FLAG
+    ../ff_watermark.sh -i ${TEXT_TEMP_FILE} -w ${WATERMARK3} -s 0.5 -S 0 -E 2 -o ${WATERMARK3_TEMP_FILE} $CONFIG_FLAG
     unset CONFIG_FLAG
 }
+WATERMARK3_TEMP_FILE="${TEMP_FOLDER}/temp_watermark3.mp4"
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │               Add LondonParkour logo to top              │
+# ╰──────────────────────────────────────────────────────────╯
+function ff_watermark4()
+{
+    CONFIG_FILE="ff_watermark4.json"
+    if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
+    ../ff_watermark.sh -i ${WATERMARK3_TEMP_FILE} -w ${WATERMARK4} -s 0.25 -x "(W-w)/2" -y 0 -o ${WATERMARK4_TEMP_FILE} $CONFIG_FLAG
+    unset CONFIG_FLAG
+}
+WATERMARK4_TEMP_FILE="${TEMP_FOLDER}/temp_watermark4.mp4"
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -302,11 +296,11 @@ function ff_watermark2()
 # ╰──────────────────────────────────────────────────────────╯
 function output_file()
 {
-    mv ${WATERMARK2_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
+    mv ${WATERMARK4_TEMP_FILE} ${CURRENT_DIRECTORY}/${OUTPUT_FILENAME}
     printf "\n\n✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
 }
 
-
+ 
 # ╭──────────────────────────────────────────────────────────╮
 # │                 Create a Thumbnail image                 │
 # ╰──────────────────────────────────────────────────────────╯
@@ -335,13 +329,12 @@ function main()
     fi
 
     ff_scale
-    ff_grouptime1
-    ff_grouptime2
-    ff_stack
-    ff_lut
-    ff_watermark1
-    ff_text
+    ff_grouptime
+    ff_background
     ff_watermark2
+    ff_text
+    ff_watermark3
+    ff_watermark4
     output_file
     ff_thumbnail
 
@@ -363,6 +356,8 @@ function read_config()
         exit
     fi
 
+    # Replace the {{FOLDER}} for real folder string
+
     # Get a list of all the scripts - Any duplicates must have digits after their name. ff_scale1, ff_scale2, etc...
     LIST_OF_SCRIPT_NAMES=$(cat ${CONFIG_FILE} | jq 'to_entries[] | select(.key|startswith("ff")) | .key' | xargs )
     ARRAY_OF_STRING_NAMES=($LIST_OF_SCRIPT_NAMES)
@@ -373,8 +368,16 @@ function read_config()
         # Get contents of the settings to insert into the config file.
         SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$ff_script_name" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value' )
 
-        # Create temp config files
-        printf "%s\n" "${SCRIPT_CONTENTS}" > ${TEMP_FOLDER}/temp_config_$ff_script_name.json
+        # Replace FOLDER_NAME variable in config file
+        FOLDER_NAME=$(basename $FOLDER)
+        SCRIPT_CONTENTS=${SCRIPT_CONTENTS//FOLDER_NAME/$FOLDER_NAME}
+
+        # Replace FOLDER_TITLE variable in config file
+        FOLDER_TITLE=${FOLDER_NAME//_/ }
+        SCRIPT_CONTENTS=${SCRIPT_CONTENTS//FOLDER_TITLE/$FOLDER_TITLE}
+
+        # Create temp config files for each section.
+        printf "%s\n" "${SCRIPT_CONTENTS}"  > ${TEMP_FOLDER}/temp_config_$ff_script_name.json
     done
 
 }
@@ -382,6 +385,7 @@ function read_config()
 
 function cleanup()
 {
+    rm -f ${TEMP_FOLDER}/temp_*
     rm -f ${LANDSCAPE_TEMP_FILE}
     rm -f ${GROUPTIME_TEMP_FILE}
     rm -f ${GROUPTIME_REVERSED_TEMP_FILE}
@@ -390,8 +394,6 @@ function cleanup()
     rm -f ${WATERMARK2_TEMP_FILE}
     rm -f ${STACK_TEMP_FILE}
     rm -f ${CONCAT_TEMP_FILE}
-    rm -f ${IMAGE_TEMP_FILE}
-    rm -f ${TEMP_FOLDER}/temp_config_ff*
 }
 
 cleanup

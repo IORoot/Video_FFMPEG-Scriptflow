@@ -1,11 +1,9 @@
 #!/bin/bash
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │             Change the scale (physical dimensions) of the video              │
+# │           Downgrade large videos to a more manageable file size              │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
-
-# https://ottverse.com/change-resolution-resize-scale-video-using-ffmpeg/
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -20,10 +18,6 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_scale.mp4"
-WIDTH="1920"
-HEIGHT="1080"
 LOGLEVEL="error" 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -40,21 +34,14 @@ usage()
 
         printf "Flags:\n"
 
-        printf " -i | --input <INPUT_FILE>\n"
-        printf "\tThe name of an input file.\n\n"
+        printf " -i | --input <INPUT_FILE / INPUT_FOLDER>\n"
+        printf "\tThe name of an input file.\n"
+        printf "\tIf a FOLDER, then it is recursive.\n\n"
 
 
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
-
-
-        printf " -w | --width <PIXELS>\n"
-        printf "\tThe width of the video. The default value is 1920.\n\n"
-
-
-        printf " -h | --height <PIXELS>\n"
-        printf "\tThe height of the video. The default value is 1920.\n\n"
 
 
         printf " -C | --config <CONFIG_FILE>\n"
@@ -95,16 +82,8 @@ function arguments()
             ;;
 
 
-        -w|--width)
-            WIDTH="$2"
-            shift 
-            shift
-            ;;
-
-
-        -h|--height)
-            HEIGHT="$2"
-            shift 
+        -r|--recursive)
+            RECURSIVE=true
             shift
             ;;
 
@@ -183,20 +162,31 @@ function exit_gracefully()
 function main()
 {
 
-    if [[ -z "${INPUT_FILENAME}" ]]; then 
-        printf "❌ No input file specified. Exiting.\n"
-        exit_gracefully
+    # If input is a file
+    if [[ -f "${INPUT_FILENAME}" ]]; then 
+        printf "📐 ff_proxy.sh - Create a small low-res proxy file for input video. "
+        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=1280:-2,setsar=1:1,fps=30 -vcodec libx264 -crf 25 -c:a aac -q:a 5 ${OUTPUT_FILENAME}
     fi
 
-    printf "📐 ff_scale.sh - Changing the size of the video. "
+    # If input is a folder
+    if [[ -d "${INPUT_FILENAME}" ]]; then
 
-    ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT} ${OUTPUT_FILENAME}
+        for FILE in $(find ${INPUT_FILENAME} -type f | grep -i 'mp4\|mov');
+        do
+            REALFILE=$(realpath $FILE)
+            DIRECTORY=$(dirname $FILE)
+            BASENAME=$(basename $FILE)
+            NOEXTENSION=$(echo "${BASENAME%.*}" )
+            echo "processing ${REALFILE}"
+            ffmpeg -y -v ${LOGLEVEL} -i ${REALFILE} -vf scale=1280:-2,setsar=1:1,fps=30 -vcodec libx264 -crf 25 -c:a aac -q:a 5 ${DIRECTORY}/proxy_${NOEXTENSION}.mp4
+        done
+    fi
+
+
 
     printf "✅ %s\n" "${OUTPUT_FILENAME}"
 
 }
-
-echo "args: $@"
 
 usage $@
 arguments $@

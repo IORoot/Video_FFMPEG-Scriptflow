@@ -1,0 +1,19 @@
+{
+    "template": "ft_syllabus.sh",
+    "schedule": "TRUE",
+    "category": "syllabus",
+
+    "ff_text": {
+        "text": "Syllabus Challenge - FOLDER_TITLE"
+    },
+
+    "ff_watermark2": {
+        "watermark": "./FOLDER_NAME/glyph.png"
+    },
+
+    "ff_watermark3": {
+        "watermark": "./FOLDER_NAME/isometric.png",
+        "xpixels": "(W-w)/2",
+        "ypixels": "(H-h)/2"
+    }
+}
