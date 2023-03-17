@@ -84,7 +84,9 @@ jobs:
   run_ffmpeg:
     needs: create_matrix
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
+      fail-fast: false
       matrix: ${{ fromJSON(needs.create_matrix.outputs.matrix) }}
     steps:
 
