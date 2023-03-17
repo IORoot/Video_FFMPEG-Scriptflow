@@ -300,7 +300,7 @@ function output_file()
     printf "\n\n✅ Appended video created: %s\n" "$OUTPUT_FILENAME"
 }
 
- 
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                 Create a Thumbnail image                 │
 # ╰──────────────────────────────────────────────────────────╯
@@ -313,7 +313,6 @@ function ff_thumbnail()
     unset CONFIG_FLAG
     mv ${OUTPUT_FOLDER}/thumbnail-01.jpg ${OUTPUT_FOLDER}/thumbnail.jpg
 }
-
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │

@@ -231,7 +231,7 @@ function read_config()
     # Print to screen
     printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
 
-    # Sen to the arguments function again to override.
+    # Send to the arguments function again to override.
     arguments $LIST_OF_INPUTS
 }
 
@@ -262,6 +262,12 @@ function main()
     if [[ -z "${WATERMARK_FILE}" ]]; then 
         printf "❌ No watermark file specified. Exiting.\n"
         exit_gracefully
+    fi
+
+    # If a wildcard is used get a random result
+    # "./lib/watermarks/youth_box_RANDOM.png"
+    if [[ ${WATERMARK_FILE} =~ .*RANDOM.* ]]; then
+        WATERMARK_FILE=$(realpath ${WATERMARK_FILE//RANDOM/*} | sort -R | head -n 1)
     fi
 
     printf "🎨 ff_watermark.sh - Overlaying the watermark (%s)." "$WATERMARK_FILE" 
