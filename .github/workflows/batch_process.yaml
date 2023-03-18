@@ -28,8 +28,8 @@ env:
   # │           Update Video Sheet with full new row           │
   # │                   including video_url                    │
   # ╰──────────────────────────────────────────────────────────╯
-  # Google AppsScript Name: "Insert Video Sheet Row"
-  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbzSV1swXbr8TxVwHLSupJILazM6oavNnM0LkZmkC8BMjtgMl_mnjZqigvm83-V5xd1P/exec"
+  # Google AppsScript Name: "Make.com Video Sheet Update Row"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbyEaJ_7s3QcR7yNcMZEQtUMXmAwixLAwF_iLH5kWY9q55xjhwjwtWvFDlaGqbPlwS7oig/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                  Google Drive Variables                  │

@@ -24,8 +24,8 @@ env:
   # ╭──────────────────────────────────────────────────────────╮
   # │                Target Google Sheet Script                │
   # ╰──────────────────────────────────────────────────────────╯
-  # Google AppsScript Name: "Update Video Sheet"
-  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbxk4T_9A5eSPvH9BEVww_Pl9CgLw8QEyCrWlFstOJrOABFaJWNOEcFU684vbh8ueXI8iA/exec"
+  # Google AppsScript Name: "Make.com Video Sheet Update Row"
+  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbyEaJ_7s3QcR7yNcMZEQtUMXmAwixLAwF_iLH5kWY9q55xjhwjwtWvFDlaGqbPlwS7oig/exec"
 
   # ╭──────────────────────────────────────────────────────────╮
   # │                        Video URL                         │
