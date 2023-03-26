@@ -31,6 +31,7 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
+FFMPEG_LOCATION="/opt/hostedtoolcache/ffmpeg/5.0.1/x64"
 OUTPUT_FILENAME="processed_youth.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
@@ -164,12 +165,7 @@ function arguments()
 function is_movie_file()
 {
     FILE=$1
-    
-    echo "test"
-    /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe -version
-    /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"
-
-    if /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"; then
+    if ${FFMPEG_LOCATION}/ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"; then
         return 0
     else
         return 1
@@ -186,6 +182,9 @@ function ff_scale()
 
     for FILE in ${FOLDER}/*
     do
+
+        echo "FILE: $FILE"
+
         if [ -d "$FILE" ]; then continue; fi
         if [ ! $(is_movie_file $FILE) ]; then continue; fi
         if [ "${FILE: -4}" == ".mov" ];then
