@@ -134,6 +134,7 @@ jobs:
           ln -s /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffmpeg ./ffmpeg
           ln -s /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe ./ffprobe
 
+
       # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
         run: |
