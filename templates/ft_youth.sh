@@ -31,11 +31,9 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
-OUTPUT_FILENAME="processed_blurred.mp4"
+OUTPUT_FILENAME="processed_youth.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
-LUT="Circinus.cube"
-WATERMARK="./lib/watermarks/youth_box.png"
 MAX_WIDTH="848"
 MAX_HEIGHT="480"
 
@@ -43,6 +41,23 @@ MAX_HEIGHT="480"
 # │                     Temporary Files                      │
 # ╰──────────────────────────────────────────────────────────╯
 TEMP_FOLDER="/tmp"
+
+# ╭──────────────────────────────────────────────────────────╮
+# │                    Randomise Overlay                     │
+# ╰──────────────────────────────────────────────────────────╯
+OVERLAYS_DIRECTORY=$(realpath ../lib/overlays)
+LIST_OVERLAYS=(
+    "arrows__multi--youth-london-parkour-classes.mov"
+    "border__orange--youth-classes.mov"
+    "circle__purple--youth-classes.mov"
+    "slant__green--youth-parkour-classes.mov"
+    "slant__orange--youth-parkour-classes.mov"
+    "solidcircle__blue--parkour-youth-classes.mov"
+    "triangles__orange--youth-classes.mov"
+)
+RANDOM=$$$(date +%s)
+RANDOM_ARRAY_ENTRY=$[$RANDOM % ${#LIST_OVERLAYS[@]}]
+RANDOM_OVERLAY=${LIST_OVERLAYS[${RANDOM_ARRAY_ENTRY}]}
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -310,8 +325,6 @@ function ff_background()
 OVERLAY_TEMP="${TEMP_FOLDER}/temp_overlay.mp4"
 function ff_overlay()
 {
-    OVERLAYS_DIRECTORY=$(realpath ../lib/overlays)
-    RANDOM_OVERLAY=$(ls ${OVERLAYS_DIRECTORY} | grep "youth" | sort -R | head -n 1 )
     OVERLAY=${OVERLAYS_DIRECTORY}/${RANDOM_OVERLAY}
     CONFIG_FILE="ff_overlay.json"
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
