@@ -42,22 +42,6 @@ MAX_HEIGHT="480"
 # ╰──────────────────────────────────────────────────────────╯
 TEMP_FOLDER="/tmp"
 
-# ╭──────────────────────────────────────────────────────────╮
-# │                    Randomise Overlay                     │
-# ╰──────────────────────────────────────────────────────────╯
-OVERLAYS_DIRECTORY=$(realpath ../lib/overlays)
-LIST_OVERLAYS=(
-    "arrows__multi--youth-london-parkour-classes.mov"
-    "border__orange--youth-classes.mov"
-    "circle__purple--youth-classes.mov"
-    "slant__green--youth-parkour-classes.mov"
-    "slant__orange--youth-parkour-classes.mov"
-    "solidcircle__blue--parkour-youth-classes.mov"
-    "triangles__orange--youth-classes.mov"
-)
-RANDOM=$$$(date +%s)
-RANDOM_ARRAY_ENTRY=$[$RANDOM % ${#LIST_OVERLAYS[@]}]
-RANDOM_OVERLAY=${LIST_OVERLAYS[${RANDOM_ARRAY_ENTRY}]}
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -323,9 +307,29 @@ function ff_background()
 # │                   Random youth overlay                   │
 # ╰──────────────────────────────────────────────────────────╯
 OVERLAY_TEMP="${TEMP_FOLDER}/temp_overlay.mp4"
+WEBHOST_ADDRESS="http://media.londonparkour.com/overlays"
+OVERLAYS_DIRECTORY=$(realpath ./)
+OVERLAY="${OVERLAYS_DIRECTORY}/overlay.mov"
+
+LIST_OVERLAYS=(
+    "arrows__multi--youth-london-parkour-classes.mov"
+    "border__orange--youth-classes.mov"
+    "circle__purple--youth-classes.mov"
+    "slant__green--youth-parkour-classes.mov"
+    "slant__orange--youth-parkour-classes.mov"
+    "solidcircle__blue--parkour-youth-classes.mov"
+    "triangles__orange--youth-classes.mov"
+)
+RANDOM=$$$(date +%s)
+RANDOM_ARRAY_ENTRY=$[$RANDOM % ${#LIST_OVERLAYS[@]}]
+RANDOM_OVERLAY=${LIST_OVERLAYS[${RANDOM_ARRAY_ENTRY}]}
+
 function ff_overlay()
 {
-    OVERLAY=${OVERLAYS_DIRECTORY}/${RANDOM_OVERLAY}
+    ## download random overlay
+    curl --url "${WEBHOST_ADDRESS}/${RANDOM_OVERLAY}" --output ${OVERLAY}
+
+    ## process
     CONFIG_FILE="ff_overlay.json"
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
     ../ff_overlay.sh -i ${BG_WATERMARK_TEMP} -v ${OVERLAY} -o ${OVERLAY_TEMP} -S 1 -E 11
