@@ -127,8 +127,8 @@ jobs:
           cat ./config.json
 
 
-      # - uses: FedericoCarboni/setup-ffmpeg@v2
-      - uses: AnimMouse/setup-ffmpeg@v1
+      - uses: FedericoCarboni/setup-ffmpeg@v2
+      # - uses: AnimMouse/setup-ffmpeg@v1
 
       # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
