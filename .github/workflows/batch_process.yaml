@@ -195,6 +195,7 @@ jobs:
 
       - name: Update google sheet with processed video folder
         run: |
+          cat ./config.json
           CATEGORY=$(cat ./config.json | sudo jq -c '.category' | tr -d '"' )
           echo $CATEGORY
           SCHEDULE=$(cat ./config.json | sudo jq -c '.schedule' | tr -d '"' )
