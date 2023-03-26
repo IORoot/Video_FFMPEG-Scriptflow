@@ -19,10 +19,6 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
 LOGLEVEL="error" 
-FPS="30"
-CRF="18"
-WIDTH="1280"
-HEIGHT="-2"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -169,22 +165,20 @@ function main()
     # If input is a file
     if [[ -f "${INPUT_FILENAME}" ]]; then 
         printf "📐 ff_proxy.sh - Create a small low-res proxy file for input video. "
-        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT},setsar=1:1,fps=${FPS} -vcodec libx264 -crf ${CRF} -c:a aac -q:a 5 ${OUTPUT_FILENAME}
+        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=1280:-2,setsar=1:1,fps=30 -vcodec libx264 -crf 25 -c:a aac -q:a 5 ${OUTPUT_FILENAME}
     fi
 
     # If input is a folder
     if [[ -d "${INPUT_FILENAME}" ]]; then
 
-        FILELIST=$(find ${INPUT_FILENAME} -type f | grep -i 'mp4\|mov')
-
-        for FILE in ${FILELIST};
+        for FILE in $(find ${INPUT_FILENAME} -type f | grep -i 'mp4\|mov');
         do
             REALFILE=$(realpath $FILE)
             DIRECTORY=$(dirname $FILE)
             BASENAME=$(basename $FILE)
             NOEXTENSION=$(echo "${BASENAME%.*}" )
             echo "processing ${REALFILE}"
-            ffmpeg -y -v ${LOGLEVEL} -i ${REALFILE} -vf scale=${WIDTH}:${HEIGHT},setsar=1:1,fps=${FPS} -vcodec libx264 -crf ${CRF} -c:a aac -q:a 5 ${DIRECTORY}/proxy_${NOEXTENSION}.mp4
+            ffmpeg -y -v ${LOGLEVEL} -i ${REALFILE} -vf scale=1280:-2,setsar=1:1,fps=30 -vcodec libx264 -crf 25 -c:a aac -q:a 5 ${DIRECTORY}/proxy_${NOEXTENSION}.mp4
         done
     fi
 
