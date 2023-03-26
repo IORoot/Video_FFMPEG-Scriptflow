@@ -96,12 +96,13 @@ jobs:
           args: copy GDrive:${GDRIVE_FOLDER_PREFIX}${GDRIVE_FOLDER} ./raw_videos
 
 
+      - uses: FedericoCarboni/setup-ffmpeg@v2
+
 
         # Use sudo otherwise permissions to /tmp won't work in runner
         # 
         # NOTE - Some templates DON'T use the -t flag. DO Include it in the template, just do nothing.
       - name: run ffmpeg template
-      - uses: FedericoCarboni/setup-ffmpeg@v2
         run: |
             echo "${{ env.CONFIG_B64 }}" > config_b64.json 
             cat config_b64.json
