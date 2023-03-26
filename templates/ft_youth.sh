@@ -166,10 +166,10 @@ function is_movie_file()
     FILE=$1
     
     echo "test"
-    ffprobe -version
-    ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"
+    /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe -version
+    /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"
 
-    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"; then
+    if /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"; then
         return 0
     else
         return 1
