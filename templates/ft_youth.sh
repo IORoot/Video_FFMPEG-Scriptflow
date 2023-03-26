@@ -31,7 +31,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        DEFAULTS                          │
 # ╰──────────────────────────────────────────────────────────╯
-FFMPEG_LOCATION="/opt/hostedtoolcache/ffmpeg/5.0.1/x64"
+FFMPEG="/opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffmpeg"
+FFPROBE="/opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe"
 OUTPUT_FILENAME="processed_youth.mp4"
 LOGLEVEL="error" 
 CURRENT_DIRECTORY=$(pwd)
@@ -165,7 +166,7 @@ function arguments()
 function is_movie_file()
 {
     FILE=$1
-    if ${FFMPEG_LOCATION}/ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"; then
+    if ${FFPROBE} -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"; then
         return 0
     else
         return 1
@@ -223,8 +224,8 @@ function ff_to_landscape()
 
         IFS=
         # Measure Height/width against each other
-        WIDTH=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=width -of csv=p=0 ${REAL_FILE})
-        HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${REAL_FILE})
+        WIDTH=$(${FFPROBE} -v ${LOGLEVEL} -select_streams v -show_entries stream=width -of csv=p=0 ${REAL_FILE})
+        HEIGHT=$(${FFPROBE} -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${REAL_FILE})
 
         WIDTH=$(echo ${WIDTH} | tr ',' '\n')
         HEIGHT=$(echo ${HEIGHT} | tr ',' '\n')
@@ -270,7 +271,7 @@ function ff_grouptime()
     if [ -f "${TEMP_FOLDER}/temp_config_$CONFIG_FILE" ]; then CONFIG_FLAG="-C ${TEMP_FOLDER}/temp_config_$CONFIG_FILE"; fi
     ../ff_grouptime.sh ${INPUT_FILE_LIST} -d 60 -o ${GROUPTIME_TEMP_FILE} $CONFIG_FLAG
     unset CONFIG_FLAG
-    ORIGINAL_HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${GROUPTIME_TEMP_FILE})
+    ORIGINAL_HEIGHT=$(${FFPROBE} -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${GROUPTIME_TEMP_FILE})
 }
 
 
