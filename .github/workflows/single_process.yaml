@@ -75,11 +75,6 @@ jobs:
 
 
 
-      - uses: FedericoCarboni/setup-ffmpeg@v2
-        id: setup-ffmpeg
-
-
-
       # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#repository_dispatch
       # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-a-repository-dispatch-event
       - name: install dependencies
@@ -106,6 +101,7 @@ jobs:
         # 
         # NOTE - Some templates DON'T use the -t flag. DO Include it in the template, just do nothing.
       - name: run ffmpeg template
+      - uses: FedericoCarboni/setup-ffmpeg@v2
         run: |
             echo "${{ env.CONFIG_B64 }}" > config_b64.json 
             cat config_b64.json

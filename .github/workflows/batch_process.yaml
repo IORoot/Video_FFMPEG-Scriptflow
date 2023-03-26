@@ -97,12 +97,6 @@ jobs:
           echo ${{ matrix.project }}
 
 
-
-      - uses: FedericoCarboni/setup-ffmpeg@v2
-        id: setup-ffmpeg
-
-
-
       - name: install dependencies
         run: |
           sudo apt-get update 
@@ -135,6 +129,7 @@ jobs:
 
       # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
+      - uses: FedericoCarboni/setup-ffmpeg@v2
         run: |
           cd ${GITHUB_WORKSPACE}
           mkdir -p ./processed_video
