@@ -196,8 +196,11 @@ jobs:
       - name: Update google sheet with processed video folder
         run: |
           CATEGORY=$(cat ./config.json | sudo jq -c '.category' | tr -d '"' )
+          echo $CATEGORY
           SCHEDULE=$(cat ./config.json | sudo jq -c '.schedule' | tr -d '"' )
+          echo $SCHEDULE
           VIDEOURL="http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4"
+          echo "${{ env.APPS_SCRIPT }}?category=%22${CATEGORY}%22&auto_schedule=%22${SCHEDULE}%22&video_url=%22${VIDEOURL}%22"
           curl "${{ env.APPS_SCRIPT }}?category=%22${CATEGORY}%22&auto_schedule=%22${SCHEDULE}%22&video_url=%22${VIDEOURL}%22"
 
 
