@@ -75,14 +75,17 @@ jobs:
 
 
 
+      - uses: FedericoCarboni/setup-ffmpeg@v2
+        id: setup-ffmpeg
+
+
+
       # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#repository_dispatch
       # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#create-a-repository-dispatch-event
       - name: install dependencies
         run: |
-          sudo add-apt-repository ppa:savoury1/ffmpeg4
-          sudo add-apt-repository ppa:savoury1/ffmpeg5
           sudo apt-get update 
-          sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass jq
+          sudo apt-get install --no-install-recommends rclone ssh sshpass jq
 
 
       - name: Checkout Repo

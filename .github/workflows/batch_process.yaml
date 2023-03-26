@@ -98,12 +98,15 @@ jobs:
 
 
 
+      - uses: FedericoCarboni/setup-ffmpeg@v2
+          id: setup-ffmpeg
+
+
+
       - name: install dependencies
         run: |
-          sudo add-apt-repository ppa:savoury1/ffmpeg4
-          sudo add-apt-repository ppa:savoury1/ffmpeg5
           sudo apt-get update 
-          sudo apt-get install --no-install-recommends ffmpeg rclone ssh sshpass sed
+          sudo apt-get install --no-install-recommends rclone ssh sshpass sed
 
 
 
