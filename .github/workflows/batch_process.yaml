@@ -133,6 +133,11 @@ jobs:
       # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
         run: |
+          whereis ffmpeg
+          echo $PATH
+          PATH=$PATH:$ffmpeg-path
+          PATH=$PATH:$ffprobe-path
+          echo $PATH
           pwd
           ls -la
           cd ${GITHUB_WORKSPACE}
@@ -142,7 +147,6 @@ jobs:
           mkdir -p ./processed_video
           TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple.sh"' | tr -d '"')
           cd ./templates
-          PATH=$PATH:/opt/hostedtoolcache/ffmpeg/5.0.1/x64/
           ln -s /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffmpeg ./ffmpeg
           ln -s /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe ./ffprobe
           ls -la
