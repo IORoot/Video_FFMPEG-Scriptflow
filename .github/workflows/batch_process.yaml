@@ -127,13 +127,19 @@ jobs:
           cat ./config.json
 
 
-      - uses: FedericoCarboni/setup-ffmpeg@v2
+      # - uses: FedericoCarboni/setup-ffmpeg@v2
+      - uses: AnimMouse/setup-ffmpeg@v1
 
       # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
         run: |
-          ffprobe --version
-          ffmpeg --version
+          ffprobe -version
+          ffmpeg -version
+          whereis ffmpeg
+          whereis ffprobe
+          echo $PATH
+          pwd
+          PATH=$PATH:${pwd}
           cd ${GITHUB_WORKSPACE}
           mkdir -p ./processed_video
           TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple.sh"' | tr -d '"')
