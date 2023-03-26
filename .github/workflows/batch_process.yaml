@@ -128,10 +128,12 @@ jobs:
 
 
       - uses: FedericoCarboni/setup-ffmpeg@v2
-      
+
       # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
         run: |
+          ffprobe --version
+          ffmpeg --version
           cd ${GITHUB_WORKSPACE}
           mkdir -p ./processed_video
           TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple.sh"' | tr -d '"')
