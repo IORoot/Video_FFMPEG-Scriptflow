@@ -22,10 +22,10 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-TMP_FILE="/tmp/tmp_ffmpeg_concat_list.txt"                  # define temporary file
-OUTPUT_FILENAME=""                                          # define output file
-LOGLEVEL="error"                                            # Default FFMPEG loglevel
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_concat.mp4"                             
+TMP_FILE="/tmp/tmp_ffmpeg_concat_list.txt"                  
+LOGLEVEL="error"                                           
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │

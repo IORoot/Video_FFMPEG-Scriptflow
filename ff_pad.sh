@@ -17,8 +17,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_pad.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_pad.mp4"
 LOGLEVEL="error" 
 WIDTH="iw"
 HEIGHT="ih*2"

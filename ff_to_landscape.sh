@@ -19,8 +19,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_landscape.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_to_landscape.mp4"
 ROTATE=2
 LOGLEVEL="error" 
 

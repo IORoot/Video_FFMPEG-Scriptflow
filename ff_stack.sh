@@ -17,12 +17,12 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_stack.mp4"
 VERTICAL=''
 HORIZONTAL=''
 GRID=''
-
 TMP_FILE="/tmp/tmp_ffmpeg_stack_list.txt" 
-OUTPUT_FILENAME="output_stack.mp4"
 WIDTH="1920"
 HEIGHT="1080"
 LOGLEVEL="error" 

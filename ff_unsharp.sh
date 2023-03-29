@@ -18,8 +18,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_unsharp.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_unsharp.mp4"
 LX="5"          # odd numbers only. 3 to 23
 LY="5"          # odd numbers only. 3 to 23
 LA="1.0"        # -1.5 and 1.5

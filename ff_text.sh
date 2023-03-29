@@ -17,8 +17,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_text.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_text.mp4"
 LOGLEVEL="error" 
 
 TEMP_TEXTFILE="/tmp/text.txt"

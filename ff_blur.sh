@@ -18,8 +18,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_blur.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_blur.mp4"
 STRENGTH="0.5"
 STEPS="1"   
 LOGLEVEL="error" 

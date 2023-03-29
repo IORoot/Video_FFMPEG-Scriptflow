@@ -20,8 +20,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_cut.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_cut.mp4"
 START="00:00:00"
 END="00:00:10"
 LOGLEVEL="error" 

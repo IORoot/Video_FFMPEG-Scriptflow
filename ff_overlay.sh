@@ -19,7 +19,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-OUTPUT_FILENAME="output_overlay.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_overlay.mp4"
 OVERLAY=""
 LOGLEVEL="error"
 START="0"

@@ -20,8 +20,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_thumbnail.png"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_thumbnail.png"
 COUNT="3"
 SAMPLE="300"
 LOGLEVEL="error" 

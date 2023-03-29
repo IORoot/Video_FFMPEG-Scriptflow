@@ -18,8 +18,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_colour.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_colour.mp4"
 BRIGHTNESS="0"      # -1.0 to 1.0
 CONTRAST="1"        # -1000.0 to 1000.0
 GAMMA="1"           # 0.1 to 10.0

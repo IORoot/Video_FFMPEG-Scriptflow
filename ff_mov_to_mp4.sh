@@ -18,7 +18,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-OUTPUT_FILENAME="output_mov.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_mov_to_mp4.mp4"
 LOGLEVEL="error"
 
 # ╭──────────────────────────────────────────────────────────╮

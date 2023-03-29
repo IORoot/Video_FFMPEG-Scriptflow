@@ -20,8 +20,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_flipped.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_flip.mp4"
 HORIZONTAL=""
 VERTICAL=""
 LOGLEVEL="error"

@@ -18,8 +18,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_sharpen.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_sharpen.mp4"
 PIXEL="5.0"      # 3 and 23
 SHARPEN="1.0"   # -2.0 and 5.0
 LOGLEVEL="error" 

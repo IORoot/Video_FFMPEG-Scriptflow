@@ -19,8 +19,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_portrait.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_to_portrait.mp4"
 ROTATE=1
 LOGLEVEL="error" 
 

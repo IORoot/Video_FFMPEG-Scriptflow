@@ -1,10 +1,10 @@
 #!/bin/bash
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │            Append two files together with a re-encoding of codecs            │
+# │                         JSON Template Config Runner                          │
+# │        Takes a JSON config file and executes each command in sequence        │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
-
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                       Set Defaults                       │
@@ -15,13 +15,10 @@ set -o pipefail                                             # pipeline fails on 
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
 cd "$(dirname "$0")"                                        # Change to the script folder.
 
-
 # ╭──────────────────────────────────────────────────────────╮
-# │                        VARIABLES                         │
+# │                     Temporary Files                      │
 # ╰──────────────────────────────────────────────────────────╯
-INPUT_FILENAME="input.mp4"
-OUTPUT_FILENAME="ff_append.mp4"
-LOGLEVEL="error" 
+TEMP_FOLDER="/tmp"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -29,30 +26,18 @@ LOGLEVEL="error"
 
 usage()
 {
-    if [ "$#" -lt 4 ]; then
-        printf "ℹ️ Usage:\n $0 -f <INPUT_FILE> -s <INPUT_FILE> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
+    if [ "$#" -lt 1 ]; then
+        printf "ℹ️  Usage:\n $0 -c <CONFIG_FILE> [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "This will append two files together while re-encoding them to be the same codec.\n\n"
+        printf "Runs a config file to execute multiple ff_ scripts in sequence.\n"
+        printf "Requires JQ command.\n\n"
 
         printf "Flags:\n"
 
-        printf " -f | --first <FIRST_INPUT_FILE>\n"
-        printf "\tThe name of the first input file.\n\n"
-
-        printf " -s | --second <SECOND_INPUT_FILE>\n"
-        printf "\tThe name of the second input file.\n\n"
-
-        printf " -o | --output <OUTPUT_FILE>\n"
-        printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
-        printf "\tThe name of the output file.\n\n"
-
         printf " -C | --config <CONFIG_FILE>\n"
-        printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
-
-        printf " -l | --loglevel <LOGLEVEL>\n"
-        printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
-        printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n"
+        printf "\tA JSON configuration file for all settings.\n"
+        printf "\tAll inputs/outputs should be relative to where this file is.\n\n"
 
         exit 1
     fi
@@ -68,35 +53,6 @@ function arguments()
 
     while [[ $# -gt 0 ]]; do
     case $1 in
-
-
-        -f|--first)
-            FIRST_FILENAME="$2"
-            shift
-            shift
-            ;;
-
-
-        -s|--second)
-            SECOND_FILENAME="$2"
-            shift
-            shift
-            ;;
-
-
-        -o|--output)
-            OUTPUT_FILENAME="$2"
-            shift 
-            shift
-            ;;
-
-
-        -l|--loglevel)
-            LOGLEVEL="$2"
-            shift 
-            shift
-            ;;
-
 
         -C|--config)
             CONFIG_FILE="$2"
@@ -122,84 +78,87 @@ function arguments()
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │   Exit the app by just skipping the ffmpeg processing.   │
-# │            Then copy the input to the output.            │
+# │             Test if file is a movie or not               │
 # ╰──────────────────────────────────────────────────────────╯
-function exit_gracefully()
+function is_movie_file()
 {
-    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
-    exit 0
+    FILE=$1
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │        Read config-file if supplied. Requires JQ         │
+# │            Config file overrides any settings            │
 # ╰──────────────────────────────────────────────────────────╯
 function read_config()
 {
+    
     # Check if config has been set.
-    if [ -z ${CONFIG_FILE+x} ]; then return 0; fi
+    if [ -z ${CONFIG_FILE+x} ]; then exit 1; fi
     
     # Check dependencies
     if ! command -v jq &> /dev/null; then
         printf "JQ is a dependency and could not be found. Please install JQ for JSON parsing. Exiting.\n"
-        exit
+        exit 1
     fi
 
-    # Read file
-    LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
-
-    # Print to screen
-    printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
-
-    # Sen to the arguments function again to override.
-    arguments $LIST_OF_INPUTS
+    # Get a list of all the scripts - Any duplicates must have digits after their name. ff_scale1, ff_scale2, etc...
+    LIST_OF_SCRIPT_NAMES=$(cat ${CONFIG_FILE} | jq 'to_entries[] | select(.key|startswith("ff")) | .key' | xargs )
+    ARRAY_OF_SCRIPT_NAMES=($LIST_OF_SCRIPT_NAMES)
 }
 
 # ╭──────────────────────────────────────────────────────────╮
-# │                                                          │
-# │                      Main Function                       │
-# │                                                          │
+# │                Remove any temporary files                │
+# ╰──────────────────────────────────────────────────────────╯
+function cleanup()
+{
+    rm -f ${TEMP_FOLDER}/temp_config_ff*
+}
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │     Run the specific ff_script with correct settings     │
+# ╰──────────────────────────────────────────────────────────╯
+function run_ff_script()
+{
+    SCRIPT_NAME=$1
+    SCRIPT_CONFIG=$2
+    SCRIPT_FILE=${TEMP_FOLDER}/temp_config_$SCRIPT_NAME.json
+
+    printf "🏃‍♀️ Running: %s\n" "${SCRIPT_NAME}"
+
+    # Put config for this script into a new /tmp/temp_config_script.json file
+    printf "%s\n" "${SCRIPT_CONFIG}"  > ${SCRIPT_FILE}
+
+    # Run script
+    eval "${SCRIPT_NAME} -C ${SCRIPT_FILE}"
+}
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │           Loop over each ff_script and run it            │
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
+    # Check if config has been set.
+    if [ -z ${CONFIG_FILE+x} ]; then exit 1; fi
 
-    if [[ -z "${FIRST_FILENAME}" ]]; then 
-        printf "❌ No first file specified. Exiting.\n"
-        exit_gracefully
-    fi
-    if [[ -z "${SECOND_FILENAME}" ]]; then 
-        printf "❌ No second file specified. Exiting.\n"
-        exit_gracefully
-    fi
-
-    # -i ${FILE0}                   input file1 as index 0
-    # -i ${FILE1}                   input file1 as index 1
-    # -filter_complex               run filters
-    # [0:v]                         use input 0's (v)ideo
-    # [0:a]                         use input 0's (a)audio
-    # [1:v]                         use input 1's (v)ideo
-    # [1:a]                         use input 1's (a)audio
-    #
-    # concat=n=2                    concatenate with number of segments (2)
-    # :v=1:a=1                      specify the number of video & audio streams (from 0) (default 1)
-    #
-    # [v]                           set ouput of filter-complex video as variable [v]
-    # [a]                           set ouput of filter-complex audio as variable [a]
-    #
-    # -map "[v]"                    map variable [v] to output
-    # -map "[a]"                    map variable [a] to output
-    # 
-    printf "🚀 ff_append.sh - Re-encoding and 📼 Appending videos. "
-    ffmpeg -v ${LOGLEVEL} -i ${FIRST_FILENAME} -i ${SECOND_FILENAME} \
-        -filter_complex "[0:v] [0:a] [1:v] [1:a] concat=n=2:v=1:a=1 [v] [a]" \
-        -map "[v]" -map "[a]" ${OUTPUT_FILENAME}
-
-    printf "✅ %s\n" "$OUTPUT_FILENAME"
+    for FF_SCRIPT in "${ARRAY_OF_SCRIPT_NAMES[@]}"
+    do
+        # Get contents of the settings to run
+        SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$FF_SCRIPT" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value' )
+        run_ff_script "${FF_SCRIPT}" "${SCRIPT_CONTENTS}"
+    done
 
 }
 
+cleanup
 usage $@
-arguments $@
+arguments "$@"
 read_config "$@"
 main $@
+cleanup

@@ -17,8 +17,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_crop.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_crop.mp4"
 LOGLEVEL="error" 
 WIDTH="300"
 HEIGHT="300"

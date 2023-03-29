@@ -20,8 +20,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_scale.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_scale.mp4"
 WIDTH="1920"
 HEIGHT="1080"
 LOGLEVEL="error" 
@@ -41,7 +41,7 @@ usage()
         printf "Flags:\n"
 
         printf " -i | --input <INPUT_FILE>\n"
-        printf "\tThe name of an input file.\n\n"
+        printf "\tThe name of an input file. Default: input.mp4\n\n"
 
 
         printf " -o | --output <OUTPUT_FILE>\n"
@@ -175,6 +175,29 @@ function exit_gracefully()
     exit 0
 }
 
+function pre_flight_checks()
+{
+    # Check input filename has been set.
+    if [[ -z "${INPUT_FILENAME}" ]]; then 
+        printf "❌ No input file specified. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input file exists.
+    if [ ! -f "$INPUT_FILENAME" ]; then
+        printf "❌ Input file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}"; then
+        continue 
+    else
+        printf "❌ Input file not a movie file. Exiting.\n"
+        exit_gracefully
+    fi
+}
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
@@ -182,11 +205,7 @@ function exit_gracefully()
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
-
-    if [[ -z "${INPUT_FILENAME}" ]]; then 
-        printf "❌ No input file specified. Exiting.\n"
-        exit_gracefully
-    fi
+    pre_flight_checks
 
     printf "📐 ff_scale.sh - Changing the size of the video. "
 

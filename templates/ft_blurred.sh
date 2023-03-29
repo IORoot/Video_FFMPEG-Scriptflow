@@ -67,8 +67,6 @@ usage()
         printf "ℹ️  Usage:\n $0 -f <FOLDER> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "🚨 PLEASE NOTE - THIS USES AUTOFLIP - WHICH REQUIRES A GITHUB PAT TO BE DEFINED.\n"
-
         printf "Use on a folder of video clips. Will concat, pad and add text\n\n"
 
         printf "Flags:\n"

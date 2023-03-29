@@ -21,9 +21,9 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_lut.mp4"
 LUT_FOLDER="./lib/luts"
-OUTPUT_FILENAME="output_lut.mp4"
 LOGLEVEL="error" 
 
 # ╭──────────────────────────────────────────────────────────╮

@@ -17,8 +17,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_middle.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_middle.mp4"
 TRIM="1"
 LOGLEVEL="error"                 # define temporary file
 
