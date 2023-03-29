@@ -9,7 +9,6 @@
 # ╭──────────────────────────────────────────────────────────╮
 # │                       Set Defaults                       │
 # ╰──────────────────────────────────────────────────────────╯
-
 set -o errexit                                              # If a command fails bash exits.
 set -o pipefail                                             # pipeline fails on one command.
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
@@ -18,6 +17,7 @@ if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show 
 # ╭──────────────────────────────────────────────────────────╮
 # │                     Temporary Files                      │
 # ╰──────────────────────────────────────────────────────────╯
+PWD=$(pwd)
 TEMP_FOLDER="/tmp"
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -55,7 +55,7 @@ function arguments()
     case $1 in
 
         -C|--config)
-            CONFIG_FILE="$2"
+            CONFIG_FILE=$(realpath "$2")
             shift 
             shift
             ;;
@@ -74,20 +74,6 @@ function arguments()
     esac
     done
 
-}
-
-
-# ╭──────────────────────────────────────────────────────────╮
-# │             Test if file is a movie or not               │
-# ╰──────────────────────────────────────────────────────────╯
-function is_movie_file()
-{
-    FILE=$1
-    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FILE}"; then
-        return 0
-    else
-        return 1
-    fi
 }
 
 
@@ -135,7 +121,7 @@ function run_ff_script()
     printf "%s\n" "${SCRIPT_CONFIG}"  > ${SCRIPT_FILE}
 
     # Run script
-    eval "${SCRIPT_NAME} -C ${SCRIPT_FILE}"
+    eval "${SCRIPT_NAME}.sh -C ${SCRIPT_FILE}"
 }
 
 
@@ -147,12 +133,20 @@ function main()
     # Check if config has been set.
     if [ -z ${CONFIG_FILE+x} ]; then exit 1; fi
 
+    # Move into the folder of the config.json file.
+    # Every folder/file should be relative to that.
+    cd $(dirname $CONFIG_FILE)
+
+    # Loop scripts
     for FF_SCRIPT in "${ARRAY_OF_SCRIPT_NAMES[@]}"
     do
         # Get contents of the settings to run
         SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$FF_SCRIPT" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value' )
         run_ff_script "${FF_SCRIPT}" "${SCRIPT_CONTENTS}"
     done
+
+    # Move back to where you were.
+    cd $PWD
 
 }
 
