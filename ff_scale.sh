@@ -15,7 +15,6 @@
 set -o errexit                                              # If a command fails bash exits.
 set -o pipefail                                             # pipeline fails on one command.
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
-cd "$(dirname "$0")"                                        # Change to the script folder.
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
@@ -82,7 +81,7 @@ function arguments()
 
 
         -i|--input)
-            INPUT_FILENAME="$2"
+            INPUT_FILENAME=$(realpath "$2")
             shift
             shift
             ;;
@@ -191,7 +190,7 @@ function pre_flight_checks()
 
     # Check input filename is a movie file.
     if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}"; then
-        continue 
+        printf "✅ Input file is a known movie filetype.\n" 
     else
         printf "❌ Input file not a movie file. Exiting.\n"
         exit_gracefully

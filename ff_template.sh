@@ -13,7 +13,7 @@
 set -o errexit                                              # If a command fails bash exits.
 set -o pipefail                                             # pipeline fails on one command.
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
-cd "$(dirname "$0")"                                        # Change to the script folder.
+
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                     Temporary Files                      │
