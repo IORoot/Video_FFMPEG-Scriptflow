@@ -19,8 +19,8 @@ cd "$(dirname "$0")"                                        # Change to the scri
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
-OUTPUT_FILENAME="output_aspect_ratio.mp4"
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_aspect_ratio.mp4"
 ASPECT_RATIO="1:1"
 LOGLEVEL="error" 
 
