@@ -66,13 +66,13 @@ if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show 
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_grouptime.mp4"
+DURATION="60"
+LOGLEVEL="error"  
 TMP_FILE="/tmp/tmp_ffmpeg_grouptime_list.txt" 
 TMP_SUFFIX="trimmed" 
 INTERMEDIATE_FILENAME="/tmp/intermediate.mp4"
-OUTPUT_FILENAME="output_grouptime.mp4"
-DURATION="60"
-LOGLEVEL="error"  
 PIPE="concat:"               # define temporary file
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -122,21 +122,17 @@ function write_to_temp()
 {
 
     FILE=$1
-    TMP=$2
 
     # Exclude folders
     if [ -d "$FILE" ]; then
         return
     fi
 
-    # get absolute path of file.
-    REAL_PATH=$(realpath ${FILE})
-
-    # print to screen
-    # printf "➡️  file: %s\n" "${REAL_PATH}"
+    # check files
+    pre_flight_checks ${FILE}
 
     # print line into temp file.
-    printf "%s\n" "${REAL_PATH}" >> ${TMP}
+    printf "%s\n" "${FILE}" >> ${TMP_FILE}
 }
 
 
@@ -158,8 +154,8 @@ function arguments()
     case $1 in
 
 
-        -i|--input)
-            write_to_temp $2 ${TMP_FILE}
+        -i|--input|--input?|--input??)
+            write_to_temp $(realpath "$2")
             shift
             shift
             ;;
@@ -262,6 +258,30 @@ function exit_gracefully()
 
 
 # ╭──────────────────────────────────────────────────────────╮
+# │     Run these checks before you run the main script      │
+# ╰──────────────────────────────────────────────────────────╯
+function pre_flight_checks()
+{
+    INPUT_FILE=$1
+
+    # Check input file exists.
+    if [ ! -f "$INPUT_FILE" ]; then
+        printf "\t❌ Input file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILE}" > /dev/null 2>&1; then
+        printf "" 
+    else
+        printf "\t❌ Input file not a movie file. Exiting.\n"
+        exit_gracefully
+    fi
+}
+
+
+
+# ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
 # │                                                          │
@@ -276,7 +296,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "👨‍👩‍👧‍👦  ff_grouptime.sh - This will remove a %% of seconds from front and end of all videos.\n"
+    printf "🎢  ff_grouptime.sh - This will remove a %% of seconds from front and end of all videos.\n"
 
 
 
@@ -287,8 +307,6 @@ function main()
     while read FILE; do
 
         FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${FILE})
-
-        printf "\t📁 File %-60s ⏲️  %s\n" "${FILE}" "${FILE_DURATION}"
 
         TOTAL_DURATION=$(echo "scale=4; ${TOTAL_DURATION} + ${FILE_DURATION}" | bc | awk '{printf "%f", $0}')
 
@@ -304,9 +322,7 @@ function main()
     # ╭──────────────────────────────────────────────────────────────────────────────╮
     # │       Step 2. Calculate 1sec in percentage against the target length.        │
     # ╰──────────────────────────────────────────────────────────────────────────────╯
-
     ONE_SECOND_IN_PERCENT=$(echo "scale=4; 100 / ${TOTAL_DURATION}" | bc | awk '{printf "%f", $0}')
-    #printf "🧮 One second = %s percent\n" "${ONE_SECOND_IN_PERCENT}"
 
 
 
@@ -316,9 +332,7 @@ function main()
     # ╭──────────────────────────────────────────────────────────╮
     # │         Step 3. Calculate the amount to cut off          │
     # ╰──────────────────────────────────────────────────────────╯
-
     TIME_TO_REMOVE=$(echo "scale=4; ${TOTAL_DURATION} - ${DURATION} " | bc | awk '{printf "%f", $0}')
-    #printf "🧮 Time to remove = %s sec\n" "${TIME_TO_REMOVE}"
 
 
 
@@ -328,7 +342,7 @@ function main()
     # │            Calculate 1% of amount to remove.             │
     # ╰──────────────────────────────────────────────────────────╯
     ONE_PERCENT_TO_REMOVE=$(echo "scale=4; ${TIME_TO_REMOVE} / 100 " | bc | awk '{printf "%f", $0}')
-    #printf "🧮 1%% of amount to remove = %s percent\n" "${ONE_PERCENT_TO_REMOVE}"
+
 
 
     # ╭──────────────────────────────────────────────────────────────────────────────╮
@@ -351,7 +365,7 @@ function main()
             # printf "AMOUNT_TO_REMOVE is %s\n" "${AMOUNT_TO_REMOVE}"
             HALF_AMOUNT_TO_REMOVE=$(echo "scale=4; ${AMOUNT_TO_REMOVE} / 2" | bc | awk '{printf "%f", $0}')
 
-            printf "\t📄 File %s is %s%% of the total. Removing %ss from start & end.\n" "${FILE}" "${PERCENTAGE_OF_TOTAL}" "${HALF_AMOUNT_TO_REMOVE}"
+            printf "\t📄 File %-80s is %s%% of total.\t Removing %ss from start & end.\n" "${FILE}" "${PERCENTAGE_OF_TOTAL}" "${HALF_AMOUNT_TO_REMOVE}"
 
             if ! command -v gdate &> /dev/null; then
                 START=$(date -d@${HALF_AMOUNT_TO_REMOVE} -u +%H:%M:%S.%N)   # convert to timestamp
@@ -426,9 +440,6 @@ function main()
     ffmpeg -y -v ${LOGLEVEL} -i ${INTERMEDIATE_FILENAME} -ss 00:00:00 -to ${FINALEND} ${OUTPUT_FILENAME}
     NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
     printf "✅ new duration: ⏲️  %s\n" "${NEW_FILE_DURATION}"
-
-
-
 
 }
 
