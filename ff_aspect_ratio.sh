@@ -129,7 +129,7 @@ function arguments()
 function pre_flight_checks()
 {
     # Check input filename has been set.
-    if [[ -z "${INPUT_FILENAME}" ]]; then 
+    if [[ -z "${INPUT_FILENAME+x}" ]]; then 
         printf "\t❌ No input file specified. Exiting.\n"
         exit_gracefully
     fi

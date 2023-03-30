@@ -163,11 +163,11 @@ function read_config()
 function pre_flight_checks()
 {
     # Check input filename has been set.
-    if [[ -z "${FIRST_FILENAME}" ]]; then 
+    if [[ -z "${FIRST_FILENAME+x}" ]]; then 
         printf "\t❌ No first file specified. Exiting.\n"
         exit_gracefully
     fi
-    if [[ -z "${SECOND_FILENAME}" ]]; then 
+    if [[ -z "${SECOND_FILENAME+x}" ]]; then 
         printf "\t❌ No second file specified. Exiting.\n"
         exit_gracefully
     fi

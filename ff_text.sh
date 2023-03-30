@@ -313,7 +313,7 @@ function main()
 {
 
     # If there is no input video, exit error
-    if [[ -z "${INPUT_FILENAME}" ]]; then 
+    if [[ -z "${INPUT_FILENAME+x}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
     fi
