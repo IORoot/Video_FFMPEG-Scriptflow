@@ -87,8 +87,8 @@ function arguments()
     while [[ $# -gt 0 ]]; do
     case $1 in
 
-
-        -i|--input)
+        # use wildcard ? to allow input1, input22,etc...
+        -i|--input|--input?|--input??)
             write_to_temp $2
             shift
             shift

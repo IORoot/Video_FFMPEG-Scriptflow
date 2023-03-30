@@ -101,20 +101,17 @@
         - [Description](#description)
         - [Flags](#flags)
         - [Examples](#examples)
-- [Templates](#templates)
-    - [ft_blurred.sh](#ft_blurredsh)
-    - [ft_grid.sh](#ft_gridsh)
-    - [ft_simple_blue.sh](#ft_simple_bluesh)
-    - [ft_simple_orange.sh](#ft_simple_orangesh)
-    - [ft_stack.sh](#ft_stacksh)
+- [ScriptFlow](#scriptflow)
+    - [Added extras:](#added-extras)
 - [Customising](#customising)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
 - [Changelog](#changelog)
-    - [Version 1.0.0](#version-100)
-    - [Version 1.0.1](#version-101)
+    - [Version 1.2](#version-12)
+    - [Version 1.1](#version-11)
+    - [Version 1.0](#version-10)
 
 <!-- /TOC -->
 
@@ -1124,55 +1121,28 @@ Small, transparent bottom-right positioned Video as a watermark:
        ff_watermark -i input.mp4 -w watermark_video.mp4 -s 0.3 -x "(W-w)" -y "(H-h)" -a 0.5
 
 
-## Templates
+## 4. ScriptFlow
 
-The `/template` folder holds wrapper scripts that chain a bunch of these utility scripts together and apply them to an entire folder of videos.
+The `scriptflow.sh` script takes a single argument - a config.json file that describes all steps to take.
 
-The idea is that you have a bunch of videos you wish to merge together, concat, pad, colour, lut, etc... These template do that.
+### Added extras:
 
-### `ft_blurred.sh`
-
-![blurred](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/blurred.jpg)
-
-This creates a one minute, 1:1 square aspect ratio, video based off a folder of videos. It uses a blurred and enlarged version of the video as the background padding.
-
-### `ft_grid.sh`
-
-![grid](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/grid.jpg)
-
-A 2x2 grid of grouped videos in four different orders. Has a watermark.
-
-### `ft_simple_blue.sh`
-
-![simple_blue](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/simple_blue.png)
-
-Square 1:1 video with a blue padding on top and bottom. Includes text on top and a watermark on the bottom.
-
-### `ft_simple_orange.sh`
-
-![simple_orange](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/simple_orange.png)
-
-Square 1:1 video with a orange padding on top and bottom. Includes text on top and a watermark on the bottom.
-
-### `ft_stack.sh`
-
-![stacked](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/stacked.jpg)
-
-Two vertically stacked videos on top of each other in a square 1:! aspect ratio video.
+Inputs can be `input1`, `input2`, etc... for scripts that require multiple inputs (like `ff_concat.sh`)
 
 
-##  4.  Customising
+
+##  5.  Customising
 
 Fork and use Pull Requests.
 
-##  5. Troubleshooting
+##  6. Troubleshooting
 
 Please use the Issues tab.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-##  6. Contributing
+##  7. Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -1189,7 +1159,7 @@ Don't forget to give the project a star! Thanks again!
 
 
 
-##  7. License
+##  8. License
 
 Distributed under the MIT License.
 
@@ -1219,18 +1189,25 @@ SOFTWARE.
 
 
 
-##  8. Contact
+##  9. Contact
 
 Author Link: [https://github.com/IORoot](https://github.com/IORoot)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-##  9. Changelog
+##  10. Changelog
 
-###  9.1. Version 1.0.0
+
+### 10.1. Version 1.2
+
+- Added scriptflow. Run any script with a JSON config file.
+
+### 10.1. Version 1.1
+
+- Added config-file abilities. Used by templates.
+
+
+###  10.2. Version 1.0
 
 - Initial
 
-### 9.2. Version 1.0.1
-
-- Added config-file abilities. Used by templates.
