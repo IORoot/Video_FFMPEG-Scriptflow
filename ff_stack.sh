@@ -33,7 +33,7 @@ LOGLEVEL="error"
 
 usage()
 {
-    if [ "$#" -lt 3 ]; then
+    if [ "$#" -lt 1 ]; then
         printf "ℹ️ Usage:\n $0 -v -h -g -i <INPUT_FILE> [-w <WIDTH>] [-h <HEIGHT>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
@@ -49,6 +49,12 @@ usage()
 
         printf " -g | --grid\n"
         printf "\tCreates a 2x2 stack of four input videos.\n\n"
+
+        printf " -x | --width\n"
+        printf "\tOutput width. default 1920.\n\n"
+
+        printf " -y | --height\n"
+        printf "\tOutput height. Default 1080.\n\n"
 
         printf " -i | --input <INPUT_FILE>\n"
         printf "\tThe name of any input files.\n\n"
@@ -81,8 +87,8 @@ function arguments()
     case $1 in
 
 
-        -i|--input)
-            write_to_temp $2 ${TMP_FILE}
+        -i|--input|--input?|--input??)
+            write_to_temp $2
             shift
             shift
             ;;
@@ -110,6 +116,20 @@ function arguments()
         -g|--grid)
             GRID="TRUE"
             shift
+            ;;
+
+
+        -x|--width)
+            WIDTH="$2"
+            shift 
+            shift 
+            ;;
+
+
+        -y|--height)
+            HEIGHT="$2"
+            shift 
+            shift 
             ;;
 
 
@@ -176,7 +196,6 @@ function write_to_temp()
 {
 
     FILE=$1
-    TMP=$2
 
     # Exclude folders
     if [ -d "$FILE" ]; then
@@ -187,7 +206,7 @@ function write_to_temp()
     REAL_PATH=$(realpath ${FILE})
 
     # print line into temp file.
-    printf "%s\n" "${REAL_PATH}" >> ${TMP}
+    printf "%s\n" "${REAL_PATH}" >> ${TMP_FILE}
 }
 
 
@@ -210,7 +229,6 @@ function exit_gracefully()
 function main()
 {
 
-
     if [[ ! -s "${TMP_FILE}" ]]; then
         printf "❌ No inputs specified. Exiting.\n"
         exit_gracefully
@@ -231,7 +249,7 @@ function main()
 
     if [ "${VERTICAL}" == "TRUE" ]; then
         if [ $NUMBER_OF_LINES -lt 2 ]; then
-            echo "Not enough inputs, need 2, got ${NUMBER_OF_LINES}. exiting."
+            echo "❌ Not enough inputs, need 2, got ${NUMBER_OF_LINES}. exiting."
             exit_gracefully
         fi
         ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex vstack=inputs=2 ${OUTPUT_FILENAME}
@@ -239,7 +257,7 @@ function main()
 
     if [ "${HORIZONTAL}" == "TRUE" ]; then
         if [ $NUMBER_OF_LINES -lt 2 ]; then
-            echo "Not enough inputs, need 2, got ${NUMBER_OF_LINES}. exiting."
+            echo "❌ Not enough inputs, need 2, got ${NUMBER_OF_LINES}. exiting."
             exit_gracefully
         fi
         ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex hstack=inputs=2 ${OUTPUT_FILENAME}
@@ -247,7 +265,7 @@ function main()
 
     if [ "${GRID}" == "TRUE" ]; then
         if [ $NUMBER_OF_LINES -lt 4 ]; then
-            echo "Not enough inputs, need 4, got ${NUMBER_OF_LINES}. exiting."
+            echo "❌ Not enough inputs, need 4, got ${NUMBER_OF_LINES}. exiting."
             exit_gracefully
         fi
         ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex "[0:v][1:v][2:v][3:v]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[v]" -map "[v]" ${OUTPUT_FILENAME}
