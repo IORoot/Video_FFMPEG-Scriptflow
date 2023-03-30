@@ -133,7 +133,7 @@ function arguments()
     case $1 in
 
         -i|--input)
-            INPUT_FILENAME="$2"
+            INPUT_FILENAME=$(realpath "$2")
             shift
             shift
             ;;
@@ -147,7 +147,7 @@ function arguments()
 
 
         -t|--textfile)
-            TEXTFILE="$2"
+            TEXTFILE=$(realpath "$2")
             shift 
             shift
             ;;

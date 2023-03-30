@@ -81,7 +81,7 @@ function arguments()
 
 
         -i|--input)
-            INPUT_FILENAME="$2"
+            INPUT_FILENAME=$(realpath "$2")
             shift
             shift
             ;;
@@ -95,7 +95,7 @@ function arguments()
 
 
         -v|--overlay)
-            OVERLAY="$2"
+            OVERLAY=$(realpath "$2")
             shift 
             shift
             ;;

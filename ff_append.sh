@@ -70,14 +70,14 @@ function arguments()
 
 
         -f|--first)
-            FIRST_FILENAME="$2"
+            FIRST_FILENAME=$(realpath "$2")
             shift
             shift
             ;;
 
 
         -s|--second)
-            SECOND_FILENAME="$2"
+            SECOND_FILENAME=$(realpath "$2")
             shift
             shift
             ;;

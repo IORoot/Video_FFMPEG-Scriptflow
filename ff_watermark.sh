@@ -118,7 +118,7 @@ function arguments()
 
 
         -i|--input)
-            INPUT_FILENAME="$2"
+            INPUT_FILENAME=$(realpath "$2")
             shift
             shift
             ;;
@@ -132,7 +132,7 @@ function arguments()
 
 
         -w|--watermark)
-            WATERMARK_FILE="$2"
+            WATERMARK_FILE=$(realpath "$2")
             shift 
             shift
             ;;
