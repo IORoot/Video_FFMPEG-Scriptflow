@@ -69,7 +69,7 @@ usage()
         printf "\tPath to font file to use. Default: /System/Library/Fonts/HelveticaNeue.ttc\n\n"
 
 
-        printf " -c | --color <FONTCOLOUR>\n"
+        printf " -c | --colour <FONTCOLOUR>\n"
         printf "\tThe font colour to use. Can be Hex RRGGBB or name and include alpha with '@0.5' after. Default: white.\n\n"
 
 
