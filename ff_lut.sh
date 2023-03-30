@@ -23,7 +23,7 @@ if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show 
 # ╰──────────────────────────────────────────────────────────╯
 INPUT_FILENAME="input.mp4"
 OUTPUT_FILENAME="ff_lut.mp4"
-LUT_FOLDER="./lib/luts"
+LUT="./lib/luts/Andromeda.cube"
 LOGLEVEL="error" 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -49,7 +49,7 @@ usage()
 
         printf " -t | --lut <LUT_FILE>\n"
         printf "\tThe Look-Up-Table (LUT) should be in a 3DL/Cube format.\n"
-        printf "\tthere is no default, so must be supplied.\n\n"
+        printf "\tDefault ./lib/lut/Andromeda.cube.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -75,7 +75,7 @@ function arguments()
 
 
         -i|--input)
-            INPUT_FILENAME="$2"
+            INPUT_FILENAME=$(realpath "$2")
             shift
             shift
             ;;
@@ -89,7 +89,7 @@ function arguments()
 
 
         -t|--lut)
-            LUT_FILE="$2"
+            LUT=$(realpath "$2")
             shift 
             shift
             ;;
@@ -180,6 +180,19 @@ function pre_flight_checks()
         exit_gracefully
     fi
 
+    # Check lut filename has been set.
+    if [[ -z "${LUT+x}" ]]; then 
+        printf "\t❌ No LUT file specified. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check lut file exists.
+    if [ ! -f "$LUT" ]; then
+        printf "\t❌ LUT file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+
     # Check input filename is a movie file.
     if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
         printf "\t" 
@@ -200,14 +213,6 @@ function main()
 {
 
     pre_flight_checks
-
-    REAL_LUT_FOLDER=$(realpath ${LUT_FOLDER})
-    REAL_LUT_FILE="${REAL_LUT_FOLDER}/${LUT_FILE}"
-
-    if [[ -z "${REAL_LUT_FILE}" ]]; then 
-        printf "❌ LUT file doesn't exist. Exiting.\n"
-        exit_gracefully
-    fi
 
     printf "%-80s" "🎨 ff_lut.sh - LUT File %s being applied to video. " "$FILE" 
 
