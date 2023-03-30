@@ -246,6 +246,49 @@ function exit_gracefully()
     exit 0
 }
 
+
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │     Run these checks before you run the main script      │
+# ╰──────────────────────────────────────────────────────────╯
+function pre_flight_checks()
+{
+    # Check input filename has been set.
+    if [[ -z "${INPUT_FILENAME}" ]]; then 
+        printf "\t❌ No input file specified. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input file exists.
+    if [ ! -f "$INPUT_FILENAME" ]; then
+        printf "\t❌ Input file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check watermark filename has been set.
+    if [[ -z "${WATERMARK_FILE}" ]]; then 
+        printf "\t❌ No watermark file specified. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check watermark file exists.
+    if [ ! -f "$WATERMARK_FILE" ]; then
+        printf "\t❌ Watermark file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
+        printf "\t" 
+    else
+        printf "\t❌ Input file not a movie file. Exiting.\n"
+        exit_gracefully
+    fi
+}
+
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
@@ -254,15 +297,7 @@ function exit_gracefully()
 function main()
 {
 
-    if [[ -z "${INPUT_FILENAME}" ]]; then 
-        printf "❌ No input file specified. Exiting.\n"
-        exit_gracefully
-    fi
-
-    if [[ -z "${WATERMARK_FILE}" ]]; then 
-        printf "❌ No watermark file specified. Exiting.\n"
-        exit_gracefully
-    fi
+    pre_flight_checks
 
     # If a wildcard is used get a random result
     # "./lib/watermarks/youth_box_RANDOM.png"
@@ -270,7 +305,7 @@ function main()
         WATERMARK_FILE=$(realpath ${WATERMARK_FILE//RANDOM/*} | sort -R | head -n 1)
     fi
 
-    printf "🎨 ff_watermark.sh - Overlaying the watermark (%s)." "$WATERMARK_FILE" 
+    printf "%-80s" "🎨 ff_watermark.sh - Overlaying the watermark (%s)." "$WATERMARK_FILE" 
 
     if [[ ! -z $START || ! -z $END ]]; then
         ENABLE=":enable='between(t,${START},${END})"
@@ -278,7 +313,7 @@ function main()
 
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}${ENABLE}" ${OUTPUT_FILENAME}
 
-    printf "✅ %s\n" "${OUTPUT_FILENAME}"
+    printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
 
 }
 

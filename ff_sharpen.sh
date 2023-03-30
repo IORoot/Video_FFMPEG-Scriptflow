@@ -171,6 +171,36 @@ function exit_gracefully()
     exit 0
 }
 
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │     Run these checks before you run the main script      │
+# ╰──────────────────────────────────────────────────────────╯
+function pre_flight_checks()
+{
+    # Check input filename has been set.
+    if [[ -z "${INPUT_FILENAME}" ]]; then 
+        printf "\t❌ No input file specified. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input file exists.
+    if [ ! -f "$INPUT_FILENAME" ]; then
+        printf "\t❌ Input file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
+        printf "\t" 
+    else
+        printf "\t❌ Input file not a movie file. Exiting.\n"
+        exit_gracefully
+    fi
+}
+
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
@@ -179,12 +209,9 @@ function exit_gracefully()
 function main()
 {
 
-    if [[ -z "${INPUT_FILENAME}" ]]; then 
-        printf "❌ No input file specified. Exiting.\n"
-        exit_gracefully
-    fi
+    pre_flight_checks
 
-    printf "🎨 ff_sharpen.sh - Changing the sharpness of the video. " "$LUT_FILE" 
+    printf "🗡️ ff_sharpen.sh - Changing the sharpness of the video."
 
     # https://ffmpeg.org/ffmpeg-filters.html#eq
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \

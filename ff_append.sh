@@ -28,7 +28,7 @@ LOGLEVEL="error"
 
 usage()
 {
-    if [ "$#" -lt 4 ]; then
+    if [ "$#" -lt 1 ]; then
         printf "ℹ️ Usage:\n $0 -f <INPUT_FILE> -s <INPUT_FILE> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
@@ -127,7 +127,7 @@ function arguments()
 function exit_gracefully()
 {
     cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
-    exit 0
+    exit 1
 }
 
 
@@ -155,6 +155,53 @@ function read_config()
     arguments $LIST_OF_INPUTS
 }
 
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │     Run these checks before you run the main script      │
+# ╰──────────────────────────────────────────────────────────╯
+function pre_flight_checks()
+{
+    # Check input filename has been set.
+    if [[ -z "${FIRST_FILENAME}" ]]; then 
+        printf "\t❌ No first file specified. Exiting.\n"
+        exit_gracefully
+    fi
+    if [[ -z "${SECOND_FILENAME}" ]]; then 
+        printf "\t❌ No second file specified. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input file exists.
+    if [ ! -f "$FIRST_FILENAME" ]; then
+        printf "\t❌ First file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+    if [ ! -f "$SECOND_FILENAME" ]; then
+        printf "\t❌ Second file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check first input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FIRST_FILENAME}" > /dev/null 2>&1; then
+        printf "\t" 
+    else
+        printf "\t❌ First Input file not a movie file. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check first input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${SECOND_FILENAME}" > /dev/null 2>&1; then
+        printf "" 
+    else
+        printf "\t❌ Second Input file not a movie file. Exiting.\n"
+        exit_gracefully
+    fi
+}
+
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
@@ -163,14 +210,7 @@ function read_config()
 function main()
 {
 
-    if [[ -z "${FIRST_FILENAME}" ]]; then 
-        printf "❌ No first file specified. Exiting.\n"
-        exit_gracefully
-    fi
-    if [[ -z "${SECOND_FILENAME}" ]]; then 
-        printf "❌ No second file specified. Exiting.\n"
-        exit_gracefully
-    fi
+    pre_flight_checks
 
     # -i ${FILE0}                   input file1 as index 0
     # -i ${FILE1}                   input file1 as index 1
@@ -189,7 +229,7 @@ function main()
     # -map "[v]"                    map variable [v] to output
     # -map "[a]"                    map variable [a] to output
     # 
-    printf "🚀 ff_append.sh - Re-encoding and 📼 Appending videos. "
+    printf "%-80s" "🚀 ff_append.sh - Re-encoding and Appending videos."
     ffmpeg -v ${LOGLEVEL} -i ${FIRST_FILENAME} -i ${SECOND_FILENAME} \
         -filter_complex "[0:v] [0:a] [1:v] [1:a] concat=n=2:v=1:a=1 [v] [a]" \
         -map "[v]" -map "[a]" ${OUTPUT_FILENAME}

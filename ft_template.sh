@@ -19,6 +19,7 @@ if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show 
 # ╰──────────────────────────────────────────────────────────╯
 PWD=$(pwd)
 TEMP_FOLDER="/tmp"
+OUTPUT_FILENAME="output.mp4"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -77,6 +78,7 @@ function arguments()
 }
 
 
+
 # ╭──────────────────────────────────────────────────────────╮
 # │            Config file overrides any settings            │
 # ╰──────────────────────────────────────────────────────────╯
@@ -97,13 +99,17 @@ function read_config()
     ARRAY_OF_SCRIPT_NAMES=($LIST_OF_SCRIPT_NAMES)
 }
 
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                Remove any temporary files                │
 # ╰──────────────────────────────────────────────────────────╯
 function cleanup()
 {
     rm -f ${TEMP_FOLDER}/temp_config_ff*
+    find . -type f -name 'ff*.mp4' -delete
 }
+
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -115,14 +121,20 @@ function run_ff_script()
     SCRIPT_CONFIG=$2
     SCRIPT_FILE=${TEMP_FOLDER}/temp_config_$SCRIPT_NAME.json
 
-    printf "🏃‍♀️ Running: %s\n" "${SCRIPT_NAME}"
+    printf "\n\n🏃‍♀️ Running: %-20s : " "${SCRIPT_NAME}"
 
     # Put config for this script into a new /tmp/temp_config_script.json file
     printf "%s\n" "${SCRIPT_CONFIG}"  > ${SCRIPT_FILE}
+ 
+    if [[ $SCRIPT_NAME = *?[0-9] ]]; then
+        SCRIPT_NAME=${SCRIPT_NAME::${#SCRIPT_NAME}-1}
+    fi
+
 
     # Run script
     eval "${SCRIPT_NAME}.sh -C ${SCRIPT_FILE}"
 }
+
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -135,18 +147,25 @@ function main()
 
     # Move into the folder of the config.json file.
     # Every folder/file should be relative to that.
-    cd $(dirname $CONFIG_FILE)
+    CONFIG_DIRECTORY=$(dirname $CONFIG_FILE)
+    cd $CONFIG_DIRECTORY
 
     # Loop scripts
     for FF_SCRIPT in "${ARRAY_OF_SCRIPT_NAMES[@]}"
     do
         # Get contents of the settings to run
-        SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$FF_SCRIPT" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value' )
+        # trim any empty string "" values
+        # trim and null values
+        # SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$FF_SCRIPT" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value | with_entries(select(.value != "")) | with_entries(select(.value != null))' )
+        # Need to KEEP the "" entries for flags with no values.
+        SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$FF_SCRIPT" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value | with_entries(select(.value != null))' )
+        
+        # Run the ff_script
         run_ff_script "${FF_SCRIPT}" "${SCRIPT_CONTENTS}"
     done
 
-    # Move back to where you were.
-    cd $PWD
+    # Copy the last 
+    cp $FF_SCRIPT.mp4 $OUTPUT_FILENAME
 
 }
 
@@ -156,3 +175,6 @@ arguments "$@"
 read_config "$@"
 main $@
 cleanup
+
+# Move back to where you were.
+cd $PWD

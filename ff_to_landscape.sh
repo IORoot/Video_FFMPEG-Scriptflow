@@ -157,6 +157,35 @@ function exit_gracefully()
 }
 
 
+
+# ╭──────────────────────────────────────────────────────────╮
+# │     Run these checks before you run the main script      │
+# ╰──────────────────────────────────────────────────────────╯
+function pre_flight_checks()
+{
+    # Check input filename has been set.
+    if [[ -z "${INPUT_FILENAME}" ]]; then 
+        printf "\t❌ No input file specified. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input file exists.
+    if [ ! -f "$INPUT_FILENAME" ]; then
+        printf "\t❌ Input file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
+        printf "\t" 
+    else
+        printf "\t❌ Input file not a movie file. Exiting.\n"
+        exit_gracefully
+    fi
+}
+
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
@@ -165,10 +194,7 @@ function exit_gracefully()
 function main()
 {
 
-    if [[ -z "${INPUT_FILENAME}" ]]; then 
-        printf "❌ No input file specified. Exiting.\n"
-        exit 1
-    fi
+    pre_flight_checks
 
     # ╭──────────────────────────────────────────────────────────╮
     # │           Step 1. Detect orientation of video.           │
@@ -189,11 +215,11 @@ function main()
         # │    Step 2. rotate video 90 degrees counter clockwise.    │
         # ╰──────────────────────────────────────────────────────────╯
 
-        printf "🏞️  ff_to_landscape.sh - Landscape video detected (%sx%s). 👤 Converting to (%sx%s) portrait. " "$WIDTH" "$HEIGHT" "$HEIGHT" "$WIDTH"
+        printf "%-80s" "🏞️  ff_to_landscape.sh - Landscape video detected. Converting to portrait. "
 
         ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" $OUTPUT_FILENAME
 
-        printf "✅ %s (%sx%s)\n" "$OUTPUT_FILENAME" "$HEIGHT" "$WIDTH" 
+        printf "✅ %-20s (%sx%s)\n" "$OUTPUT_FILENAME" "$HEIGHT" "$WIDTH" 
     fi
 
 }
