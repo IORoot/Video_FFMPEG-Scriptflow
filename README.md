@@ -15,7 +15,6 @@
 
 ##  1. Table of Contents
 
-
 <!-- TOC -->
 
 - [Table of Contents](#table-of-contents)
@@ -24,7 +23,6 @@
     - [Installation](#installation)
 - [Usage](#usage)
 - [Configs](#configs)
-- [Template Configs](#template-configs)
 - [Script Details](#script-details)
     - [ff_append.sh](#ff_appendsh)
         - [Description](#description)
@@ -102,7 +100,12 @@
         - [Flags](#flags)
         - [Examples](#examples)
 - [ScriptFlow](#scriptflow)
-    - [Added extras:](#added-extras)
+    - [Blank flags](#blank-flags)
+    - [nulls](#nulls)
+    - [Multiple duplicate scripts](#multiple-duplicate-scripts)
+    - [Scripts with multiple inputs](#scripts-with-multiple-inputs)
+    - [Output & Cleanup](#output--cleanup)
+    - [pwd and file references](#pwd-and-file-references)
 - [Customising](#customising)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
@@ -119,7 +122,7 @@
 
 This is a collection of scripts to automate simple video editing tasks.
 
-The idea is that they can be chained together for more complex video effects and tasks.
+They can be easily chained together for more complex video effects and tasks by simply using a JSON configuration file.
 
 These are all based on BASH and FFMPEG.
 
@@ -164,17 +167,18 @@ Current list of scripts and their purposes.
 | `ff_blur.sh`         | Simple blur function using an unsharp mask                       |
 | `ff_colour.sh`       | Change brightness, contrast, gamma, saturation of video          |
 | `ff_concat.sh`       | Concatenate multiple videos together                             |
+| `ff_convert.sh`      | Convert an apple quicktime MOV to MP4 file                       |
 | `ff_crop.sh`         | Crop video to specific size                                      |
 | `ff_cut.sh`          | Cut video from start time to end time.                           |
 | `ff_flip.sh`         | Horizontally and/or vertically flip the video                    |
 | `ff_fps.sh`          | Alter the FPS with changing length of video                      |
 | `ff_grouptime.sh`    | Proportionally trims and concats videos to target video duration |
-| `ff_image.sh`        |                                                                  |
+| `ff_image.sh`        | Make a video from a looped image                                 |
 | `ff_lut.sh`          | Apply a 3DL/Cube LUT file to a video                             |
 | `ff_middle.sh`       | Remove equal number of seconds from start and end of video       |
-| `ff_mov_to_mp4.sh`   | Convert an iPhone quicktime MOV to MP4 file                      |
-| `ff_overlay.sh`      |                                                                  |
+| `ff_overlay.sh`      | Overlay an image or video on top of another video                |
 | `ff_pad.sh`          | Add a background padding around the video                        |
+| `ff_proxy.sh`        | Create a down-scaled,res,fps,crf proxy file for a video          | 
 | `ff_rotate.sh`       | Rotate a video in 90 degree increments                           |
 | `ff_scale.sh`        | Change the width and height of the video                         |
 | `ff_sharpen.sh`      | Simple sharpen function using an unsharp mask                    |
@@ -186,10 +190,16 @@ Current list of scripts and their purposes.
 | `ff_unsharp.sh`      | Use an unsharp mask to blur/sharpen luma,gamma,alpha             |
 | `ff_watermark.sh`    | Overlay a watermark image/video                                  |
 
+Additionally:
+
+| Script        | Description                                                         |
+| ------------- | ------------------------------------------------------------------- |
+| `scriptflow.sh` | Reads a JSON configuration file a runs the ff_ scripts sequentially | 
+
 
 ## Configs
 
-You can provide any of the scripts a configuration JSON file with the `-c|--config` flag. 
+You can provide any of the scripts a configuration JSON file with the `-C|--config` flag. 
 This JSON file should contain an object with the keys as the flags to the script and the values as the values you would pass on the command line.
 
 For instance, the following command:
@@ -212,37 +222,10 @@ And run like this:
 ./ff_scale.sh -c config.json
 ```
 
-## Template Configs
+For scripts that require multiple inputs, you can use `input1`, `input2`, etc... Suffix 1 or 2 digits.
 
-The templates can also take config files with nested configs for each stage of the template.
 
-Lets say we use the `ft_blurred.sh` template. That consists of multiple calls to other `ff_` scripts.
 
-You can provide the config for each one of those scripts individually by building up the template config.
-
-The github action requires `template`, `schedule` and `category`. These are not needed other than for my pipelines.
-
-Each key has the name of the script, like `ff_lut` and then an object with each key and value.
-
-These will become an overriding `--key value` for the script.
-
-```json
-{
-    "template": "ft_blurred.sh",
-    "schedule": "NOW",
-    "category": "youtheast_thu18",
-
-    "ff_lut": {
-        "lut": "Lundmark.cube"
-    },
-
-    "ff_thumbnail": {
-        "count": "2"
-    }
-}
-```
-
-If you have multiple stages with the same name, like `ff_scale`, Then use a counter after. So, `ff_scale1` and `ff_scale2`...
 
 
 ## Script Details
@@ -1125,10 +1108,103 @@ Small, transparent bottom-right positioned Video as a watermark:
 
 The `scriptflow.sh` script takes a single argument - a config.json file that describes all steps to take.
 
-### Added extras:
+This configuration JSON file will built up of a chain of scripts you wish to run. Each key has the name of the script, like `ff_lut` and then an object with each key and value. 
+
+For example, to run the `ff_lut` script followed by the `ff_thumbnail` script, you can use the following file:
+
+```json
+{
+
+    "ff_lut": {
+	    "input": "movie.mp4",
+        "lut": "Lundmark.cube"
+    },
+
+    "ff_thumbnail": {
+	    "input": "ff_lut.mp4",
+        "count": "2"
+    }
+}
+```
+
+Defaults will be used for any flag not specified. Every script has a default `output` of it's own script name. This is why the `ff_thumbnail` script can take in the `ff_lut.mp4` file.
+
+### 4.1 Blank flags
+
+If you need to use a flag without a value, simple use an empty string.
+```json
+{
+    "ff_flip": {
+	    "input": "movie.mp4",
+        "horizontal": ""
+    }
+}
+```
+
+### 4.2 nulls
+`null` values can also be used to just act as a reminder of what keys are available. Any key with a `null` value will be stripped out when run and the default value of the script will be used.
+
+```json
+{
+    "ff_flip": {
+	    "input":      null,
+        "horizontal": null,
+        "vertical":   null,
+        "output":     null,
+        "loglevel":   null
+    }
+}
+
+```
+
+
+> Note : The github action requires  `schedule` and `category`. These are not needed other than for my pipelines.
+
+
+### 4.3 Multiple duplicate scripts
+
+If you have multiple stages with the same name, like `ff_scale`, Then use a counter digit as a suffix. So, `ff_scale1` and `ff_scale2`...
+
+```json
+{
+    "ff_proxy1": {
+	    "input":      "video1.mp4",
+        "output":     "proxy1.mp4"
+    },
+
+	"ff_proxy2": {
+	    "input":      "videoB.mp4",
+        "output":     "proxy2.mp4"
+    }
+    
+}
+```
+
+
+### 4.4 Scripts with multiple inputs
 
 Inputs can be `input1`, `input2`, etc... for scripts that require multiple inputs (like `ff_concat.sh`)
 
+```json
+{
+    "ff_concat": {
+	    "input1":     "video1.mp4",
+	    "input2":     "videoB.mp4",
+	    "input3":     "charlie.mp4"
+    },    
+}
+```
+
+
+### 4.5. Output & Cleanup
+
+Once the `scriptflow` has finished, it will output to a file called `output.mp4` and all other `ff_?????.mp4`  intermediate movie files will be removed.
+
+
+### 4.6 pwd and file references
+
+When `scriptflow` runs, it will move into the folder that the `config.json` file sits in. All file references should be relative to the `config.json` file.
+The script will finish by move back to when you first were in the filesystem.
 
 
 ##  5.  Customising
