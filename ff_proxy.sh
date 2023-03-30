@@ -20,6 +20,11 @@ if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show 
 # ╰──────────────────────────────────────────────────────────╯
 INPUT_FILENAME="input.mp4"
 OUTPUT_FILENAME="ff_proxy.mp4"
+SCALE_X="1280"
+SCALE_Y="-2"
+FPS="30"
+CRF="25"
+CODEC="libx264"
 LOGLEVEL="error" 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -44,6 +49,30 @@ usage()
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
+
+
+        printf " -r | --recursive\n"
+        printf "\tIf a FOLDER, then recurse to deeper folders.\n\n"
+
+
+        printf " -x | --scalex\n"
+        printf "\tWidth of the output proxy. can use -2 to keep aspect ratio to scaley. Default 1280.\n\n"
+
+
+        printf " -y | --scaley\n"
+        printf "\tHeight of the output proxy. can use -2 to keep aspect ratio to scalex. Default -2.\n\n"
+
+
+        printf " -f | --fps\n"
+        printf "\tFrames Per Second to reduce the proxy down to. Default 30.\n\n"
+
+
+        printf " -c | --CRF\n"
+        printf "\tConstant Rate Factor. 0-51. Controls the quality of the output. Default 25.\n\n"
+
+
+        printf " -d | --codec\n"
+        printf "\tCodec library to use. libxwebp / libx264 / libx265 /etc... Default libx264.\n\n"
 
 
         printf " -C | --config <CONFIG_FILE>\n"
@@ -90,11 +119,40 @@ function arguments()
             ;;
 
 
-        -l|--loglevel)
-            LOGLEVEL="$2"
+        -x|--scalex)
+            SCALE_X="$2"
+            shift
+            shift
+            ;;
+
+
+        -y|--scaley)
+            SCALE_Y="$2"
+            shift
+            shift
+            ;;
+
+
+        -f|--fps)
+            FPS="$2"
             shift 
             shift
             ;;
+
+
+        -c|--crf)
+            CRF="$2"
+            shift 
+            shift
+            ;;
+
+
+        -d|--codec)
+            CODEC="$2"
+            shift 
+            shift
+            ;;
+
 
 
         -C|--config)
@@ -163,27 +221,29 @@ function exit_gracefully()
 # ╰──────────────────────────────────────────────────────────╯
 function pre_flight_checks()
 {
+
+    INPUT_FILE=$1 
+
     # Check input filename has been set.
-    if [[ -z "${INPUT_FILENAME+x}" ]]; then 
-        printf "\t❌ No input file/folder specified. Exiting.\n"
+    if [[ -z "${INPUT_FILE+x}" ]]; then 
+        printf "\t❌ No input file specified. Exiting.\n"
         exit_gracefully
     fi
 
-    # Check input file exists.
-    if [ ! -e "$INPUT_FILENAME" ]; then
-        printf "\t❌ Input file/folder not found. Exiting.\n"
+    # Check input file/folder exists.
+    if [ ! -f "$INPUT_FILE" ]; then
+        printf "\t❌ Input file not found. Exiting.\n"
         exit_gracefully
     fi
 
-    # Check input filename is a movie file.
-    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
+        # Check input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILE}" > /dev/null 2>&1; then
         printf "\t" 
     else
         printf "\t❌ Input file not a movie file. Exiting.\n"
         exit_gracefully
     fi
 }
-
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -194,25 +254,24 @@ function pre_flight_checks()
 function main()
 {
 
-    pre_flight_checks
-
     # If input is a file
     if [[ -f "${INPUT_FILENAME}" ]]; then 
+        pre_flight_checks $INPUT_FILENAME
         printf "📐 ff_proxy.sh - Create a small low-res proxy file for input video. "
-        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=1280:-2,setsar=1:1,fps=30 -vcodec libx264 -crf 25 -c:a aac -q:a 5 ${OUTPUT_FILENAME}
+        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${SCALE_X}:${SCALE_Y},setsar=1:1,fps=${FPS} -vcodec ${CODEC} -crf ${CRF} -c:a aac -q:a 5 ${OUTPUT_FILENAME}
     fi
 
     # If input is a folder
     if [[ -d "${INPUT_FILENAME}" ]]; then
-
         for FILE in $(find ${INPUT_FILENAME} -type f | grep -i 'mp4\|mov');
         do
+            pre_flight_checks $FILE
             REALFILE=$(realpath $FILE)
             DIRECTORY=$(dirname $FILE)
             BASENAME=$(basename $FILE)
             NOEXTENSION=$(echo "${BASENAME%.*}" )
             echo "processing ${REALFILE}"
-            ffmpeg -y -v ${LOGLEVEL} -i ${REALFILE} -vf scale=1280:-2,setsar=1:1,fps=30 -vcodec libx264 -crf 25 -c:a aac -q:a 5 ${DIRECTORY}/proxy_${NOEXTENSION}.mp4
+            ffmpeg -y -v ${LOGLEVEL} -i ${REALFILE} -vf scale=${SCALE_X}:${SCALE_Y},setsar=1:1,fps=${FPS} -vcodec ${CODEC} -crf ${CRF} -c:a aac -q:a 5 ${DIRECTORY}/proxy_${NOEXTENSION}.mp4
         done
     fi
 
