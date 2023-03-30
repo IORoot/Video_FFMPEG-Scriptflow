@@ -66,6 +66,9 @@ function write_to_temp()
     # print to screen
     printf "➡️  file: %s\n" "${REAL_PATH}"
 
+    # check files
+    pre_flight_checks ${FILE}
+    
     # print line into temp file.
     printf "file '%s'\n" "${REAL_PATH}" >> ${TMP_FILE}
 }
@@ -165,8 +168,29 @@ function read_config()
 # ╰──────────────────────────────────────────────────────────╯
 function exit_gracefully()
 {
-    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
     exit 0
+}
+
+# ╭──────────────────────────────────────────────────────────╮
+# │     Run these checks before you run the main script      │
+# ╰──────────────────────────────────────────────────────────╯
+function pre_flight_checks()
+{
+    INPUT_FILE=$1
+
+    # Check input file exists.
+    if [ ! -f "$INPUT_FILE" ]; then
+        printf "\t❌ Input file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILE}" > /dev/null 2>&1; then
+        printf "" 
+    else
+        printf "\t❌ Input file not a movie file. Exiting.\n"
+        exit_gracefully
+    fi
 }
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -180,7 +204,7 @@ function exit_gracefully()
 function main()
 {
 
-    printf "🚀 ff_concat.sh - Running video concatenation. "
+    printf "🚀 ff_concat.sh - Running video concatenation."
 
     # -v error      : Only show errors
     # -f concat     : use filter 'concat'
