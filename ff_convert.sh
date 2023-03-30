@@ -19,7 +19,7 @@ if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show 
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
 INPUT_FILENAME="input.mp4"
-OUTPUT_FILENAME="ff_mov_to_mp4.mp4"
+OUTPUT_FILENAME="ff_convert.mp4"
 LOGLEVEL="error"
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -189,7 +189,7 @@ function main()
 
     pre_flight_checks
 
-    printf "%-80s" "📽️  ff_mov_to_mp4.sh - Converting MOV to MP4. "
+    printf "%-80s" "📽️  ff_convert.sh - Converting MOV to MP4. "
 
     ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vcodec h264 -acodec mp2 ${OUTPUT_FILENAME}
 
