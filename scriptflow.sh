@@ -102,6 +102,39 @@ function read_config()
 
 
 # ╭──────────────────────────────────────────────────────────╮
+# │   Substitute specific keywords for their actual values   │
+# ╰──────────────────────────────────────────────────────────╯
+function keyword_substitutions()
+{
+
+    # <FOLDER_NAME>
+    # current folder
+    FOLDER_NAME=$(basename $PWD)
+    SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<FOLDER_NAME>/$FOLDER_NAME}
+
+
+    # <FOLDER_TITLE>
+    # This is the folder name, replacing _ for spaces.
+    FOLDER_TITLE=${FOLDER_NAME//_/ }
+    SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<FOLDER_TITLE>/$FOLDER_TITLE}
+
+
+    # <DATE_%d-%m-%y>
+    # Format can be of any kind. see https://man7.org/linux/man-pages/man1/date.1.html
+    # Formats like:
+    # <DATE_%A %d %B. %Y> = Friday 31 March. 2023
+    REGEX="<DATE_(.*)>"
+    if [[ $SCRIPT_CONTENTS =~ $REGEX ]]; then
+        DATE_FORMAT="${BASH_REMATCH[1]}"
+        DATE=$(date +"${DATE_FORMAT//\\/}")
+        SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<DATE_${BASH_REMATCH[1]}>/$DATE}
+    fi
+
+}
+
+
+
+# ╭──────────────────────────────────────────────────────────╮
 # │                Remove any temporary files                │
 # ╰──────────────────────────────────────────────────────────╯
 function cleanup()
@@ -153,13 +186,12 @@ function main()
     # Loop scripts
     for FF_SCRIPT in "${ARRAY_OF_SCRIPT_NAMES[@]}"
     do
-        # Get contents of the settings to run
-        # trim any empty string "" values
-        # trim and null values
-        # SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$FF_SCRIPT" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value | with_entries(select(.value != "")) | with_entries(select(.value != null))' )
-        # Need to KEEP the "" entries for flags with no values.
+        # Get contents of the settings to run and trim any null values
         SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$FF_SCRIPT" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value | with_entries(select(.value != null))' )
         
+        # Do any keyword substitutions
+        keyword_substitutions
+
         # Run the ff_script
         run_ff_script "${FF_SCRIPT}" "${SCRIPT_CONTENTS}"
     done
