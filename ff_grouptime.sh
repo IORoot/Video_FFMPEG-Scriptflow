@@ -105,7 +105,10 @@ usage()
         printf "\tstandard - standard first-to-last 1,2,3,4. (default)\n"
         printf "\treversed - last-to-first 4,3,2,1.\n"
         printf "\tskip1 - 2,3,4,1. You can use 'skipx', where x is any number.\n"
-        printf "\tskip1reversed - 1,4,3,2.\n\n"
+        printf "\tskip1reversed - 1,4,3,2. Combination of keywords\n"
+        printf "\trandom - 4,1,3,2. Random order\n\n"
+        printf "\teven - 2,4,1,3. Evens first, then odds.\n\n"
+        printf "\todd - 1,3,2,4. Odds first, then evens.\n\n"
 
 
         printf " -d | --duration <DURATION>\n"
@@ -243,8 +246,19 @@ function read_config()
     # Print to screen
     printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
 
-    # Sen to the arguments function again to override.
+    # Send to the arguments function again to override.
     arguments $LIST_OF_INPUTS
+}
+
+
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │   Substitute specific keywords for their actual values   │
+# ╰──────────────────────────────────────────────────────────╯
+function keyword_substitutions()
+{
+
 }
 
 
@@ -307,6 +321,18 @@ function rearrange_order()
     cat ${TMP_FILE}
     echo "arrangement: $ARRANGEMENT"
 
+    if [[ "$ARRANGEMENT" =~ .*"even".* ]]; then
+        sed -n 'n;p' ${TMP_FILE} > ${TMP_FILE}.tmp
+        sed -n 'p;n' ${TMP_FILE} > ${TMP_FILE}.tmp
+        mv ${TMP_FILE}.tmp ${TMP_FILE}
+    fi
+
+    if [[ "$ARRANGEMENT" =~ .*"odd".* ]]; then
+        sed -n 'p;n' ${TMP_FILE} > ${TMP_FILE}.tmp
+        sed -n 'n;p' ${TMP_FILE} > ${TMP_FILE}.tmp
+        mv ${TMP_FILE}.tmp ${TMP_FILE}
+    fi
+
     if [[ "$ARRANGEMENT" =~ .*"skip".* ]]; then
         SKIP_NUMBER=$(echo ${ARRANGEMENT} | tr -dc '0-9')
         head -n ${SKIP_NUMBER} ${TMP_FILE} >> ${TMP_FILE}
@@ -320,9 +346,17 @@ function rearrange_order()
         mv ${TMP_FILE}.tmp ${TMP_FILE}
     fi
 
+
+    if [[ "$ARRANGEMENT" =~ .*"random".* ]]; then
+        cat ${TMP_FILE} | sort -R > ${TMP_FILE}.tmp
+        mv ${TMP_FILE}.tmp ${TMP_FILE}
+    fi
+
     cat ${TMP_FILE}
 
 }
+
+
 
 
 
