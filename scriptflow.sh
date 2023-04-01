@@ -141,14 +141,10 @@ function keyword_substitutions()
     # Any random file in folder, filtered with specific string 'youth'
     # "../lib/overlays/<RANDOM_FILTER_blue>"
     REGEX2="<RANDOM_VIDEO_FILTER_(.*)>"
-    echo $SCRIPT_CONTENTS
-    
     if [[ $SCRIPT_CONTENTS =~ $REGEX2 ]]; then
         FILTER="${BASH_REMATCH[1]}"
-        echo $FILTER
         RANDOM_FILTER=$(find . -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep $FILTER | sort -R | head -n 1)
-        echo $RANDOM_FILTER
-        SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<RANDOM_FILTER>/$RANDOM_FILTER}
+        SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<RANDOM_VIDEO_FILTER_${BASH_REMATCH[1]}>/$RANDOM_FILTER}
     fi
     
 }
