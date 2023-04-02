@@ -45,10 +45,8 @@ usage()
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
 
-
         printf " -p | --pixels <AMOUNT>\n"
         printf "\tBoth the X and Y matrix horizontal size. It must be an odd integer between 3 and 23. The default value is 5.\n\n"
-
 
         printf " -s | --sharpen <AMOUNT>\n"
         printf "\tSet the sharpen strength. It must be a floating point number. -2.0 to 5.0. Default value is 1.0.\n"

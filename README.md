@@ -15,6 +15,7 @@
 
 ##  1. Table of Contents
 
+
 <!-- TOC -->
 
 - [Table of Contents](#table-of-contents)
@@ -104,6 +105,12 @@
     - [nulls](#nulls)
     - [Multiple duplicate scripts](#multiple-duplicate-scripts)
     - [Scripts with multiple inputs](#scripts-with-multiple-inputs)
+    - [Keyword Replacements](#keyword-replacements)
+        - [<FOLDER_NAME>](#folder_name)
+        - [<FOLDER_TITLE>](#folder_title)
+        - [<DATE_format>](#date_format)
+        - [<RANDOM_VIDEO>](#random_video)
+        - [<RANDOM_VIDEO_FILTER_string>](#random_video_filter_string)
     - [Output & Cleanup](#output--cleanup)
     - [pwd and file references](#pwd-and-file-references)
 - [Customising](#customising)
@@ -112,6 +119,7 @@
 - [License](#license)
 - [Contact](#contact)
 - [Changelog](#changelog)
+    - [Version 1.3](#version-13)
     - [Version 1.2](#version-12)
     - [Version 1.1](#version-11)
     - [Version 1.0](#version-10)
@@ -1196,6 +1204,108 @@ Inputs can be `input1`, `input2`, etc... for scripts that require multiple input
 ```
 
 
+### 4.5 Keyword Replacements
+
+#### <FOLDER_NAME>
+You can use the `<FOLDER_NAME>` keyword variable to replace with the ACTUAL name of the folder the config file is located.
+```json
+{
+    "ff_to_landscape": {
+	    "input":     "<FOLDER_NAME>"
+    },    
+}
+```
+This will translate to something equivalent to:
+```json
+{
+    "ff_to_landscape": {
+	    "input":     "/Users/me/myfolder/"
+    },    
+}
+```
+
+
+#### <FOLDER_TITLE>
+The `<FOLDER_TITLE>` is very similar to the `<FOLDER_NAME>` except it replaces underscores for spaces. 
+This is useful for adding text relevant to the folder.
+For example:
+```json
+{
+    "ff_text": {
+	    "input": "/tmp/Youth_Classes/video.mp4",
+	    "text": "Every Sunday!\n<FOLDER_TITLE>!"
+    },    
+}
+```
+will translate to:
+```json
+{
+    "ff_text": {
+	    "input": "/tmp/Youth_Classes/video.mp4",
+	    "text": "Every Sunday!\nYouth Classes!"
+    },    
+}
+```
+
+
+
+#### <DATE_format>
+The `<DATE_format>` keyword, as the word implies, allows you to add the current date as per the bash formatting. (see https://man7.org/linux/man-pages/man1/date.1.html)
+```json
+{
+    "ff_text": {
+	    "input": "video.mp4",
+	    "text": "Video created on\n<DATE_%A %d %B. %Y>"
+    },    
+}
+```
+Becomes:
+```json
+{
+    "ff_text": {
+	    "input": "video.mp4",
+	    "text": "Video created on\nFriday 31 March. 2023"
+    },    
+}
+```
+
+
+#### <RANDOM_VIDEO>
+If you wish to pick a random video from a folder, you can use this `<RANDOM_VIDEO>` variable.
+```json
+{
+    "ff_pad": {
+	    "input": "/Videos/<RANDOM_VIDEO>",
+	    "width": "800",
+	    "height": "800"
+    },    
+}
+```
+This will search all `*.mov` and `*.mp4` videos in that folder and randomise the output.
+
+
+#### <RANDOM_VIDEO_FILTER_string>
+For a little more control over the randomised selection of videos, the `<RANDOM_VIDEO_FILTER_string>` keyword allows you to supply a string that must be contained in the video name.
+Say you have the following videos:
+```bash
+/videos/video01.mp4
+/videos/landscape_holiday.mp4
+/videos/sea_holiday.mp4
+/videos/sportsday.mp4
+/videos/presentation.mp4
+```
+If you wanted a random selection from only the `holiday` videos, you can supply the following config:
+```json
+{
+    "ff_sharpen": {
+	    "input": "/Videos/<RANDOM_VIDEO_FILTER_holiday>",
+	    "strength": "3.2"
+    },    
+}
+```
+This will randomly pick ONLY a holiday video and sharpen it.
+
+
 ### 4.5. Output & Cleanup
 
 Once the `scriptflow` has finished, it will output to a file called `output.mp4` and all other `ff_?????.mp4`  intermediate movie files will be removed.
@@ -1274,16 +1384,21 @@ Author Link: [https://github.com/IORoot](https://github.com/IORoot)
 ##  10. Changelog
 
 
-### 10.1. Version 1.2
+### Version 1.3
+
+- Folder handling in many scripts.
+- Keywords in JSON
+
+### Version 1.2
 
 - Added scriptflow. Run any script with a JSON config file.
 
-### 10.1. Version 1.1
+### Version 1.1
 
 - Added config-file abilities. Used by templates.
 
 
-###  10.2. Version 1.0
+### Version 1.0
 
 - Initial
 
