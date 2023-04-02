@@ -168,20 +168,22 @@ function exit_gracefully()
 # ╰──────────────────────────────────────────────────────────╯
 function pre_flight_checks()
 {
+    INPUT_FILE=$1
+
     # Check input filename has been set.
-    if [[ -z "${INPUT_FILENAME+x}" ]]; then 
+    if [[ -z "${INPUT_FILE+x}" ]]; then 
         printf "\t❌ No input file specified. Exiting.\n"
         exit_gracefully
     fi
 
     # Check input file exists.
-    if [ ! -f "$INPUT_FILENAME" ]; then
+    if [ ! -f "$INPUT_FILE" ]; then
         printf "\t❌ Input file not found. Exiting.\n"
         exit_gracefully
     fi
 
     # Check input filename is a movie file.
-    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILE}" > /dev/null 2>&1; then
         printf "\t" 
     else
         printf "\t❌ Input file not a movie file. Exiting.\n"
@@ -199,21 +201,43 @@ function pre_flight_checks()
 function main()
 {
 
-    pre_flight_checks
-
-    FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${INPUT_FILENAME})
-
-    HALF_TRIM_FROM_START=$(echo "scale=4; ${TRIM} / 2" | bc | awk '{printf "%f", $0}')      # send to 'bc' command for floating numbers. Awk used to add leading '0' if less than 1.
-    START=$(gdate -d@${HALF_TRIM_FROM_START} -u +%H:%M:%S.%N)                               # convert to timestamp
-
-    HALF_TRIM_FROM_END=$(echo "scale=4; ${FILE_DURATION} - ${HALF_TRIM_FROM_START}" | bc | awk '{printf "%f", $0}')
-    END=$(gdate -d@${HALF_TRIM_FROM_END} -u +%H:%M:%S.%N)
-
     printf "%-80s" "🖕  ff_middle.sh - Trimming input video equally at start and end."
 
-    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -ss ${START} -to ${END} ${OUTPUT_FILENAME}
+    # If this is a file
+    if [ -f "$INPUT_FILENAME" ]; then
+        pre_flight_checks $INPUT_FILENAME
+            FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${INPUT_FILENAME})
+            HALF_TRIM_FROM_START=$(echo "scale=4; ${TRIM} / 2" | bc | awk '{printf "%f", $0}')      # send to 'bc' command for floating numbers. Awk used to add leading '0' if less than 1.
+            START=$(gdate -d@${HALF_TRIM_FROM_START} -u +%H:%M:%S.%N)                               # convert to timestamp
+            HALF_TRIM_FROM_END=$(echo "scale=4; ${FILE_DURATION} - ${HALF_TRIM_FROM_START}" | bc | awk '{printf "%f", $0}')
+            END=$(gdate -d@${HALF_TRIM_FROM_END} -u +%H:%M:%S.%N)
+            ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -ss ${START} -to ${END} ${OUTPUT_FILENAME}
+            NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
+        printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
+    fi
 
-    NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${OUTPUT_FILENAME})
+    # If this is a drectory
+    if [ -d "$INPUT_FILENAME" ]; then
+        LOOP=0
+        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \))
+        for INPUT_FILENAME in $LIST_OF_FILES
+        do
+            pre_flight_checks $INPUT_FILENAME
+                FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${INPUT_FILENAME})
+                HALF_TRIM_FROM_START=$(echo "scale=4; ${TRIM} / 2" | bc | awk '{printf "%f", $0}')      # send to 'bc' command for floating numbers. Awk used to add leading '0' if less than 1.
+                START=$(gdate -d@${HALF_TRIM_FROM_START} -u +%H:%M:%S.%N)                               # convert to timestamp
+                HALF_TRIM_FROM_END=$(echo "scale=4; ${FILE_DURATION} - ${HALF_TRIM_FROM_START}" | bc | awk '{printf "%f", $0}')
+                END=$(gdate -d@${HALF_TRIM_FROM_END} -u +%H:%M:%S.%N)
+                ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -ss ${START} -to ${END} ${LOOP}_${OUTPUT_FILENAME}
+                NEW_FILE_DURATION=$(ffprobe -v ${LOGLEVEL} -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 ${LOOP}_${OUTPUT_FILENAME})
+            printf "✅ %-20s\n" "${LOOP}_${OUTPUT_FILENAME}"
+            LOOP=$(expr $LOOP + 1)
+        done
+    fi
+
+
+
+
     printf "✅ %-10s ( ⏲️  new duration: %s)\n" "$OUTPUT_FILENAME" "${NEW_FILE_DURATION}"
 
 }

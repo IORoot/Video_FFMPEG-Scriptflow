@@ -24,17 +24,18 @@ OUTPUT_FILENAME="ff_to_portrait.mp4"
 ROTATE=1
 LOGLEVEL="error" 
 
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
 # ╰──────────────────────────────────────────────────────────╯
-
 usage()
 {
     if [ "$#" -lt 2 ]; then
-        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> -o <OUTPUT_FILE> [-r ROTATION] [-l loglevel]\n\n" >&2 
+        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE/FOLDER> -o <OUTPUT_FILE> [-r ROTATION] [-l loglevel]\n\n" >&2 
 
         printf " -i | --input <INPUT_FILE>\n"
-        printf "\tThe name of an input file.\n\n"
+        printf "\tThe name of an input file or folder (for batch processing).\n\n"
 
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
@@ -56,6 +57,7 @@ usage()
         exit 1
     fi
 }
+
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -146,6 +148,7 @@ function read_config()
 }
 
 
+
 # ╭──────────────────────────────────────────────────────────╮
 # │   Exit the app by just skipping the ffmpeg processing.   │
 # │            Then copy the input to the output.            │
@@ -163,25 +166,54 @@ function exit_gracefully()
 # ╰──────────────────────────────────────────────────────────╯
 function pre_flight_checks()
 {
+    INPUT_FILE=$1
+
     # Check input filename has been set.
-    if [[ -z "${INPUT_FILENAME+x}" ]]; then 
+    if [[ -z "${INPUT_FILE+x}" ]]; then 
         printf "\t❌ No input file specified. Exiting.\n"
         exit_gracefully
     fi
 
     # Check input file exists.
-    if [ ! -f "$INPUT_FILENAME" ]; then
+    if [ ! -f "$INPUT_FILE" ]; then
         printf "\t❌ Input file not found. Exiting.\n"
         exit_gracefully
     fi
 
     # Check input filename is a movie file.
-    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILE}" > /dev/null 2>&1; then
         printf "\t" 
     else
         printf "\t❌ Input file not a movie file. Exiting.\n"
         exit_gracefully
     fi
+}
+
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │           Step 1. Detect orientation of video.           │
+# ╰──────────────────────────────────────────────────────────╯
+function detect_orientation()
+{
+    WIDTH=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=width -of csv=p=0 ${INPUT_FILENAME})
+    HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${INPUT_FILENAME})
+    WIDTH=$(echo ${WIDTH} | tr ',' '\n')
+    HEIGHT=$(echo ${HEIGHT} | tr ',' '\n')
+}
+
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │    Step 2. rotate video 90 degrees counter clockwise.    │
+# ╰──────────────────────────────────────────────────────────╯
+function rotate()
+{
+    
+
+    ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" $OUTPUT_FILENAME
+
+    printf "✅ %-20s (%sx%s)\n" "$OUTPUT_FILENAME" "$HEIGHT" "$WIDTH" 
 }
 
 
@@ -194,28 +226,39 @@ function pre_flight_checks()
 function main()
 {
 
-    pre_flight_checks
+    printf "%-80s" "🏞️  ff_to_portrait.sh - Landscape video detected. Converting to portrait. "
 
-    # ╭──────────────────────────────────────────────────────────╮
-    # │           Step 1. Detect orientation of video.           │
-    # ╰──────────────────────────────────────────────────────────╯
-    WIDTH=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=width -of csv=p=0 ${INPUT_FILENAME})
-    HEIGHT=$(ffprobe -v ${LOGLEVEL} -select_streams v -show_entries stream=height -of csv=p=0 ${INPUT_FILENAME})
+    # If this is a file
+    if [ -f "$INPUT_FILENAME" ]; then
+        pre_flight_checks $INPUT_FILENAME
 
-    # If width is greater than height, it's already landscape.
-    if [ "$HEIGHT" -gt "$WIDTH" ];then
-        printf "❌ Already portrait (%sx%s)\n" "$WIDTH" "$HEIGHT"
-        exit_gracefully
-    else
-
-        # ╭──────────────────────────────────────────────────────────╮
-        # │    Step 2. rotate video 90 degrees counter clockwise.    │
-        # ╰──────────────────────────────────────────────────────────╯
-        printf "%-80s" "🏞️  ff_to_portrait.sh - Landscape video detected. Converting to portrait."
-
+        detect_orientation
+        if [[ "$HEIGHT" -gt "$WIDTH" ]];then
+            printf "❌ %s Already portrait (%sx%s)\n" "$INPUT_FILENAME" "$WIDTH" "$HEIGHT"
+            exit_gracefully
+        fi
         ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" $OUTPUT_FILENAME
 
-        printf "✅ %-20s (%sx%s)\n" "$OUTPUT_FILENAME" "$HEIGHT" "$WIDTH" 
+        printf "✅ %s\n" "${OUTPUT_FILENAME}"
+    fi
+
+    # If this is a drectory
+    if [ -d "$INPUT_FILENAME" ]; then
+        LOOP=0
+        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \))
+        for INPUT_FILENAME in $LIST_OF_FILES
+        do
+            pre_flight_checks $INPUT_FILENAME
+            detect_orientation
+            if [[ $HEIGHT -gt $WIDTH ]];then
+                printf "❌ %s Already portrait (%sx%s)\n" "$INPUT_FILENAME" "$WIDTH" "$HEIGHT"
+                continue
+            fi
+            ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" ${LOOP}_${OUTPUT_FILENAME}
+
+            printf "✅ %s\n" "${LOOP}_${OUTPUT_FILENAME}"
+            LOOP=$(expr $LOOP + 1)
+        done
     fi
 
 }

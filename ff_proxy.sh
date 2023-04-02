@@ -253,12 +253,13 @@ function pre_flight_checks()
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
+    printf "%-80s" "📐 ff_proxy.sh - Create a small low-res proxy file for input video. "
 
     # If input is a file
     if [[ -f "${INPUT_FILENAME}" ]]; then 
         pre_flight_checks $INPUT_FILENAME
-        printf "%-80s" "📐 ff_proxy.sh - Create a small low-res proxy file for input video. "
         ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${SCALE_X}:${SCALE_Y},setsar=1:1,fps=${FPS} -vcodec ${CODEC} -crf ${CRF} -c:a aac -q:a 5 ${OUTPUT_FILENAME}
+        printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
     fi
 
     # If input is a folder
@@ -272,12 +273,10 @@ function main()
             NOEXTENSION=$(echo "${BASENAME%.*}" )
             printf "%-80s" "processing ${REALFILE}"
             ffmpeg -y -v ${LOGLEVEL} -i ${REALFILE} -vf scale=${SCALE_X}:${SCALE_Y},setsar=1:1,fps=${FPS} -vcodec ${CODEC} -crf ${CRF} -c:a aac -q:a 5 ${DIRECTORY}/proxy_${NOEXTENSION}.mp4
+            printf "✅ %-20s\n" "${DIRECTORY}/proxy_${NOEXTENSION}.mp4"
         done
     fi
 
-
-
-    printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
 
 }
 

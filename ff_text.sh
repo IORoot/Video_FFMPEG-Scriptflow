@@ -304,18 +304,32 @@ function exit_gracefully()
     exit 0
 }
 
+
 # ╭──────────────────────────────────────────────────────────╮
-# │                                                          │
-# │                      Main Function                       │
-# │                                                          │
+# │     Run these checks before you run the main script      │
 # ╰──────────────────────────────────────────────────────────╯
-function main()
+function pre_flight_checks()
 {
+    INPUT_FILE=$1
 
     # If there is no input video, exit error
-    if [[ -z "${INPUT_FILENAME+x}" ]]; then 
+    if [[ -z "${INPUT_FILE+x}" ]]; then 
         printf "❌ No input file specified. Exiting.\n"
         exit 1
+    fi
+
+    # Check input file exists.
+    if [ ! -f "$INPUT_FILE" ]; then
+        printf "\t❌ Input file not found. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILE}" > /dev/null 2>&1; then
+        printf "\t" 
+    else
+        printf "\t❌ Input file not a movie file. Exiting.\n"
+        exit_gracefully
     fi
 
     # If there in any inline TEXT been set, echo it into the TEMP_TEXTFILE
@@ -339,6 +353,18 @@ function main()
         printf "❌ No text in text file specified. Exiting gracefully.\n"
         exit_gracefully
     fi
+}
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │                                                          │
+# │                      Main Function                       │
+# │                                                          │
+# ╰──────────────────────────────────────────────────────────╯
+function main()
+{
+
+    pre_flight_checks ${INPUT_FILENAME}
 
     # Count Number of lines in TEMP_TEXTFILE. (wc -l doesn't work without newlines.)
     LINECOUNT=$(grep -c "" ${TEMP_TEXTFILE})

@@ -1,0 +1,10 @@
+{
+    "schedule": "TRUE",
+    "category": "youth_west",
+
+    "ff_to_landscape": {
+        "text": "Syllabus Challenge - <FOLDER_TITLE>",
+        "input": "<BATCH_INPUT>"
+    }
+    
+}

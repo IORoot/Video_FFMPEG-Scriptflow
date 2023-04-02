@@ -207,20 +207,22 @@ function exit_gracefully()
 # ╰──────────────────────────────────────────────────────────╯
 function pre_flight_checks()
 {
+    INPUT_FILE=$1
+
     # Check input filename has been set.
-    if [[ -z "${INPUT_FILENAME+x}" ]]; then 
+    if [[ -z "${INPUT_FILE+x}" ]]; then 
         printf "\t❌ No input file specified. Exiting.\n"
         exit_gracefully
     fi
 
     # Check input file exists.
-    if [ ! -f "$INPUT_FILENAME" ]; then
+    if [ ! -f "$INPUT_FILE" ]; then
         printf "\t❌ Input file not found. Exiting.\n"
         exit_gracefully
     fi
 
     # Check input filename is a movie file.
-    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILE}" > /dev/null 2>&1; then
         printf "\t" 
     else
         printf "\t❌ Input file not a movie file. Exiting.\n"
@@ -236,13 +238,29 @@ function pre_flight_checks()
 function main()
 {
 
-    pre_flight_checks
-
     printf "%-80s" "🌾 ff_crop.sh - Crop around the video. "
 
-    ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "crop=w=${WIDTH}:h=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}" ${OUTPUT_FILENAME}
+    
 
-    printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
+    # If this is a file
+    if [ -f "$INPUT_FILENAME" ]; then
+        pre_flight_checks $INPUT_FILENAME
+        ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "crop=w=${WIDTH}:h=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}" ${OUTPUT_FILENAME}
+        printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
+    fi
+
+    # If this is a drectory
+    if [ -d "$INPUT_FILENAME" ]; then
+        LOOP=0
+        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \))
+        for INPUT_FILENAME in $LIST_OF_FILES
+        do
+            pre_flight_checks $INPUT_FILENAME
+            ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "crop=w=${WIDTH}:h=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}" ${LOOP}_${OUTPUT_FILENAME}
+            printf "✅ %-20s\n" "${LOOP}_${OUTPUT_FILENAME}"
+            LOOP=$(expr $LOOP + 1)
+        done
+    fi
 
 }
 
