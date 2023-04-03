@@ -21,6 +21,7 @@ INPUT_FILENAME="input.mp4"
 OUTPUT_FILENAME="ff_middle.mp4"
 TRIM="1"
 LOGLEVEL="error"                 # define temporary file
+GREP=""
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -40,15 +41,15 @@ usage()
         printf " -i | --input <INPUT_FILE>\n"
         printf "\tThe name of an input file.\n\n"
 
-
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
 
-
         printf " -t | --trim <TRIM>\n"
         printf "\tNumber of seconds to remove from the start and end of video. Default is 1 second. (1) \n\n"
 
+        printf " -g | --grep <STRING>\n"
+        printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -90,6 +91,13 @@ function arguments()
 
         -t|--trim)
             TRIM="$2"
+            shift 
+            shift
+            ;;
+
+
+        -g|--grep)
+            GREP="$2"
             shift 
             shift
             ;;
@@ -219,7 +227,7 @@ function main()
     # If this is a drectory
     if [ -d "$INPUT_FILENAME" ]; then
         LOOP=0
-        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \))
+        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
         for INPUT_FILENAME in $LIST_OF_FILES
         do
             pre_flight_checks $INPUT_FILENAME

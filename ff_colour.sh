@@ -26,6 +26,7 @@ GAMMA="1"           # 0.1 to 10.0
 SATURATION="1"      # 0.0 to 3.0
 WEIGHT="1"          # 0.0 to 1.0
 LOGLEVEL="error" 
+GREP=""
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -54,7 +55,7 @@ usage()
         printf " -c | --contrast <CONTRAST>\n"
         printf "\tChange the contrast value from -1000.0 to 1000.0.\n\n"
 
-        printf " -g | --gamma <GAMMA>\n"
+        printf " -m | --gamma <GAMMA>\n"
         printf "\tChange the gamma value from 0.1 to 10.0.\n\n"
 
         printf " -s | --saturation <SATURATION>\n"
@@ -62,6 +63,9 @@ usage()
 
         printf " -w | --weight <GAMMAWEIGHT>\n"
         printf "\tChange the gamma weight value from 0.0 to 1.0.\n\n"
+
+        printf " -g | --grep <STRING>\n"
+        printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -111,10 +115,10 @@ function arguments()
             CONTRAST="$2"
             shift 
             shift
-            ;;
+            ;;å
 
 
-        -g|--gamma)
+        -m|--gamma)
             GAMMA="$2"
             shift 
             shift
@@ -130,6 +134,13 @@ function arguments()
 
         -w|--weight)
             WEIGHT="$2"
+            shift 
+            shift
+            ;;
+
+
+        -g|--grep)
+            GREP="$2"
             shift 
             shift
             ;;
@@ -259,7 +270,7 @@ function main()
     # If this is a drectory
     if [ -d "$INPUT_FILENAME" ]; then
         LOOP=0
-        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \))
+        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
         for INPUT_FILENAME in $LIST_OF_FILES
         do
             pre_flight_checks $INPUT_FILENAME

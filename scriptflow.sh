@@ -20,6 +20,7 @@ if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show 
 PWD=$(pwd)
 TEMP_FOLDER="/tmp"
 OUTPUT_FILENAME="output.mp4"
+CONFIG_FILE="config.json"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -137,7 +138,8 @@ function keyword_substitutions()
     RANDOM_VIDEO=$(find . -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | sort -R | head -n 1)
     SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<RANDOM_VIDEO>/$RANDOM_VIDEO}
 
-    # <RANDOM_FILTER_youth>
+
+    # <RANDOM_VIDEO_FILTER_youth>
     # Any random file in folder, filtered with specific string 'youth'
     # "../lib/overlays/<RANDOM_FILTER_blue>"
     REGEX2="<RANDOM_VIDEO_FILTER_(.*)>"

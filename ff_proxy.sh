@@ -26,6 +26,7 @@ FPS="30"
 CRF="25"
 CODEC="libx264"
 LOGLEVEL="error" 
+GREP=""
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -45,39 +46,33 @@ usage()
         printf "\tThe name of an input file.\n"
         printf "\tIf a FOLDER, then it is recursive.\n\n"
 
-
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
 
-
         printf " -r | --recursive\n"
         printf "\tIf a FOLDER, then recurse to deeper folders.\n\n"
-
 
         printf " -x | --scalex\n"
         printf "\tWidth of the output proxy. can use -2 to keep aspect ratio to scaley. Default 1280.\n\n"
 
-
         printf " -y | --scaley\n"
         printf "\tHeight of the output proxy. can use -2 to keep aspect ratio to scalex. Default -2.\n\n"
-
 
         printf " -f | --fps\n"
         printf "\tFrames Per Second to reduce the proxy down to. Default 30.\n\n"
 
-
         printf " -c | --CRF\n"
         printf "\tConstant Rate Factor. 0-51. Controls the quality of the output. Default 25.\n\n"
-
 
         printf " -d | --codec\n"
         printf "\tCodec library to use. libxwebp / libx264 / libx265 /etc... Default libx264.\n\n"
 
+        printf " -g | --grep <STRING>\n"
+        printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
-
 
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
@@ -153,6 +148,12 @@ function arguments()
             shift
             ;;
 
+
+        -g|--grep)
+            GREP="$2"
+            shift 
+            shift
+            ;;
 
 
         -C|--config)
@@ -264,7 +265,7 @@ function main()
 
     # If input is a folder
     if [[ -d "${INPUT_FILENAME}" ]]; then
-        for FILE in $(find ${INPUT_FILENAME} -type f | grep -i 'mp4\|mov');
+        for FILE in $(find ${INPUT_FILENAME} -type f | grep -i 'mp4\|mov'  | grep "$GREP");
         do
             pre_flight_checks $FILE
             REALFILE=$(realpath $FILE)

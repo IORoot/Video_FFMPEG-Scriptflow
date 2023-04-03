@@ -23,6 +23,7 @@ INPUT_FILENAME="input.mp4"
 OUTPUT_FILENAME="ff_fps.mp4"
 FPS="30"
 LOGLEVEL="error" 
+GREP=""
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -41,24 +42,19 @@ usage()
         printf " -i | --input <INPUT_FILE>\n"
         printf "\tThe name of an input file.\n\n"
 
-
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
-
 
         printf " -f | --fps <FPS>\n"
         printf "\tThe frames per second the video should be converted to. The default value is 30.\n"
         printf "\tThe length of the video will not change, but frames will either be added or removed.\n\n"
 
+        printf " -g | --grep <STRING>\n"
+        printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
-
-
-        printf " -c | --config <CONFIG_FILE>\n"
-        printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
-
 
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
@@ -103,6 +99,13 @@ function arguments()
 
         -l|--loglevel)
             LOGLEVEL="$2"
+            shift 
+            shift
+            ;;
+
+
+        -g|--grep)
+            GREP="$2"
             shift 
             shift
             ;;
@@ -221,7 +224,7 @@ function main()
     # If this is a drectory
     if [ -d "$INPUT_FILENAME" ]; then
         LOOP=0
-        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \))
+        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
         for INPUT_FILENAME in $LIST_OF_FILES
         do
             pre_flight_checks $INPUT_FILENAME

@@ -23,6 +23,7 @@ OUTPUT_FILENAME="ff_blur.mp4"
 STRENGTH="0.5"
 STEPS="1"   
 LOGLEVEL="error" 
+GREP=""
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -42,18 +43,18 @@ usage()
         printf " -i | --input <INPUT_FILE>\n"
         printf "\tThe name of an input file.\n\n"
 
-
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
 
-
         printf " -s | --strength <AMOUNT>\n"
         printf "\tSet horizontal sigma, standard deviation of Gaussian blur (strength). The default value is 0.5.\n\n"
 
-
         printf " -t | --steps <AMOUNT>\n"
         printf "\tSet the number of times to apply blur. Default value is 1.\n"
+
+        printf " -g | --grep <STRING>\n"
+        printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -101,6 +102,13 @@ function arguments()
 
         -t|--steps)
             STEPS="$2"
+            shift 
+            shift
+            ;;
+
+
+        -g|--grep)
+            GREP="$2"
             shift 
             shift
             ;;
@@ -225,7 +233,7 @@ function main()
     # If this is a drectory
     if [ -d "$INPUT_FILENAME" ]; then
         LOOP=0
-        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \))
+        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
         for INPUT_FILENAME in $LIST_OF_FILES
         do
             pre_flight_checks $INPUT_FILENAME

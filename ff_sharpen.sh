@@ -23,6 +23,7 @@ OUTPUT_FILENAME="ff_sharpen.mp4"
 PIXEL="5.0"      # 3 and 23
 SHARPEN="1.0"   # -2.0 and 5.0
 LOGLEVEL="error" 
+GREP=""
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -51,6 +52,9 @@ usage()
         printf " -s | --sharpen <AMOUNT>\n"
         printf "\tSet the sharpen strength. It must be a floating point number. -2.0 to 5.0. Default value is 1.0.\n"
         printf "\tNegative values will blur the input video, while positive values will sharpen it, a value of zero will disable the effect.\n\n"
+
+        printf " -g | --grep <STRING>\n"
+        printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -98,6 +102,13 @@ function arguments()
 
         -s|--sharpen)
             SHARPEN="$2"
+            shift 
+            shift
+            ;;
+
+
+        -g|--grep)
+            GREP="$2"
             shift 
             shift
             ;;
@@ -226,7 +237,7 @@ function main()
     # If this is a drectory
     if [ -d "$INPUT_FILENAME" ]; then
         LOOP=0
-        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \))
+        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
         for INPUT_FILENAME in $LIST_OF_FILES
         do
             pre_flight_checks $INPUT_FILENAME

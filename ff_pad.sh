@@ -25,6 +25,7 @@ HEIGHT="ih*2"
 XPIXELS="(ow-iw)/2"
 YPIXELS="(oh-ih)/2"
 COLOUR="#fb923c"
+GREP=""
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -43,23 +44,18 @@ usage()
         printf " -i | --input <INPUT_FILE>\n"
         printf "\tThe name of an input file.\n\n"
 
-
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
 
-
         printf " -w | --width <WIDTH>\n"
         printf "\tWidth of the output video. Default: Same as input video.\n\n"
-
 
         printf " -h | --height <HEIGHT>\n"
         printf "\tHeight of the output video. Default: 2x input video height.\n\n"
 
-
         printf " -x | --xpixels <PIXELS>\n"
         printf "\tWhere to position the video in the frame on X-Axis from left.\n\n"
-
 
         printf " -y | --ypixels <PIXELS>\n"
         printf "\tWhere to position the video in the frame on Y-Axis from top.\n\n"
@@ -71,11 +67,12 @@ usage()
         printf "\tThese can be used to calculate areas of the screen. For example:\n"
         printf "\tThe center of the screen on x-axis is 'x=(ow-iw)/2\n\n"
 
-
         printf " -c | --colour <COLOUR>\n"
         printf "\tColour to use for the padding. See https://ffmpeg.org/ffmpeg-utils.html#color-syntax\n"
         printf "\tCan use a word 'Aqua, Beige, Cyan, etc...', the word 'random' or hex code : RRGGBB[AA] \n\n"
 
+        printf " -g | --grep <STRING>\n"
+        printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -161,6 +158,13 @@ function arguments()
 
         -C|--config)
             CONFIG_FILE="$2"
+            shift 
+            shift
+            ;;
+
+
+        -g|--grep)
+            GREP="$2"
             shift 
             shift
             ;;
@@ -277,7 +281,7 @@ function main()
     # If this is a drectory
     if [ -d "$INPUT_FILENAME" ]; then
         LOOP=0
-        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \))
+        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
         for INPUT_FILENAME in $LIST_OF_FILES
         do
             pre_flight_checks $INPUT_FILENAME

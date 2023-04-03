@@ -1,0 +1,9 @@
+{
+    "schedule": "TRUE",
+    "category": "blurred",
+
+    "ff_scale": {
+        "input": "./<FOLDER_NAME>"
+    }
+    
+}
