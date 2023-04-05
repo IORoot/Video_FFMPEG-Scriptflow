@@ -74,7 +74,8 @@ LOGLEVEL="error"
 TMP_FILE="/tmp/tmp_ffmpeg_grouptime_list.txt" 
 TMP_SUFFIX="trimmed" 
 INTERMEDIATE_FILENAME="/tmp/intermediate.mp4"
-PIPE="concat:"               # define temporary file
+PIPE="concat:"               
+GREP=""
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -93,11 +94,9 @@ usage()
         printf " -i | --input <INPUT_FILE>\n"
         printf "\tThe name of an input file.\n\n"
 
-
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
-
 
         printf " -a | --arrangement <ORDER>\n"
         printf "\tThe order to read the input files.\n"
@@ -110,10 +109,11 @@ usage()
         printf "\teven - 2,4,1,3. Evens first, then odds.\n\n"
         printf "\todd - 1,3,2,4. Odds first, then evens.\n\n"
 
-
         printf " -d | --duration <DURATION>\n"
         printf "\tThe final duration of the output file in seconds. Default is 60. \n\n"
 
+        printf " -g | --grep <STRING>\n"
+        printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -127,34 +127,6 @@ usage()
     fi
 }
 
-
-# ╭──────────────────────────────────────────────────────────╮
-# │     Write the absolute path into the temporary file      │
-# ╰──────────────────────────────────────────────────────────╯
-function write_to_temp()
-{
-
-    FILE=$1
-
-    # Exclude folders
-    if [ -d "$FILE" ]; then
-        return
-    fi
-
-    # check files
-    pre_flight_checks ${FILE}
-
-    # print line into temp file.
-    printf "%s\n" "${FILE}" >> ${TMP_FILE}
-}
-
-
-
-function setup()
-{
-    # delete any existing temp file.
-    rm -f ${TMP_FILE} 
-}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │         Take the arguments from the command line         │
@@ -190,6 +162,13 @@ function arguments()
 
         -d|--duration)
             DURATION="$2"
+            shift 
+            shift
+            ;;
+
+
+        -g|--grep)
+            GREP="$2"
             shift 
             shift
             ;;
@@ -251,6 +230,49 @@ function read_config()
 }
 
 
+# ╭──────────────────────────────────────────────────────────╮
+# │     Write the absolute path into the temporary file      │
+# ╰──────────────────────────────────────────────────────────╯
+function write_to_temp()
+{
+
+    FILE=$1
+
+    # if this a folder
+    if [ -d "$FILE" ]; then
+        LOOP=0
+        LIST_OF_FILES=$(find $FILE -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
+        for FILE in $LIST_OF_FILES
+        do
+            pre_flight_checks $FILE
+            printf "%s\n" "${FILE}" >> ${TMP_FILE}
+            LOOP=$(expr $LOOP + 1)
+        done
+    fi
+
+    # check files
+    pre_flight_checks ${FILE}
+
+    # print line into temp file.
+    printf "%s\n" "${FILE}" >> ${TMP_FILE}
+}
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │If the GREP is set AFTER the input, we need to grep file. │
+# ╰──────────────────────────────────────────────────────────╯
+function grep_file()
+{
+    cat ${TMP_FILE} | grep "${GREP}" > ${TMP_FILE}.grep
+    mv ${TMP_FILE}.grep ${TMP_FILE}
+}
+
+
+function setup()
+{
+    # delete any existing temp file.
+    rm -f ${TMP_FILE} 
+}
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -307,8 +329,6 @@ function pre_flight_checks()
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 function rearrange_order()
 {
-
-    cat ${TMP_FILE}
     echo "arrangement: $ARRANGEMENT"
 
     if [[ "$ARRANGEMENT" =~ .*"even".* ]]; then
@@ -341,8 +361,6 @@ function rearrange_order()
         cat ${TMP_FILE} | sort -R > ${TMP_FILE}.tmp
         mv ${TMP_FILE}.tmp ${TMP_FILE}
     fi
-
-    cat ${TMP_FILE}
 
 }
 
@@ -507,7 +525,9 @@ function main()
         exit_gracefully
     fi
 
-    printf "🎢  ff_grouptime.sh - This will remove a %% of seconds from front and end of all videos.\n"
+    printf "🎢  ff_grouptime.sh - This will remove a seconds from front and end of all videos.\n"
+
+    grep_file
 
     rearrange_order
 

@@ -248,6 +248,8 @@ function main()
             detect_orientation
             if [[ $WIDTH -gt $HEIGHT ]];then
                 printf "❌ %s Already landscape (%sx%s)\n" "$INPUT_FILENAME" "$WIDTH" "$HEIGHT"
+                cp -f ${INPUT_FILENAME} ${LOOP}_${OUTPUT_FILENAME}
+                LOOP=$(expr $LOOP + 1)
                 continue
             fi
             ffmpeg -y -v ${LOGLEVEL} -i $INPUT_FILENAME -vf "transpose=${ROTATE}" ${LOOP}_${OUTPUT_FILENAME}

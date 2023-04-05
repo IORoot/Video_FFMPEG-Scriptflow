@@ -1,0 +1,62 @@
+{
+    "schedule": "TRUE",
+    "category": "simple",
+    
+    "ff_scale": {
+        "input": "./",
+        "width": "848",
+        "height": "480"
+    },
+    
+    "ff_to_landscape": {
+        "input": "./",
+        "grep": "ff_scale"
+    },
+
+    "ff_grouptime": {
+        "input": "./",
+        "grep": "ff_to_landscape"
+    },
+
+    "ff_lut": {
+        "input": "ff_grouptime.mp4",
+        "lut": "../lib/luts/Holmberg.cube"
+    },
+
+    "ff_pad": {
+        "input": "ff_lut.mp4",
+        "height": "iw",
+        "colour": "#2dd4bf"
+    },
+
+    "ff_text1": {
+        "input": "ff_pad.mp4",
+        "output": "ff_text1.mp4",
+        "text": "Top test\n<DATE_%A %d %B. %Y>",
+        "colour": "#fafaf9",
+        "boxcolour": "#2dd4bf",
+        "size": "32",
+        "reduction": "10",
+        "ypixels": "70"
+    },
+
+    "ff_watermark": {
+        "input": "ff_text1.mp4",
+        "watermark": "../lib/watermarks/ldnpk_white.png",
+        "scale": "0.25",
+        "xpixels": "(W-w)/2",
+        "ypixels": "(H-h)"
+    },
+
+    "ff_text2": {
+        "input": "ff_watermark.mp4",
+        "output": "ff_text2.mp4",
+        "text": "LondonParkour.com",
+        "colour": "#fafaf9",
+        "boxcolour": "#2dd4bf",
+        "size": "24",
+        "reduction": "10",
+        "ypixels": "(h-th)-30"
+    }
+
+}

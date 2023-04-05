@@ -305,7 +305,7 @@ function main()
         WATERMARK_FILE=$(realpath ${WATERMARK_FILE//RANDOM/*} | sort -R | head -n 1)
     fi
 
-    printf "%-80s" "🎨 ff_watermark.sh - Overlaying the watermark (%s)." "$WATERMARK_FILE" 
+    printf "%-80s" "🎨 ff_watermark.sh - Overlaying the watermark."
 
     if [[ ! -z $START || ! -z $END ]]; then
         ENABLE=":enable='between(t,${START},${END})"

@@ -221,7 +221,7 @@ function main()
         printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
     fi
 
-    # If this is a drectory
+    # If this is a directory
     if [ -d "$INPUT_FILENAME" ]; then
         LOOP=0
         LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")

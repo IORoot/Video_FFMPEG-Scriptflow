@@ -134,6 +134,13 @@ function arguments()
             ;;
 
 
+        -g|--grep)
+            GREP="$2"
+            shift 
+            shift
+            ;;
+
+            
         -C|--config)
             CONFIG_FILE="$2"
             shift 
