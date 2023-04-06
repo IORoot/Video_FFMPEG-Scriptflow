@@ -1,4 +1,7 @@
 
+
+
+
 <div id="top"></div>
 
 <div align="center">
@@ -111,6 +114,10 @@
         - [<DATE_format>](#date_format)
         - [<RANDOM_VIDEO>](#random_video)
         - [<RANDOM_VIDEO_FILTER_string>](#random_video_filter_string)
+        - [<RANDOM_COLOUR>](#random_colour)
+        - [<RANDOM_CONTRAST_COLOUR>](#random_contrast_colour)
+        - [<CONSTANT_RANDOM_COLOUR>](#constant_random_colour)
+        - [<CONSTANT_CONTRAST_COLOUR>](#constant_contrast_colour)
     - [Output & Cleanup](#output--cleanup)
     - [pwd and file references](#pwd-and-file-references)
 - [Customising](#customising)
@@ -119,6 +126,7 @@
 - [License](#license)
 - [Contact](#contact)
 - [Changelog](#changelog)
+    - [Version 1.4](#version-14)
     - [Version 1.3](#version-13)
     - [Version 1.2](#version-12)
     - [Version 1.1](#version-11)
@@ -1306,6 +1314,148 @@ If you wanted a random selection from only the `holiday` videos, you can supply 
 This will randomly pick ONLY a holiday video and sharpen it.
 
 
+
+#### <RANDOM_COLOUR>
+This uses the tailwind CSS palette for a nicer curated list of colours to use. See https://tailwindcss.com/docs/customizing-colors
+
+This keyword will just randomly pick a new colour from the tailwind array and replace it with the hex code.
+
+```json
+{
+    "ff_text": {
+        "input": "video.mp4",
+        "text": "Hello!",
+        "colour": "<RANDOM_COLOUR>"
+    }
+}
+```
+This will become:
+```json
+{
+    "ff_text": {
+        "input": "video.mp4",
+        "text": "Hello!",
+        "colour": "#c2410c"
+    }
+}
+```
+
+Note that a key point to remember is that subsequent stages of the JSON file will be also be random values and will keep changing.
+
+
+#### <RANDOM_CONTRAST_COLOUR>
+This is based on the `<RANDOM_COLOUR>` tag and will determine if the generated value is 'light' or 'dark'. It will then set this `<RANDOM_CONTRAST_COLOUR>` tag to be a contrasting white or black colour.
+For instance, if the `<RANDOM_COLOUR>` is #365314 (a dark green) then the `<RANDOM_CONTRAST_COLOUR>` will be set to white to contrast it. This is useful for text over background colours.
+
+```json
+    "ff_text": {
+        "input": "input.mp4",
+        "text": "The background is random, the foreground is contrasting.",
+        "colour": "<RANDOM_CONTRAST_COLOUR>",
+        "boxcolour": "<RANDOM_COLOUR>"
+    },
+```
+This will change to:
+```json
+    "ff_text": {
+        "input": "input.mp4",
+        "text": "The background is random, the foreground is white or black.",
+        "colour": "#fafafa",
+        "boxcolour": "#365314"
+    },
+```
+
+
+
+#### <CONSTANT_RANDOM_COLOUR>
+One issue is that the `<RANDOM_COLOUR>` and `<RANDOM_CONTRAST_COLOUR>`  tags will keep changing across each JSON step. It can therefore be tricky to reuse and match colours across multiple steps. This is where the `<CONSTANT_RANDOM_COLOUR>` comes in. 
+
+This will be randomised once at the beginning of the script run and then never changed. This way, the same colour can be reused.
+
+The below example adds a pad around a landscape video to make it the same height as it's width. Then text is overlayed on the padding area.
+```json
+    "ff_pad": {
+        "input": "input.mp4",
+        "height": "iw",
+        "colour": "<CONSTANT_RANDOM_COLOUR>"
+    },
+
+    "ff_text1": {
+        "input": "ff_pad.mp4",
+        "text": "Top test",
+        "colour": "<RANDOM_COLOUR>",
+        "boxcolour": "<CONSTANT_RANDOM_COLOUR>",
+        "ypixels": "70"
+    },
+```
+
+Here, both steps will now have the same colour for the padding and the text box background (#a5f3fc), with the text being a random different colour.
+
+```json
+    "ff_pad": {
+        "input": "input.mp4",
+        "height": "iw",
+        "colour": "#a5f3fc"
+    },
+
+    "ff_text1": {
+        "input": "ff_pad.mp4",
+        "text": "Top test",
+        "colour": "#2e1065",
+        "boxcolour": "#a5f3fc",
+        "ypixels": "70"
+    },
+```
+
+#### <CONSTANT_CONTRAST_COLOUR>
+This tag will contrast the  `<CONSTANT_RANDOM_COLOUR>`  colour and will only be randomised once on the start of the script flow. Therefore maintaining a constant light or dark colour until the script is finished. 
+Useful for maintaining across multiple JSON steps.
+
+```json
+    "ff_text1": {
+        "input": "input.mp4",
+        "output": "ff_text1.mp4",
+        "text": "First Line",
+        "colour": "<CONSTANT_CONTRAST_COLOUR>",
+        "boxcolour": "<CONSTANT_RANDOM_COLOUR>",
+        "ypixels": "70"
+    },
+    
+    "ff_text1": {
+        "input": "ff_text1.mp4",
+        "output": "ff_text2.mp4",
+        "text": "Second Line",
+        "colour": "<CONSTANT_CONTRAST_COLOUR>",
+        "boxcolour": "<CONSTANT_RANDOM_COLOUR>",
+        "ypixels": "120"
+    },
+
+```
+
+The substituted scripts will now have the same colours across each step. Here you have a dark red text box background (#83184) and white contrasting text (#ffffff)
+
+```json
+    "ff_text1": {
+        "input": "input.mp4",
+        "output": "ff_text1.mp4",
+        "text": "First Line",
+        "colour": "#ffffff",
+        "boxcolour": "#83184",
+        "ypixels": "70"
+    },
+    
+    "ff_text1": {
+        "input": "ff_text1.mp4",
+        "output": "ff_text2.mp4",
+        "text": "Second Line",
+        "colour": "#ffffff",
+        "boxcolour": "#83184",
+        "ypixels": "120"
+    },
+
+```
+
+
 ### 4.5. Output & Cleanup
 
 Once the `scriptflow` has finished, it will output to a file called `output.mp4` and all other `ff_?????.mp4`  intermediate movie files will be removed.
@@ -1383,6 +1533,8 @@ Author Link: [https://github.com/IORoot](https://github.com/IORoot)
 
 ##  10. Changelog
 
+### Version 1.4
+- Keywords for Random tailwind colours.
 
 ### Version 1.3
 

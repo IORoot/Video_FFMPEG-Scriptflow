@@ -26,15 +26,15 @@
     "ff_pad": {
         "input": "ff_lut.mp4",
         "height": "iw",
-        "colour": "#2dd4bf"
+        "colour": "<CONSTANT_RANDOM_COLOUR>"
     },
 
     "ff_text1": {
         "input": "ff_pad.mp4",
         "output": "ff_text1.mp4",
         "text": "Top test\n<DATE_%A %d %B. %Y>",
-        "colour": "#fafaf9",
-        "boxcolour": "#2dd4bf",
+        "colour": "<CONSTANT_RANDOM_COLOUR>",
+        "boxcolour": "<CONSTANT_CONTRAST_COLOUR>",
         "size": "32",
         "reduction": "10",
         "ypixels": "70"
@@ -52,8 +52,8 @@
         "input": "ff_watermark.mp4",
         "output": "ff_text2.mp4",
         "text": "LondonParkour.com",
-        "colour": "#fafaf9",
-        "boxcolour": "#2dd4bf",
+        "colour": "<CONSTANT_RANDOM_COLOUR>",
+        "boxcolour": "<CONSTANT_CONTRAST_COLOUR>",
         "size": "24",
         "reduction": "10",
         "ypixels": "(h-th)-30"

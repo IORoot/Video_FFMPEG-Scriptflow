@@ -32,21 +32,6 @@ TAILWIND="#f8fafc #f1f5f9 #e2e8f0 #cbd5e1 #94a3b8 #64748b #475569 #334155 #1e293
 TAILWIND_ARRAY=($TAILWIND)
 
 
-# ╭──────────────────────────────────────────────────────────╮
-# │   Generate a random colour that stays constant through   │
-# │   the whole scriptflow. This allows for multiple steps   │
-# │    to use the same random colour and contrast colour.    │
-# ╰──────────────────────────────────────────────────────────╯
-generate_colours()
-{
-    RANDOM_SEED=$$$(date +%s)
-    RANDOM_KEY=$[$RANDOM_SEED % ${#TAILWIND_ARRAY[@]}]
-    CONSTANT_RANDOM_COLOUR=${TAILWIND_ARRAY[$RANDOM_KEY]}
-    contrast_colour "$CONSTANT_RANDOM_COLOUR"
-    CONSTANT_CONTRAST_COLOUR="$CONTRAST_COLOUR"
-}
-
-
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -127,6 +112,20 @@ function read_config()
 }
 
 
+# ╭──────────────────────────────────────────────────────────╮
+# │   Generate a random colour that stays constant through   │
+# │   the whole scriptflow. This allows for multiple steps   │
+# │    to use the same random colour and contrast colour.    │
+# ╰──────────────────────────────────────────────────────────╯
+generate_colours()
+{
+    RANDOM_SEED=$$$(date +%s)
+    RANDOM_KEY=$[$RANDOM_SEED % ${#TAILWIND_ARRAY[@]}]
+    CONSTANT_RANDOM_COLOUR=${TAILWIND_ARRAY[$RANDOM_KEY]}
+    contrast_colour "$CONSTANT_RANDOM_COLOUR"
+    CONSTANT_CONTRAST_COLOUR="$CONTRAST_COLOUR"
+}
+
 
 # ╭──────────────────────────────────────────────────────────╮
 # │   Substitute specific keywords for their actual values   │
@@ -156,9 +155,7 @@ function keyword_substitutions()
     REGEX="<DATE_([^>]*)>"
     if [[ $SCRIPT_CONTENTS =~ $REGEX ]]; then
         DATE_FORMAT="${BASH_REMATCH[1]}"
-        echo $DATE_FORMAT
         DATE=$(date +"${DATE_FORMAT//\\/}")
-        echo $DATE
         SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<DATE_${BASH_REMATCH[1]}>/$DATE}
     fi
 
@@ -218,17 +215,23 @@ function keyword_substitutions()
 # │      Find a contrasting colour to the random colour      │
 # ╰──────────────────────────────────────────────────────────╯
 contrast_colour() {
+
+    IN="$1"
     # Remove the '#' from the hex code and convert it to RGB
-    r=$(echo "${1#"#"}" | sed -E 's/^(..).+$/\1/')
-    g=$(echo "${1#"#"}" | sed -E 's/^..(..).+$/\1/')
-    b=$(echo "${1#"#"}" | sed -E 's/^....(..)$/\1/')
+    r=$(echo "${IN#"#"}" | sed -E 's/^(..).+$/\1/')
+    g=$(echo "${IN#"#"}" | sed -E 's/^..(..).+$/\1/')
+    b=$(echo "${IN#"#"}" | sed -E 's/^....(..)$/\1/')
+
+    r_bright=$((16#${r}${r}))
+    g_bright=$((16#${g}${g}))
+    b_bright=$((16#${b}${b}))
 
     # Calculate the brightness of the color
-    brightness=$((16#${r}${r} + 16#${g}${g} + 16#${b}${b}))
+    brightness=$(( ${r_bright} + ${g_bright} + ${b_bright}))
     brightness=$((brightness / 3))
 
     # Return "light" or "dark" depending on the brightness
-    if (( $(echo "$brightness > 130" | bc -l) )); then
+    if (( $(echo "$brightness > 32767" | bc -l) )); then
         CONTRAST_COLOUR="$DARK_COLOUR"
     else
         CONTRAST_COLOUR="$LIGHT_COLOUR"
@@ -242,6 +245,7 @@ function cleanup()
 {
     rm -f ${TEMP_FOLDER}/temp_config_ff*
     find . -type f -name 'ff*.mp4' -delete
+    find . -regex './[0-9][0-9]*_ff.*' -type f -print0 | xargs -0 rm
 }
 
 

@@ -1,0 +1,89 @@
+{
+    "schedule": "TRUE",
+    "category": "syllabus",
+
+    "ff_scale1": {
+        "input": "./"
+    },
+    
+    "ff_to_landscape": {
+        "input": "./",
+        "grep": "ff_scale"
+    },
+
+    "ff_grouptime": {
+        "input": "./",
+        "grep": "ff_to_landscape"
+    },
+
+    "ff_lut": {
+        "input": "ff_grouptime.mp4",
+        "lut": "../lib/luts/Holmberg.cube"
+    },
+
+    "ff_scale2": {
+        "input": "ff_lut.mp4",
+        "width": "1920",
+        "height": "1080"
+    },
+
+    "ff_crop": {
+        "input": "ff_scale.mp4",
+        "width": "1080",
+        "height": "1080"
+    },
+
+    "ff_blur": {
+        "input": "ff_crop.mp4",
+        "strength": "20"
+    },
+
+    "ff_watermark1": {
+        "input": "ff_blur.mp4",
+        "output": "ff_watermark1.mp4",
+        "watermark": "ff_lut.mp4",
+        "xpixels": "(W-w)/2",
+        "ypixels": "(H-h)/2",
+        "scale": "0.56"
+    },
+    
+    "ff_watermark2": {
+        "input": "ff_watermark1.mp4",
+        "output": "ff_watermark2.mp4",
+        "watermark": "glyph.png",
+        "xpixels": "(W-w)",
+        "ypixels": "(H-h)",
+        "scale": "0.2"
+    },
+
+    "ff_watermark3": {
+        "input": "ff_watermark2.mp4",
+        "output": "ff_watermark3.mp4",
+        "watermark": "isometric.png",
+        "scale": "0.5",
+        "start": "0",
+        "xpixels": "(W-w)/2",
+        "ypixels": "(H-h)/2",
+        "end": "2"
+    },
+
+    "ff_watermark4": {
+        "input": "ff_watermark3.mp4",
+        "output": "ff_watermark4.mp4",
+        "watermark": "../lib/watermarks/ldnpk_white.png",
+        "xpixels": "(W-w)/2",
+        "ypixels": "0",
+        "scale": "0.25"
+    },
+
+    "ff_text": {
+        "input": "ff_watermark4.mp4",
+        "text": "Syllabus Challenge - <FOLDER_TITLE>",
+        "size": "36",
+        "reduction": "10",
+        "xpixels": "(w-tw)/2",
+        "ypixels": "(h-th)-100",
+        "colour": "#FFFFFF",
+        "boxcolour": "#262626"
+    }
+}

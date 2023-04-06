@@ -1,5 +1,7 @@
 {
-    
+    "schedule": "TRUE",
+    "category": "blurred",
+
     "ff_scale1": {
         "input": "./"
     },
