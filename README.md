@@ -126,6 +126,7 @@
 - [License](#license)
 - [Contact](#contact)
 - [Changelog](#changelog)
+    - [Version 1.5](#version-15)
     - [Version 1.4](#version-14)
     - [Version 1.3](#version-13)
     - [Version 1.2](#version-12)
@@ -186,6 +187,7 @@ Current list of scripts and their purposes.
 | `ff_convert.sh`      | Convert an apple quicktime MOV to MP4 file                       |
 | `ff_crop.sh`         | Crop video to specific size                                      |
 | `ff_cut.sh`          | Cut video from start time to end time.                           |
+| `ff_download.sh`     | Use CURL to download multiple files. Useful for scriptflow.      | 
 | `ff_flip.sh`         | Horizontally and/or vertically flip the video                    |
 | `ff_fps.sh`          | Alter the FPS with changing length of video                      |
 | `ff_grouptime.sh`    | Proportionally trims and concats videos to target video duration |
@@ -194,7 +196,7 @@ Current list of scripts and their purposes.
 | `ff_middle.sh`       | Remove equal number of seconds from start and end of video       |
 | `ff_overlay.sh`      | Overlay an image or video on top of another video                |
 | `ff_pad.sh`          | Add a background padding around the video                        |
-| `ff_proxy.sh`        | Create a down-scaled,res,fps,crf proxy file for a video          | 
+| `ff_proxy.sh`        | Create a down-scaled,res,fps,crf proxy file for a video          |
 | `ff_rotate.sh`       | Rotate a video in 90 degree increments                           |
 | `ff_scale.sh`        | Change the width and height of the video                         |
 | `ff_sharpen.sh`      | Simple sharpen function using an unsharp mask                    |
@@ -1532,6 +1534,10 @@ Author Link: [https://github.com/IORoot](https://github.com/IORoot)
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ##  10. Changelog
+
+### Version 1.5
+- Added ff_download.sh
+- removed templates for configs and scriptflow.sh
 
 ### Version 1.4
 - Keywords for Random tailwind colours.

@@ -211,8 +211,6 @@ function main()
     LOOP=1
     while read FILE; do
 
-        
-
         # Filename
         OUTPUT_FILE=${LOOP}_${OUTPUT_FILENAME}
 

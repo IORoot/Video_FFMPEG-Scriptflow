@@ -16,6 +16,28 @@ set -o pipefail                                             # pipeline fails on 
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
 
 
+# DIAGRAM
+#
+#                   | 'OVERLAY_START_TIME' = start overlay at 0.  
+#                   |
+#                   |                                             | 'DURATION' = 5 seconds.
+#                   |                                             |
+#                   |                                             |
+#                   |                                             |
+#                   ╭─────────────────────────────────────────────╮
+#                   │ OVERLAY (5 seconds long)                    │
+#                   0────────1────────2────────3────────4────────5╯
+#                   |                                             |
+#                   | 'START' = 2 seconds in on input video       | 'END' = 7 seconds.
+#                   |                                             |
+#                   |                                             |
+#                   |                                             |
+#                   |                                             |
+# ╭────────────────────────────────────────────────────────────────────────╮
+# │ INPUT VIDEO (8 seconds long)                                           │
+# 0────────1────────2────────3────────4────────5────────6────────7────────8╯
+
+
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
@@ -27,6 +49,14 @@ YPIXELS="10"
 LOGLEVEL="error"
 SCALE="0.2" 
 ALPHA="1" 
+OVERLAY_START_TIME="0"      # Where the overlay video should start playing from. Default is from the start (0).
+START="0"
+END="5"
+
+
+
+
+
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -73,10 +103,21 @@ usage()
         printf "\tTransparency (alpha channel) of the watermark. From 0 to 1. Default is 1.\n\n"
 
         printf " -S | --start <SECONDS>\n"
-        printf "\tStart time in seconds of when to show overlay.\n"
+        printf "\tStart time in seconds of when to show overlay. Default 0.\n"
+        printf "\tYou can also express with basic maths and percentage values.\n"
+        printf "\tExamples:\n"
+        printf "\t\"10\" : Start 10 seconds into the input video. \n"
+        printf "\t\"50%\" : Start half way through the input video. \n"
+        printf "\t\"100%-5\" : Start 5 seconds before the end of the input video. \n"
+        printf "\t\"10%+12\" : Start 12 seconds after the 10% mark of the input video. \n"
+        printf "\t\"-5\" : Start 5 seconds before the beginning of the input video. \n"
 
         printf " -E | --end <SECONDS>\n"
-        printf "\nEnd time in seconds of when to show overlay.\n"
+        printf "\nEnd time in seconds of when to show overlay. Default 5\n"
+        printf "\nYou can also use basic maths and percentage values the same as the --start flag.\n"
+
+        printf " -D | --duration <SECONDS>\n"
+        printf "\nOverride the --end time with a duration instead. Default is unset (null)\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -171,10 +212,17 @@ function arguments()
             shift 
             shift
             ;;
-        
-        
+
+
         -E|--end)
             END="$2"
+            shift 
+            shift
+            ;;
+
+
+        -D|--duration)
+            DURATION="$2"
             shift 
             shift
             ;;
@@ -290,6 +338,53 @@ function pre_flight_checks()
 
 
 # ╭──────────────────────────────────────────────────────────╮
+# │           Start and end times for the overlay            │
+# ╰──────────────────────────────────────────────────────────╯
+calculate_times()
+{
+
+    # detect the length of the main input video
+    # will be in seconds and milliseconds. e.g. 32.23442
+    LENGTH_OF_INPUT_VIDEO=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${INPUT_FILENAME}")
+    INPUT_LENGTH=${LENGTH_OF_INPUT_VIDEO%%.*}
+    # If contains a % symbol
+    REGEX="([0-9]|[1-9][0-9]|100)%"
+    if [[ $START =~ $REGEX ]]; then
+        # Get the percent value
+        PERCENT=${BASH_REMATCH[0]}
+        # remove the % symbol
+        PERCENT_NO_SYMBOL=${PERCENT%?}
+        # calculate the actual time of that percentage along the input video.
+        PERCENT_TIME=$(( $INPUT_LENGTH*$PERCENT_NO_SYMBOL/100 ))
+        # Substitute the original percentage value for the time value.
+        SUBSTITUTE_PERCENT_FOR_REAL_TIME=${START//${BASH_REMATCH[1]}%/$PERCENT_TIME}
+        # calculate any maths (including -5, +5%, /2, etc...)
+        START=$(( $SUBSTITUTE_PERCENT_FOR_REAL_TIME ))
+    fi
+
+    # Repeat for the END entry.
+    if [[ $END =~ $REGEX ]]; then
+        PERCENT=${BASH_REMATCH[0]}
+        PERCENT_NO_SYMBOL=${PERCENT%?}
+        PERCENT_RESULT=$(( $INPUT_LENGTH*$PERCENT_NO_SYMBOL/100 ))
+        SUBSTITUTE_PERCENT_FOR_REAL_TIME=${END//${BASH_REMATCH[1]}%/$PERCENT_RESULT}
+        END=$(( $SUBSTITUTE_PERCENT_FOR_REAL_TIME ))
+    fi
+
+    # duration of the overlay video to play (if not already set)
+    if [[ -z ${DURATION+x} ]]; then
+        DURATION=$(( $END - $START ))
+    fi
+
+    printf "\nstart: %-4s end: %-4s duration: %-4s\n" "$START" "$END" "$DURATION"
+
+    # Set the overlay playing duration.
+    ENABLE=":enable='between(t,${OVERLAY_START_TIME},${END})'"
+}
+
+
+
+# ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
 # │                                                          │
@@ -305,13 +400,12 @@ function main()
         WATERMARK_FILE=$(realpath ${WATERMARK_FILE//RANDOM/*} | sort -R | head -n 1)
     fi
 
+    calculate_times
+
     printf "%-80s" "🎨 ff_watermark.sh - Overlaying the watermark."
 
-    if [[ ! -z $START || ! -z $END ]]; then
-        ENABLE=":enable='between(t,${START},${END})"
-    fi
-
-    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}${ENABLE}" ${OUTPUT_FILENAME}
+    echo     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]setpts=PTS-STARTPTS+${START}/TB,format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}${ENABLE}" ${OUTPUT_FILENAME}
+    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]setpts=PTS-STARTPTS+${START}/TB,format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}${ENABLE}" ${OUTPUT_FILENAME}
 
     printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
 
