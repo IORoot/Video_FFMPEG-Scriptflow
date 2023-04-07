@@ -51,7 +51,7 @@ SCALE="0.2"
 ALPHA="1" 
 OVERLAY_START_TIME="0"      # Where the overlay video should start playing from. Default is from the start (0).
 START="0"
-END="5"
+END="100%"
 
 
 
@@ -113,7 +113,7 @@ usage()
         printf "\t\"-5\" : Start 5 seconds before the beginning of the input video. \n"
 
         printf " -E | --end <SECONDS>\n"
-        printf "\nEnd time in seconds of when to show overlay. Default 5\n"
+        printf "\nEnd time in seconds of when to show overlay. Default 100%\n"
         printf "\nYou can also use basic maths and percentage values the same as the --start flag.\n"
 
         printf " -D | --duration <SECONDS>\n"
@@ -404,7 +404,6 @@ function main()
 
     printf "%-80s" "🎨 ff_watermark.sh - Overlaying the watermark."
 
-    echo     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]setpts=PTS-STARTPTS+${START}/TB,format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}${ENABLE}" ${OUTPUT_FILENAME}
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]setpts=PTS-STARTPTS+${START}/TB,format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}${ENABLE}" ${OUTPUT_FILENAME}
 
     printf "✅ %-20s\n" "${OUTPUT_FILENAME}"

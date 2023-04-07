@@ -139,7 +139,7 @@ function arguments()
     case $1 in
 
 
-        -i|--input|--input?|--input??)
+        -i|--input|--input?|--input??|--input???)
             write_to_temp $(realpath "$2")
             shift
             shift
@@ -241,7 +241,7 @@ function write_to_temp()
     # if this a folder
     if [ -d "$FILE" ]; then
         LOOP=0
-        LIST_OF_FILES=$(find $FILE -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
+        LIST_OF_FILES=$(find $FILE -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP" | sort)
         for FILE in $LIST_OF_FILES
         do
             pre_flight_checks $FILE
@@ -525,7 +525,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "🎢  ff_grouptime.sh - This will remove a seconds from front and end of all videos.\n"
+    printf "🎢  ff_grouptime.sh - This will remove X seconds from front and end of all videos.\n"
 
     grep_file
 

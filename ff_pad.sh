@@ -49,10 +49,12 @@ usage()
         printf "\tThe name of the output file.\n\n"
 
         printf " -w | --width <WIDTH>\n"
-        printf "\tWidth of the output video. Default: Same as input video.\n\n"
+        printf "\tWidth of the output video. Default: Same as input video.\n"
+        printf "\t0 : use the input value.\n\n"
 
         printf " -h | --height <HEIGHT>\n"
-        printf "\tHeight of the output video. Default: 2x input video height.\n\n"
+        printf "\tHeight of the output video. Default: double input video height.\n"
+        printf "\t0 : use the input value.\n\n"
 
         printf " -x | --xpixels <PIXELS>\n"
         printf "\tWhere to position the video in the frame on X-Axis from left.\n\n"

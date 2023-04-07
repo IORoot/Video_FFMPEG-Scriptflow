@@ -91,7 +91,7 @@ function arguments()
     case $1 in
 
         # use wildcard ? to allow input1, input22,etc...
-        -i|--input|--input?|--input??)
+        -i|--input|--input?|--input??|--input???)
             write_to_temp $2
             shift
             shift

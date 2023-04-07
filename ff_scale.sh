@@ -48,10 +48,20 @@ usage()
         printf "\tThe name of the output file.\n\n"
 
         printf " -w | --width <PIXELS>\n"
-        printf "\tThe width of the video. The default value is 1920.\n\n"
+        printf "\tThe width of the video. The default value is 1920.\n"
+        printf "\t-1 : keep aspect ratio.\n\n"
+        printf "\t-n : aspect ratio a multiple of n. (-2 is even numbers)\n"
+        printf "\tiw : input width.\n"
+        printf "\tih : input height.\n"
+        printf "\tiw*.5 : input width divided by 0.5 (half width).\n\n"
 
         printf " -h | --height <PIXELS>\n"
-        printf "\tThe height of the video. The default value is 1920.\n\n"
+        printf "\tThe height of the video. The default value is 1080.\n"
+        printf "\t-1 : keep aspect ratio.\n\n"
+        printf "\t-n : aspect ratio a multiple of n.\n"
+        printf "\tiw : input width.\n"
+        printf "\tih : input height.\n"
+        printf "\tiw*.5 : input width divided by 0.5 (half width).\n\n"
 
         printf " -g | --grep <STRING>\n"
         printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"

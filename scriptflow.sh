@@ -52,6 +52,9 @@ usage()
         printf "\tA JSON configuration file for all settings.\n"
         printf "\tAll inputs/outputs should be relative to where this file is.\n\n"
 
+        printf " -t | --notidy\n"
+        printf "\tDo not delete intermediate files.\n"
+
         exit 1
     fi
 }
@@ -71,6 +74,12 @@ function arguments()
             CONFIG_FILE=$(realpath "$2")
             shift 
             shift
+            ;;
+
+
+        -t|--notidy)
+            TIDY="FALSE"
+            shift 
             ;;
 
 
@@ -243,9 +252,13 @@ contrast_colour() {
 # ╰──────────────────────────────────────────────────────────╯
 function cleanup()
 {
-    rm -f ${TEMP_FOLDER}/temp_config_ff*
-    find . -type f -name 'ff*.mp4' -delete
-    find . -regex './[0-9][0-9]*_ff.*' -type f -print0 | xargs -0 rm
+    if [[ -z ${TIDY+x} ]]; then
+        rm -f ${TEMP_FOLDER}/temp_config_ff*
+        find . -type f -name 'ff*.mp4' -delete
+        find . -regex './[0-9][0-9]*_ff.*' -type f -print0 | xargs -0 rm
+    fi
+
+
 }
 
 

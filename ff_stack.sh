@@ -87,7 +87,7 @@ function arguments()
     case $1 in
 
 
-        -i|--input|--input?|--input??)
+        -i|--input|--input?|--input??|--input???)
             write_to_temp $2
             shift
             shift

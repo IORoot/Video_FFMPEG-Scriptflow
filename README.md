@@ -12,7 +12,7 @@
 <h3 align="center">FFMPEG Util scripts and Templates</h3>
 
 <p align="center">
-    Simple wrapper scripts for FFMPEG.
+    This project automates multimedia processing tasks using FFMPEG wrapper scripts and a script runner that reads JSON configuration files. The wrapper scripts provide an interface for executing specific tasks, while the script runner allows users to define a series of tasks to be performed on a set of media files. This automation pipeline saves time and effort, enabling users to execute multiple tasks on numerous media files with a single command.
 </p>    
 </div>
 
