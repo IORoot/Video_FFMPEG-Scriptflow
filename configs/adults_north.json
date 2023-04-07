@@ -386,5 +386,31 @@
         "xpixels": "(W-w)/2",
         "ypixels": "(H-h)/2",
         "scale": "0.56"
-    }
+    },
+
+    "ff_download1": {
+        "input1": "http://media.londonparkour.com/overlays/intros_10s/2xwords__black--london-parkour.mov",
+        "input2": "http://media.londonparkour.com/overlays/intros_10s/3xwords__cyan--explore-challenge-conquer.mov",
+        "input3": "http://media.londonparkour.com/overlays/intros_10s/slant__green--youth-parkour-classes.mov",
+        "input4": "http://media.londonparkour.com/overlays/intros_10s/slant__orange--youth-parkour-classes.mov",
+        "input5": "http://media.londonparkour.com/overlays/intros_10s/solidcircle__blue--parkour-youth-classes.mov",
+        "input6": "http://media.londonparkour.com/overlays/intros_10s/triangles__orange--youth-classes.mov",
+        "input7": "http://media.londonparkour.com/overlays/intros_5s/bigtypo__yellow--youth-parkour.mov",
+        "input8": "http://media.londonparkour.com/overlays/intros_5s/border__orange--youth-classes.mov",
+        "output": "ff_intro.mov",
+        "strategy": "random"
+    },
+
+
+    "ff_watermark2": {
+        "input": "ff_watermark1.mp4",
+        "output": "ff_watermark2.mp4",
+        "watermark": "1_ff_intro.mov",
+        "xpixels": "(W-w)/2",
+        "ypixels": "(H-h)/2",
+        "start": "0",
+        "end": "5",
+        "scale": "1"
+    },
+
 }
