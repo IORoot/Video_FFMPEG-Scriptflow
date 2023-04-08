@@ -319,13 +319,13 @@ function main()
 
 }
 
-cleanup
+# cleanup
 generate_colours
 usage $@
 arguments "$@"
 read_config "$@"
 main $@
-cleanup
+# cleanup
 
 # Move back to where you were.
 cd $PWD
