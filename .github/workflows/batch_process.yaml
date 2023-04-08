@@ -141,11 +141,9 @@ jobs:
       - name: run ffmpeg template
         run: |
           cd ${GITHUB_WORKSPACE}
-          mkdir -p ./processed_video
-          TEMPLATE=$(cat ./config.json | jq -c '.template // "ft_simple.sh"' | tr -d '"')
-          cd ./templates
-          sudo ./$TEMPLATE -f ../${{ matrix.project }} -o ../processed_video/processed.mp4 -c $(realpath ../config.json)
-
+          mkdir -p ${GITHUB_WORKSPACE}/processed_video
+          sudo ./scriptflow.sh --config $(realpath ./config.json)
+          mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
 
 
       - name: download music
@@ -162,10 +160,11 @@ jobs:
         continue-on-error: true
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i processed.mp4 -i music.mp3 -filter_complex amix=weights="1 0.6" -map 0:v -map 0:a -map 1:a -shortest merged_music.mp4 || true
+          sudo ffmpeg -i output.mp4 -i music.mp3 -filter_complex amix=weights="1 0.6" -map 0:v -map 0:a -map 1:a -shortest merged_music.mp4 || true
           sudo mv -f merged_music.mp4 processed.mp4
           rm ./yt-dlp
           rm ./music.mp3
+          rm ./output.mp4
 
 
 

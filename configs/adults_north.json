@@ -1,6 +1,6 @@
 {
     "schedule": "TRUE",
-    "category": "adults_north",
+    "category": "adult_north",
 
     "ff_download": {
         "input0": "http://media.londonparkour.com/clips/001.mp4",
