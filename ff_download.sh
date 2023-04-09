@@ -178,6 +178,8 @@ function configure_strategy()
 {
     INPUT_FILE=$1
 
+    cat ${TMP_FILE}
+    
     # Randomise and slect single download
     if [[ "${STRATEGY}" == "random" ]]; then 
         cat ${TMP_FILE} | sort -R | head -n 1 > ${TMP_FILE}.random
