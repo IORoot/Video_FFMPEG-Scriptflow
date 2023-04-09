@@ -30,7 +30,7 @@ env:
   # ╰──────────────────────────────────────────────────────────╯
   # Google AppsScript Name: "Make.com Video Sheet Insert Row"
   # INSERT
-  APPS_SCRIPT: "https://script.google.com/macros/s/AKfycbyEaJ_7s3QcR7yNcMZEQtUMXmAwixLAwF_iLH5kWY9q55xjhwjwtWvFDlaGqbPlwS7oig/exec"
+  APPS_SCRIPT: ${{ secrets.APPS_SCRIPT }}
 
 
   # ╭──────────────────────────────────────────────────────────╮
@@ -142,8 +142,8 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           mkdir -p ${GITHUB_WORKSPACE}/processed_video
-          sudo ./scriptflow.sh --config $(realpath ./config.json)
           ls -la
+          sudo ./scriptflow.sh --config $(realpath ./config.json)
           mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
 
 
@@ -166,8 +166,6 @@ jobs:
           rm ./yt-dlp
           rm ./music.mp3
           rm ./output.mp4
-
-
 
 
       - name: rclone copy result back to google drive
