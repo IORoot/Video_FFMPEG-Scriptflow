@@ -142,7 +142,6 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           mkdir -p ${GITHUB_WORKSPACE}/processed_video
-          ls -la
           sudo ./scriptflow.sh --config $(realpath ./config.json)
           mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
 
@@ -154,7 +153,6 @@ jobs:
           sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp
           sudo chmod a+rx ./yt-dlp
           sudo ./yt-dlp ${{ env.YOUTUBE_AUDIO_PLAYLIST }} --playlist-random --max-downloads 1 --restrict-filenames --trim-filenames 20 --extract-audio --audio-format mp3 --postprocessor-args "-ss 00:00:00.00 -t 00:01:00.00" --output music.mp3 --force-overwrites || true
-          ls -la
 
 
       - name: overlay music
