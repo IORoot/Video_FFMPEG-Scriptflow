@@ -137,13 +137,12 @@ jobs:
           ln -s /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe ./ffprobe
 
 
-
-      - name: Start SSH session
-        uses: luchihoratiu/debug-via-ssh@main
+      - name: Setup tunnel
+        uses: joshlarsen/ssh-tunnel-action@main
         with:
-          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-          SSH_PASS: ${{ secrets.NGROK_SSH_PASS }}
-
+          timeout: 1h
+          ssh_public_key: ${{ secrets.NGROK_SSH_PUBLIC_KEY }}
+          ngrok_token: ${{ secrets.NGROK_AUTH_TOKEN }}
 
       # Use sudo otherwise permissions to /tmp won't work in runner
       - name: run ffmpeg template
