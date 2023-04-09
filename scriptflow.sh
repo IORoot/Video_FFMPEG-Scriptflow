@@ -173,9 +173,11 @@ function keyword_substitutions()
     # <RANDOM_VIDEO>
     # Any random file in folder.
     # "../lib/luts/<RANDOM_FILE>"
-    one=$( find ${PWD} -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) )
+
+    echo "PWD:${PWD}"
+    one=$( find ${PWD} \( -iname '*.mp4' -o -iname '*.mov' \) )
     echo "one:$one"
-    RANDOM_VIDEO=$( find ${PWD} -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | sort -R | head -n 1 )
+    RANDOM_VIDEO=$( find ${PWD} \( -iname '*.mp4' -o -iname '*.mov' \) | sort -R | head -n 1 )
     echo "RANDOM_VIDEO:$RANDOM_VIDEO"
     SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<RANDOM_VIDEO>/$RANDOM_VIDEO}
 
