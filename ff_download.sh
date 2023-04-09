@@ -177,10 +177,6 @@ function exit_gracefully()
 function configure_strategy()
 {
     INPUT_FILE=$1
-    
-        echo "STRAT:${STRATEGY}"
-        echo "TMP_FILE:${TMP_FILE}"
-        ls -la "${TMP_FILE}"
 
     # Randomise and select single download
     if [[ "${STRATEGY}" == "random" ]]; then 

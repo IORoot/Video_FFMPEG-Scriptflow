@@ -2,7 +2,7 @@
     "schedule": "TRUE",
     "category": "adult_north",
 
-    "ff_download": {
+    "ff_download1": {
         "input0": "http://media.londonparkour.com/clips/001.mp4",
         "input1": "http://media.londonparkour.com/clips/002.mp4",
         "input2": "http://media.londonparkour.com/clips/003_fail.mp4",
@@ -388,7 +388,7 @@
         "scale": "0.56"
     },
 
-    "ff_download1": {
+    "ff_download2": {
         "input1": "http://media.londonparkour.com/overlays/intros_10s/2xwords__black--london-parkour.mov",
         "input2": "http://media.londonparkour.com/overlays/intros_10s/3xwords__cyan--explore-challenge-conquer.mov",
         "input3": "http://media.londonparkour.com/overlays/intros_10s/slant__green--youth-parkour-classes.mov",
