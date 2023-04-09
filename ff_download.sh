@@ -177,10 +177,8 @@ function exit_gracefully()
 function configure_strategy()
 {
     INPUT_FILE=$1
-
-    cat ${TMP_FILE}
     
-    # Randomise and slect single download
+    # Randomise and select single download
     if [[ "${STRATEGY}" == "random" ]]; then 
         cat ${TMP_FILE} | sort -R | head -n 1 > ${TMP_FILE}.random
         mv ${TMP_FILE}.random ${TMP_FILE}
@@ -189,6 +187,11 @@ function configure_strategy()
     # If its a number, randomise and take top X
     REGEX='^[0-9]+$'
     if [[ "${STRATEGY}" =~ $REGEX ]] ; then
+
+        echo "STRAT:${STRATEGY}"
+        echo "TMP_FILE:${TMP_FILE}"
+        ls -la "${TMP_FILE}"
+
         cat ${TMP_FILE} | sort -R | head -n ${STRATEGY} > ${TMP_FILE}.random
         mv ${TMP_FILE}.random ${TMP_FILE}
     fi
