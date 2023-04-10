@@ -137,8 +137,8 @@ jobs:
           ln -s /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe ./ffprobe
 
 
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
+      # - name: Setup upterm session
+      #   uses: lhotari/action-upterm@v1
 
 
       # Use sudo otherwise permissions to /tmp won't work in runner
@@ -165,9 +165,9 @@ jobs:
           cd ${GITHUB_WORKSPACE}/processed_video
           sudo ffmpeg -i output.mp4 -i music.mp3 -filter_complex amix=weights="1 0.6" -map 0:v -map 0:a -map 1:a -shortest merged_music.mp4 || true
           sudo mv -f merged_music.mp4 processed.mp4
-          rm ./yt-dlp
-          rm ./music.mp3
-          rm ./output.mp4
+          rm -f ./yt-dlp
+          rm -f ./music.mp3
+          rm -f ./output.mp4
 
 
       - name: rclone copy result back to google drive
