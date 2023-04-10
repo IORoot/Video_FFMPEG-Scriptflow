@@ -12,8 +12,8 @@
 # │                       Set Defaults                       │
 # ╰──────────────────────────────────────────────────────────╯
 
-set -o errexit                                              # If a command fails bash exits.
-set -o pipefail                                             # pipeline fails on one command.
+# set -o errexit                                              # If a command fails bash exits.
+# set -o pipefail                                             # pipeline fails on one command.
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
 
 

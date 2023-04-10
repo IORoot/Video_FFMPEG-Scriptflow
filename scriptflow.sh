@@ -9,8 +9,8 @@
 # ╭──────────────────────────────────────────────────────────╮
 # │                       Set Defaults                       │
 # ╰──────────────────────────────────────────────────────────╯
-set -o errexit                                              # If a command fails bash exits.
-set -o pipefail                                             # pipeline fails on one command.
+# set -o errexit                                              # If a command fails bash exits.
+# set -o pipefail                                             # pipeline fails on one command.
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
 
 
@@ -173,7 +173,7 @@ function keyword_substitutions()
     # <RANDOM_VIDEO>
     # Any random file in folder.
     # "../lib/luts/<RANDOM_FILE>"
-    one=$( find ${PWD} \( -iname '*.mp4' -o -iname '*.mov' \) )
+    echo "$PWD"
     RANDOM_VIDEO=$( find ${PWD} \( -iname '*.mp4' -o -iname '*.mov' \) | sort -R | head -n 1 )
     SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<RANDOM_VIDEO>/$RANDOM_VIDEO}
 
@@ -184,8 +184,7 @@ function keyword_substitutions()
     REGEX2="<RANDOM_VIDEO_FILTER_([^>]*)>"
     if [[ $SCRIPT_CONTENTS =~ $REGEX2 ]]; then
         FILTER="${BASH_REMATCH[1]}"
-        RANDOM_FILTER=$(find . -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep $FILTER | sort -R | head -n 1)
-        echo "RANDOM_FILTER:$RANDOM_FILTER"
+        RANDOM_FILTER=$(find ${PWD} \( -iname '*.mp4' -o -iname '*.mov' \) | grep $FILTER | sort -R | head -n 1)
         SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<RANDOM_VIDEO_FILTER_${BASH_REMATCH[1]}>/$RANDOM_FILTER}
     fi
     

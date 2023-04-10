@@ -9,8 +9,8 @@
 # │                       Set Defaults                       │
 # ╰──────────────────────────────────────────────────────────╯
 
-set -o errexit                                              # If a command fails bash exits.
-set -o pipefail                                             # pipeline fails on one command.
+# set -o errexit                                              # If a command fails bash exits.
+# set -o pipefail                                             # pipeline fails on one command.
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
 
 
@@ -177,10 +177,6 @@ function exit_gracefully()
 function configure_strategy()
 {
     INPUT_FILE=$1
-    
-    echo "STRAT:${STRATEGY}"
-    echo "TMP_FILE:${TMP_FILE}"
-    ls -la "${TMP_FILE}"
 
     # Randomise and select single download
     if [[ "${STRATEGY}" == "random" ]]; then 
