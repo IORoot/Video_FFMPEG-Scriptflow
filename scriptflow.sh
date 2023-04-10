@@ -173,7 +173,6 @@ function keyword_substitutions()
     # <RANDOM_VIDEO>
     # Any random file in folder.
     # "../lib/luts/<RANDOM_FILE>"
-    echo "$PWD"
     RANDOM_VIDEO=$( find ${PWD} \( -iname '*.mp4' -o -iname '*.mov' \) | sort -R | head -n 1 )
     SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<RANDOM_VIDEO>/$RANDOM_VIDEO}
 
@@ -273,7 +272,7 @@ function run_ff_script()
     SCRIPT_CONFIG=$2
     SCRIPT_FILE=${TEMP_FOLDER}/temp_config_$SCRIPT_NAME.json
 
-    printf "\n\n🏃‍♀️ Running: %-20s : " "${SCRIPT_NAME}"
+    printf "\n\n Running: %-20s : " "${SCRIPT_NAME}"
 
     # Put config for this script into a new /tmp/temp_config_script.json file
     printf "%s\n" "${SCRIPT_CONFIG}"  > ${SCRIPT_FILE}
