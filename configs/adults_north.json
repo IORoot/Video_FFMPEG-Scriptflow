@@ -379,7 +379,7 @@
         "strength": "20"
     },
 
-    "ff_watermark": {
+    "ff_watermark1": {
         "input": "ff_blur.mp4",
         "output": "ff_watermark1.mp4",
         "watermark": "ff_grouptime.mp4",
