@@ -235,7 +235,7 @@ function main()
     if [ -f "$INPUT_FILENAME" ]; then
         pre_flight_checks $INPUT_FILENAME
 
-        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT} ${OUTPUT_FILENAME}
+        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT}:force_original_aspect_ratio=decrease ${OUTPUT_FILENAME}
         
         printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
     fi
@@ -248,7 +248,7 @@ function main()
         do
             pre_flight_checks $INPUT_FILENAME
 
-            ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT} ${LOOP}_${OUTPUT_FILENAME}
+            ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT}:force_original_aspect_ratio=decrease ${LOOP}_${OUTPUT_FILENAME}
                 
             printf "✅ %-20s\n" "${LOOP}_${OUTPUT_FILENAME}"
             LOOP=$(expr $LOOP + 1)

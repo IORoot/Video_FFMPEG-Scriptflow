@@ -9,8 +9,8 @@
 # │                       Set Defaults                       │
 # ╰──────────────────────────────────────────────────────────╯
 
-# set -o errexit                                              # If a command fails bash exits.
-# set -o pipefail                                             # pipeline fails on one command.
+set -o errexit                                              # If a command fails bash exits.
+set -o pipefail                                             # pipeline fails on one command.
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
 
 
@@ -22,7 +22,10 @@ OUTPUT_FILENAME="ff_pad.mp4"
 LOGLEVEL="error" 
 WIDTH="iw"
 HEIGHT="ih*2"
+XPIXELS="(ow-iw)/2"
+YPIXELS="(oh-ih)/2"
 COLOUR="#fb923c"
+DAR="16/9"
 GREP=""
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -54,9 +57,25 @@ usage()
         printf "\tHeight of the output video. Default: double input video height.\n"
         printf "\t0 : use the input value.\n\n"
 
+        printf " -x | --xpixels <PIXELS>\n"
+        printf "\tWhere to position the video in the frame on X-Axis from left.\n\n"
+
+        printf " -y | --ypixels <PIXELS>\n"
+        printf "\tWhere to position the video in the frame on Y-Axis from top.\n\n"
+        printf "\tThe width, height, x and y parameters also have access to the following variables:\n"
+        printf "\t- iw : The input video's width.\n"
+        printf "\t- ih : The input video's height.\n"
+        printf "\t- ow : The output video's width.\n"
+        printf "\t- oh : The output video's height.\n"
+        printf "\tThese can be used to calculate areas of the screen. For example:\n"
+        printf "\tThe center of the screen on x-axis is 'x=(ow-iw)/2\n\n"
+
         printf " -c | --colour <COLOUR>\n"
         printf "\tColour to use for the padding. See https://ffmpeg.org/ffmpeg-utils.html#color-syntax\n"
         printf "\tCan use a word 'Aqua, Beige, Cyan, etc...', the word 'random' or hex code : RRGGBB[AA] \n\n"
+
+        printf " -d | --dar <DAR>\n"
+        printf "\tSet the DAR. (Display Aspect Ratio) Default is 16/9.\n\n"
 
         printf " -g | --grep <STRING>\n"
         printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
@@ -122,8 +141,29 @@ function arguments()
             ;;
 
 
+        -x|--xpixels)
+            XPIXELS="$2"
+            shift 
+            shift
+            ;;
+
+
+        -y|--ypixels)
+            YPIXELS="$2"
+            shift 
+            shift
+            ;;
+
+
         -c|--colour)
             COLOUR="$2"
+            shift 
+            shift
+            ;;
+
+
+        -d|--dar)
+            DAR="$2"
             shift 
             shift
             ;;
@@ -246,7 +286,7 @@ function main()
     if [ -f "$INPUT_FILENAME" ]; then
         pre_flight_checks $INPUT_FILENAME
 
-        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:color=${COLOUR}" ${OUTPUT_FILENAME}
+        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}:color=${COLOUR},setdar=${DAR}" ${OUTPUT_FILENAME}
         
         printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
     fi
@@ -259,7 +299,7 @@ function main()
         do
             pre_flight_checks $INPUT_FILENAME
 
-            ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:color=${COLOUR}" ${LOOP}_${OUTPUT_FILENAME}
+            ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}:color=${COLOUR},setdar=${DAR}" ${LOOP}_${OUTPUT_FILENAME}
                 
             printf "✅ %-20s\n" "${LOOP}_${OUTPUT_FILENAME}"
             LOOP=$(expr $LOOP + 1)

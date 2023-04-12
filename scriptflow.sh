@@ -283,7 +283,7 @@ function run_ff_script()
 
 
     # Run script
-    eval "sudo ${PWD}/${SCRIPT_NAME}.sh -C ${SCRIPT_FILE}"
+    eval "${SCRIPT_NAME}.sh -C ${SCRIPT_FILE}"
 }
 
 
