@@ -142,11 +142,12 @@ jobs:
 
 
       # Use sudo otherwise permissions to /tmp won't work in runner
+      # export PATH to allow shell variable become environment variable for subshells to work.
       - name: run ffmpeg template
         run: |
           cd ${GITHUB_WORKSPACE}
           mkdir -p ${GITHUB_WORKSPACE}/processed_video
-          PATH=$PATH:$(pwd)
+          export PATH=$PATH:$(pwd)
           sudo ./scriptflow.sh --config $(realpath ./config.json)
           mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
 
