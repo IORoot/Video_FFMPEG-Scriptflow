@@ -283,6 +283,7 @@ function run_ff_script()
 
 
     # Run script
+    export PATH=$PATH:$PWD
     eval "${SCRIPT_NAME}.sh -C ${SCRIPT_FILE}"
 }
 
