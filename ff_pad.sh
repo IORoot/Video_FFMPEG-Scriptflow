@@ -74,9 +74,6 @@ usage()
         printf "\tColour to use for the padding. See https://ffmpeg.org/ffmpeg-utils.html#color-syntax\n"
         printf "\tCan use a word 'Aqua, Beige, Cyan, etc...', the word 'random' or hex code : RRGGBB[AA] \n\n"
 
-        printf " -d | --dar <DAR>\n"
-        printf "\tSet the DAR. (Display Aspect Ratio) Default is 16/9.\n\n"
-
         printf " -g | --grep <STRING>\n"
         printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
 
@@ -157,13 +154,6 @@ function arguments()
 
         -c|--colour)
             COLOUR="$2"
-            shift 
-            shift
-            ;;
-
-
-        -d|--dar)
-            DAR="$2"
             shift 
             shift
             ;;
@@ -286,7 +276,7 @@ function main()
     if [ -f "$INPUT_FILENAME" ]; then
         pre_flight_checks $INPUT_FILENAME
 
-        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}:color=${COLOUR},setdar=${DAR}" ${OUTPUT_FILENAME}
+        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}:color=${COLOUR}" ${OUTPUT_FILENAME}
         
         printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
     fi
@@ -299,7 +289,7 @@ function main()
         do
             pre_flight_checks $INPUT_FILENAME
 
-            ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}:color=${COLOUR},setdar=${DAR}" ${LOOP}_${OUTPUT_FILENAME}
+            ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "pad=width=${WIDTH}:height=${HEIGHT}:x=${XPIXELS}:y=${YPIXELS}:color=${COLOUR}" ${LOOP}_${OUTPUT_FILENAME}
                 
             printf "✅ %-20s\n" "${LOOP}_${OUTPUT_FILENAME}"
             LOOP=$(expr $LOOP + 1)

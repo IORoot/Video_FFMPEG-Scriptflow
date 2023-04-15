@@ -25,6 +25,8 @@ WIDTH="1920"
 HEIGHT="1080"
 LOGLEVEL="error" 
 GREP=""
+DAR="16/9"
+SAR="1/1"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -62,6 +64,12 @@ usage()
         printf "\tiw : input width.\n"
         printf "\tih : input height.\n"
         printf "\tiw*.5 : input width divided by 0.5 (half width).\n\n"
+
+        printf " -d | --sar <SAR>\n"
+        printf "\tSet the SAR. (Display Aspect Ratio - dimensions of the image) Default is 16/9.\n\n"
+
+        printf " -d | --dar <DAR>\n"
+        printf "\tSet the DAR. (Sample Aspect Ratio - dimensions of a pixel) Default is 1/1.\n\n"
 
         printf " -g | --grep <STRING>\n"
         printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
@@ -112,6 +120,20 @@ function arguments()
 
         -h|--height)
             HEIGHT="$2"
+            shift 
+            shift
+            ;;
+
+
+        -d|--dar)
+            DAR="$2"
+            shift 
+            shift
+            ;;
+
+
+        -s|--sar)
+            SAR="$2"
             shift 
             shift
             ;;
@@ -235,7 +257,7 @@ function main()
     if [ -f "$INPUT_FILENAME" ]; then
         pre_flight_checks $INPUT_FILENAME
 
-        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT}:force_original_aspect_ratio=decrease ${OUTPUT_FILENAME}
+        ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT}:force_original_aspect_ratio=decrease,setdar=${DAR},setsar=${SAR} ${OUTPUT_FILENAME}
         
         printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
     fi
@@ -248,7 +270,7 @@ function main()
         do
             pre_flight_checks $INPUT_FILENAME
 
-            ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT}:force_original_aspect_ratio=decrease ${LOOP}_${OUTPUT_FILENAME}
+            ffmpeg -y -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf scale=${WIDTH}:${HEIGHT}:force_original_aspect_ratio=decrease,setdar=${DAR},setsar=${SAR} ${LOOP}_${OUTPUT_FILENAME}
                 
             printf "✅ %-20s\n" "${LOOP}_${OUTPUT_FILENAME}"
             LOOP=$(expr $LOOP + 1)
