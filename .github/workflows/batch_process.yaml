@@ -146,6 +146,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           mkdir -p ${GITHUB_WORKSPACE}/processed_video
+          PATH=$PATH:$(pwd)
           sudo ./scriptflow.sh --config $(realpath ./config.json)
           mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
 
