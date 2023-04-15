@@ -255,7 +255,7 @@ function cleanup()
     if [[ -z ${TIDY+x} ]]; then
         rm -f ${TEMP_FOLDER}/temp_config_ff*
         find . -type f -name 'ff*.mp4' -delete
-        find . -regex './[0-9][0-9]*_ff.*' -type f -print0 | xargs -0 rm
+        find . -regex './[0-9][0-9]*_ff.*' -type f | xargs rm
     fi
 
 
@@ -319,13 +319,13 @@ function main()
 
 }
 
-# cleanup
+cleanup
 generate_colours
 usage $@
 arguments "$@"
 read_config "$@"
 main $@
-# cleanup
+cleanup
 
 # Move back to where you were.
 cd $PWD
