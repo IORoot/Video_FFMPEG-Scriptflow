@@ -137,10 +137,10 @@ jobs:
           ln -s /opt/hostedtoolcache/ffmpeg/5.0.1/x64/ffprobe ./ffprobe
 
 
-        # SSH ----------------------
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        # SSH ----------------------
+      #   # SSH ----------------------
+      # - name: Setup upterm session
+      #   uses: lhotari/action-upterm@v1
+      #   # SSH ----------------------
 
 
       # Use sudo otherwise permissions to /tmp won't work in runner
@@ -160,18 +160,16 @@ jobs:
           cd ${GITHUB_WORKSPACE}/processed_video
           sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp
           sudo chmod a+rx ./yt-dlp
-          sudo ./yt-dlp ${{ env.YOUTUBE_AUDIO_PLAYLIST }} --playlist-random --max-downloads 1 --restrict-filenames --trim-filenames 20 --extract-audio --audio-format mp3 --postprocessor-args "-ss 00:00:00.00 -t 00:01:00.00" --output music.mp3 --force-overwrites || true
+          sudo ./yt-dlp ${{ env.YOUTUBE_AUDIO_PLAYLIST }} --playlist-random --max-downloads 1 --restrict-filenames --trim-filenames 20 --extract-audio --audio-format mp3 --postprocessor-args "-ss 00:00:00.00 -t 00:01:00.00" --output music.mp3 --force-overwrites
 
 
       - name: overlay music
         continue-on-error: true
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i output.mp4 -i music.mp3 -filter_complex amix=weights="1 0.6" -map 0:v -map 0:a -map 1:a -shortest merged_music.mp4 || true
+          sudo ffmpeg -i output.mp4 -i music.mp3 -filter_complex amix=weights="1 0.6" -map 0:v -map 0:a -map 1:a -shortest merged_music.mp4
           sudo mv -f merged_music.mp4 processed.mp4
-          rm -f ./yt-dlp
-          rm -f ./music.mp3
-          rm -f ./output.mp4
+          rm -f ./yt-dlp ./music.mp3 ./output.mp4
 
 
       - name: rclone copy result back to google drive
