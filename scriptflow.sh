@@ -256,8 +256,11 @@ function cleanup()
 {
     printf "cleanup\n"
     if [[ -z ${TIDY+x} ]]; then
-        rm -f ${TEMP_FOLDER}/temp_config_ff* || true
+        printf "cleanup TEMP_FOLDER\n"
+        rm -f ${TEMP_FOLDER}/temp_config_ff*
+        printf "find-delete ff*.mp4\n"
         find . -type f -name 'ff*.mp4' -delete
+        printf "find-delete xargs rm\n"
         find . -regex './[0-9][0-9]*_ff.*' -type f | xargs rm || true
     fi
 
