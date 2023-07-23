@@ -124,7 +124,7 @@ jobs:
         run: |
           cd ./${{ matrix.project }}
           if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
-          sudo mv ./config.json ../
+          sudo mv ./* ../
           cd ${GITHUB_WORKSPACE}
           cat ./config.json
 
@@ -138,10 +138,10 @@ jobs:
           ln -s /opt/hostedtoolcache/ffmpeg/*/x64/ffprobe ./ffprobe
 
 
-        # SSH ----------------------
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        # SSH ----------------------
+      #   # SSH ----------------------
+      # - name: Setup upterm session
+      #   uses: lhotari/action-upterm@v1
+      #   # SSH ----------------------
 
 
       # Use sudo otherwise permissions to /tmp won't work in runner
@@ -151,7 +151,6 @@ jobs:
           cd ${GITHUB_WORKSPACE}
           mkdir -p ${GITHUB_WORKSPACE}/processed_video
           export PATH=$PATH:$(pwd)
-          ls -la /usr/local/bin/ff*
           sudo ./scriptflow.sh --config $(realpath ./config.json)
           mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
 
