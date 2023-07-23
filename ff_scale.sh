@@ -232,6 +232,19 @@ function pre_flight_checks()
         exit_gracefully
     fi
 
+    if ! command -v ffprobe &> /dev/null
+    then
+        echo "ffprobe could not be found"
+        exit
+    fi
+
+    if ! command -v ffmpeg &> /dev/null
+    then
+        echo "ffmpeg could not be found"
+        exit
+    fi
+
+
     # Check input filename is a movie file.
     if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILE}" > /dev/null 2>&1; then
         printf "\t" 
