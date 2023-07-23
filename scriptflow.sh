@@ -65,7 +65,6 @@ usage()
 # ╰──────────────────────────────────────────────────────────╯
 function arguments()
 {
-    printf "arguments\n"
     POSITIONAL_ARGS=()
 
     while [[ $# -gt 0 ]]; do
@@ -106,7 +105,6 @@ function arguments()
 # ╰──────────────────────────────────────────────────────────╯
 function read_config()
 {
-    printf "read_config\n"
     # Check if config has been set.
     if [ -z ${CONFIG_FILE+x} ]; then exit 1; fi
     
@@ -129,7 +127,6 @@ function read_config()
 # ╰──────────────────────────────────────────────────────────╯
 generate_colours()
 {
-    printf "generate_colours\n"
     RANDOM_SEED=$$$(date +%s)
     RANDOM_KEY=$[$RANDOM_SEED % ${#TAILWIND_ARRAY[@]}]
     CONSTANT_RANDOM_COLOUR=${TAILWIND_ARRAY[$RANDOM_KEY]}
@@ -143,7 +140,6 @@ generate_colours()
 # ╰──────────────────────────────────────────────────────────╯
 function keyword_substitutions()
 {
-    printf "keyword_substitutions\n"
     # <FOLDER_NAME>
     # current folder
     FOLDER_NAME=$(basename $PWD)
@@ -226,7 +222,6 @@ function keyword_substitutions()
 # │      Find a contrasting colour to the random colour      │
 # ╰──────────────────────────────────────────────────────────╯
 contrast_colour() {
-    printf "contrast_colour\n"
     IN="$1"
     # Remove the '#' from the hex code and convert it to RGB
     r=$(echo "${IN#"#"}" | sed -E 's/^(..).+$/\1/')
@@ -254,7 +249,6 @@ contrast_colour() {
 # ╰──────────────────────────────────────────────────────────╯
 function cleanup()
 {
-    printf "cleanup\n"
     if [[ -z ${TIDY+x} ]]; then
         rm -f ${TEMP_FOLDER}/temp_config_ff*
         find . -type f -name 'ff*.mp4' -delete
@@ -271,7 +265,6 @@ function cleanup()
 # ╰──────────────────────────────────────────────────────────╯
 function run_ff_script()
 {
-    printf "run_ff_script\n"
     SCRIPT_NAME=$1
     SCRIPT_CONFIG=$2
     SCRIPT_FILE=${TEMP_FOLDER}/temp_config_$SCRIPT_NAME.json
@@ -298,7 +291,6 @@ function run_ff_script()
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
-    printf "main\n"
     # Check if config has been set.
     if [ -z ${CONFIG_FILE+x} ]; then exit 1; fi
 
@@ -310,7 +302,6 @@ function main()
     # Loop scripts
     for FF_SCRIPT in "${ARRAY_OF_SCRIPT_NAMES[@]}"
     do
-        echo "FF_SCRIPT:$FF_SCRIPT"
         # Get contents of the settings to run and trim any null values
         SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$FF_SCRIPT" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value | with_entries(select(.value != null))' )
         
