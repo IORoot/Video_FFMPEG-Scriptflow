@@ -261,7 +261,7 @@ function cleanup()
         printf "find-delete ff*.mp4\n"
         find . -type f -name 'ff*.mp4' -delete
         printf "find-delete xargs rm\n"
-        find . -regex './[0-9][0-9]*_ff.*' -type f | xargs rm || true
+        find . -type f -regex './[0-9][0-9]*_ff.*' -delete
     fi
 
 
