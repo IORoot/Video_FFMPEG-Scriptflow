@@ -65,6 +65,7 @@ usage()
 # ╰──────────────────────────────────────────────────────────╯
 function arguments()
 {
+    printf "arguments\n"
     POSITIONAL_ARGS=()
 
     while [[ $# -gt 0 ]]; do
@@ -105,7 +106,7 @@ function arguments()
 # ╰──────────────────────────────────────────────────────────╯
 function read_config()
 {
-    
+    printf "read_config\n"
     # Check if config has been set.
     if [ -z ${CONFIG_FILE+x} ]; then exit 1; fi
     
@@ -128,6 +129,7 @@ function read_config()
 # ╰──────────────────────────────────────────────────────────╯
 generate_colours()
 {
+    printf "generate_colours\n"
     RANDOM_SEED=$$$(date +%s)
     RANDOM_KEY=$[$RANDOM_SEED % ${#TAILWIND_ARRAY[@]}]
     CONSTANT_RANDOM_COLOUR=${TAILWIND_ARRAY[$RANDOM_KEY]}
@@ -141,7 +143,7 @@ generate_colours()
 # ╰──────────────────────────────────────────────────────────╯
 function keyword_substitutions()
 {
-
+    printf "keyword_substitutions\n"
     # <FOLDER_NAME>
     # current folder
     FOLDER_NAME=$(basename $PWD)
@@ -224,7 +226,7 @@ function keyword_substitutions()
 # │      Find a contrasting colour to the random colour      │
 # ╰──────────────────────────────────────────────────────────╯
 contrast_colour() {
-
+    printf "contrast_colour\n"
     IN="$1"
     # Remove the '#' from the hex code and convert it to RGB
     r=$(echo "${IN#"#"}" | sed -E 's/^(..).+$/\1/')
@@ -252,10 +254,11 @@ contrast_colour() {
 # ╰──────────────────────────────────────────────────────────╯
 function cleanup()
 {
+    printf "cleanup\n"
     if [[ -z ${TIDY+x} ]]; then
-        rm -f ${TEMP_FOLDER}/temp_config_ff*
+        rm -f ${TEMP_FOLDER}/temp_config_ff* || true
         find . -type f -name 'ff*.mp4' -delete
-        find . -regex './[0-9][0-9]*_ff.*' -type f | xargs rm
+        find . -regex './[0-9][0-9]*_ff.*' -type f | xargs rm || true
     fi
 
 
@@ -268,6 +271,7 @@ function cleanup()
 # ╰──────────────────────────────────────────────────────────╯
 function run_ff_script()
 {
+    printf "run_ff_script\n"
     SCRIPT_NAME=$1
     SCRIPT_CONFIG=$2
     SCRIPT_FILE=${TEMP_FOLDER}/temp_config_$SCRIPT_NAME.json
@@ -294,6 +298,7 @@ function run_ff_script()
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
+    printf "main\n"
     # Check if config has been set.
     if [ -z ${CONFIG_FILE+x} ]; then exit 1; fi
 
