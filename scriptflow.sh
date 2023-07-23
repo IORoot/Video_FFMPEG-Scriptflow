@@ -310,6 +310,7 @@ function main()
     # Loop scripts
     for FF_SCRIPT in "${ARRAY_OF_SCRIPT_NAMES[@]}"
     do
+        echo "FF_SCRIPT:$FF_SCRIPT"
         # Get contents of the settings to run and trim any null values
         SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$FF_SCRIPT" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value | with_entries(select(.value != null))' )
         
