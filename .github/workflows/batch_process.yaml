@@ -138,10 +138,10 @@ jobs:
           ln -s /opt/hostedtoolcache/ffmpeg/*/x64/ffprobe ./ffprobe
 
 
-      #   # SSH ----------------------
-      # - name: Setup upterm session
-      #   uses: lhotari/action-upterm@v1
-      #   # SSH ----------------------
+        # SSH ----------------------
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        # SSH ----------------------
 
 
       # Use sudo otherwise permissions to /tmp won't work in runner
