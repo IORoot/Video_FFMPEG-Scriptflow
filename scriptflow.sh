@@ -312,6 +312,7 @@ function main()
         run_ff_script "${FF_SCRIPT}" "${SCRIPT_CONTENTS}"
 
         # list current dir
+        printf "\n Current Dir\n"
         ls -la
     done
 

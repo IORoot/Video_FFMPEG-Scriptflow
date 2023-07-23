@@ -124,7 +124,7 @@ jobs:
         run: |
           cd ./${{ matrix.project }}
           if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
-          sudo mv ./config.json ../
+          sudo mv ./* ../
           cd ${GITHUB_WORKSPACE}
           cat ./config.json
 
