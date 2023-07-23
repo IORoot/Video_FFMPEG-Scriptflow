@@ -110,7 +110,7 @@
 	},
 
 	"ff_thumbnail": {
-		"input": "ff_watermark.mp4",
+		"input": "ff_watermark4.mp4",
 		"output": "ff_thumbnail.png",
 		"count": "1"
 	}

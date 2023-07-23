@@ -88,7 +88,7 @@
 	},
 
 	"ff_thumbnail": {
-		"input": "ff_watermark.mp4",
+		"input": "ff_text.mp4",
 		"output": "ff_thumbnail.png",
 		"count": "1"
 	}
