@@ -173,6 +173,15 @@ jobs:
           rm -f ./yt-dlp ./music.mp3 ./output.mp4
 
 
+      - name: reformat for instagram
+        continue-on-error: true
+        run: |
+          cd ${GITHUB_WORKSPACE}/processed_video
+          sudo ffmpeg -i output.mp4 -pix_fmt yuv420p -c:a copy reformatted.mp4
+          sudo rm -f output.mp4
+          sudo mv reformatted.mp4 output.mp4
+
+
       - name: rclone copy result back to google drive
         uses: wei/rclone@v1
         env:
