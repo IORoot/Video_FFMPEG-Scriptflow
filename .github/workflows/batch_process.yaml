@@ -150,9 +150,11 @@ jobs:
           cd ${GITHUB_WORKSPACE}
           mkdir -p ${GITHUB_WORKSPACE}/processed_video
           export PATH=$PATH:$(pwd)
-          ls ./${{ matrix.project }}/config.json 
-          echo $(realpath ./${{ matrix.project }}/config.json) 
-          sudo ./scriptflow.sh --config $(realpath ./${{ matrix.project }}/config.json)
+          ls ${GITHUB_WORKSPACE}/${{ matrix.project }}/config.json 
+          echo $(realpath ${GITHUB_WORKSPACE}/${{ matrix.project }}/config.json) 
+          
+          sudo ./scriptflow.sh --config ${GITHUB_WORKSPACE}/${{ matrix.project }}/config.json
+
           mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
 
 
