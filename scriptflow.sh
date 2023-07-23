@@ -255,7 +255,7 @@ contrast_colour() {
 function cleanup()
 {
     printf "cleanup\n"
-    if [[ -z ${TIDY+x} ]]; then"
+    if [[ -z ${TIDY+x} ]]; then
         rm -f ${TEMP_FOLDER}/temp_config_ff*
         find . -type f -name 'ff*.mp4' -delete
         find . -type f -regex './[0-9][0-9]*_ff.*' -delete
