@@ -101,7 +101,7 @@
 
 	"ff_thumbnail": {
 		"input": "ff_watermark3.mp4",
-		"output": "ff_thumbnail.png",
+		"output": "thumbnail.jpg",
 		"count": "1"
 	},
 
