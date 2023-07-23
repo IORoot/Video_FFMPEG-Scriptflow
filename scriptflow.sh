@@ -311,6 +311,7 @@ function main()
         # Run the ff_script
         run_ff_script "${FF_SCRIPT}" "${SCRIPT_CONTENTS}"
 
+        ls -la
     done
 
     # Copy the last
