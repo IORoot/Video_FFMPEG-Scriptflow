@@ -311,9 +311,6 @@ function main()
         # Run the ff_script
         run_ff_script "${FF_SCRIPT}" "${SCRIPT_CONTENTS}"
 
-        # list current dir
-        printf "\n Current Dir\n"
-        ls -la
     done
 
     # Copy the last
