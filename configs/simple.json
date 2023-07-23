@@ -48,6 +48,12 @@
 		"ypixels": "(H-h)"
 	},
 
+	"ff_thumbnail": {
+		"input": "ff_watermark.mp4",
+		"output": "ff_thumbnail.png",
+		"count": "1"
+	},
+
 	"ff_text2": {
 		"input": "ff_watermark.mp4",
 		"output": "ff_text2.mp4",
@@ -57,11 +63,5 @@
 		"size": "24",
 		"reduction": "10",
 		"ypixels": "(h-th)-30"
-	},
-
-	"ff_thumbnail": {
-		"input": "ff_text2.mp4",
-		"output": "ff_thumbnail.png",
-		"count": "1"
 	}
 }

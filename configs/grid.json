@@ -47,17 +47,17 @@
 		"height": "480"
 	},
 
+	"ff_thumbnail": {
+		"input": "ff_crop.mp4",
+		"output": "ff_thumbnail.png",
+		"count": "1"
+	},
+
 	"ff_stack": {
 		"input1": "0_ff_crop.mp4",
 		"input2": "1_ff_crop.mp4",
 		"input3": "2_ff_crop.mp4",
 		"input4": "3_ff_crop.mp4",
 		"grid": ""
-	},
-
-	"ff_thumbnail": {
-		"input": "ff_stack.mp4",
-		"output": "ff_thumbnail.png",
-		"count": "1"
 	}
 }
