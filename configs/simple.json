@@ -1,62 +1,67 @@
 {
-    "schedule": "TRUE",
-    "category": "simple",
-    
-    "ff_scale": {
-        "input": "./",
-        "width": "848",
-        "height": "480"
-    },
-    
-    "ff_to_landscape": {
-        "input": "./",
-        "grep": "ff_scale"
-    },
+	"schedule": "TRUE",
+	"category": "simple",
 
-    "ff_grouptime": {
-        "input": "./",
-        "grep": "ff_to_landscape"
-    },
+	"ff_scale": {
+		"input": "./",
+		"width": "848",
+		"height": "480"
+	},
 
-    "ff_lut": {
-        "input": "ff_grouptime.mp4",
-        "lut": "../lib/luts/Holmberg.cube"
-    },
+	"ff_to_landscape": {
+		"input": "./",
+		"grep": "ff_scale"
+	},
 
-    "ff_pad": {
-        "input": "ff_lut.mp4",
-        "height": "iw",
-        "colour": "<CONSTANT_RANDOM_COLOUR>"
-    },
+	"ff_grouptime": {
+		"input": "./",
+		"grep": "ff_to_landscape"
+	},
 
-    "ff_text1": {
-        "input": "ff_pad.mp4",
-        "output": "ff_text1.mp4",
-        "text": "Top test\n<DATE_%A %d %B. %Y>",
-        "colour": "<CONSTANT_RANDOM_COLOUR>",
-        "boxcolour": "<CONSTANT_CONTRAST_COLOUR>",
-        "size": "32",
-        "reduction": "10",
-        "ypixels": "70"
-    },
+	"ff_lut": {
+		"input": "ff_grouptime.mp4",
+		"lut": "../lib/luts/Holmberg.cube"
+	},
 
-    "ff_watermark": {
-        "input": "ff_text1.mp4",
-        "watermark": "../lib/watermarks/ldnpk_white.png",
-        "scale": "0.25",
-        "xpixels": "(W-w)/2",
-        "ypixels": "(H-h)"
-    },
+	"ff_pad": {
+		"input": "ff_lut.mp4",
+		"height": "iw",
+		"colour": "<CONSTANT_RANDOM_COLOUR>"
+	},
 
-    "ff_text2": {
-        "input": "ff_watermark.mp4",
-        "output": "ff_text2.mp4",
-        "text": "LondonParkour.com",
-        "colour": "<CONSTANT_RANDOM_COLOUR>",
-        "boxcolour": "<CONSTANT_CONTRAST_COLOUR>",
-        "size": "24",
-        "reduction": "10",
-        "ypixels": "(h-th)-30"
-    }
+	"ff_text1": {
+		"input": "ff_pad.mp4",
+		"output": "ff_text1.mp4",
+		"text": "Top test\n<DATE_%A %d %B. %Y>",
+		"colour": "<CONSTANT_RANDOM_COLOUR>",
+		"boxcolour": "<CONSTANT_CONTRAST_COLOUR>",
+		"size": "32",
+		"reduction": "10",
+		"ypixels": "70"
+	},
 
+	"ff_watermark": {
+		"input": "ff_text1.mp4",
+		"watermark": "../lib/watermarks/ldnpk_white.png",
+		"scale": "0.25",
+		"xpixels": "(W-w)/2",
+		"ypixels": "(H-h)"
+	},
+
+	"ff_text2": {
+		"input": "ff_watermark.mp4",
+		"output": "ff_text2.mp4",
+		"text": "LondonParkour.com",
+		"colour": "<CONSTANT_RANDOM_COLOUR>",
+		"boxcolour": "<CONSTANT_CONTRAST_COLOUR>",
+		"size": "24",
+		"reduction": "10",
+		"ypixels": "(h-th)-30"
+	},
+
+	"ff_thumbnail": {
+		"input": "ff_watermark.mp4",
+		"output": "ff_thumbnail.png",
+		"count": "1"
+	}
 }

@@ -1,49 +1,54 @@
 {
-    "schedule": "TRUE",
-    "category": "blurred",
+	"schedule": "TRUE",
+	"category": "blurred",
 
-    "ff_scale1": {
-        "input": "./"
-    },
-    
-    "ff_to_landscape": {
-        "input": "./",
-        "grep": "ff_scale"
-    },
+	"ff_scale1": {
+		"input": "./"
+	},
 
-    "ff_grouptime": {
-        "input": "./",
-        "grep": "ff_to_landscape"
-    },
+	"ff_to_landscape": {
+		"input": "./",
+		"grep": "ff_scale"
+	},
 
-    "ff_lut": {
-        "input": "ff_grouptime.mp4",
-        "lut": "../lib/luts/Holmberg.cube"
-    },
+	"ff_grouptime": {
+		"input": "./",
+		"grep": "ff_to_landscape"
+	},
 
-    "ff_scale2": {
-        "input": "ff_lut.mp4",
-        "width": "1920",
-        "height": "1080"
-    },
+	"ff_lut": {
+		"input": "ff_grouptime.mp4",
+		"lut": "../lib/luts/Holmberg.cube"
+	},
 
-    "ff_crop": {
-        "input": "ff_scale.mp4",
-        "width": "1080",
-        "height": "1080"
-    },
+	"ff_scale2": {
+		"input": "ff_lut.mp4",
+		"width": "1920",
+		"height": "1080"
+	},
 
-    "ff_blur": {
-        "input": "ff_crop.mp4",
-        "strength": "20"
-    },
+	"ff_crop": {
+		"input": "ff_scale.mp4",
+		"width": "1080",
+		"height": "1080"
+	},
 
-    "ff_watermark": {
-        "input": "ff_blur.mp4",
-        "watermark": "ff_lut.mp4",
-        "xpixels": "(W-w)/2",
-        "ypixels": "(H-h)/2",
-        "scale": "0.56"
-    }
-    
+	"ff_blur": {
+		"input": "ff_crop.mp4",
+		"strength": "20"
+	},
+
+	"ff_watermark": {
+		"input": "ff_blur.mp4",
+		"watermark": "ff_lut.mp4",
+		"xpixels": "(W-w)/2",
+		"ypixels": "(H-h)/2",
+		"scale": "0.56"
+	},
+
+	"ff_thumbnail": {
+		"input": "ff_watermark.mp4",
+		"output": "ff_thumbnail.png",
+		"count": "1"
+	}
 }
