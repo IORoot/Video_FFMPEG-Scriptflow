@@ -99,6 +99,12 @@
 		"strategy": "random"
 	},
 
+	"ff_thumbnail": {
+		"input": "ff_watermark3.mp4",
+		"output": "ff_thumbnail.png",
+		"count": "1"
+	},
+
 	"ff_watermark4": {
 		"input": "ff_watermark3.mp4",
 		"output": "ff_watermark4.mp4",
@@ -109,11 +115,5 @@
 		"end": "50%+10",
 		"duration": "1",
 		"scale": "0.8"
-	},
-
-	"ff_thumbnail": {
-		"input": "ff_watermark4.mp4",
-		"output": "ff_thumbnail.png",
-		"count": "1"
 	}
 }

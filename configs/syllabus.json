@@ -76,6 +76,12 @@
 		"scale": "0.25"
 	},
 
+	"ff_thumbnail": {
+		"input": "ff_watermark4.mp4",
+		"output": "ff_thumbnail.png",
+		"count": "1"
+	},
+
 	"ff_text": {
 		"input": "ff_watermark4.mp4",
 		"text": "Syllabus Challenge - <FOLDER_TITLE>",
@@ -85,11 +91,5 @@
 		"ypixels": "(h-th)-100",
 		"colour": "#FFFFFF",
 		"boxcolour": "#262626"
-	},
-
-	"ff_thumbnail": {
-		"input": "ff_text.mp4",
-		"output": "ff_thumbnail.png",
-		"count": "1"
 	}
 }
