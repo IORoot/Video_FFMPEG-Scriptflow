@@ -124,7 +124,7 @@ jobs:
         run: |
           cd ./${{ matrix.project }}
           if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
-          sudo mv ./* ../
+          sudo mv ./config.json ../
           cd ${GITHUB_WORKSPACE}
           cat ./config.json
 
@@ -150,8 +150,9 @@ jobs:
           cd ${GITHUB_WORKSPACE}
           mkdir -p ${GITHUB_WORKSPACE}/processed_video
           export PATH=$PATH:$(pwd)
-          ls -la
-          sudo ./scriptflow.sh --config $(realpath ./config.json)
+          ls ${{ matrix.project }}/config.json 
+          echo $(realpath ./${{ matrix.project }}/config.json) 
+          sudo ./scriptflow.sh --config $(realpath ./${{ matrix.project }}/config.json)
           mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
 
 
