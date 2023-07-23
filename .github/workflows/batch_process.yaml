@@ -153,7 +153,7 @@ jobs:
           export PATH=$PATH:$(pwd)
           sudo ./scriptflow.sh --config $(realpath ./config.json)
           [ ! -f output.mp4 ] || mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
-          [ ! -f thumbnail.jpg ] || mv thumbnail*.jpg ${GITHUB_WORKSPACE}/processed_video/thumbnail.jpg
+          [ ! -f thumbnail.jpg ] || mv thumbnail*.jpg ${GITHUB_WORKSPACE}/processed_video
           ls -la
           ls -la ${GITHUB_WORKSPACE}/processed_video
 
