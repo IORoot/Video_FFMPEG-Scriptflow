@@ -72,6 +72,8 @@
         - [Description](#description)
         - [Flags](#flags)
         - [Examples](#examples)
+    - [ff_proxy.sh](#ff_proxysh)
+    - [ff_reformat.sh](#ff_reformatsh)
     - [ff_rotate.sh](#ff_rotatesh)
         - [Description](#description)
         - [Flags](#flags)
@@ -740,6 +742,14 @@ Make black bars..
 
        /ff_pad.sh -i input.mp4 -w iw -h ih+100 -y '(oh-ih)/2' -x '(ow-iw)/2' -c #000000
 
+
+### `ff_proxy.sh`
+
+Converts the video to smaller managable sizes
+
+### `ff_reformat.sh`
+
+Converts the video to formats for social media
 
 ### `ff_rotate.sh`
 
