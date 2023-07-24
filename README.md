@@ -50,6 +50,7 @@
     - [ff_cut.sh](#ff_cutsh)
         - [Description](#description)
         - [Flags](#flags)
+    - [ff_download.sh](#ff_downloadsh)
     - [ff_flip.sh](#ff_flipsh)
         - [Description](#description)
         - [Flags](#flags)
@@ -199,6 +200,7 @@ Current list of scripts and their purposes.
 | `ff_overlay.sh`      | Overlay an image or video on top of another video                |
 | `ff_pad.sh`          | Add a background padding around the video                        |
 | `ff_proxy.sh`        | Create a down-scaled,res,fps,crf proxy file for a video          |
+| `ff_reformate.sh`    | Format video for social-media                                    | 
 | `ff_rotate.sh`       | Rotate a video in 90 degree increments                           |
 | `ff_scale.sh`        | Change the width and height of the video                         |
 | `ff_sharpen.sh`      | Simple sharpen function using an unsharp mask                    |
@@ -514,6 +516,7 @@ Change the length of the video.
         Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
 ```
 
+### `ff_download.sh`
 
 
 ### `ff_flip.sh`
