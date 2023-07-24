@@ -399,7 +399,7 @@
 		"input8": "http://media.londonparkour.com/overlays/intros_10s/triangles__red--beginner-classes.mov",
 		"input9": "http://media.londonparkour.com/overlays/intros_10s/2xwords__black--london-parkour.mov",
 		"output": "ff_intro.mov",
-		"strategy": "random"
+		"strategy": "1"
 	},
 
 	"ff_watermark2": {
@@ -422,7 +422,7 @@
 		"input6": "http://media.londonparkour.com/overlays/outros_10s/wireframe__white-logo--transparent.mov",
 		"input7": "http://media.londonparkour.com/overlays/outros_10s/wiresplat__multi-logo-and-url--transparent.mov",
 		"output": "ff_outro.mov",
-		"strategy": "random"
+		"strategy": "1"
 	},
 
 	"ff_watermark3": {
@@ -441,7 +441,7 @@
 		"input2": "http://media.londonparkour.com/overlays/details_10s/linecallout__white-green-archway-sunday-1100am-adults__transparent.mov",
 		"input3": "http://media.londonparkour.com/overlays/details_10s/triangle__white-blue-archway-sunday-1100am-adults__transparent.mov",
 		"output": "ff_middle.mov",
-		"strategy": "random"
+		"strategy": "1"
 	},
 
 	"ff_thumbnail": {
