@@ -171,14 +171,14 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
           sudo ffmpeg -i output.mp4 -i music.mp3 -filter_complex amix=weights="1 0.6" -map 0:v -map 0:a -map 1:a -shortest merged_music.mp4
-        # rm -f ./yt-dlp ./music.mp3 ./output.mp4
+          rm -f ./yt-dlp ./music.mp3 ./output.mp4
 
 
       - name: reformat for instagram
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i merged_music.mp4 -pix_fmt yuv420p -c:a copy processed.mp4
-        # sudo rm -f merged_music.mp4
+          sudo ffmpeg -i merged_music.mp4 -pix_fmt yuv420p -shortest processed.mp4
+          sudo rm -f merged_music.mp4
 
 
       - name: rclone copy result back to google drive
