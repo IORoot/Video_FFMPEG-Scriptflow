@@ -178,6 +178,7 @@ function pre_flight_checks()
         printf "\t" 
     else
         printf "\t❌ Input file not a image/movie file. Exiting.\n"
+        ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILE}"
         exit_gracefully
     fi
 }

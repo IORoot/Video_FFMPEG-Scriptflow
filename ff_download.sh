@@ -180,7 +180,9 @@ function configure_strategy()
 
     # Randomise and select single download
     if [[ "${STRATEGY}" == "random" ]]; then 
+        # sort | head errors by design.
         cat ${TMP_FILE} | sort -R | head -n 1 > ${TMP_FILE}.random
+        printf "\nignore sort error - by design.\n"
         mv ${TMP_FILE}.random ${TMP_FILE}
     fi
 
@@ -188,9 +190,9 @@ function configure_strategy()
     REGEX='^[0-9]+$'
     if [[ "${STRATEGY}" =~ $REGEX ]] ; then
         cat ${TMP_FILE} | sort -R | head -n ${STRATEGY} > ${TMP_FILE}.random
+        printf "\nignore sort error - by design.\n"
         mv ${TMP_FILE}.random ${TMP_FILE}
     fi
-
 }
 
 
