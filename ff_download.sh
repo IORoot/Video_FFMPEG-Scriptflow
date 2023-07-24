@@ -49,9 +49,8 @@ usage()
         printf "\tA URL of a txt file with a list of all files to use as inputs. Separated one per line.\n\n"
 
         printf " -s | --strategy <STRATEGY>\n"
-        printf "\tall. Download all files as output name. Prefix number on output filename. (default)\n"
-        printf "\trandom. Download single random file as output name.\n\n"
-        printf "\t5. A number. Random 5 videos from inputs. Prefix number on output filename.\n\n"
+        printf "\t5\t A number. First 5 videos from inputs. Prefix number on output filename.\n"
+        printf "\t~5\t Tilde(~) followed by a number. Random 5 videos from inputs. Prefix number on output filename.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -216,18 +215,19 @@ function configure_strategy()
 {
     INPUT_FILE=$1
 
-    # Randomise and select single download
-    if [[ "${STRATEGY}" == "random" ]]; then 
-        # sort | head errors by design.
-        cat ${TMP_FILE} | sort -R | head -n 1 > ${TMP_FILE}.random
+    # If its a number, take top X
+    REGEX='^[0-9]+$'
+    if [[ "${STRATEGY}" =~ $REGEX ]] ; then
+        cat ${TMP_FILE} | head -n ${STRATEGY} > ${TMP_FILE}.random
         printf "\nignore sort error - by design.\n"
         mv ${TMP_FILE}.random ${TMP_FILE}
     fi
 
-    # If its a number, randomise and take top X
-    REGEX='^[0-9]+$'
+
+    # If its a tilde ~ followed by a number, randomise and take top X
+    REGEX='^~[0-9]+$'
     if [[ "${STRATEGY}" =~ $REGEX ]] ; then
-        cat ${TMP_FILE} | sort -R | head -n ${STRATEGY} > ${TMP_FILE}.random
+        cat ${TMP_FILE} | sort -R | head -n ${STRATEGY:1} > ${TMP_FILE}.random
         printf "\nignore sort error - by design.\n"
         mv ${TMP_FILE}.random ${TMP_FILE}
     fi
