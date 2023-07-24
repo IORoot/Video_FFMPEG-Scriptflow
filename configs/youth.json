@@ -1,0 +1,124 @@
+{
+	"schedule": "TRUE",
+	"category": "youth",
+
+	"ff_download1": {
+		"urlsource": "http://media.londonparkour.com/clips_teens/filelist.txt",
+		"output": "ff_download.mp4",
+		"strategy": "8"
+	},
+
+	"ff_scale": {
+		"input": "./",
+		"width": "1920",
+		"height": "1080",
+		"grep": "ff_download"
+	},
+
+	"ff_pad": {
+		"input": "./",
+		"width": "1920",
+		"height": "1080",
+		"colour": "#000000",
+		"grep": "ff_scale"
+	},
+
+	"ff_grouptime": {
+		"input": "./",
+		"grep": "ff_pad"
+	},
+
+	"ff_crop": {
+		"input": "ff_grouptime.mp4",
+		"width": "1080",
+		"height": "1080"
+	},
+
+	"ff_blur": {
+		"input": "ff_crop.mp4",
+		"strength": "20"
+	},
+
+	"ff_watermark1": {
+		"input": "ff_blur.mp4",
+		"output": "ff_watermark1.mp4",
+		"watermark": "ff_grouptime.mp4",
+		"xpixels": "(W-w)/2",
+		"ypixels": "(H-h)/2",
+		"scale": "0.56"
+	},
+
+	"ff_download2": {
+		"input1": "http://media.londonparkour.com/overlays/intros_10s/3xwords__cyan--explore-challenge-conquer.mov",
+		"input2": "http://media.londonparkour.com/overlays/intros_10s/3xwords__green--jump-climb-vault.mov",
+		"input3": "http://media.londonparkour.com/overlays/intros_10s/3xwords__grey--practical-movement-training.mov",
+		"input4": "http://media.londonparkour.com/overlays/intros_10s/4xwords__orange--jump-climb-vault-swing.mov",
+		"input5": "http://media.londonparkour.com/overlays/intros_10s/circle__red--parkour-london.mov",
+		"input6": "http://media.londonparkour.com/overlays/intros_10s/solidcircle__orange--beginner-parkour-classes.mov",
+		"input7": "http://media.londonparkour.com/overlays/intros_10s/triangles__blue--parkour-classes.mov",
+		"input8": "http://media.londonparkour.com/overlays/intros_10s/triangles__red--beginner-classes.mov",
+		"input9": "http://media.londonparkour.com/overlays/intros_10s/2xwords__black--london-parkour.mov",
+		"output": "ff_intro.mov",
+		"strategy": "random"
+	},
+
+	"ff_watermark2": {
+		"input": "ff_watermark1.mp4",
+		"output": "ff_watermark2.mp4",
+		"watermark": "1_ff_intro.mov",
+		"xpixels": "(W-w)/2",
+		"ypixels": "(H-h)/2",
+		"start": "0",
+		"end": "5",
+		"scale": "1"
+	},
+
+	"ff_download3": {
+		"input1": "http://media.londonparkour.com/overlays/outros_10s/blood__red-logo-and-text--transparent.mov",
+		"input2": "http://media.londonparkour.com/overlays/outros_10s/concentric__yellow-green-logo-and-text--transparent.mov",
+		"input3": "http://media.londonparkour.com/overlays/outros_10s/meteor__blue-logo-and-text--transparent.mov",
+		"input4": "http://media.londonparkour.com/overlays/outros_10s/spinning__yellow-and-logo-text--transparent.mov",
+		"input5": "http://media.londonparkour.com/overlays/outros_10s/triangle__white-logo--transparent.mov",
+		"input6": "http://media.londonparkour.com/overlays/outros_10s/wireframe__white-logo--transparent.mov",
+		"input7": "http://media.londonparkour.com/overlays/outros_10s/wiresplat__multi-logo-and-url--transparent.mov",
+		"output": "ff_outro.mov",
+		"strategy": "random"
+	},
+
+	"ff_watermark3": {
+		"input": "ff_watermark2.mp4",
+		"output": "ff_watermark3.mp4",
+		"watermark": "1_ff_outro.mov",
+		"xpixels": "(W-w)/2",
+		"ypixels": "(H-h)/2",
+		"start": "100%-10",
+		"end": "100%",
+		"scale": "1"
+	},
+
+	"ff_download4": {
+		"input1": "http://media.londonparkour.com/overlays/details_10s/centerbig__green-canada-water-saturdays-1030am--transparent.mov",
+		"input2": "http://media.londonparkour.com/overlays/details_10s/linecallout__white-blue-canada-water-saturday-1030am-beginners__transparent.mov",
+		"input3": "http://media.londonparkour.com/overlays/details_10s/triangle__white-green-canada-water-saturday-1030am-beginners__transparent.mov",
+		"output": "ff_middle.mov",
+		"strategy": "random"
+	},
+
+	"ff_thumbnail": {
+		"input": "ff_watermark3.mp4",
+		"output": "ff_thumbnail.png",
+		"count": "1"
+	},
+
+	"ff_watermark4": {
+		"input": "ff_watermark3.mp4",
+		"output": "ff_watermark4.mp4",
+		"watermark": "1_ff_middle.mov",
+		"xpixels": "0",
+		"ypixels": "(H-h)/2",
+		"start": "45%",
+		"end": "50%+10",
+		"duration": "1",
+		"scale": "1"
+	}
+}

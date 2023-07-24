@@ -22,6 +22,7 @@ OUTPUT_FILENAME="ff_download.mp4"
 STRATEGY="all"
 LOGLEVEL="error" 
 TMP_FILE="/tmp/tmp_ff_download_list"
+FILELIST="./filelist.txt"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -30,7 +31,7 @@ TMP_FILE="/tmp/tmp_ff_download_list"
 usage()
 {
     if [ "$#" -lt 2 ]; then
-        printf "ℹ️ Usage:\n $0 -u <INPUT_URL> [-s <STRATEGY>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
+        printf "ℹ️ Usage:\n $0 -i <INPUT_URL> [-s <STRATEGY>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
         printf "Change the FPS of a video without changing the length..\n\n"
@@ -43,6 +44,9 @@ usage()
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
+
+        printf " -u | --urlsource <FILE_WITH_LIST>\n"
+        printf "\tA URL of a txt file with a list of all files to use as inputs. Separated one per line.\n\n"
 
         printf " -s | --strategy <STRATEGY>\n"
         printf "\tall. Download all files as output name. Prefix number on output filename. (default)\n"
@@ -74,6 +78,13 @@ function arguments()
 
         -i|--input|--input?|--input??|--input???)
             write_to_temp "$2"
+            shift
+            shift
+            ;;
+
+
+        -u|--urlsource)
+            URL_SOURCE="$2"
             shift
             shift
             ;;
@@ -144,7 +155,34 @@ function read_config()
     # Print to screen
     printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
 
-    # Sen to the arguments function again to override.
+    # Send to the arguments function again to override.
+    arguments $LIST_OF_INPUTS
+}
+
+
+# ╭───────────────────────────────────────────────────────────────────────────╮
+# │         Reads the URL txt file and creates --inputs for each line         │
+# ╰───────────────────────────────────────────────────────────────────────────╯
+function read_url_input_list()
+{
+    # Check if a url source has been set.
+    if [ -z ${URL_SOURCE+x} ]; then return 0; fi
+
+    # download txt file
+    curl --insecure --silent --show-error --url "$URL_SOURCE" --output ${FILELIST} 2>/dev/null
+
+    # Check if file exists.
+    if [ ! -f ${FILELIST} ]; then return 0; fi
+
+    # Get the directory URL 
+    DIR_NAME=$(dirname ${URL_SOURCE})
+
+    # append INPUTS to the LIST_OF_INPUTS
+    while read LINE; do
+        LIST_OF_INPUTS="${LIST_OF_INPUTS} --input ${DIR_NAME}/${LINE}"
+    done < ${FILELIST}
+
+    # Send to the arguments function again to override.
     arguments $LIST_OF_INPUTS
 }
 
@@ -202,6 +240,7 @@ function configure_strategy()
 function cleanup()
 {
     rm -f ${TMP_FILE}
+    rm -f ${FILELIST}
 }
 
 
@@ -243,5 +282,6 @@ cleanup
 usage $@
 arguments $@
 read_config "$@"
+read_url_input_list "$@"
 main $@
 cleanup
