@@ -178,7 +178,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
           sudo ffmpeg -i merged_music.mp4 -pix_fmt yuv420p -shortest processed.mp4
-          sudo rm -f merged_music.mp4
+        # sudo rm -f merged_music.mp4
 
 
       - name: rclone copy result back to google drive
