@@ -177,7 +177,7 @@ jobs:
       - name: reformat for instagram
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i merged_music.mp4 -pix_fmt yuv420p -shortest processed.mp4
+          sudo ffmpeg -i merged_music.mp4 -pix_fmt yuv420p processed.mp4
         # sudo rm -f merged_music.mp4
 
 
@@ -238,6 +238,11 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
+
+        # SSH ----------------------
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        # SSH ----------------------
 
 
   batch_complete:
