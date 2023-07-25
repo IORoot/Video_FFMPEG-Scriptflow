@@ -174,11 +174,11 @@ jobs:
           rm -f ./yt-dlp ./music.mp3 ./output.mp4
 
 
-      - name: reformat for instagram
+      - name: reformat for instagram and merge audio
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i merged_music.mp4 -pix_fmt yuv420p processed.mp4
-        # sudo rm -f merged_music.mp4
+          sudo ffmpeg -i merged_music.mp4 -pix_fmt yuv420p -filter_complex "[0:a]amerge=inputs=3[a]" -ac 1 -map 0:v -map "[a]" processed.mp4
+          sudo rm -f merged_music.mp4
 
 
       - name: rclone copy result back to google drive
@@ -239,10 +239,10 @@ jobs:
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
 
-        # SSH ----------------------
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        # SSH ----------------------
+      #   # SSH ----------------------
+      # - name: Setup upterm session
+      #   uses: lhotari/action-upterm@v1
+      #   # SSH ----------------------
 
 
   batch_complete:
