@@ -225,7 +225,7 @@ jobs:
         with:
           payload: |
             {
-              "text": ":clapper: Batch Video Processed. http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4"
+              "text": ":clapper: GitHub-Action Batch Single Video Processed.\n http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
@@ -243,7 +243,7 @@ jobs:
         with:
           payload: |
             {
-              "text": ":white_check_mark: Batch Complete!"
+              "text": ":white_check_mark: GitHub-Action All videos complete!"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
