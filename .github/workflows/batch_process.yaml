@@ -170,15 +170,8 @@ jobs:
         continue-on-error: true
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i output.mp4 -i music.mp3 -filter_complex amix=weights="1 0.6" -map 0:v -map 0:a -map 1:a -shortest merged_music.mp4
+          sudo ffmpeg -i output.mp4 -i music.mp3 -pix_fmt yuv420p -c:v copy -map 0:v:0 -map 1:a:0 -shortest processed.mp4
           rm -f ./yt-dlp ./music.mp3 ./output.mp4
-
-
-      - name: reformat for instagram and merge audio
-        run: |
-          cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i merged_music.mp4 -pix_fmt yuv420p -filter_complex "[0:a]amerge=inputs=3[a]" -ac 1 -map 0:v -map "[a]" processed.mp4
-          sudo rm -f merged_music.mp4
 
 
       - name: rclone copy result back to google drive
