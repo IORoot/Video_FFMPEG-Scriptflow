@@ -74,13 +74,7 @@
 	},
 
 	"ff_download3": {
-		"input1": "http://media.londonparkour.com/overlays/outros_10s/blood__red-logo-and-text--transparent.mov",
-		"input2": "http://media.londonparkour.com/overlays/outros_10s/concentric__yellow-green-logo-and-text--transparent.mov",
-		"input3": "http://media.londonparkour.com/overlays/outros_10s/meteor__blue-logo-and-text--transparent.mov",
-		"input4": "http://media.londonparkour.com/overlays/outros_10s/spinning__yellow-and-logo-text--transparent.mov",
-		"input5": "http://media.londonparkour.com/overlays/outros_10s/triangle__white-logo--transparent.mov",
-		"input6": "http://media.londonparkour.com/overlays/outros_10s/wireframe__white-logo--transparent.mov",
-		"input7": "http://media.londonparkour.com/overlays/outros_10s/wiresplat__multi-logo-and-url--transparent.mov",
+		"input1": "http://media.londonparkour.com/overlays/outros/outro_simple.mov",
 		"output": "ff_outro.mov",
 		"strategy": "~1"
 	},
