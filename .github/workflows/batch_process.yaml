@@ -50,11 +50,12 @@ env:
   TARGET_ROOT_FOLDER:       "/var/www/vhosts/media.londonparkour.com/processed/batch_processed"
 
 
-  YOUTUBE_AUDIO_PLAYLIST:   "https://www.youtube.com/playlist?list=PLzCxunOM5WFIBEfixsIWyqPpaABQ5S8HD"
+  YOUTUBE_AUDIO_PLAYLIST:   "https://www.youtube.com/playlist?list=PLzCxunOM5WFI6sgbAppnSgLQxxNg_d10L"
+
+
+
 
 jobs:
-
-
 
   create_matrix:
     runs-on: ubuntu-latest
@@ -91,7 +92,6 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.create_matrix.outputs.matrix) }}
     steps:
-
 
 
       - name: Matrix Echo
@@ -231,11 +231,6 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
-
-      #   # SSH ----------------------
-      # - name: Setup upterm session
-      #   uses: lhotari/action-upterm@v1
-      #   # SSH ----------------------
 
 
   batch_complete:
