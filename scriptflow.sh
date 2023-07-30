@@ -309,7 +309,9 @@ function main()
         keyword_substitutions
 
         # timestamp
-        printf "started: %s\n" "$(date +'%d/%m/%Y %H:%M:%S')"
+        printf "---\n"
+        printf "⏱️ started: %s\n" "$(date +'%d/%m/%Y %H:%M:%S')"
+        printf "---\n\n"
 
         # Run the ff_script
         run_ff_script "${FF_SCRIPT}" "${SCRIPT_CONTENTS}"

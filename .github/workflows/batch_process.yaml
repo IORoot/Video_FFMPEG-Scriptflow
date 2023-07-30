@@ -170,7 +170,7 @@ jobs:
         continue-on-error: true
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i output.mp4 -i music.mp3 -pix_fmt yuv420p -c:v copy -map 0:v:0 -map 1:a:0 -shortest overlaid_music.mp4
+          sudo ffmpeg -i output.mp4 -i music.mp3 -c:v copy -map 0:v:0 -map 1:a:0 -shortest overlaid_music.mp4
           ls -lart
           ls -la ${GITHUB_WORKSPACE}/processed_video
           sudo rm -f ./yt-dlp 
