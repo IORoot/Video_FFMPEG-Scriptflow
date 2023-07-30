@@ -171,6 +171,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
           sudo ffmpeg -i output.mp4 -i music.mp3 -pix_fmt yuv420p -c:v copy -map 0:v:0 -map 1:a:0 -shortest processed.mp4
+          ls -lart
           rm -f ./yt-dlp ./music.mp3 ./output.mp4
 
 

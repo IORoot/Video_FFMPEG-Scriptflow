@@ -308,6 +308,9 @@ function main()
         # Do any keyword substitutions
         keyword_substitutions
 
+        # timestamp
+        printf "started: %s\n" "$(date +'%d/%m/%Y %H:%M:%S')"
+
         # Run the ff_script
         run_ff_script "${FF_SCRIPT}" "${SCRIPT_CONTENTS}"
     done
