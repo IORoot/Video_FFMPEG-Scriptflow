@@ -187,7 +187,7 @@ function pre_flight_checks()
     if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FIRST_FILENAME}" > /dev/null 2>&1; then
         printf "\t" 
     else
-        printf "\t❌ First Input file not a movie file. Exiting.\n"
+        printf "\t❌ First Input file: '%s' not a movie file. Exiting.\n" "${FIRST_FILENAME}"
         ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${FIRST_FILENAME}"
         exit_gracefully
     fi
@@ -196,7 +196,7 @@ function pre_flight_checks()
     if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${SECOND_FILENAME}" > /dev/null 2>&1; then
         printf "" 
     else
-        printf "\t❌ Second Input file not a movie file. Exiting.\n"
+        printf "\t❌ Second Input file: '%s' not a movie file. Exiting.\n" "${SECOND_FILENAME}"
         ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${SECOND_FILENAME}"
         exit_gracefully
     fi

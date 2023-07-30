@@ -311,10 +311,12 @@ function main()
         # timestamp
         printf "\n\n---\n"
         printf "⏱️ started: %s" "$(date +'%d/%m/%Y %H:%M:%S')"
-        printf "\n---\n\n"
+        printf "\n---"
 
         # Run the ff_script
         run_ff_script "${FF_SCRIPT}" "${SCRIPT_CONTENTS}"
+
+        ls -lart
     done
 
     # Copy the last
