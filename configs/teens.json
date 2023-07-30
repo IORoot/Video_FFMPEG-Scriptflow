@@ -61,7 +61,7 @@
 		"count": "1"
 	},
 
-	"ff_watermark3": {
+	"ff_watermark2": {
 		"input": "ff_watermark1.mp4",
 		"output": "ff_watermark2.mp4",
 		"watermark": "1_ff_outro.mov",
