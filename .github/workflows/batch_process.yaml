@@ -170,9 +170,20 @@ jobs:
         continue-on-error: true
         run: |
           cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i output.mp4 -i music.mp3 -pix_fmt yuv420p -c:v copy -map 0:v:0 -map 1:a:0 -shortest processed.mp4
+          sudo ffmpeg -i output.mp4 -i music.mp3 -pix_fmt yuv420p -c:v copy -map 0:v:0 -map 1:a:0 -shortest overlaid_music.mp4
           ls -lart
-          rm -f ./yt-dlp ./music.mp3 ./output.mp4
+          ls -la ${GITHUB_WORKSPACE}/processed_video
+          sudo rm -f ./yt-dlp 
+          sudo rm -f ./music.mp3
+          sudo rm -f ./output.mp4
+
+
+      - name: reformat for instagram
+        run: |
+          cd ${GITHUB_WORKSPACE}/processed_video
+          sudo ffmpeg -i overlaid_music.mp4 -pix_fmt yuv420p processed.mp4
+          sudo rm -f overlaid_music.mp4
+          ls -la ${GITHUB_WORKSPACE}/processed_video
 
 
       - name: rclone copy result back to google drive
