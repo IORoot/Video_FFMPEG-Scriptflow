@@ -48,7 +48,7 @@
 		"scale": "0.56"
 	},
 
-	"ff_download3": {
+	"ff_download2": {
 		"input1": "http://media.londonparkour.com/overlays/outros/outro_arrows.mov",
 		"input2": "http://media.londonparkour.com/overlays/outros/outro_simple.mov",
 		"output": "ff_outro.mov",
