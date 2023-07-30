@@ -3,7 +3,7 @@
 	"category": "adults",
 
 	"ff_download1": {
-		"urlsource": "http://media.londonparkour.com/clips/filelist.txt",
+		"urlsource": "http://media.londonparkour.com/clips_teens/filelist.txt",
 		"output": "ff_download.mp4",
 		"strategy": "~8"
 	},

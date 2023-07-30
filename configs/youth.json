@@ -1,11 +1,11 @@
 {
 	"schedule": "TRUE",
-	"category": "youth",
+	"category": "adults",
 
 	"ff_download1": {
-		"urlsource": "http://media.londonparkour.com/clips_teens/filelist.txt",
+		"urlsource": "http://media.londonparkour.com/clips_youth/filelist.txt",
 		"output": "ff_download.mp4",
-		"strategy": "~2"
+		"strategy": "~8"
 	},
 
 	"ff_scale": {
@@ -48,50 +48,26 @@
 		"scale": "0.56"
 	},
 
-	"ff_download2": {
-		"input1": "http://media.londonparkour.com/overlays/intros_10s/3xwords__cyan--explore-challenge-conquer.mov",
-		"input2": "http://media.londonparkour.com/overlays/intros_10s/3xwords__green--jump-climb-vault.mov",
-		"input3": "http://media.londonparkour.com/overlays/intros_10s/3xwords__grey--practical-movement-training.mov",
-		"input4": "http://media.londonparkour.com/overlays/intros_10s/4xwords__orange--jump-climb-vault-swing.mov",
-		"input5": "http://media.londonparkour.com/overlays/intros_10s/circle__red--parkour-london.mov",
-		"input6": "http://media.londonparkour.com/overlays/intros_10s/solidcircle__orange--beginner-parkour-classes.mov",
-		"input7": "http://media.londonparkour.com/overlays/intros_10s/triangles__blue--parkour-classes.mov",
-		"input8": "http://media.londonparkour.com/overlays/intros_10s/triangles__red--beginner-classes.mov",
-		"input9": "http://media.londonparkour.com/overlays/intros_10s/2xwords__black--london-parkour.mov",
-		"output": "ff_intro.mov",
-		"strategy": "~1"
-	},
-
-	"ff_watermark2": {
-		"input": "ff_watermark1.mp4",
-		"output": "ff_watermark2.mp4",
-		"watermark": "1_ff_intro.mov",
-		"xpixels": "(W-w)/2",
-		"ypixels": "(H-h)/2",
-		"start": "0",
-		"end": "5",
-		"scale": "1"
-	},
-
 	"ff_download3": {
-		"input1": "http://media.londonparkour.com/overlays/outros/outro_simple.mov",
+		"input1": "http://media.londonparkour.com/overlays/outros/outro_arrows.mov",
+		"input2": "http://media.londonparkour.com/overlays/outros/outro_simple.mov",
 		"output": "ff_outro.mov",
 		"strategy": "~1"
 	},
 
 	"ff_thumbnail": {
-		"input": "ff_watermark2.mp4",
+		"input": "ff_watermark1.mp4",
 		"output": "ff_thumbnail.png",
 		"count": "1"
 	},
 
 	"ff_watermark3": {
-		"input": "ff_watermark2.mp4",
-		"output": "ff_watermark3.mp4",
+		"input": "ff_watermark1.mp4",
+		"output": "ff_watermark2.mp4",
 		"watermark": "1_ff_outro.mov",
 		"xpixels": "(W-w)/2",
 		"ypixels": "(H-h)/2",
-		"start": "100%-6",
+		"start": "100%-10",
 		"end": "100%",
 		"scale": "1"
 	}
