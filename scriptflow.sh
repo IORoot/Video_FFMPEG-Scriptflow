@@ -309,7 +309,7 @@ function main()
         keyword_substitutions
 
         # timestamp
-        printf "---\n"
+        printf "\n\n---\n"
         printf "⏱️ started: %s\n" "$(date +'%d/%m/%Y %H:%M:%S')"
         printf "---\n\n"
 
