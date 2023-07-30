@@ -18,7 +18,7 @@
 
 	"ff_lut": {
 		"input": "ff_grouptime.mp4",
-		"lut": "../lib/luts/Holmberg.cube"
+		"lut": "./lib/luts/Holmberg.cube"
 	},
 
 	"ff_scale2": {
@@ -90,7 +90,7 @@
 
 	"ff_text": {
 		"input": "ff_watermark4.mp4",
-		"text": "Syllabus Challenge - <FOLDER_TITLE>",
+		"text": "Syllabus Challenge - <ENV_PROJECT>",
 		"size": "36",
 		"reduction": "10",
 		"xpixels": "(w-tw)/2",

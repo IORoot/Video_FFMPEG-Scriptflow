@@ -140,6 +140,11 @@ generate_colours()
 # ╰──────────────────────────────────────────────────────────╯
 function keyword_substitutions()
 {
+
+    # <ENV_PROJECT>
+    ENVIRONMENT_VARIABLE=${ENV_PROJECT//_/ }
+    SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<ENV_PROJECT>/$ENVIRONMENT_VARIABLE}
+
     # <FOLDER_NAME>
     # current folder
     FOLDER_NAME=$(basename $PWD)
