@@ -50,7 +50,6 @@
 
 	"ff_download2": {
 		"input1": "http://media.londonparkour.com/overlays/outros/outro_arrows.mov",
-		"input2": "http://media.londonparkour.com/overlays/outros/outro_simple.mov",
 		"output": "ff_outro.mov",
 		"strategy": "~1"
 	},
