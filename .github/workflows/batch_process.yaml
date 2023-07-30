@@ -138,6 +138,11 @@ jobs:
           ln -s /opt/hostedtoolcache/ffmpeg/*/x64/ffprobe ./ffprobe
 
 
+        # SSH ----------------------
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+        # SSH ----------------------
+
       # Use sudo otherwise permissions to /tmp won't work in runner
       # export PATH to allow shell variable become environment variable for subshells to work.
       - name: run ffmpeg template
@@ -151,10 +156,6 @@ jobs:
           ls -la
           ls -la ${GITHUB_WORKSPACE}/processed_video
 
-      #   # SSH ----------------------
-      # - name: Setup upterm session
-      #   uses: lhotari/action-upterm@v1
-      #   # SSH ----------------------
 
       - name: download music
         continue-on-error: true

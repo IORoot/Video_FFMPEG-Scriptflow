@@ -67,10 +67,16 @@
 		"end": "2"
 	},
 
+	"ff_download2": {
+		"input1": "http://media.londonparkour.com/overlays/logos/ldnpk_white.png",
+		"output": "ldnpk_white.png",
+		"strategy": "1"
+	},
+
 	"ff_watermark4": {
 		"input": "ff_watermark3.mp4",
 		"output": "ff_watermark4.mp4",
-		"watermark": "../lib/watermarks/ldnpk_white.png",
+		"watermark": "./ldnpk_white.png",
 		"xpixels": "(W-w)/2",
 		"ypixels": "0",
 		"scale": "0.25"
