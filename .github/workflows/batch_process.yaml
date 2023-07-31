@@ -152,7 +152,7 @@ jobs:
           export PATH=$PATH:$(pwd)
           sudo PROJECT="${{ matrix.project }}" ./scriptflow.sh --config $(realpath ./config.json)
           [ ! -f output.mp4 ] || mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
-          [ ! -f thumbnail* ] || mv thumbnail* ${GITHUB_WORKSPACE}/processed_video/
+          [ ! -f ff_thumbnail-01.png ] || mv ff_thumbnail-01.png ${GITHUB_WORKSPACE}/processed_video/thumbnail.png
           ls -la
           ls -la ${GITHUB_WORKSPACE}/processed_video
 

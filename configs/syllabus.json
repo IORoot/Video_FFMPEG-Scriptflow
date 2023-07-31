@@ -76,7 +76,7 @@
 	"ff_watermark4": {
 		"input": "ff_watermark3.mp4",
 		"output": "ff_watermark4.mp4",
-		"watermark": "./ldnpk_white.png",
+		"watermark": "./1_ldnpk_white.png",
 		"xpixels": "(W-w)/2",
 		"ypixels": "0",
 		"scale": "0.25"

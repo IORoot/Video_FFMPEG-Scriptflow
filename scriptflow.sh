@@ -152,6 +152,7 @@ function keyword_substitutions()
         ENVIRONMENT_VALUE_SPACED="${ENVIRONMENT_VALUE//_/ }"
         printf "Found <ENV_*> Variable: %s with value: %s \n" "$ENVIRONMENT_VARIABLE" "$ENVIRONMENT_VALUE_SPACED"
         SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<ENV_${ENVIRONMENT_VARIABLE}>/$ENVIRONMENT_VALUE_SPACED}
+        echo $SCRIPT_CONTENTS
     fi
 
 
