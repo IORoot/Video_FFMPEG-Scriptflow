@@ -112,6 +112,7 @@
     - [Multiple duplicate scripts](#multiple-duplicate-scripts)
     - [Scripts with multiple inputs](#scripts-with-multiple-inputs)
     - [Keyword Replacements](#keyword-replacements)
+        - [<ENV_*>](#env_)
         - [<FOLDER_NAME>](#folder_name)
         - [<FOLDER_TITLE>](#folder_title)
         - [<DATE_format>](#date_format)
@@ -1228,6 +1229,37 @@ Inputs can be `input1`, `input2`, etc... for scripts that require multiple input
 
 
 ### 4.5 Keyword Replacements
+
+
+#### <ENV_*>
+You can use the `<ENV_VARIABLENAME>` keyword variable to replace with the any environment variable.
+Set an environment variable by:
+```bash
+export MYVARIABLE="Helloo there"
+```
+
+and then including the tag `<ENV_MYVARIABLE>` into the code.
+
+```json
+{
+    "ff_text": {
+		"input": "input.mp4",
+		"text": "Test of variable - <ENV_MYVARIABLE>",
+		"size": "36",
+		"reduction": "10",
+		"xpixels": "(w-tw)/2",
+		"ypixels": "(h-th)-100",
+		"colour": "#FFFFFF",
+		"boxcolour": "#262626"
+	}    
+}
+```
+
+You can also prepend the variable to the front of the script so you don't need to set it as an environment variable:
+
+```bash
+MYVARIABLE="Helloo there" ./scriptflow.sh
+```
 
 #### <FOLDER_NAME>
 You can use the `<FOLDER_NAME>` keyword variable to replace with the ACTUAL name of the folder the config file is located.

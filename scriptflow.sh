@@ -141,9 +141,17 @@ generate_colours()
 function keyword_substitutions()
 {
 
-    # <ENV_PROJECT>
-    ENVIRONMENT_VARIABLE=${ENV_PROJECT//_/ }
-    SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<ENV_PROJECT>/$ENVIRONMENT_VARIABLE}
+    # <ENV_*>
+    # Replace environment variables
+    # Run `export VAR="123"` or add to front of scriptflow command
+    # VAR="ABC" ./scriptflow.sh
+    REGEX="<ENV_([^>]*)>"
+    if [[ $SCRIPT_CONTENTS =~ $REGEX ]]; then
+        ENVIRONMENT_VARIABLE="${BASH_REMATCH[1]}"
+        ENVIRONMENT_VALUE="${!ENVIRONMENT_VARIABLE}"
+        SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<ENV_${ENVIRONMENT_VARIABLE}>/$ENVIRONMENT_VALUE}
+    fi
+
 
     # <FOLDER_NAME>
     # current folder

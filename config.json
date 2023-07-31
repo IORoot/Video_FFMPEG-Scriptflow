@@ -1,0 +1,15 @@
+{
+	"schedule": "TRUE",
+	"category": "syllabus",
+
+	"ff_text": {
+		"input": "proxy.mp4",
+		"text": "Syllabus Challenge - <ENV_TEST>",
+		"size": "36",
+		"reduction": "10",
+		"xpixels": "(w-tw)/2",
+		"ypixels": "(h-th)-100",
+		"colour": "#FFFFFF",
+		"boxcolour": "#262626"
+	}
+}
