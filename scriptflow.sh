@@ -149,6 +149,7 @@ function keyword_substitutions()
     if [[ $SCRIPT_CONTENTS =~ $REGEX ]]; then
         ENVIRONMENT_VARIABLE="${BASH_REMATCH[1]}"
         ENVIRONMENT_VALUE="${!ENVIRONMENT_VARIABLE}"
+        ENVIRONMENT_VALUE=${ENVIRONMENT_VALUE//_/ }
         printf "Found <ENV_*> Variable: %s with value: %s \n" "$ENVIRONMENT_VARIABLE" "$ENVIRONMENT_VALUE"
         SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<ENV_${ENVIRONMENT_VARIABLE}>/$ENVIRONMENT_VALUE}
     fi

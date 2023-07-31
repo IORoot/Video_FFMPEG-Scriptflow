@@ -72,7 +72,7 @@ jobs:
         env:
           RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
         with:
-          args: lsf GDrive:${GDRIVE_SOURCE_FOLDER} | tr -d '//' | head -n 18 > ./folderlist.txt
+          args: lsf GDrive:${GDRIVE_SOURCE_FOLDER} | tr -d '//' | head -n 20 > ./folderlist.txt
 
       - id: set-matrix
         run: |

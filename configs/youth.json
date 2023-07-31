@@ -5,7 +5,7 @@
 	"ff_download1": {
 		"urlsource": "http://media.londonparkour.com/clips_youth/filelist.txt",
 		"output": "ff_download.mp4",
-		"strategy": "~2"
+		"strategy": "~8"
 	},
 
 	"ff_scale": {
