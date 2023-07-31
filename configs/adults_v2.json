@@ -1,0 +1,101 @@
+{
+	"schedule": "TRUE",
+	"category": "adults",
+
+	"ff_download1": {
+		"urlsource": "http://media.londonparkour.com/clips_adults/filelist.txt",
+		"output": "ff_download.mp4",
+		"strategy": "~3"
+	},
+
+	"ff_scale": {
+		"input": "./",
+		"width": "1920",
+		"height": "1080",
+		"grep": "ff_download"
+	},
+
+	"ff_pad": {
+		"input": "./",
+		"width": "1920",
+		"height": "1080",
+		"colour": "#000000",
+		"grep": "ff_scale"
+	},
+
+	"ff_grouptime": {
+		"input": "./",
+		"grep": "ff_pad"
+	},
+
+	"ff_crop": {
+		"input": "ff_grouptime.mp4",
+		"width": "1080",
+		"height": "1080"
+	},
+
+	"ff_blur": {
+		"input": "ff_crop.mp4",
+		"strength": "20"
+	},
+
+	"ff_watermark1": {
+		"input": "ff_blur.mp4",
+		"output": "ff_watermark1.mp4",
+		"watermark": "ff_grouptime.mp4",
+		"xpixels": "(W-w)/2",
+		"ypixels": "(H-h)/2",
+		"scale": "0.56"
+	},
+
+	"ff_download2": {
+		"input1": "http://media.londonparkour.com/overlays/logos/ldnpk_white.png",
+		"output": "ldnpk_white.png",
+		"strategy": "1"
+	},
+
+	"ff_watermark2": {
+		"input": "ff_watermark1.mp4",
+		"output": "ff_watermark2.mp4",
+		"watermark": "./1_ldnpk_white.png",
+		"xpixels": "(W-w)/2",
+		"ypixels": "0",
+		"scale": "0.25"
+	},
+
+	"ff_text": {
+		"input": "ff_watermark2.mp4",
+		"output": "ff_text.mp4",
+		"text": "BEGINNER CLASSES EVERY WEEKEND\nLONDONPARKOUR.COM",
+		"size": "36",
+		"reduction": "10",
+		"xpixels": "(w-tw)/2",
+		"ypixels": "(h-th)-100",
+		"colour": "#FFFFFF",
+		"boxcolour": "#262626"
+	},
+
+	"ff_download3": {
+		"input1": "http://media.londonparkour.com/overlays/outros/outro_arrows.mov",
+		"input2": "http://media.londonparkour.com/overlays/outros/outro_simple.mov",
+		"output": "ff_outro.mov",
+		"strategy": "~1"
+	},
+
+	"ff_thumbnail": {
+		"input": "ff_text.mp4",
+		"output": "ff_thumbnail.png",
+		"count": "1"
+	},
+
+	"ff_watermark3": {
+		"input": "ff_text.mp4",
+		"output": "ff_watermark3.mp4",
+		"watermark": "1_ff_outro.mov",
+		"xpixels": "(W-w)/2",
+		"ypixels": "(H-h)/2",
+		"start": "100%-6",
+		"end": "100%",
+		"scale": "1"
+	}
+}
