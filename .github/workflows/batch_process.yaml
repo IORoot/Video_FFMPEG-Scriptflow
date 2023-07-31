@@ -150,8 +150,8 @@ jobs:
           cd ${GITHUB_WORKSPACE}
           mkdir -p ${GITHUB_WORKSPACE}/processed_video
           export PATH=$PATH:$(pwd)
-          export ENV_PROJECT="${{ matrix.project }}"
-          echo $ENV_PROJECT
+          export PROJECT="${{ matrix.project }}"
+          printf "<ENV_PROJECT> should be:" "$PROJECT"
           sudo ./scriptflow.sh --config $(realpath ./config.json)
           [ ! -f output.mp4 ] || mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
           [ ! -f thumbnail* ] || mv thumbnail* ${GITHUB_WORKSPACE}/processed_video/
