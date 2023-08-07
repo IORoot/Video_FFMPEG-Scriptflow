@@ -131,6 +131,7 @@ jobs:
                   [ ! -f ff_thumbnail-01.png ] || mv ff_thumbnail-01.png ${GITHUB_WORKSPACE}/processed_video/thumbnail.png
                   ls -la
                   ls -la ${GITHUB_WORKSPACE}/processed_video
+                  mv *.mp4 ${GITHUB_WORKSPACE}/processed_video
 
             - name: download music
               continue-on-error: true
@@ -146,9 +147,9 @@ jobs:
                   cd ${GITHUB_WORKSPACE}/processed_video
                   sudo ffmpeg -i output.mp4 -i music.mp3 -c:v copy -map 0:v:0 -map 1:a:0 -shortest overlaid_music.mp4
                   ls -la ${GITHUB_WORKSPACE}/processed_video
-              # sudo rm -f ./yt-dlp
-              # sudo rm -f ./music.mp3
-              # sudo rm -f ./output.mp4
+                  sudo rm -f ./yt-dlp
+                  sudo rm -f ./music.mp3
+                  sudo rm -f ./output.mp4
 
             - name: reformat for instagram
               run: |
