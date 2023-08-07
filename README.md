@@ -559,6 +559,8 @@ The download script is quite a powerful tool to auto-generate your videos. It ca
 
 Here are some examples using the `scriptflow` tool and the JSON input format:
 
+---
+
 ##### Single Download
 
 This example will just download a single file from a URL.
@@ -591,6 +593,8 @@ This time we will download two images that will be output as `1_logo_solid.jpg` 
 }
 ```
 
+---
+
 ##### Using a URL Source.
 
 You can provide a URL of a text file listing all of the available files and download some from that list.
@@ -622,6 +626,8 @@ Now, you can use that text file as a reference and use the `strategy` field to d
 ```
 
 This will download files `my_video_01.mp4` and `my_video_02.mp4`. These will be output as `1_ff_download.mp4` and `2_ff_download.mp4`.
+
+---
 
 ##### URL Source randomised strategy.
 
