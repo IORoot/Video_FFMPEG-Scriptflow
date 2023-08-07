@@ -131,7 +131,6 @@ jobs:
                   [ ! -f ff_thumbnail-01.png ] || mv ff_thumbnail-01.png ${GITHUB_WORKSPACE}/processed_video/thumbnail.png
                   ls -la
                   ls -la ${GITHUB_WORKSPACE}/processed_video
-                  mv *.mp4 ${GITHUB_WORKSPACE}/processed_video
 
             - name: download music
               continue-on-error: true

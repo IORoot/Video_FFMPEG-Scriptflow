@@ -93,6 +93,7 @@
 	"ff_text": {
 		"description": "Overlay description text of the project across bottom.",
 		"input": "ff_watermark4.mp4",
+		"output": "ff_text.mp4",
 		"text": "Syllabus Challenge - <ENV_PROJECT>",
 		"size": "36",
 		"reduction": "10",
@@ -112,7 +113,7 @@
 
 	"ff_watermark5": {
 		"description": "Add the outro video over the end 6 seconds.",
-		"input": "ff_watermark4.mp4",
+		"input": "ff_text.mp4",
 		"output": "ff_watermark5.mp4",
 		"watermark": "1_ff_outro.mov",
 		"xpixels": "(W-w)/2",
