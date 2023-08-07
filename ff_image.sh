@@ -203,7 +203,7 @@ function main()
 
     printf "%-80s\n" "🎨 ff_image.sh - Creating a video from an image."
 
-    ffmpeg -v ${LOGLEVEL} -loop 1 -i ${INPUT_FILENAME} -c:v libx264 -t ${DURATION} -pix_fmt yuv420p ${OUTPUT_FILENAME}
+    ffmpeg -v ${LOGLEVEL} -framerate 29.97 -loop 1 -i ${INPUT_FILENAME} -c:v libx264 -t ${DURATION} -pix_fmt yuv420p ${OUTPUT_FILENAME}
     
     printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
 
