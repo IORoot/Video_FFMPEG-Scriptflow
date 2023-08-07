@@ -6,6 +6,8 @@
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 
+# Note: the FIRST video will set the FPS and dimensions. Make sure they are not different.
+
 # links
 # https://stackoverflow.com/questions/7333232/how-to-concatenate-two-mp4-files-using-ffmpeg
 

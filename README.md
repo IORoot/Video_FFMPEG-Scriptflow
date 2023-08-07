@@ -414,6 +414,8 @@ graph LR
 
 Concatenate multiple videos into one output video.
 
+The first video will set the FPS and dimensions, so make sure all videos are the same otherwise you'll get slow-motion.
+
 ![concat](https://raw.githubusercontent.com/IORoot/ffmpeg__bash-scripts/master/lib/images/concat.svg)
 
 #### Flags
