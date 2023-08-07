@@ -1,261 +1,226 @@
-name: GDrive Batch Processing 
-
+name: GDrive Batch Processing
 
 # Run with a CURL request:
-# 
-# curl                                                            \                                    
-# -X POST                                                         \                                   
-# -H "Accept: application/vnd.github+json"                        \                  
-# -H "Authorization: Bearer GITHUB_PAT_KEY"                       \                  
-# -H "X-GitHub-Api-Version: 2022-11-28"                           \                    
-#     https://api.github.com/repos/ioroot/ffmpeg__bash-scripts/dispatches \         
-#     -d '{"event_type":"run_autoflip","client_payload":{         \         
-#             "GDRIVE_FOLDER":  "FOLDER/IN/GDRIVE/TO/USE",        \            
+#
+# curl                                                            \
+# -X POST                                                         \
+# -H "Accept: application/vnd.github+json"                        \
+# -H "Authorization: Bearer GITHUB_PAT_KEY"                       \
+# -H "X-GitHub-Api-Version: 2022-11-28"                           \
+#     https://api.github.com/repos/ioroot/ffmpeg__bash-scripts/dispatches \
+#     -d '{"event_type":"run_autoflip","client_payload":{         \
+#             "GDRIVE_FOLDER":  "FOLDER/IN/GDRIVE/TO/USE",        \
 #         }                                                       \
 
-
 on:
+    # Via a webhook
+    repository_dispatch:
+        types: gdrive_batch_process
 
-  # Via a webhook
-  repository_dispatch:
-    types: gdrive_batch_process
-
-  workflow_dispatch:
+    workflow_dispatch:
 
 env:
+    # ╭──────────────────────────────────────────────────────────╮
+    # │           Update Video Sheet with full new row           │
+    # │                   including video_url                    │
+    # ╰──────────────────────────────────────────────────────────╯
+    # Google AppsScript Name: "Make.com Video Sheet Insert Row"
+    # INSERT
+    APPS_SCRIPT: ${{ secrets.APPS_SCRIPT }}
 
-  # ╭──────────────────────────────────────────────────────────╮
-  # │           Update Video Sheet with full new row           │
-  # │                   including video_url                    │
-  # ╰──────────────────────────────────────────────────────────╯
-  # Google AppsScript Name: "Make.com Video Sheet Insert Row"
-  # INSERT
-  APPS_SCRIPT: ${{ secrets.APPS_SCRIPT }}
+    # ╭──────────────────────────────────────────────────────────╮
+    # │                  Google Drive Variables                  │
+    # ╰──────────────────────────────────────────────────────────╯
+    GDRIVE_SOURCE_FOLDER: "/SocialExporter/batch_queue"
+    GDRIVE_TARGET_FOLDER: "/SocialExporter/videos/batch_processed"
+    GDRIVE_ARCHIVE_FOLDER: "/SocialExporter/batch_archive"
+    CONFIG_FILE_NAME: "config.json"
 
+    # ╭──────────────────────────────────────────────────────────╮
+    # │              Where to upload the result to.              │
+    # │                      - Server name                       │
+    # │                     - Target folder.                     │
+    # ╰──────────────────────────────────────────────────────────╯
+    SERVER: "londonparkour.com"
+    TARGET_ROOT_FOLDER: "/var/www/vhosts/media.londonparkour.com/processed/batch_processed"
 
-  # ╭──────────────────────────────────────────────────────────╮
-  # │                  Google Drive Variables                  │
-  # ╰──────────────────────────────────────────────────────────╯
-  GDRIVE_SOURCE_FOLDER:     "/SocialExporter/batch_queue"
-  GDRIVE_TARGET_FOLDER:     "/SocialExporter/videos/batch_processed"
-  GDRIVE_ARCHIVE_FOLDER:    "/SocialExporter/batch_archive"
-  CONFIG_FILE_NAME:         "config.json"
-
-  # ╭──────────────────────────────────────────────────────────╮
-  # │              Where to upload the result to.              │
-  # │                      - Server name                       │
-  # │                     - Target folder.                     │
-  # ╰──────────────────────────────────────────────────────────╯
-  SERVER:                   "londonparkour.com"
-  TARGET_ROOT_FOLDER:       "/var/www/vhosts/media.londonparkour.com/processed/batch_processed"
-
-
-  YOUTUBE_AUDIO_PLAYLIST:   "https://www.youtube.com/playlist?list=PLzCxunOM5WFI6sgbAppnSgLQxxNg_d10L"
-
-
-
+    YOUTUBE_AUDIO_PLAYLIST: "https://www.youtube.com/playlist?list=PLzCxunOM5WFI6sgbAppnSgLQxxNg_d10L"
 
 jobs:
+    create_matrix:
+        runs-on: ubuntu-latest
+        outputs:
+            matrix: ${{ steps.set-matrix.outputs.matrix }}
+        steps:
+            - name: install dependencies
+              run: |
+                  sudo apt-get update 
+                  sudo apt-get install --no-install-recommends jq
 
-  create_matrix:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - name: install dependencies
-        run: |
-          sudo apt-get update 
-          sudo apt-get install --no-install-recommends jq
+            - name: rclone
+              uses: wei/rclone@v1
+              env:
+                  RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+              with:
+                  args: lsf GDrive:${GDRIVE_SOURCE_FOLDER} | tr -d '//' | head -n 20 > ./folderlist.txt
 
-      - name: rclone
-        uses: wei/rclone@v1
-        env:
-          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-        with:
-          args: lsf GDrive:${GDRIVE_SOURCE_FOLDER} | tr -d '//' | head -n 20 > ./folderlist.txt
+            - id: set-matrix
+              run: |
+                  printf "matrix={\"include\":[" > ./matrix_file.txt
+                  cat ./folderlist.txt | while read LINE; do printf "{\"project\":\"%s\"}," $LINE >> ./matrix_file.txt ;done
+                  printf "]}" >> ./matrix_file.txt
+                  cat ./matrix_file.txt >> $GITHUB_OUTPUT
 
-      - id: set-matrix
-        run: |
-          printf "matrix={\"include\":[" > ./matrix_file.txt
-          cat ./folderlist.txt | while read LINE; do printf "{\"project\":\"%s\"}," $LINE >> ./matrix_file.txt ;done
-          printf "]}" >> ./matrix_file.txt
-          cat ./matrix_file.txt >> $GITHUB_OUTPUT
-
-
-
-
-  run_ffmpeg:
-    needs: create_matrix
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.create_matrix.outputs.matrix) }}
-    steps:
-
-
-      - name: Matrix Echo
-        run: |
-          echo ${{ matrix.project }}
-
-
-      - name: install dependencies
-        run: |
-          sudo apt-get update 
-          sudo apt-get install --no-install-recommends rclone ssh sshpass sed
-
-
-
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-
-
-
-      - name: rclone copy to runner
-        uses: wei/rclone@v1
-        env:
-          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-        with:
-          args: copy GDrive:${{ env.GDRIVE_SOURCE_FOLDER }}/${{ matrix.project }} ./${{ matrix.project }}
-
-
-
-      - name: read config.json
-        run: |
-          cd ./${{ matrix.project }}
-          if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
-          sudo mv ./* ../
-          cd ${GITHUB_WORKSPACE}
-          cat ./config.json
-
-
-      - uses: FedericoCarboni/setup-ffmpeg@v2
-      - name: setup ffmpeg
-        run: |
-          cd /usr/local/bin
-          env
-          ln -s /opt/hostedtoolcache/ffmpeg/*/x64/ffmpeg ./ffmpeg
-          ln -s /opt/hostedtoolcache/ffmpeg/*/x64/ffprobe ./ffprobe
-
-
-      #   # SSH ----------------------
-      # - name: Setup upterm session
-      #   uses: lhotari/action-upterm@v1
-      #   # SSH ----------------------
-
-      # Use sudo otherwise permissions to /tmp won't work in runner
-      # export PATH to allow shell variable become environment variable for subshells to work.
-      - name: run ffmpeg template
-        run: |
-          cd ${GITHUB_WORKSPACE}
-          mkdir -p ${GITHUB_WORKSPACE}/processed_video
-          export PATH=$PATH:$(pwd)
-          sudo PROJECT="${{ matrix.project }}" ./scriptflow.sh --config $(realpath ./config.json)
-          [ ! -f output.mp4 ] || mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
-          [ ! -f ff_thumbnail-01.png ] || mv ff_thumbnail-01.png ${GITHUB_WORKSPACE}/processed_video/thumbnail.png
-          ls -la
-          ls -la ${GITHUB_WORKSPACE}/processed_video
-
-
-      - name: download music
+    run_ffmpeg:
+        needs: create_matrix
+        runs-on: ubuntu-latest
         continue-on-error: true
-        run: |
-          cd ${GITHUB_WORKSPACE}/processed_video
-          sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp
-          sudo chmod a+rx ./yt-dlp
-          sudo ./yt-dlp ${{ env.YOUTUBE_AUDIO_PLAYLIST }} --playlist-random --max-downloads 1 --restrict-filenames --trim-filenames 20 --extract-audio --audio-format mp3 --postprocessor-args "-ss 00:00:00.00 -t 00:01:00.00" --output music.mp3 --force-overwrites || true
+        strategy:
+            fail-fast: false
+            matrix: ${{ fromJSON(needs.create_matrix.outputs.matrix) }}
+        steps:
+            - name: Matrix Echo
+              run: |
+                  echo ${{ matrix.project }}
 
+            - name: install dependencies
+              run: |
+                  sudo apt-get update 
+                  sudo apt-get install --no-install-recommends rclone ssh sshpass sed
 
-      - name: overlay music
-        continue-on-error: true
-        run: |
-          cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i output.mp4 -i music.mp3 -c:v copy -map 0:v:0 -map 1:a:0 -shortest overlaid_music.mp4
-          ls -la ${GITHUB_WORKSPACE}/processed_video
-          sudo rm -f ./yt-dlp 
-          sudo rm -f ./music.mp3
-          sudo rm -f ./output.mp4
+            - name: Checkout Repo
+              uses: actions/checkout@v3
 
+            - name: rclone copy to runner
+              uses: wei/rclone@v1
+              env:
+                  RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+              with:
+                  args: copy GDrive:${{ env.GDRIVE_SOURCE_FOLDER }}/${{ matrix.project }} ./${{ matrix.project }}
 
-      - name: reformat for instagram
-        run: |
-          cd ${GITHUB_WORKSPACE}/processed_video
-          sudo ffmpeg -i overlaid_music.mp4 -pix_fmt yuv420p processed.mp4
-          sudo rm -f overlaid_music.mp4
-          ls -la ${GITHUB_WORKSPACE}/processed_video
+            - name: read config.json
+              run: |
+                  cd ./${{ matrix.project }}
+                  if [ ! -f "./config.json" ]; then sudo cp ../.github/workflows/default_config.json ./config.json; fi
+                  sudo mv ./* ../
+                  cd ${GITHUB_WORKSPACE}
+                  cat ./config.json
 
+            - uses: FedericoCarboni/setup-ffmpeg@v2
+            - name: setup ffmpeg
+              run: |
+                  cd /usr/local/bin
+                  env
+                  ln -s /opt/hostedtoolcache/ffmpeg/*/x64/ffmpeg ./ffmpeg
+                  ln -s /opt/hostedtoolcache/ffmpeg/*/x64/ffprobe ./ffprobe
 
-      - name: rclone copy result back to google drive
-        uses: wei/rclone@v1
-        env:
-          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-        with:
-          args: copy ./processed_video GDrive:${GDRIVE_TARGET_FOLDER}/${{ matrix.project }}
+            #   # SSH ----------------------
+            # - name: Setup upterm session
+            #   uses: lhotari/action-upterm@v1
+            #   # SSH ----------------------
 
+            # Use sudo otherwise permissions to /tmp won't work in runner
+            # export PATH to allow shell variable become environment variable for subshells to work.
+            - name: run ffmpeg template
+              run: |
+                  cd ${GITHUB_WORKSPACE}
+                  mkdir -p ${GITHUB_WORKSPACE}/processed_video
+                  export PATH=$PATH:$(pwd)
+                  sudo PROJECT="${{ matrix.project }}" ./scriptflow.sh --config $(realpath ./config.json) -t
+                  [ ! -f output.mp4 ] || mv output.mp4 ${GITHUB_WORKSPACE}/processed_video
+                  [ ! -f ff_thumbnail-01.png ] || mv ff_thumbnail-01.png ${GITHUB_WORKSPACE}/processed_video/thumbnail.png
+                  ls -la
+                  ls -la ${GITHUB_WORKSPACE}/processed_video
 
+            - name: download music
+              continue-on-error: true
+              run: |
+                  cd ${GITHUB_WORKSPACE}/processed_video
+                  sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp
+                  sudo chmod a+rx ./yt-dlp
+                  sudo ./yt-dlp ${{ env.YOUTUBE_AUDIO_PLAYLIST }} --playlist-random --max-downloads 1 --restrict-filenames --trim-filenames 20 --extract-audio --audio-format mp3 --postprocessor-args "-ss 00:00:00.00 -t 00:01:00.00" --output music.mp3 --force-overwrites || true
 
-      - name: Copy Video to Server
-        run: |
-          mkdir ~/.ssh
-          ssh-keyscan -H ${{env.SERVER}} >> ~/.ssh/known_hosts
+            - name: overlay music
+              continue-on-error: true
+              run: |
+                  cd ${GITHUB_WORKSPACE}/processed_video
+                  sudo ffmpeg -i output.mp4 -i music.mp3 -c:v copy -map 0:v:0 -map 1:a:0 -shortest overlaid_music.mp4
+                  ls -la ${GITHUB_WORKSPACE}/processed_video
+              # sudo rm -f ./yt-dlp
+              # sudo rm -f ./music.mp3
+              # sudo rm -f ./output.mp4
 
-          SOURCE_DIR="./processed_video"
-          TARGET_DIR="${TARGET_ROOT_FOLDER}/${{ matrix.project }}"
+            - name: reformat for instagram
+              run: |
+                  cd ${GITHUB_WORKSPACE}/processed_video
+                  sudo ffmpeg -i overlaid_music.mp4 -pix_fmt yuv420p processed.mp4
+                  sudo rm -f overlaid_music.mp4
+                  ls -la ${GITHUB_WORKSPACE}/processed_video
 
-          echo "SOURCE DIR: ${SOURCE_DIR}"
-          echo "TARGET DIR: ${TARGET_DIR}"
+            - name: rclone copy result back to google drive
+              uses: wei/rclone@v1
+              env:
+                  RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+              with:
+                  args: copy ./processed_video GDrive:${GDRIVE_TARGET_FOLDER}/${{ matrix.project }}
 
-          sshpass -p '${{secrets.SSH_PASS}}' ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{secrets.SSH_USER}}@${{env.SERVER}} "mkdir -p ${TARGET_DIR}"
-          cd ${SOURCE_DIR}
-          sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null * ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
+            - name: Copy Video to Server
+              run: |
+                  mkdir ~/.ssh
+                  ssh-keyscan -H ${{env.SERVER}} >> ~/.ssh/known_hosts
 
+                  SOURCE_DIR="./processed_video"
+                  TARGET_DIR="${TARGET_ROOT_FOLDER}/${{ matrix.project }}"
 
-      - name: Update google sheet with processed video folder
-        run: |
-          cat ./config.json
-          CATEGORY=$(cat ./config.json | sudo jq -c '.category' | tr -d '"' )
-          echo $CATEGORY
-          SCHEDULE=$(cat ./config.json | sudo jq -c '.schedule' | tr -d '"' )
-          echo $SCHEDULE
-          VIDEOURL="http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4"
-          echo "${{ env.APPS_SCRIPT }}?category=%22${CATEGORY}%22&auto_schedule=%22${SCHEDULE}%22&video_url=%22${VIDEOURL}%22"
-          curl "${{ env.APPS_SCRIPT }}?category=%22${CATEGORY}%22&auto_schedule=%22${SCHEDULE}%22&video_url=%22${VIDEOURL}%22"
+                  echo "SOURCE DIR: ${SOURCE_DIR}"
+                  echo "TARGET DIR: ${TARGET_DIR}"
 
+                  sshpass -p '${{secrets.SSH_PASS}}' ssh -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{secrets.SSH_USER}}@${{env.SERVER}} "mkdir -p ${TARGET_DIR}"
+                  cd ${SOURCE_DIR}
+                  sshpass -p '${{secrets.SSH_PASS}}' scp -v -p -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null * ${{secrets.SSH_USER}}@${{env.SERVER}}:${TARGET_DIR}
 
-      - name: rclone archive videos
-        uses: wei/rclone@v1
-        env:
-          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
-        with:
-          args: moveto GDrive:${GDRIVE_SOURCE_FOLDER}/${{ matrix.project }} GDrive:${GDRIVE_ARCHIVE_FOLDER}/${{ matrix.project }}
+            - name: Update google sheet with processed video folder
+              run: |
+                  cat ./config.json
+                  CATEGORY=$(cat ./config.json | sudo jq -c '.category' | tr -d '"' )
+                  echo $CATEGORY
+                  SCHEDULE=$(cat ./config.json | sudo jq -c '.schedule' | tr -d '"' )
+                  echo $SCHEDULE
+                  VIDEOURL="http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4"
+                  echo "${{ env.APPS_SCRIPT }}?category=%22${CATEGORY}%22&auto_schedule=%22${SCHEDULE}%22&video_url=%22${VIDEOURL}%22"
+                  curl "${{ env.APPS_SCRIPT }}?category=%22${CATEGORY}%22&auto_schedule=%22${SCHEDULE}%22&video_url=%22${VIDEOURL}%22"
 
+            - name: rclone archive videos
+              uses: wei/rclone@v1
+              env:
+                  RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+              with:
+                  args: moveto GDrive:${GDRIVE_SOURCE_FOLDER}/${{ matrix.project }} GDrive:${GDRIVE_ARCHIVE_FOLDER}/${{ matrix.project }}
 
-      - name: Send custom JSON data to Slack workflow
-        id: slack
-        uses: slackapi/slack-github-action@v1.23.0
-        with:
-          payload: |
-            {
-              "text": ":clapper: GitHub-Action Batch Single Video Processed.\n http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+            - name: Send custom JSON data to Slack workflow
+              id: slack
+              uses: slackapi/slack-github-action@v1.23.0
+              with:
+                  payload: |
+                      {
+                        "text": ":clapper: GitHub-Action Batch Single Video Processed.\n http://media.londonparkour.com/processed/batch_processed/${{ matrix.project }}/processed.mp4"
+                      }
+              env:
+                  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+                  SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
-
-
-  batch_complete:
-    needs: run_ffmpeg
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send Batch Complete to Slack workflow
-        id: slack
-        uses: slackapi/slack-github-action@v1.23.0
-        with:
-          payload: |
-            {
-              "text": ":white_check_mark: GitHub-Action All videos complete!"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+    batch_complete:
+        needs: run_ffmpeg
+        runs-on: ubuntu-latest
+        steps:
+            - name: Send Batch Complete to Slack workflow
+              id: slack
+              uses: slackapi/slack-github-action@v1.23.0
+              with:
+                  payload: |
+                      {
+                        "text": ":white_check_mark: GitHub-Action All videos complete!"
+                      }
+              env:
+                  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+                  SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
