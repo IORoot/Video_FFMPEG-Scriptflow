@@ -79,7 +79,7 @@ function write_to_temp()
 function setup()
 {
     # delete any existing temp file.
-    rm -f ${TMP_FILE} 
+    rm -f ${TMP_FILE}
 }
 
 # ╭──────────────────────────────────────────────────────────╮

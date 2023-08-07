@@ -64,20 +64,6 @@
 		"scale": "0.25"
 	},
 
-	"ff_image": {
-		"description": "create a 1 second video from the isometric image.",
-		"input": "./isometric.png",
-		"output": "ff_image.mp4",
-		"duration": "1"
-	},
-
-	"ff_concat": {
-		"description": "attach the isometric video on the front of main one.",
-		"input1": "ff_image.mp4",
-		"input2": "ff_watermark3.mp4",
-		"output": "ff_concat.mp4"
-	},
-
 	"ff_thumbnail": {
 		"description": "Make a thumbnail of video (must not be last step)",
 		"input": "ff_watermark3.mp4",
@@ -114,6 +100,25 @@
 		"ypixels": "(H-h)/2",
 		"start": "100%-6",
 		"end": "100%",
+		"scale": "1"
+	},
+
+	"ff_image": {
+		"description": "create a 1 second video from the isometric image.",
+		"input": "./isometric.png",
+		"output": "ff_image.mp4",
+		"duration": "1"
+	},
+
+	"ff_watermark5": {
+		"description": "Add the intro video over the first 1 seconds.",
+		"input": "ff_watermark4.mp4",
+		"output": "ff_watermark5.mp4",
+		"watermark": "ff_image.mp4",
+		"xpixels": "(W-w)/2",
+		"ypixels": "(H-h)/2",
+		"start": "0",
+		"end": "1",
 		"scale": "1"
 	}
 }
