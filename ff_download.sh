@@ -19,7 +19,7 @@ if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show 
 # ╰──────────────────────────────────────────────────────────╯
 INPUT_URL=""
 OUTPUT_FILENAME="ff_download.mp4"
-STRATEGY="all"
+STRATEGY="1"
 LOGLEVEL="error" 
 TMP_FILE="/tmp/tmp_ff_download_list"
 FILELIST="./filelist.txt"
@@ -49,7 +49,7 @@ usage()
         printf "\tA URL of a txt file with a list of all files to use as inputs. Separated one per line.\n\n"
 
         printf " -s | --strategy <STRATEGY>\n"
-        printf "\t5\t A number. First 5 videos from inputs. Prefix number on output filename.\n"
+        printf "\t5\t A number. First 5 videos from inputs. Prefix number on output filename. Default 1.\n"
         printf "\t~5\t Tilde(~) followed by a number. Random 5 videos from inputs. Prefix number on output filename.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
