@@ -73,7 +73,7 @@
 
 	"ff_text": {
 		"description": "Overlay description text of the project across bottom.",
-		"input": "ff_concat.mp4",
+		"input": "ff_watermark3.mp4",
 		"text": "Syllabus Challenge - <ENV_PROJECT>",
 		"size": "36",
 		"reduction": "10",
