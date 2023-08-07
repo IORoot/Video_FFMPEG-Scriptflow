@@ -118,6 +118,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -211,7 +217,7 @@ function pre_flight_checks()
 function main()
 {
 
-    printf "%-80s" "🏎️  ff_fps.sh - Changing the FPS of video."
+    printf "%-80s\n" "🏎️  ff_fps.sh - Changing the FPS of video."
 
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then

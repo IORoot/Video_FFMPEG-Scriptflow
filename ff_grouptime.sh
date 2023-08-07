@@ -188,6 +188,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -330,7 +336,6 @@ function pre_flight_checks()
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 function rearrange_order()
 {
-    echo "arrangement: $ARRANGEMENT"
 
     if [[ "$ARRANGEMENT" =~ .*"even".* ]]; then
         sed -n 'n;p' ${TMP_FILE} > ${TMP_FILE}.tmp

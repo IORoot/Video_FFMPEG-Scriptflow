@@ -104,10 +104,17 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
             ;;
+
 
 
         *)
@@ -231,7 +238,7 @@ function main()
     # -map "[v]"                    map variable [v] to output
     # -map "[a]"                    map variable [a] to output
     # 
-    printf "%-80s" "🚀 ff_append.sh - Re-encoding and Appending videos."
+    printf "%-80s\n" "🚀 ff_append.sh - Re-encoding and Appending videos."
     ffmpeg -v ${LOGLEVEL} -i ${FIRST_FILENAME} -i ${SECOND_FILENAME} \
         -filter_complex "[0:v] [0:a] [1:v] [1:a] concat=n=2:v=1:a=1 [v] [a]" \
         -map "[v]" -map "[a]" ${OUTPUT_FILENAME}

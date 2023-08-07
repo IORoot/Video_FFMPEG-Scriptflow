@@ -116,6 +116,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -237,7 +243,7 @@ function rotate()
 function main()
 {
 
-    printf "%-80s" "🏞️  ff_to_portrait.sh - Landscape video detected. Converting to portrait. "
+    printf "%-80s\n" "🏞️  ff_to_portrait.sh - Landscape video detected. Converting to portrait. "
 
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then

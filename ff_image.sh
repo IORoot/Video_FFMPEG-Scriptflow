@@ -18,7 +18,7 @@ if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show 
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-INPUT_FILENAME="input.mp4"
+INPUT_FILENAME="input.png"
 OUTPUT_FILENAME="ff_image.mp4"
 LOGLEVEL="error"
 DURATION="3"
@@ -98,6 +98,12 @@ function arguments()
         -l|--loglevel)
             LOGLEVEL="$2"
             shift 
+            shift
+            ;;
+
+
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
             shift
             ;;
 
@@ -195,7 +201,7 @@ function main()
 
     pre_flight_checks
 
-    printf "%-80s" "🎨 ff_image.sh - Creating a video from an image."
+    printf "%-80s\n" "🎨 ff_image.sh - Creating a video from an image."
 
     ffmpeg -v ${LOGLEVEL} -loop 1 -i ${INPUT_FILENAME} -c:v libx264 -t ${DURATION} -pix_fmt yuv420p ${OUTPUT_FILENAME}
     

@@ -242,6 +242,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -403,7 +409,7 @@ function main()
 
     calculate_times
 
-    printf "%-80s" "🎨 ff_watermark.sh - Overlaying the watermark."
+    printf "%-80s\n" "🎨 ff_watermark.sh - Overlaying the watermark."
 
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]setpts=PTS-STARTPTS+${START}/TB,format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}${ENABLE}" ${OUTPUT_FILENAME}
 

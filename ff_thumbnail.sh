@@ -124,6 +124,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -217,7 +223,7 @@ function main()
 
     pre_flight_checks
 
-    printf "%-80s" "🌄 ff_thumbnail.sh - Generating thumbnail. "
+    printf "%-80s\n" "🌄 ff_thumbnail.sh - Generating thumbnail. "
 
     # ffmpeg  -vf scale=${WIDTH}:${HEIGHT} ${OUTPUT_FILENAME}
 

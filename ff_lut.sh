@@ -120,6 +120,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -226,7 +232,7 @@ function pre_flight_checks()
 function main()
 {
 
-    printf "%-80s" "🎨 ff_lut.sh - LUT File being applied to video. " "$FILE" 
+    printf "%-80s\n" "🎨 ff_lut.sh - LUT File being applied to video. " "$FILE" 
 
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then

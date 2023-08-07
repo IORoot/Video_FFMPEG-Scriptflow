@@ -160,6 +160,18 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -265,7 +277,7 @@ function pre_flight_checks()
 function main()
 {
 
-    printf "%-80s" "📐 ff_scale.sh - Changing the size of the video. "
+    printf "%-80s\n" "📐 ff_scale.sh - Changing the size of the video. "
 
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then

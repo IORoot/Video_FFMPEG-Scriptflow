@@ -118,6 +118,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -209,7 +215,7 @@ function exit_gracefully()
 function main()
 {
 
-    printf "%-80s" "🚀 ff_aspect_ratio.sh - Changing video container to new aspect ratio."
+    printf "%-80s\n" "🚀 ff_aspect_ratio.sh - Changing video container to new aspect ratio."
 
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then

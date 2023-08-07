@@ -3,51 +3,42 @@
 	"category": "syllabus",
 
 	"ff_scale1": {
+		"description": "Scale all input videos to 1920x1080",
 		"input": "./"
 	},
 
-	"ff_to_landscape": {
-		"input": "./",
-		"grep": "ff_scale"
-	},
-
 	"ff_grouptime": {
+		"description": "Group all scaled videos into a single 59sec one.",
 		"input": "./",
-		"grep": "ff_to_landscape"
-	},
-
-	"ff_lut": {
-		"input": "ff_grouptime.mp4",
-		"lut": "./lib/luts/Holmberg.cube"
-	},
-
-	"ff_scale2": {
-		"input": "ff_lut.mp4",
-		"width": "1920",
-		"height": "1080"
+		"grep": "ff_scale",
+		"duration": "58"
 	},
 
 	"ff_crop": {
-		"input": "ff_scale.mp4",
+		"description": "Make a square version",
+		"input": "ff_grouptime.mp4",
 		"width": "1080",
 		"height": "1080"
 	},
 
 	"ff_blur": {
+		"description": "blur the square version",
 		"input": "ff_crop.mp4",
 		"strength": "20"
 	},
 
 	"ff_watermark1": {
+		"description": "overlay the original over the blurred version",
 		"input": "ff_blur.mp4",
 		"output": "ff_watermark1.mp4",
-		"watermark": "ff_lut.mp4",
+		"watermark": "ff_grouptime.mp4",
 		"xpixels": "(W-w)/2",
 		"ypixels": "(H-h)/2",
 		"scale": "0.56"
 	},
 
 	"ff_watermark2": {
+		"description": "Watermark the attached glyph.png in the bottom right",
 		"input": "ff_watermark1.mp4",
 		"output": "ff_watermark2.mp4",
 		"watermark": "glyph.png",
@@ -56,40 +47,47 @@
 		"scale": "0.2"
 	},
 
-	"ff_watermark3": {
-		"input": "ff_watermark2.mp4",
-		"output": "ff_watermark3.mp4",
-		"watermark": "isometric.png",
-		"scale": "0.5",
-		"start": "0",
-		"xpixels": "(W-w)/2",
-		"ypixels": "(H-h)/2",
-		"end": "2"
-	},
-
-	"ff_download2": {
+	"ff_download1": {
+		"description": "Download the logo",
 		"input1": "http://media.londonparkour.com/overlays/logos/ldnpk_white.png",
 		"output": "ldnpk_white.png",
 		"strategy": "1"
 	},
 
-	"ff_watermark4": {
-		"input": "ff_watermark3.mp4",
-		"output": "ff_watermark4.mp4",
+	"ff_watermark3": {
+		"description": "watermark the logo on the top of the video.",
+		"input": "ff_watermark2.mp4",
+		"output": "ff_watermark3.mp4",
 		"watermark": "./1_ldnpk_white.png",
 		"xpixels": "(W-w)/2",
 		"ypixels": "0",
 		"scale": "0.25"
 	},
 
+	"ff_image": {
+		"description": "create a 1 second video from the isometric image.",
+		"input": "./isometric.png",
+		"output": "ff_image.mp4",
+		"duration": "1"
+	},
+
+	"ff_concat": {
+		"description": "attach the isometric video on the front of main one.",
+		"input1": "ff_image.mp4",
+		"input2": "ff_watermark3.mp4",
+		"output": "ff_concat.mp4"
+	},
+
 	"ff_thumbnail": {
-		"input": "ff_watermark4.mp4",
+		"description": "Make a thumbnail of video (must not be last step)",
+		"input": "ff_watermark3.mp4",
 		"output": "ff_thumbnail.png",
 		"count": "1"
 	},
 
 	"ff_text": {
-		"input": "ff_watermark4.mp4",
+		"description": "Overlay description text of the project across bottom.",
+		"input": "ff_concat.mp4",
 		"text": "Syllabus Challenge - <ENV_PROJECT>",
 		"size": "36",
 		"reduction": "10",
@@ -97,5 +95,25 @@
 		"ypixels": "(h-th)-100",
 		"colour": "#FFFFFF",
 		"boxcolour": "#262626"
+	},
+
+	"ff_download2": {
+		"description": "Randomly download an outro video",
+		"input1": "http://media.londonparkour.com/overlays/outros/outro_arrows.mov",
+		"input2": "http://media.londonparkour.com/overlays/outros/outro_simple.mov",
+		"output": "ff_outro.mov",
+		"strategy": "~1"
+	},
+
+	"ff_watermark4": {
+		"description": "Add the outro video over the end 6 seconds.",
+		"input": "ff_text.mp4",
+		"output": "ff_watermark4.mp4",
+		"watermark": "1_ff_outro.mov",
+		"xpixels": "(W-w)/2",
+		"ypixels": "(H-h)/2",
+		"start": "100%-6",
+		"end": "100%",
+		"scale": "1"
 	}
 }

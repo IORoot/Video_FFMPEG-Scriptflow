@@ -163,6 +163,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -255,7 +261,7 @@ function pre_flight_checks()
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
-    printf "%-80s" "📐 ff_proxy.sh - Create a small low-res proxy file for input video. "
+    printf "%-80s\n" "📐 ff_proxy.sh - Create a small low-res proxy file for input video. "
 
     # If input is a file
     if [[ -f "${INPUT_FILENAME}" ]]; then 
@@ -273,7 +279,7 @@ function main()
             DIRECTORY=$(dirname $FILE)
             BASENAME=$(basename $FILE)
             NOEXTENSION=$(echo "${BASENAME%.*}" )
-            printf "%-80s" "processing ${REALFILE}"
+            printf "%-80s\n" "processing ${REALFILE}"
             ffmpeg -y -v ${LOGLEVEL} -i ${REALFILE} -vf scale=${SCALE_X}:${SCALE_Y},setsar=1:1,fps=${FPS} -vcodec ${CODEC} -crf ${CRF} -c:a aac -q:a 5 ${DIRECTORY}/proxy_${NOEXTENSION}.mp4
             printf "✅ %-20s\n" "${DIRECTORY}/proxy_${NOEXTENSION}.mp4"
         done

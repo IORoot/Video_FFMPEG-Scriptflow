@@ -116,6 +116,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -222,7 +228,7 @@ function detect_orientation()
 function main()
 {
 
-    printf "%-80s" "🏞️  ff_to_landscape.sh - Portrait video detected. Converting to landscape. "
+    printf "%-80s\n" "🏞️  ff_to_landscape.sh - Portrait video detected. Converting to landscape. "
 
 
     # If this is a file

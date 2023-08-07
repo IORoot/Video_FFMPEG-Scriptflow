@@ -83,6 +83,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -150,9 +156,7 @@ function keyword_substitutions()
         ENVIRONMENT_VARIABLE="${BASH_REMATCH[1]}"
         ENVIRONMENT_VALUE="${!ENVIRONMENT_VARIABLE}"
         ENVIRONMENT_VALUE_SPACED="${ENVIRONMENT_VALUE//_/ }"
-        printf "Found <ENV_*> Variable: %s with value: %s \n" "$ENVIRONMENT_VARIABLE" "$ENVIRONMENT_VALUE_SPACED"
         SCRIPT_CONTENTS=${SCRIPT_CONTENTS//<ENV_${ENVIRONMENT_VARIABLE}>/$ENVIRONMENT_VALUE_SPACED}
-        echo $SCRIPT_CONTENTS
     fi
 
 
@@ -285,7 +289,7 @@ function run_ff_script()
     SCRIPT_CONFIG=$2
     SCRIPT_FILE=${TEMP_FOLDER}/temp_config_$SCRIPT_NAME.json
 
-    printf "\n\n Running: %-20s : " "${SCRIPT_NAME}"
+    printf "\n🚀 Running: %s \n" "${SCRIPT_NAME}"
 
     # Put config for this script into a new /tmp/temp_config_script.json file
     printf "%s\n" "${SCRIPT_CONFIG}"  > ${SCRIPT_FILE}
@@ -326,7 +330,7 @@ function main()
 
         # timestamp
         printf "\n\n---\n"
-        printf "⏱️ started: %s" "$(date +'%d/%m/%Y %H:%M:%S')"
+        printf "⏱️  started: %s" "$(date +'%d/%m/%Y %H:%M:%S')"
         printf "\n---"
 
         # Run the ff_script

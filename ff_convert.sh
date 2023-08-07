@@ -108,6 +108,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -202,7 +208,7 @@ function main()
 {
 
 
-    printf "%-80s" "📽️  ff_convert.sh - Converting MOV to MP4. "
+    printf "%-80s\n" "📽️  ff_convert.sh - Converting MOV to MP4. "
 
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then

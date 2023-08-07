@@ -117,6 +117,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -253,7 +259,7 @@ function cleanup()
 function main()
 {
 
-    printf "%-80s" "⬇️  ff_download.sh - Download a video/file for usage in scriptflow."
+    printf "%-80s\n" "⬇️  ff_download.sh - Download a video/file for usage in scriptflow."
 
     configure_strategy
     
@@ -264,7 +270,7 @@ function main()
         OUTPUT_FILE=${LOOP}_${OUTPUT_FILENAME}
 
         # printf
-        printf "\n\tDownloading: %150s  to  %s " "$FILE" "$OUTPUT_FILE"
+        printf "\nDownloading: %s to %s " "$FILE" "$OUTPUT_FILE"
 
         # download
         curl --insecure --silent --show-error --url "$FILE" --output ${OUTPUT_FILE} 2>/dev/null

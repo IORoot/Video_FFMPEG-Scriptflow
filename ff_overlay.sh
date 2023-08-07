@@ -129,6 +129,12 @@ function arguments()
             ;;
 
 
+        --description)              # IGNORED. used for descriptions in JSON 
+            shift
+            shift
+            ;;
+
+
         -*|--*)
             echo "Unknown option $1"
             exit 1
@@ -227,7 +233,7 @@ function main()
         exit_gracefully
     fi
 
-    printf "%-80s" "🎨 ff_overlay.sh - Overlaying a video on top."
+    printf "%-80s\n" "🎨 ff_overlay.sh - Overlaying a video on top."
 
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "movie=${OVERLAY} [a];[a]setpts=PTS-STARTPTS+${START}/TB[top]; [in][top] overlay=0:0:enable='between(t,${START},${END})' [c]" ${OUTPUT_FILENAME}
     
