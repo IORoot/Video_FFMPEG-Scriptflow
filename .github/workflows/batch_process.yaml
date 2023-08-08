@@ -15,7 +15,7 @@ name: GDrive Batch Processing
 on:
     # Via a webhook
     repository_dispatch:
-        types: gdrive_batch_process
+        types: [gdrive_batch_process]
 
     workflow_dispatch:
 
@@ -44,7 +44,14 @@ env:
     SERVER: "londonparkour.com"
     TARGET_ROOT_FOLDER: "/var/www/vhosts/media.londonparkour.com/processed/batch_processed"
 
-    YOUTUBE_AUDIO_PLAYLIST: "https://www.youtube.com/playlist?list=PLzCxunOM5WFI6sgbAppnSgLQxxNg_d10L"
+    # NCS - No Copyright Sounds - Electronic Copyright Free - NCS Arcade. (Has vocals)
+    # https://www.youtube.com/playlist?list=PLRBp0Fe2GpglvwYma4hf0fJy0sWaNY_CL
+
+    # RFM - Royalty Free Music - EDM Music (Has vocals)
+    # https://www.youtube.com/playlist?list=PLmurGgZIgor4a3gO1_L8OyR89sJW5g6Vz
+
+    # HipHop & Rap Music - Audio Library
+    YOUTUBE_AUDIO_PLAYLIST: "https://www.youtube.com/playlist?list=PLzCxunOM5WFKNv_NaoVO6DWNkR3K8K9WC"
 
 jobs:
     create_matrix:
