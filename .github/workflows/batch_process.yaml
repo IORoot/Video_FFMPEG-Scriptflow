@@ -41,7 +41,7 @@ env:
     # │                      - Server name                       │
     # │                     - Target folder.                     │
     # ╰──────────────────────────────────────────────────────────╯
-    SERVER: "londonparkour.com"
+    SERVER: "media.londonparkour.com"
     TARGET_ROOT_FOLDER: "/var/www/vhosts/media.londonparkour.com/processed/batch_processed"
 
     # NCS - No Copyright Sounds - Electronic Copyright Free - NCS Arcade. (Has vocals)
