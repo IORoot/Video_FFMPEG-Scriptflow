@@ -289,7 +289,7 @@ function run_ff_script()
     SCRIPT_CONFIG=$2
     SCRIPT_FILE=${TEMP_FOLDER}/temp_config_$SCRIPT_NAME.json
 
-    printf "\n🚀 Running: %s \n" "${SCRIPT_NAME}"
+    printf "\n🚀 Running: %s\n" "${SCRIPT_NAME}" 
 
     # Put config for this script into a new /tmp/temp_config_script.json file
     printf "%s\n" "${SCRIPT_CONFIG}"  > ${SCRIPT_FILE}
@@ -298,9 +298,9 @@ function run_ff_script()
         SCRIPT_NAME=${SCRIPT_NAME::${#SCRIPT_NAME}-1}
     fi
 
-
     # Run script
     export PATH=$PATH:$PWD
+
     eval "${SCRIPT_NAME}.sh -C ${SCRIPT_FILE}"
 }
 
@@ -324,7 +324,7 @@ function main()
     do
         # Get contents of the settings to run and trim any null values
         SCRIPT_CONTENTS=$(cat ${CONFIG_FILE} | jq --arg SCRIPTNAME "$FF_SCRIPT" 'to_entries[] | select(.key|startswith($SCRIPTNAME)) | .value | with_entries(select(.value != null))' )
-        
+
         # Do any keyword substitutions
         keyword_substitutions
 
@@ -338,7 +338,9 @@ function main()
     done
 
     # Copy the last
-    cp $FF_SCRIPT.mp4 $OUTPUT_FILENAME
+    if [ -f "$FF_SCRIPT.mp4" ]; then
+        cp $FF_SCRIPT.mp4 $OUTPUT_FILENAME
+    fi
 
 }
 

@@ -148,7 +148,7 @@ function arguments()
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │        Read config-file if supplied. Requires JQ         │
+# │         Read config-file if supplied. Requires JQ          │
 # ╰──────────────────────────────────────────────────────────╯
 function read_config()
 {
