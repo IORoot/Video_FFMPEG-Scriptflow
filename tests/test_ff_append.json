@@ -1,0 +1,27 @@
+{
+
+	"ff_sh_runner1": {
+		"script": "rm",
+		"parameters": "./test_result_ff_blur.mp4",
+		"output": ""
+	},
+
+	"ff_sh_runner2": {
+		"script": "cp",
+		"parameters": "./sample_video.mp4 ./sample_video_2.mp4",
+		"output": ""
+	},
+
+	"ff_append": {
+		"first": "sample_video.mp4",
+		"second": "sample_video_2.mp4",
+		"output": "test_result_ff_blur.mp4"
+	},
+
+	"ff_sh_runner3": {
+		"script": "rm",
+		"parameters": "./sample_video_2.mp4",
+		"output": ""
+	}	
+
+}

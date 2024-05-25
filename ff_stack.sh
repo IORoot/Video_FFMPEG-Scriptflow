@@ -23,9 +23,19 @@ VERTICAL=''
 HORIZONTAL=''
 GRID=''
 TMP_FILE="/tmp/tmp_ffmpeg_stack_list.txt" 
-WIDTH="1920"
-HEIGHT="1080"
 LOGLEVEL="error" 
+
+function stylesheet()
+{
+    TEXT_GREEN_400="\e[38;2;74;222;128m"
+    TEXT_ORANGE_500="\e[38;2;249;115;22m"
+    TEXT_RED_400="\e[38;2;248;113;113m"
+    TEXT_BLUE_600="\e[38;2;37;99;235m"
+    TEXT_YELLOW_500="\e[38;2;234;179;8m"
+    TEXT_PURPLE_500="\e[38;2;168;85;247m"
+    TEXT_RESET="\e[39m"
+}
+stylesheet
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -34,7 +44,7 @@ LOGLEVEL="error"
 usage()
 {
     if [ "$#" -lt 1 ]; then
-        printf "ℹ️ Usage:\n $0 -v -h -g -i <INPUT_FILE> [-w <WIDTH>] [-h <HEIGHT>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
+        printf "ℹ️ Usage:\n $0 -v -h -g -i <INPUT_FILE> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
         printf "Stack or grid multiple videos together. Videos have to be same dimensions.\n\n"
@@ -49,12 +59,6 @@ usage()
 
         printf " -g | --grid\n"
         printf "\tCreates a 2x2 stack of four input videos.\n\n"
-
-        printf " -x | --width\n"
-        printf "\tOutput width. default 1920.\n\n"
-
-        printf " -y | --height\n"
-        printf "\tOutput height. Default 1080.\n\n"
 
         printf " -i | --input <INPUT_FILE>\n"
         printf "\tThe name of any input files.\n\n"
@@ -119,20 +123,6 @@ function arguments()
             ;;
 
 
-        -x|--width)
-            WIDTH="$2"
-            shift 
-            shift 
-            ;;
-
-
-        -y|--height)
-            HEIGHT="$2"
-            shift 
-            shift 
-            ;;
-
-
         -C|--config)
             CONFIG_FILE="$2"
             shift 
@@ -187,8 +177,6 @@ function read_config()
     # Read file
     LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
 
-    # Print to screen
-    printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
 
     # Sen to the arguments function again to override.
     arguments $LIST_OF_INPUTS
@@ -227,6 +215,14 @@ function exit_gracefully()
 }
 
 
+function print_flags()
+{
+    printf "📐 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Vertical" "$VERTICAL"
+    printf "📐 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Horizontal" "$HORIZONTAL"
+    printf "#️⃣  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Grid" "$GRID"
+}
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
@@ -241,7 +237,7 @@ function main()
     fi
 
 
-    printf "📚 ff_stack.sh - Stacking input videos. "
+    print_flags
 
     INPUT_FILE_LIST=""
     while read FILE; do
@@ -277,7 +273,7 @@ function main()
         ffmpeg -y -v ${LOGLEVEL} ${INPUT_FILE_LIST} -filter_complex "[0:v][1:v][2:v][3:v]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[v]" -map "[v]" ${OUTPUT_FILENAME}
     fi
 
-    printf "✅ %s\n" "${OUTPUT_FILENAME}"
+    printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
 
 }
 

@@ -1,0 +1,19 @@
+{
+
+	"ff_sh_runner1": {
+		"script": "rm",
+		"parameters": "-f ./test_result_ff_pad.mp4",
+		"output": ""
+	},
+
+	"ff_pad": {
+		"input": "sample_video.mp4",
+		"width": "1400",
+		"height": "1400",
+		"xpixels": "100",
+		"ypixels": "100",
+		"colour": "random",
+		"output": "test_result_ff_pad.mp4"
+	}
+
+}

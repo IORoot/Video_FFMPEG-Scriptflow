@@ -1,0 +1,21 @@
+{
+
+	"ff_sh_runner1": {
+		"script": "rm",
+		"parameters": "-f ./test_result_ff_to_landscape.mp4 ./test_result_ff_to_portrait.mp4",
+		"output": ""
+	},
+
+	"ff_to_portrait": {
+		"input": "sample_video.mp4",
+		"rotate": "1",
+		"output": "test_result_ff_to_portrait.mp4"
+	},
+
+	"ff_to_landscape": {
+		"input": "test_result_ff_to_portrait.mp4",
+		"rotate": "1",
+		"output": "test_result_ff_to_landscape.mp4"
+	}
+
+}

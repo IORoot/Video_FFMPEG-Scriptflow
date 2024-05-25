@@ -1,0 +1,18 @@
+{
+
+	"ff_sh_runner1": {
+		"script": "rm",
+		"parameters": "-f ./test_result_ff_scale.mp4",
+		"output": ""
+	},
+
+	"ff_scale": {
+		"input": "sample_video.mp4",
+		"width": "iw*.5",
+		"height": "ih*.5",
+		"sar": "20/9",
+		"dar": "1/2",
+		"output": "test_result_ff_scale.mp4"
+	}
+
+}

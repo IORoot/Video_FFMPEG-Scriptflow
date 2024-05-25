@@ -1,0 +1,15 @@
+{
+
+	"ff_sh_runner1": {
+		"script": "rm",
+		"parameters": "-f ./test_result_ff_fps.mp4",
+		"output": ""
+	},
+
+	"ff_fps": {
+		"input": "sample_video.mp4",
+		"fps": "5",
+		"output": "test_result_ff_fps.mp4"
+	}
+
+}

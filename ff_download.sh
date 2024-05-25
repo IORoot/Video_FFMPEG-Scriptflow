@@ -1,7 +1,7 @@
 #!/bin/bash
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │              Download a video or file to use in the scriptflow               │
+# │              Download a video or file to use in the scriptflow                 │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 
@@ -24,6 +24,18 @@ LOGLEVEL="error"
 TMP_FILE="/tmp/tmp_ff_download_list"
 FILELIST="./filelist.txt"
 
+function stylesheet()
+{
+    TEXT_GREEN_400="\e[38;2;74;222;128m"
+    TEXT_ORANGE_500="\e[38;2;249;115;22m"
+    TEXT_RED_400="\e[38;2;248;113;113m"
+    TEXT_BLUE_600="\e[38;2;37;99;235m"
+    TEXT_YELLOW_500="\e[38;2;234;179;8m"
+    TEXT_PURPLE_500="\e[38;2;168;85;247m"
+    TEXT_RESET="\e[39m"
+}
+stylesheet
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
 # ╰──────────────────────────────────────────────────────────╯
@@ -34,7 +46,7 @@ usage()
         printf "ℹ️ Usage:\n $0 -i <INPUT_URL> [-s <STRATEGY>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Change the FPS of a video without changing the length..\n\n"
+        printf "Download videos.\n\n"
 
         printf "Flags:\n"
 
@@ -157,9 +169,6 @@ function read_config()
     # Read file
     LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
 
-    # Print to screen
-    printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
-
     # Send to the arguments function again to override.
     arguments $LIST_OF_INPUTS
 }
@@ -194,11 +203,12 @@ function read_url_input_list()
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │     Write the absolute path into the temporary file      │
+# │     Write the absolute path into the temporary file       │
 # ╰──────────────────────────────────────────────────────────╯
 function write_to_temp()
 {
     FILE=$1
+
     # print line into temp file.
     printf "%s\n" "${FILE}" >> ${TMP_FILE}
 }
@@ -225,7 +235,6 @@ function configure_strategy()
     REGEX='^[0-9]+$'
     if [[ "${STRATEGY}" =~ $REGEX ]] ; then
         cat ${TMP_FILE} | head -n ${STRATEGY} > ${TMP_FILE}.random
-        printf "\nignore sort error - by design.\n"
         mv ${TMP_FILE}.random ${TMP_FILE}
     fi
 
@@ -234,7 +243,6 @@ function configure_strategy()
     REGEX='^~[0-9]+$'
     if [[ "${STRATEGY}" =~ $REGEX ]] ; then
         cat ${TMP_FILE} | sort -R | head -n ${STRATEGY:1} > ${TMP_FILE}.random
-        printf "\nignore sort error - by design.\n"
         mv ${TMP_FILE}.random ${TMP_FILE}
     fi
 }
@@ -249,7 +257,11 @@ function cleanup()
     rm -f ${FILELIST}
 }
 
-
+function print_flags()
+{
+    printf "1️⃣  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Strategy" "$STRATEGY"
+    printf "2️⃣  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "URL Src" "$URL_SOURCE"
+}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
@@ -258,8 +270,7 @@ function cleanup()
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
-
-    printf "%-80s\n" "⬇️  ff_download.sh - Download a video/file for usage in scriptflow."
+    print_flags
 
     configure_strategy
     
@@ -270,7 +281,9 @@ function main()
         OUTPUT_FILE=${LOOP}_${OUTPUT_FILENAME}
 
         # printf
-        printf "\nDownloading: %s to %s " "$FILE" "$OUTPUT_FILE"
+
+        # print to screen
+        printf "📥 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Input" "$FILE"
 
         # download
         curl --insecure --silent --show-error --url "$FILE" --output ${OUTPUT_FILE} 2>/dev/null
@@ -280,7 +293,7 @@ function main()
 
     done < ${TMP_FILE}
     
-    printf "\n✅ %-20s\n" "${OUTPUT_FILENAME}"
+    printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
 
 }
 

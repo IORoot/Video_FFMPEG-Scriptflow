@@ -1,0 +1,19 @@
+{
+
+	"ff_sh_runner1": {
+		"script": "rm",
+		"parameters": "./test_result_ff_colour.mp4",
+		"output": ""
+	},
+
+	"ff_colour": {
+		"input": "sample_video.mp4",
+		"brightness": "0.5",      
+		"contrast": "100",        
+		"gamma": "5",           
+		"saturation": "1.5",      
+		"weight": "0.5",          
+		"output": "test_result_ff_colour.mp4"
+	}
+
+}

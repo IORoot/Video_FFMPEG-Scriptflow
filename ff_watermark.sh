@@ -54,9 +54,17 @@ START="0"
 END="100%"
 
 
-
-
-
+function stylesheet()
+{
+    TEXT_GREEN_400="\e[38;2;74;222;128m"
+    TEXT_ORANGE_500="\e[38;2;249;115;22m"
+    TEXT_RED_400="\e[38;2;248;113;113m"
+    TEXT_BLUE_600="\e[38;2;37;99;235m"
+    TEXT_YELLOW_500="\e[38;2;234;179;8m"
+    TEXT_PURPLE_500="\e[38;2;168;85;247m"
+    TEXT_RESET="\e[39m"
+}
+stylesheet
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -282,8 +290,6 @@ function read_config()
     # Read file
     LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
 
-    # Print to screen
-    printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
 
     # Send to the arguments function again to override.
     arguments $LIST_OF_INPUTS
@@ -334,7 +340,7 @@ function pre_flight_checks()
 
     # Check input filename is a movie file.
     if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
-        printf "\t" 
+        printf "" 
     else
         printf "\t❌ Input file: '%s' not a movie file. Exiting.\n" "${INPUT_FILE}"
         ffprobe "${INPUT_FILE}"
@@ -383,13 +389,23 @@ calculate_times()
         DURATION=$(( $END - $START ))
     fi
 
-    printf "\nstart: %-4s end: %-4s duration: %-4s\n" "$START" "$END" "$DURATION"
+    
 
     # Set the overlay playing duration.
     ENABLE=":enable='between(t,${OVERLAY_START_TIME},${END})'"
 }
 
-
+function print_flags()
+{
+    printf "🌁 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Watermark" "$WATERMARK_FILE"
+    printf "🔳 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "XPixels" "$XPIXELS"
+    printf "🔳 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "YPixels" "$YPIXELS"
+    printf "🏋️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Scale" "$SCALE"
+    printf "🔲 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Alpha" "$ALPHA"
+    printf "🏁 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Start" "$START"
+    printf "🎬 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "End" "$END"
+    printf "⏲️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Duration" "$DURATION"
+}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
@@ -409,11 +425,11 @@ function main()
 
     calculate_times
 
-    printf "%-80s\n" "🎨 ff_watermark.sh - Overlaying the watermark."
+    print_flags
 
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i "${WATERMARK_FILE}" -filter_complex "[1]setpts=PTS-STARTPTS+${START}/TB,format=rgba,colorchannelmixer=aa=${ALPHA}[logo];[logo][0]scale2ref=oh*mdar:ih*${SCALE}[logo][video];[video][logo]overlay=${XPIXELS}:${YPIXELS}${ENABLE}" ${OUTPUT_FILENAME}
 
-    printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
+    printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
 
 }
 

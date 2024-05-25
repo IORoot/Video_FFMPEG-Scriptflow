@@ -1,0 +1,19 @@
+{
+
+	"ff_sh_runner1": {
+		"script": "rm",
+		"parameters": "-f ./test_result_ff_proxy.mp4",
+		"output": ""
+	},
+
+	"ff_proxy": {
+		"input": "sample_video.mp4",
+		"scalex": "240",
+		"scaley": "120",
+		"fps": "15",
+		"crf": "10",
+		"codec": "libx264",
+		"output": "test_result_ff_proxy.mp4"
+	}
+
+}

@@ -1,0 +1,14 @@
+{
+
+	"ff_sh_runner1": {
+		"script": "rm",
+		"parameters": "./test_result_ff_convert.mp4",
+		"output": ""
+	},
+
+	"ff_concat": {
+		"input1": "sample_video.mp4",
+		"output": "test_result_ff_convert.mp4"
+	}
+
+}

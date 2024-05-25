@@ -1,0 +1,21 @@
+{
+
+	"ff_sh_runner1": {
+		"script": "rm",
+		"parameters": "-f ./test_result_ff_flip_vertical.mp4 ./test_result_ff_flip_horizontal.mp4",
+		"output": ""
+	},
+
+	"ff_flip1": {
+		"input": "sample_video.mp4",
+		"vertical": "",
+		"output": "test_result_ff_flip_vertical.mp4"
+	},
+
+
+	"ff_flip2": {
+		"input": "sample_video.mp4",
+		"horizontal": "",
+		"output": "test_result_ff_flip_horizontal.mp4"
+	}
+}

@@ -1,0 +1,16 @@
+{
+
+	"ff_sh_runner1": {
+		"script": "rm",
+		"parameters": "-f ./test_result_ff_sharpen.mp4",
+		"output": ""
+	},
+
+	"ff_sharpen": {
+		"input": "sample_video.mp4",
+		"pixel": "9",
+		"sharpen": "4.2",
+		"output": "test_result_ff_sharpen.mp4"
+	}
+
+}

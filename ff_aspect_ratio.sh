@@ -25,6 +25,18 @@ ASPECT_RATIO="1:1"
 LOGLEVEL="error" 
 GREP=""
 
+function stylesheet()
+{
+    TEXT_GREEN_400="\e[38;2;74;222;128m"
+    TEXT_ORANGE_500="\e[38;2;249;115;22m"
+    TEXT_RED_400="\e[38;2;248;113;113m"
+    TEXT_BLUE_600="\e[38;2;37;99;235m"
+    TEXT_YELLOW_500="\e[38;2;234;179;8m"
+    TEXT_PURPLE_500="\e[38;2;168;85;247m"
+    TEXT_RESET="\e[39m"
+}
+stylesheet
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
 # ╰──────────────────────────────────────────────────────────╯
@@ -162,7 +174,7 @@ function pre_flight_checks()
 
     # Check input filename is a movie file.
     if ffprobe "${INPUT_FILE}" > /dev/null 2>&1; then
-        printf "\t" 
+        printf "" 
     else
         printf "\t❌ Input file: '%s' not a movie file. Exiting.\n" "${INPUT_FILE}"
         ffprobe "${INPUT_FILE}"
@@ -188,9 +200,6 @@ function read_config()
     # Read file
     LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
 
-    # Print to screen
-    printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
-
     # Sen to the arguments function again to override.
     arguments $LIST_OF_INPUTS
 }
@@ -205,7 +214,11 @@ function exit_gracefully()
     exit 0
 }
 
-
+function print_flags()
+{
+    printf "1️⃣  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Input" "$INPUT_FILENAME"
+    printf "🆚 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Ratio" "$ASPECT_RATIO"
+}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
@@ -215,7 +228,7 @@ function exit_gracefully()
 function main()
 {
 
-    printf "%-80s\n" "🚀 ff_aspect_ratio.sh - Changing video container to new aspect ratio."
+    print_flags
 
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then
@@ -225,7 +238,7 @@ function main()
         # and does NOT transcode the video file.
         # see https://superuser.com/questions/907933/correct-aspect-ratio-without-re-encoding-video-file
         ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -aspect ${ASPECT_RATIO} ${OUTPUT_FILENAME}
-        printf "✅ %s\n" "${OUTPUT_FILENAME}"
+        printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
     fi
 
     # If this is a drectory
@@ -236,7 +249,7 @@ function main()
         do
             pre_flight_checks $INPUT_FILENAME
             ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -aspect ${ASPECT_RATIO} ${LOOP}_${OUTPUT_FILENAME}
-            printf "✅ %s\n" "${LOOP}_${OUTPUT_FILENAME}"
+            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "${LOOP}_${OUTPUT_FILENAME}"
             LOOP=$(expr $LOOP + 1)
         done
     fi

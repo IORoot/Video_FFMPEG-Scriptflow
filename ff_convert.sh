@@ -1,7 +1,7 @@
 #!/bin/bash
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │             Convert frile from iPhone Quicktime MOV to MP4 file              │
+# │                             Convert file to MP4 file                           │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
 
@@ -148,8 +148,6 @@ function read_config()
     # Read file
     LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
 
-    # Print to screen
-    printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
 
     # Sen to the arguments function again to override.
     arguments $LIST_OF_INPUTS
@@ -189,7 +187,7 @@ function pre_flight_checks()
 
     # Check input filename is a movie file.
     if ffprobe "${INPUT_FILE}" > /dev/null 2>&1; then
-        printf "\t" 
+        printf "" 
     else
         printf "\t❌ Input file: '%s' not a movie file. Exiting.\n" "${INPUT_FILE}"
         ffprobe "${INPUT_FILE}"
@@ -197,7 +195,10 @@ function pre_flight_checks()
     fi
 }
 
-
+function print_flags()
+{
+    printf "📥  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Input" "$INPUT_FILENAME"
+}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
@@ -206,15 +207,13 @@ function pre_flight_checks()
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
-
-
-    printf "%-80s\n" "📽️  ff_convert.sh - Converting MOV to MP4. "
+    print_flags
 
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then
         pre_flight_checks $INPUT_FILENAME
         ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vcodec h264 -acodec mp2 ${OUTPUT_FILENAME}
-        printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
+        printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
     fi
 
     # If this is a drectory
@@ -225,7 +224,7 @@ function main()
         do
             pre_flight_checks $INPUT_FILENAME
             ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vcodec h264 -acodec mp2 ${LOOP}_${OUTPUT_FILENAME}
-            printf "✅ %-20s\n" "${LOOP}_${OUTPUT_FILENAME}"
+            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "${LOOP}_${OUTPUT_FILENAME}"
             LOOP=$(expr $LOOP + 1)
         done
     fi

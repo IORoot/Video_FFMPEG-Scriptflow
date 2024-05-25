@@ -1773,7 +1773,10 @@ Fork and use Pull Requests.
 
 ## 6. Troubleshooting
 
-Please use the Issues tab.
+### Output Files.
+
+Do not start the name of the output file ff*.mp4 because the cleanup script will delete it.
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -1835,6 +1838,12 @@ Author Link: [https://github.com/IORoot](https://github.com/IORoot)
 ---
 
 ## 10. Changelog
+
+### Version 1.7
+
+- Upgraded output messages
+- fixed ff_flip
+- Added tests for all scripts
 
 ### Version 1.6
 

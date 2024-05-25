@@ -25,6 +25,18 @@ FPS="30"
 LOGLEVEL="error" 
 GREP=""
 
+function stylesheet()
+{
+    TEXT_GREEN_400="\e[38;2;74;222;128m"
+    TEXT_ORANGE_500="\e[38;2;249;115;22m"
+    TEXT_RED_400="\e[38;2;248;113;113m"
+    TEXT_BLUE_600="\e[38;2;37;99;235m"
+    TEXT_YELLOW_500="\e[38;2;234;179;8m"
+    TEXT_PURPLE_500="\e[38;2;168;85;247m"
+    TEXT_RESET="\e[39m"
+}
+stylesheet
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
 # ╰──────────────────────────────────────────────────────────╯
@@ -158,9 +170,6 @@ function read_config()
     # Read file
     LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
 
-    # Print to screen
-    printf "🎛️  Config Flags: %s\n" "$LIST_OF_INPUTS"
-
     # Sen to the arguments function again to override.
     arguments $LIST_OF_INPUTS
 }
@@ -199,7 +208,7 @@ function pre_flight_checks()
 
     # Check input filename is a movie file.
     if ffprobe "${INPUT_FILE}" > /dev/null 2>&1; then
-        printf "\t" 
+        printf "" 
     else
         printf "\t❌ Input file: '%s' not a movie file. Exiting.\n" "${INPUT_FILE}"
         ffprobe "${INPUT_FILE}"
@@ -207,6 +216,11 @@ function pre_flight_checks()
     fi
 }
 
+
+function print_flags()
+{
+    printf "🎞️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "FPS" "$FPS"
+}
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -217,7 +231,7 @@ function pre_flight_checks()
 function main()
 {
 
-    printf "%-80s\n" "🏎️  ff_fps.sh - Changing the FPS of video."
+    print_flags
 
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then
@@ -225,7 +239,7 @@ function main()
 
         ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf fps=${FPS} ${OUTPUT_FILENAME}
         
-        printf "✅ %-20s\n" "${OUTPUT_FILENAME}"
+        printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
     fi
 
     # If this is a directory
@@ -238,7 +252,7 @@ function main()
 
             ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf fps=${FPS} ${LOOP}_${OUTPUT_FILENAME}
                 
-            printf "✅ %-20s\n" "${LOOP}_${OUTPUT_FILENAME}"
+            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "${LOOP}_${OUTPUT_FILENAME}"
             LOOP=$(expr $LOOP + 1)
         done
     fi

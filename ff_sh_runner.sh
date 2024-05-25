@@ -8,12 +8,22 @@
 
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
 
+function stylesheet()
+{
+    TEXT_GREEN_400="\e[38;2;74;222;128m"
+    TEXT_ORANGE_500="\e[38;2;249;115;22m"
+    TEXT_RED_400="\e[38;2;248;113;113m"
+    TEXT_BLUE_600="\e[38;2;37;99;235m"
+    TEXT_YELLOW_500="\e[38;2;234;179;8m"
+    TEXT_PURPLE_500="\e[38;2;168;85;247m"
+    TEXT_RESET="\e[39m"
+}
+stylesheet
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
 # ╰──────────────────────────────────────────────────────────╯
-
-usage()
+function usage()
 {
     if [ "$#" -lt 1 ]; then
         printf "ℹ️ Usage:\n $0 -C <CONFIG_FILE>\n\n" >&2 
@@ -93,7 +103,7 @@ function read_config()
     OUTPUT=$(cat ${CONFIG_FILE} | jq -r '.output') 
 
     # Print to screen
-    printf "🎛️  Script Flags: %s\n" "${PARAMS}"
+    printf "🎛️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} ${TEXT_ORANGE_500}%s${TEXT_RESET} ${TEXT_YELLOW_500}%s${TEXT_RESET} ${TEXT_PURPLE_500}%s${TEXT_RESET}\n" "Command" "${SCRIPT}" "${PARAMS}" "${OUTPUT}"
 }
 
 
@@ -106,12 +116,10 @@ function read_config()
 function main()
 {
 
-    printf "%-80s\n" "🚀 sh_runner.sh - Run any arbitary command in scriptflow."
-
     # Run the script    
     eval "${SCRIPT} ${PARAMS} ${OUTPUT}"
 
-    printf "✅ %s\n" "Done."
+    printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$Exit $?"
 
 }
 
