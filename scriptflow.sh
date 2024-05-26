@@ -299,7 +299,7 @@ function run_ff_script()
     SCRIPT_CONFIG=$2
     SCRIPT_FILE=${TEMP_FOLDER}/temp_config_$SCRIPT_NAME.json
 
-    printf "\n🚀 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %-80s ${TEXT_BLUE_600}%s${TEXT_RESET}\n" "Running" "${SCRIPT_NAME}" "$(date +'%d/%m/%Y %H:%M:%S')"
+    printf "\n🚀 ${TEXT_ORANGE_500}%-10s :${TEXT_RESET} %-80s ${TEXT_BLUE_600}%s${TEXT_RESET}\n" "Running" "${SCRIPT_NAME}" "$(date +'%d/%m/%Y %H:%M:%S')"
 
     # Put config for this script into a new /tmp/temp_config_script.json file
     printf "%s\n" "${SCRIPT_CONFIG}"  > ${SCRIPT_FILE}
