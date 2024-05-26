@@ -24,6 +24,7 @@ OUTPUT_FILENAME="ff_audio.mp4"
 LOGLEVEL="error"
 START="0"
 SPEED="1.0"
+SHORTEST=""
 
 function stylesheet()
 {
@@ -121,8 +122,16 @@ function arguments()
             SPEED="$2"
             shift 
             shift
+            ;; 
+
+        
+        -h|--shortest)
+            SHORTEST="-shortest"
+            shift 
+            shift
             ;;
 
+        
 
         -C|--config)
             CONFIG_FILE="$2"
@@ -240,6 +249,7 @@ function print_flags()
     printf "🔊 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Overlay" "$AUDIO_FILENAME"
     printf "🏁 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Start" "$START"
     printf "🏎️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Speed" "$SPEED"
+    printf "🐜  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Shortest" "$SHORTEST"
 }
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -259,7 +269,7 @@ function main()
 
     print_flags
 
-    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -itsoffset ${START} -i ${AUDIO_FILENAME} -filter_complex "[1:a]atempo=${PLAYBACK}[aud]" -map 0:v:0 -map "[aud]" -c:v copy ${OUTPUT_FILENAME} 
+    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -itsoffset ${START} -i ${AUDIO_FILENAME} -filter_complex "[1:a]atempo=${PLAYBACK}[aud]" -map 0:v:0 -map "[aud]" -c:v copy ${SHORTEST} ${OUTPUT_FILENAME} 
     
     printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
 
