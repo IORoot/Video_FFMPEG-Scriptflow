@@ -315,6 +315,35 @@ This will alter the container metadata (DAR) of the video to the new aspect rati
 
 ---
 
+
+### `ff_audio.sh`
+
+#### Description
+
+This will overlay audio on top of the video.
+
+#### Flags
+
+```
+-i | --input <INPUT_FILE>
+    The name of an input file.
+
+-a | --audio <INPUT_FILE>
+    The name of an audio file.
+
+-o | --output <OUTPUT_FILE>
+    Default is %s "${OUTPUT_FILENAME}"
+    The name of the output file.
+
+-s | --start <SECONDS>
+    Start time in seconds of when to play audio.
+
+-p | --speed <SPEED>
+    Playback speed of the audio.
+```
+
+---
+
 ### `ff_blur.sh`
 
 #### Description
