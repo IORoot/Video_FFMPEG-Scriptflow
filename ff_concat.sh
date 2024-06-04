@@ -57,6 +57,9 @@ usage()
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
+        printf " -t | --transcode \n"
+        printf "\tTranscode the input files to a common format h264 AAC.\n\n"
+
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
         printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n"
@@ -99,6 +102,12 @@ function arguments()
         -C|--config)
             CONFIG_FILE="$2"
             shift 
+            shift
+            ;;
+
+
+        -t|--transcode)
+            TRANSCODE="TRUE"
             shift
             ;;
 
@@ -161,10 +170,15 @@ function write_to_temp()
 
     # if this a folder
     if [ -d "$FILE" ]; then
+
+        # If TRANSCODE is on, copy the folder first
+        if [ ! -z ${TRANSCODE+x} ]; then cp -r $FILE ${FILE}_raw; fi
+
         LOOP=0
         LIST_OF_FILES=$(find $FILE -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP" | sort)
         for FILE in $LIST_OF_FILES
         do
+            transcode_file $FILE
             pre_flight_checks $FILE
             FULL_FILEPATH=$(realpath ${FILE})
             printf "file %s\n" "${FULL_FILEPATH}" >> ${TMP_FILE}
@@ -175,6 +189,25 @@ function write_to_temp()
     
 }
 
+
+# ╭───────────────────────────────────────────────────────╮
+# │   Transcode to common filetype and remove original     │
+# ╰───────────────────────────────────────────────────────╯
+function transcode_file()
+{
+    if [ -z ${TRANSCODE+x} ]; then return; fi
+
+    VIDEO_FILE=$1
+    VIDEO_FILENAME=$(basename $VIDEO_FILE)
+    VIDEO_DIRECTORY=$(dirname $VIDEO_FILE)
+    OUTPUT_FILE="${VIDEO_DIRECTORY}/transcoded_${VIDEO_FILENAME}"
+
+    ffmpeg -i "$VIDEO_FILE" -c:v libx264 -c:a aac -strict experimental -y "$OUTPUT_FILE"
+
+    rm $VIDEO_FILE
+
+    mv $OUTPUT_FILE $VIDEO_FILE
+}
 
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -232,6 +265,8 @@ function pre_flight_checks()
 }
 
 
+
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
 # │                      Main Function                       │
@@ -242,7 +277,11 @@ function pre_flight_checks()
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
-    echo  ${OUTPUT_FILENAME}
+
+    echo "concat"
+
+    cat ${TMP_FILE}
+
     # -v error      : Only show errors
     # -f concat     : use filter 'concat'
     # -safe         : enable safe mode 0 (possible values: -1 0 1)
