@@ -454,7 +454,7 @@ The first video will set the FPS and dimensions, so make sure all videos are the
     The name of the output file. Specify only one.
 
 -i | --input <INPUT_FILE>
-    The name of an input file. Specify as many as you wish.
+    The name of an input file (or folder). Specify as many as you wish.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
