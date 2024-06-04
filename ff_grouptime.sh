@@ -507,7 +507,7 @@ function create_intermediates()
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │  Concat all files together to make approx output video.  │
+# │  Concat all files together to make approx output video.   │
 # ╰──────────────────────────────────────────────────────────╯
 function concat_and_trim()
 {

@@ -20,7 +20,6 @@
 if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
 
 
-
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
@@ -65,28 +64,6 @@ usage()
         exit 1
     fi
 }
-
-
-# ╭──────────────────────────────────────────────────────────╮
-# │     Write the absolute path into the temporary file      │
-# ╰──────────────────────────────────────────────────────────╯
-function write_to_temp()
-{
-    FILE=$1
-
-    # get absolute path of file.
-    REAL_PATH=$(realpath ${FILE})
-
-    # print to screen
-    printf "📥 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Input" "$REAL_PATH"
-
-    # check files
-    pre_flight_checks ${FILE}
-    
-    # print line into temp file.
-    printf "file '%s'\n" "${REAL_PATH}" >> ${TMP_FILE}
-}
-
 
 function setup()
 {
@@ -158,7 +135,50 @@ function arguments()
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │        Read config-file if supplied. Requires JQ         │
+# │     Write the absolute path into the temporary file      │
+# ╰──────────────────────────────────────────────────────────╯
+function write_to_temp()
+{
+    FILE=$1
+
+
+    # If this is a file
+    if [ -f "$FILE" ]; then
+        # get absolute path of file.
+        REAL_PATH=$(realpath ${FILE})
+
+        # print to screen
+        printf "📥 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Input" "$REAL_PATH"
+
+        # check files
+        pre_flight_checks ${FILE}
+        
+        # print line into temp file.
+        printf "file '%s'\n" "${REAL_PATH}" >> ${TMP_FILE}
+    fi
+
+
+
+    # if this a folder
+    if [ -d "$FILE" ]; then
+        LOOP=0
+        LIST_OF_FILES=$(find $FILE -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP" | sort)
+        for FILE in $LIST_OF_FILES
+        do
+            pre_flight_checks $FILE
+            FULL_FILEPATH=$(realpath ${FILE})
+            printf "file %s\n" "${FULL_FILEPATH}" >> ${TMP_FILE}
+            LOOP=$(expr $LOOP + 1)
+        done
+
+    fi
+    
+}
+
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │        Read config-file if supplied. Requires JQ           │
 # ╰──────────────────────────────────────────────────────────╯
 function read_config()
 {
@@ -222,9 +242,7 @@ function pre_flight_checks()
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {
-
-    
-
+    echo  ${OUTPUT_FILENAME}
     # -v error      : Only show errors
     # -f concat     : use filter 'concat'
     # -safe         : enable safe mode 0 (possible values: -1 0 1)
