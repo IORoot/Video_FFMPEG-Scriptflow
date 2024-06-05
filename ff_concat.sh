@@ -278,8 +278,6 @@ function pre_flight_checks()
 function main()
 {
 
-    echo "concat"
-
     cat ${TMP_FILE}
 
     # -v error      : Only show errors

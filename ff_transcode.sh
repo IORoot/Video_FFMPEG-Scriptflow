@@ -1,10 +1,10 @@
 #!/bin/bash
+
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                                                              │
-# │                             Convert file to MP4 file                           │
+# │                  Transcode multiple files to same format                      │
 # │                                                                              │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
-
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                       Set Defaults                       │
@@ -19,45 +19,76 @@ if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show 
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
 INPUT_FILENAME="input.mp4"
-OUTPUT_FILENAME="ff_convert.mp4"
-LOGLEVEL="error"
+OUTPUT_FILENAME="ff_transcode.mp4" 
+VIDEO_CODEC="libx264"
+AUDIO_CODEC="aac"
+FPS="30"
+SAR="1:1"
+DAR="16:9"
 GREP=""
+
+LOGLEVEL="error"                                           
+
+function stylesheet()
+{
+    TEXT_GREEN_400="\e[38;2;74;222;128m"
+    TEXT_ORANGE_500="\e[38;2;249;115;22m"
+    TEXT_RED_400="\e[38;2;248;113;113m"
+    TEXT_BLUE_600="\e[38;2;37;99;235m"
+    TEXT_YELLOW_500="\e[38;2;234;179;8m"
+    TEXT_PURPLE_500="\e[38;2;168;85;247m"
+    TEXT_RESET="\e[39m"
+}
+stylesheet
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
 # ╰──────────────────────────────────────────────────────────╯
-
 usage()
 {
     if [ "$#" -lt 2 ]; then
-        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
-
-        printf "Summary:\n"
-        printf "Convert an iPhone Quicktime MOV file to MP4.\n\n"
-
-        printf "Flags:\n"
-
-        printf " -i | --input <INPUT_FILE>\n"
-        printf "\tThe name of an input file.\n\n"
+        printf "ℹ️ Usage:\n $0 -o <OUTPUT_FILE> -i <INPUT_FILE> -i <INPUT_FILE> [ -i <INPUT_FILE3>...] [-l loglevel]\n\n" >&2 
 
         printf " -o | --output <OUTPUT_FILE>\n"
-        printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
-        printf "\tThe name of the output file.\n\n"
+        printf "\tThe name of the output file. Specify only one.\n\n"
 
-        printf " -g | --grep <STRING>\n"
+        printf " -i | --input <INPUT_FILE>\n"
+        printf "\tThe name of an input file or folder.\n\n"
+
+        printf " -g | --grep <GREP>\n"
         printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
+
+        printf " -v | --video <VIDEO_CODEC>\n"
+        printf "\tThe video codec to convert all files to. [default libx264]\n\n"
+
+        printf " -a | --audio <AUDIO_CODEC>\n"
+        printf "\tThe audio codec to convert all files to. [default aac]\n\n"
+
+        printf " -f | --fps <FPS>\n"
+        printf "\tThe Frames Per Second to convert all files to. [default 30]\n\n"
+
+        printf " -s | --sar <SAR>\n"
+        printf "\tThe Sample Aspect Ratio to convert all files to. [default 1:1]\n\n"
+
+        printf " -d | --dar <DAR>\n"
+        printf "\tThe Display Aspect Ratio to convert all files to. [default 16:9]\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
 
         printf " -l | --loglevel <LOGLEVEL>\n"
         printf "\tThe FFMPEG loglevel to use. Default is 'error' only.\n"
-        printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n\n"
+        printf "\tOptions: quiet,panic,fatal,error,warning,info,verbose,debug,trace\n"
 
         exit 1
     fi
 }
 
+function setup()
+{
+    # delete any existing temp file.
+    rm -f ${TMP_FILE}
+}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │         Take the arguments from the command line         │
@@ -76,6 +107,13 @@ function arguments()
             shift
             ;;
 
+            
+        -g|--grep)
+            GREP="$2"
+            shift 
+            shift
+            ;;
+
 
         -o|--output)
             OUTPUT_FILENAME="$2"
@@ -84,15 +122,43 @@ function arguments()
             ;;
 
 
-        -C|--config)
-            CONFIG_FILE="$2"
+        -v|--video)
+            VIDEO_CODEC="$2"
             shift 
             shift
             ;;
 
 
-        -g|--grep)
-            GREP="$2"
+        -a|--audio)
+            AUDIO_CODEC="$2"
+            shift 
+            shift
+            ;;
+
+
+        -f|--fps)
+            FPS="$2"
+            shift 
+            shift
+            ;;
+
+
+        -s|--sar)
+            SAR="$2"
+            shift 
+            shift
+            ;;
+
+
+        -d|--dar)
+            DAR="$2"
+            shift 
+            shift
+            ;;
+
+
+        -C|--config)
+            CONFIG_FILE="$2"
             shift 
             shift
             ;;
@@ -128,38 +194,7 @@ function arguments()
 
 
 
-# ╭──────────────────────────────────────────────────────────╮
-# │        Read config-file if supplied. Requires JQ         │
-# ╰──────────────────────────────────────────────────────────╯
-function read_config()
-{
-    # Check if config has been set.
-    if [ -z ${CONFIG_FILE+x} ]; then return 0; fi
-    
-    # Check dependencies
-    if ! command -v jq &> /dev/null; then
-        printf "JQ is a dependency and could not be found. Please install JQ for JSON parsing. Exiting.\n"
-        exit
-    fi
 
-    # Read file
-    LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
-
-
-    # Sen to the arguments function again to override.
-    arguments $LIST_OF_INPUTS
-}
-
-
-# ╭──────────────────────────────────────────────────────────╮
-# │   Exit the app by just skipping the ffmpeg processing.   │
-# │            Then copy the input to the output.            │
-# ╰──────────────────────────────────────────────────────────╯
-function exit_gracefully()
-{
-    cp -f ${INPUT_FILENAME} ${OUTPUT_FILENAME}
-    exit 0
-}
 
 
 
@@ -169,12 +204,6 @@ function exit_gracefully()
 function pre_flight_checks()
 {
     INPUT_FILE=$1
-
-    # Check input filename has been set.
-    if [[ -z "${INPUT_FILE+x}" ]]; then 
-        printf "\t❌ No input file specified. Exiting.\n"
-        exit_gracefully
-    fi
 
     # Check input file exists.
     if [ ! -f "$INPUT_FILE" ]; then
@@ -192,9 +221,57 @@ function pre_flight_checks()
     fi
 }
 
-function print_flags()
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │        Read config-file if supplied. Requires JQ           │
+# ╰──────────────────────────────────────────────────────────╯
+function read_config()
 {
-    printf "📥  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Input" "$INPUT_FILENAME"
+    # Check if config has been set.
+    if [ -z ${CONFIG_FILE+x} ]; then return 0; fi
+    
+    # Check dependencies
+    if ! command -v jq &> /dev/null; then
+        printf "JQ is a dependency and could not be found. Please install JQ for JSON parsing. Exiting.\n"
+        exit
+    fi
+
+    # Read file
+    LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
+
+    # Sen to the arguments function again to override.
+    arguments $LIST_OF_INPUTS
+}
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │   Exit the app by just skipping the ffmpeg processing.   │
+# │            Then copy the input to the output.            │
+# ╰──────────────────────────────────────────────────────────╯
+function exit_gracefully()
+{
+    exit 0
+}
+
+
+
+# ╭───────────────────────────────────────────────────────╮
+# │             Transcode to common filetype               │
+# ╰───────────────────────────────────────────────────────╯
+function transcode_file() 
+{
+    INPUT_FILE=$1
+    OUTPUT_FILE=$2
+
+    ffmpeg -v ${LOGLEVEL} -i "$INPUT_FILE" -c:v $VIDEO_CODEC -c:a $AUDIO_CODEC -r $FPS -vf "setsar=$SAR,setdar=$DAR" "$OUTPUT_FILE"
+
+    # Check if FFmpeg encountered any errors
+    if [ $? -eq 0 ]; then
+        printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILE"
+    else
+        printf "❌ ${TEXT_RED_500}%-10s :${TEXT_RESET} %s\n" "Error" "Failed to transcode $INPUT_FILE"
+    fi
 }
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -202,33 +279,44 @@ function print_flags()
 # │                      Main Function                       │
 # │                                                          │
 # ╰──────────────────────────────────────────────────────────╯
+# ╭──────────────────────────────────────────────────────────╮
+# │          Run FFMPEG against the temporary file           │
+# ╰──────────────────────────────────────────────────────────╯
 function main()
 {
-    print_flags
 
-    # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then
-        pre_flight_checks $INPUT_FILENAME
-        ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vcodec h264 -acodec mp2 ${OUTPUT_FILENAME}
+        OUTPUT_FILENAME="${OUTPUT_DIR}/$(basename "${INPUT_FILENAME%.*}_converted.mp4")"
+        pre_flight_checks "$INPUT_FILENAME"
+        transcode_file "$INPUT_FILENAME" "$OUTPUT_FILENAME"
         printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
-    fi
 
-    # If this is a drectory
-    if [ -d "$INPUT_FILENAME" ]; then
+
+    elif [ -d "$INPUT_FILENAME" ]; then
         LOOP=0
-        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
-        for INPUT_FILENAME in $LIST_OF_FILES
-        do
-            pre_flight_checks $INPUT_FILENAME
-            ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vcodec h264 -acodec mp2 ${LOOP}_${OUTPUT_FILENAME}
-            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "${LOOP}_${OUTPUT_FILENAME}"
-            LOOP=$(expr $LOOP + 1)
+        LIST_OF_FILES=$(find "$INPUT_FILENAME" -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
+
+        for INPUT_FILE in $LIST_OF_FILES; do
+            OUTPUT_FILENAME="${OUTPUT_DIR}/$(basename "${INPUT_FILE%.*}_converted.mp4")"
+            pre_flight_checks "$INPUT_FILE"
+            transcode_file "$INPUT_FILE" "$OUTPUT_FILENAME"
+            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
+            LOOP=$((LOOP + 1))
         done
+
+        
+    else
+        echo "Input path is neither a file nor a directory: $INPUT_FILENAME"
+        exit 1
     fi
 
+    printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
 }
 
+
+# Run the main functions passing all parameters in.
 usage $@
+setup
 arguments $@
 read_config "$@"
 main $@
