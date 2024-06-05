@@ -26,6 +26,8 @@ FPS="30"
 SAR="1:1"
 DAR="16:9"
 GREP=""
+TARGET_WIDTH="1920"
+TARGET_HEIGHT="1080"
 
 LOGLEVEL="error"                                           
 
@@ -68,10 +70,16 @@ usage()
         printf "\tThe Frames Per Second to convert all files to. [default 30]\n\n"
 
         printf " -s | --sar <SAR>\n"
-        printf "\tThe Sample Aspect Ratio to convert all files to. [default 1:1]\n\n"
+        printf "\tThe Sample Aspect Ratio to convert all files to.\n\n"
 
         printf " -d | --dar <DAR>\n"
-        printf "\tThe Display Aspect Ratio to convert all files to. [default 16:9]\n\n"
+        printf "\tThe Display Aspect Ratio to convert all files to.\n\n"
+
+        printf " -w | --width <WIDTH>\n"
+        printf "\tThe width to convert all files to. [default 1920]\n\n"
+
+        printf " -h | --height <HEIGHT>\n"
+        printf "\tThe height to convert all files to. [default 1080]\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -152,6 +160,20 @@ function arguments()
 
         -d|--dar)
             DAR="$2"
+            shift 
+            shift
+            ;;
+
+
+        -w|--width)
+            TARGET_WIDTH="$2"
+            shift 
+            shift
+            ;;
+
+    
+        -h|--height)
+            TARGET_HEIGHT="$2"
             shift 
             shift
             ;;
@@ -264,14 +286,25 @@ function transcode_file()
     INPUT_FILE=$1
     OUTPUT_FILE=$2
 
-    ffmpeg -v ${LOGLEVEL} -i "$INPUT_FILE" -c:v $VIDEO_CODEC -c:a $AUDIO_CODEC -r $FPS -vf "setsar=$SAR,setdar=$DAR" "$OUTPUT_FILE"
+    # Get video dimensions
+    dimensions=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$INPUT_FILE")
+    width=$(echo "$dimensions" | cut -d 'x' -f1)
+    height=$(echo "$dimensions" | cut -d 'x' -f2)
 
-    # Check if FFmpeg encountered any errors
-    if [ $? -eq 0 ]; then
-        printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILE"
+    # Calculate padding to maintain aspect ratio
+    if [ "$height" -gt "$width" ]; then
+        scale="iw*sar*min($TARGET_WIDTH/(iw*sar)\,$TARGET_HEIGHT/ih):ih*min($TARGET_WIDTH/(iw*sar)\,$TARGET_HEIGHT/ih)"
+        pad="($TARGET_WIDTH-iw*min($TARGET_WIDTH/iw\,$TARGET_HEIGHT/ih))/2:($TARGET_HEIGHT-ih*min($TARGET_WIDTH/iw\,$TARGET_HEIGHT/ih))/2"
     else
-        printf "❌ ${TEXT_RED_500}%-10s :${TEXT_RESET} %s\n" "Error" "Failed to transcode $INPUT_FILE"
+        scale="min(iw\,$TARGET_WIDTH):min(ih\,$TARGET_HEIGHT)"
+        pad="($TARGET_WIDTH-iw)/2:($TARGET_HEIGHT-ih)/2"
     fi
+
+
+    # Add black background and resize using pad filter
+    ffmpeg -v ${LOGLEVEL} -i "$INPUT_FILE" -vf "scale=$scale,pad=$TARGET_WIDTH:$TARGET_HEIGHT:$pad:black" \
+    -c:v $VIDEO_CODEC -c:a $AUDIO_CODEC -r $FPS "$OUTPUT_FILE"
+
 }
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -286,7 +319,6 @@ function main()
 {
 
     if [ -f "$INPUT_FILENAME" ]; then
-        OUTPUT_FILENAME="${OUTPUT_DIR}/$(basename "${INPUT_FILENAME%.*}_converted.mp4")"
         pre_flight_checks "$INPUT_FILENAME"
         transcode_file "$INPUT_FILENAME" "$OUTPUT_FILENAME"
         printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
@@ -297,20 +329,19 @@ function main()
         LIST_OF_FILES=$(find "$INPUT_FILENAME" -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
 
         for INPUT_FILE in $LIST_OF_FILES; do
-            OUTPUT_FILENAME="${OUTPUT_DIR}/$(basename "${INPUT_FILE%.*}_converted.mp4")"
+            OUTPUT_FILEPATH="./${LOOP}_${OUTPUT_FILENAME}"
             pre_flight_checks "$INPUT_FILE"
-            transcode_file "$INPUT_FILE" "$OUTPUT_FILENAME"
-            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
+            transcode_file "$INPUT_FILE" "$OUTPUT_FILEPATH"
+            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILEPATH"
             LOOP=$((LOOP + 1))
         done
 
-        
+
     else
         echo "Input path is neither a file nor a directory: $INPUT_FILENAME"
         exit 1
     fi
 
-    printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
 }
 
 
