@@ -102,6 +102,9 @@
     - [ff_to_portrait.sh](#ff_to_portraitsh)
         - [Description](#description)
         - [Flags](#flags)
+    - [ff_transcode.sh](#ff_transcodesh)
+        - [Description](#description)
+        - [Flags](#flags)
     - [ff_unsharp.sh](#ff_unsharpsh)
         - [Description](#description)
         - [Flags](#flags)
@@ -1234,6 +1237,56 @@ Convert a landscape video to portrait.
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
+```
+
+---
+
+
+### `ff_transcode.sh`
+
+#### Description
+
+Convert a file to a common format.
+
+#### Flags
+
+```
+    -o | --output <OUTPUT_FILE>
+        The name of the output file. Specify only one.
+
+    -i | --input <INPUT_FILE>
+        The name of an input file or folder.
+
+    -g | --grep <GREP>
+        Supply a grep string for filtering the inputs if a folder is specified.
+
+    -v | --video <VIDEO_CODEC>
+        The video codec to convert all files to. [default libx264]
+
+    -a | --audio <AUDIO_CODEC>
+        The audio codec to convert all files to. [default aac]
+
+    -f | --fps <FPS>
+        The Frames Per Second to convert all files to. [default 30]
+
+    -s | --sar <SAR>
+        The Sample Aspect Ratio to convert all files to.
+
+    -d | --dar <DAR>
+        The Display Aspect Ratio to convert all files to.
+
+    -w | --width <WIDTH>
+        The width to convert all files to. [default 1920]
+
+    -h | --height <HEIGHT>
+        The height to convert all files to. [default 1080]
+
+    -C | --config <CONFIG_FILE>
+        Supply a config.json file with settings instead of command-line. Requires JQ installed.
+
+    -l | --loglevel <LOGLEVEL>
+        The FFMPEG loglevel to use. Default is 'error' only.
+        Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
 ```
 
 ---
