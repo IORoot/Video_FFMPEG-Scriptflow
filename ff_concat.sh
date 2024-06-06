@@ -241,7 +241,7 @@ function pre_flight_checks()
 # │                                                          │
 # ╰──────────────────────────────────────────────────────────╯
 # ╭──────────────────────────────────────────────────────────╮
-# │          Run FFMPEG against the temporary file           │
+# │          Run FFMPEG against the temporary file            │
 # ╰──────────────────────────────────────────────────────────╯
 function main()
 {

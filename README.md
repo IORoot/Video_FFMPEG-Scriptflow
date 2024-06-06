@@ -105,6 +105,9 @@
     - [ff_transcode.sh](#ff_transcodesh)
         - [Description](#description)
         - [Flags](#flags)
+    - [ff_transition.sh](#ff_transitionsh)
+        - [Description](#description)
+        - [Flags](#flags)
     - [ff_unsharp.sh](#ff_unsharpsh)
         - [Description](#description)
         - [Flags](#flags)
@@ -138,7 +141,7 @@
 - [License](#license)
 - [Contact](#contact)
 - [Changelog](#changelog)
-    - [Cersion 1.8](#cersion-18)
+    - [Version 1.8](#version-18)
     - [Version 1.7](#version-17)
     - [Version 1.6](#version-16)
     - [Version 1.5](#version-15)
@@ -149,7 +152,6 @@
     - [Version 1.0](#version-10)
 
 <!-- /TOC -->
-
 ## 2. About The Project
 
 This is a collection of scripts to automate simple video editing tasks.
@@ -1292,6 +1294,48 @@ Convert a file to a common format.
         Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
 ```
 
+
+---
+
+
+### `ff_transition.sh`
+
+#### Description
+
+Concats files together but adds a XFade transition between them. You can use any
+of the effects defined here: https://trac.ffmpeg.org/wiki/Xfade
+
+You can specify the duration of the effect also.
+
+Note. You must have all files the same type. Use `ff_transcode` for a common format.
+
+#### Flags
+
+```
+    -o | --output <OUTPUT_FILE>
+        The name of the output file. Specify only one.
+
+    -i | --input <INPUT_FILE>
+        The name of an input file or folder.
+
+    -g | --grep <GREP>
+        Supply a grep string for filtering the inputs if a folder is specified.
+
+    -e | --effects <CSV_STRING>"
+        A csv string of each effect to use. If the effect list is shorter than"
+        video list, then the effects will be repeated. [default 'fade'] (https://trac.ffmpeg.org/wiki/Xfade)"
+
+    -d | --duration <STRING>"
+        How long each transition should take."
+
+    -C | --config <CONFIG_FILE>
+        Supply a config.json file with settings instead of command-line. Requires JQ installed.
+
+    -l | --loglevel <LOGLEVEL>
+        The FFMPEG loglevel to use. Default is 'error' only.
+        Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
+```
+
 ---
 
 ### `ff_unsharp.sh`
@@ -1930,11 +1974,13 @@ Author Link: [https://github.com/IORoot](https://github.com/IORoot)
 
 ## 10. Changelog
 
-### Cersion 1.8
+### Version 1.8
 
 - ff_concat can now reformat files first.
 - added ff_transcode.sh to format files into a common format.
 - ff_audio can remove audio from video.
+- ff_transition added. You can use XFade effects to concat files together.
+- ff_transition test added.
 
 ### Version 1.7
 
