@@ -58,6 +58,9 @@ usage()
         printf " -a | --audio <INPUT_FILE>\n"
         printf "\tThe name of an audio file.\n\n"
 
+        printf " -r | --remove\n"
+        printf "\tRemove the audio.\n\n"
+
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
@@ -110,7 +113,13 @@ function arguments()
             shift
             ;;
 
-        
+          
+        -r|--remove)
+            REMOVE="TRUE"
+            shift
+            ;; 
+
+
         -s|--start)
             START="$2"
             shift 
@@ -222,6 +231,20 @@ function pre_flight_checks()
         exit_gracefully
     fi
 
+    # Check input filename is a movie file.
+    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
+        printf "" 
+    else
+        printf "\t❌ Input file: '%s' not a movie file. Exiting.\n" "${INPUT_FILENAME}"
+        ffprobe "${INPUT_FILENAME}"
+        exit_gracefully
+    fi
+
+    # Skip AUDIO FILE Checks if audio remove is selected.
+    if [[ ! -z "${REMOVE+x}" ]]; then 
+        return
+    fi
+
     # Check audio filename has been set.
     if [[ -z "${AUDIO_FILENAME+x}" ]]; then 
         printf "\t❌ No audio file specified. Exiting.\n"
@@ -231,15 +254,6 @@ function pre_flight_checks()
     # Check audio file exists.
     if [ ! -f "$AUDIO_FILENAME" ]; then
         printf "\t❌ audio file not found. Exiting.\n"
-        exit_gracefully
-    fi
-
-    # Check input filename is a movie file.
-    if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
-        printf "" 
-    else
-        printf "\t❌ Input file: '%s' not a movie file. Exiting.\n" "${INPUT_FILENAME}"
-        ffprobe "${INPUT_FILENAME}"
         exit_gracefully
     fi
 }
@@ -262,9 +276,11 @@ function main()
 
     pre_flight_checks
 
-    if [[ -z "${AUDIO_FILENAME}" ]]; then 
-        printf "❌ No audio file specified. Exiting.\n"
-        exit_gracefully
+    # If this is just a REMOVE AUDIO, skip everything else.
+    if [[ ! -z "${REMOVE+x}" ]]; then 
+        ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -an -c:v copy ${OUTPUT_FILENAME}
+        printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
+        return
     fi
 
     print_flags

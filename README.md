@@ -349,6 +349,9 @@ This will overlay audio on top of the video.
 
 -p | --speed <SPEED>
     Playback speed of the audio.
+
+-r | --remove
+    tRemove the audio.
 ```
 
 ---
@@ -1931,6 +1934,7 @@ Author Link: [https://github.com/IORoot](https://github.com/IORoot)
 
 - ff_concat can now reformat files first.
 - added ff_transcode.sh to format files into a common format.
+- ff_audio can remove audio from video.
 
 ### Version 1.7
 
