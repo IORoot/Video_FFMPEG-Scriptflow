@@ -1,10 +1,81 @@
 #!/bin/bash
-# ╭──────────────────────────────────────────────────────────────────────────────╮
-# │                                                                              │
-# │              Overlay a video at specific time on the video                    │
-# │              Allows for transparent videos and animations                    │
-# │                                                                              │
-# ╰──────────────────────────────────────────────────────────────────────────────╯
+# ╭───────────────────────────────────────────────────────────────────────────╮
+# │                                                                           │
+# │                       Embed subtitles over a video                        │
+# │                                                                           │
+# ╰───────────────────────────────────────────────────────────────────────────╯
+
+# More information : https://aegisub.org/docs/3.2/ASS_Tags/
+
+# FontName: Specifies the font name or family for the subtitles.
+# force_style='FontName=Arial'
+
+# FontSize: Sets the font size for the subtitles.
+# force_style='FontSize=24'
+
+# PrimaryColour: Specifies the color of the subtitles' text.
+# force_style='PrimaryColour=&H00FF00' # Green color
+
+# SecondaryColour: Specifies the color of the subtitles' secondary text.
+# force_style='SecondaryColour=&HFFFF00' # Yellow color
+
+# OutlineColour: Specifies the color of the outline of the subtitles' text.
+# force_style='OutlineColour=&H55000000' # Semi-transparent black outline
+
+# BackColour: Specifies the background color behind the subtitles' text.
+# force_style='BackColour=&H55000000' # Semi-transparent black background
+
+# Bold: Enables or disables bold text style for the subtitles.
+# force_style='Bold=1' # Enable bold
+
+# Italic: Enables or disables italic text style for the subtitles.
+# force_style='Italic=1' # Enable italic
+
+# Underline: Enables or disables underline text style for the subtitles.
+# force_style='Underline=1' # Enable underline
+
+# StrikeOut: Enables or disables strikeout text style for the subtitles.
+# force_style='StrikeOut=1' # Enable strikeout
+
+# ScaleX: Scales the width of the subtitles' text.
+# force_style='ScaleX=1.5' # Scale width by 1.5
+
+# ScaleY: Scales the height of the subtitles' text.
+# force_style='ScaleY=1.5' # Scale height by 1.5
+
+# Spacing: Adjusts the spacing between characters in the subtitles.
+# force_style='Spacing=2' # Increase spacing by 2 pixels
+
+# Angle: Specifies the angle of rotation for the subtitles' text.
+# force_style='Angle=45' # Rotate text by 45 degrees
+
+# BorderStyle: Sets the style of the border around the subtitles' text.
+# force_style='BorderStyle=3' # Drop shadow border style
+
+# Outline: Sets the width of the outline around the subtitles' text.
+# force_style='Outline=2' # Set outline width to 2 pixels
+
+# Shadow: Sets the distance and angle of shadow for the subtitles' text.
+# force_style='Shadow=2,2,black' # Shadow offset (2 pixels horizontal, 2 pixels vertical) and color (black)
+
+# Alignment: Specifies the alignment of the subtitles within their bounding box.
+# force_style='Alignment=6' # Middle center alignment
+
+# MarginL: Sets the left margin for the subtitles.
+# force_style='MarginL=10' # Set left margin to 10 pixels
+
+# MarginR: Sets the right margin for the subtitles.
+# force_style='MarginR=10' # Set right margin to 10 pixels
+
+# MarginV: Sets the vertical margin for the subtitles.
+# force_style='MarginV=10' # Set vertical margin to 10 pixels
+
+# AlphaLevel: Sets the transparency level for the subtitles' text.
+# force_style='AlphaLevel=50' # Set transparency to 50%
+
+# Encoding: Specifies the character encoding used for the subtitles.
+# force_style='Encoding=1' # Set character encoding to Unicode (UTF-16LE)
+
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                       Set Defaults                       │
@@ -12,19 +83,17 @@
 
 # set -o errexit                                              # If a command fails bash exits.
 # set -o pipefail                                             # pipeline fails on one command.
-if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi           # DEBUG=1 will show debugging.
+if [[ "${DEBUG-0}" == "1" ]]; then set -o xtrace; fi        # DEBUG=1 will show debugging.
 
 
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                        VARIABLES                         │
 # ╰──────────────────────────────────────────────────────────╯
-INPUT_FILENAME="input.mp4"
-OUTPUT_FILENAME="ff_overlay.mp4"
-OVERLAY=""
-LOGLEVEL="error"
-START="0"
-END="3"
+INPUT_FILENAME=""
+SUBTITLE_FILENAME=""
+OUTPUT_FILENAME="ff_subtitle.mp4"
+LOGLEVEL="error"  
 
 function stylesheet()
 {
@@ -45,29 +114,25 @@ stylesheet
 usage()
 {
     if [ "$#" -lt 2 ]; then
-        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> -v <OVERLAY_FILE> [-S <START>] [-E <END>] [-x <PIXELS>] [-y <PIXELS>] [-s <SCALE>] [-a <ALPHA>] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
+        printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> -s <SUBTITLE_FILENAME> -f <FORCED_STYLE> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Overlay a watermark on the video.\n\n"
+        printf "Overlay an audio file on the video.\n\n"
 
         printf "Flags:\n"
 
         printf " -i | --input <INPUT_FILE>\n"
         printf "\tThe name of an input file.\n\n"
 
+        printf " -s | --subtitles <INPUT_FILE>\n"
+        printf "\tThe name of an subtitle SRT file.\n\n"
+
+        printf " -f | --styles\n"
+        printf "\tThe Forced Style for the subtitles.\n\n"
+
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
-
-        printf " -v | --overlay <OVERLAY_FILE>\n"
-        printf "\tNote that you CAN use videos as the overlay.\n"
-        printf "\tImage/Video to use for the overlay.\n\n"
-
-        printf " -S | --start <SECONDS>\n"
-        printf "\tStart time in seconds of when to show overlay.\n"
-
-        printf " -E | --end <SECONDS>\n"
-        printf "\nEnd time in seconds of when to show overlay.\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"
@@ -99,33 +164,27 @@ function arguments()
             ;;
 
 
+        -s|--subtitles)
+            SUBTITLE_FILENAME=$(realpath "$2")
+            shift
+            shift
+            ;;
+
+
+        -f|--style)
+            STYLE="$2"
+            shift 
+            shift
+            ;;
+
+
         -o|--output)
             OUTPUT_FILENAME="$2"
             shift 
             shift
             ;;
 
-
-        -v|--overlay)
-            OVERLAY=$(realpath "$2")
-            shift 
-            shift
-            ;;
-
         
-        -S|--start)
-            START="$2"
-            shift 
-            shift
-            ;;
-        
-        
-        -E|--end)
-            END="$2"
-            shift 
-            shift
-            ;;
-
 
         -C|--config)
             CONFIG_FILE="$2"
@@ -165,7 +224,7 @@ function arguments()
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │        Read config-file if supplied. Requires JQ         │
+# │         Read config-file if supplied. Requires JQ          │
 # ╰──────────────────────────────────────────────────────────╯
 function read_config()
 {
@@ -220,17 +279,49 @@ function pre_flight_checks()
     if ffprobe -v quiet -select_streams v:0 -show_entries stream=codec_name -print_format csv=p=0 "${INPUT_FILENAME}" > /dev/null 2>&1; then
         printf "" 
     else
-        printf "\t❌ Input file: '%s' not a movie file. Exiting.\n" "${INPUT_FILE}"
-        ffprobe "${INPUT_FILE}"
+        printf "\t❌ Input file: '%s' not a movie file. Exiting.\n" "${INPUT_FILENAME}"
+        ffprobe "${INPUT_FILENAME}"
+        exit_gracefully
+    fi
+
+    # Check subtitle filename has been set.
+    if [[ -z "${SUBTITLE_FILENAME+x}" ]]; then 
+        printf "\t❌ No subtitle file specified. Exiting.\n"
+        exit_gracefully
+    fi
+
+    # Check subtitle file exists.
+    if [ ! -f "$SUBTITLE_FILENAME" ]; then
+        printf "\t❌ subtitle file not found. Exiting.\n"
         exit_gracefully
     fi
 }
 
 function print_flags()
 {
-    printf "📑 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Overlay" "$OVERLAY"
-    printf "🏁 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Start" "$START"
-    printf "🎬 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "End" "$END"
+    printf "💬 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Subtitle File" "$SUBTITLE_FILENAME"
+    printf "🙋‍♀️ ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Video Height" "$HEIGHT"
+    printf "🎨 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Style" "$STYLE"
+}
+
+function get_height_width()
+{
+    # Get the height of the video
+    HEIGHT=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=s=x:p=0 ${INPUT_FILENAME} )
+    HALF_HEIGHT=$(( ${HEIGHT} / 2 ))
+
+    # If MarginV contains "h-", calculate the actual MarginV
+    if [[ $STYLE == *MarginV=h-* ]]; then
+        # Extract the value after "h-" from MarginV
+        margin_value=${STYLE#*MarginV=h-}
+        
+        # Calculate the actual MarginV
+        margin_v=$((HALF_HEIGHT - margin_value))
+        
+        # Replace the original MarginV with the calculated value
+        STYLE=${STYLE/MarginV=h-$margin_value/MarginV=$margin_v}
+    fi
+
 }
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -243,16 +334,12 @@ function main()
 
     pre_flight_checks
 
-    if [[ -z "${OVERLAY}" ]]; then 
-        printf "❌ No overlay file specified. Exiting.\n"
-        exit_gracefully
-    fi
+    get_height_width
 
     print_flags
 
-    # With Alpha
-    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i ${OVERLAY} -filter_complex "[1:v]setpts=PTS-${START}/TB[ovr];[0:v][ovr]overlay=enable='between(t,${START},${END})'" -pix_fmt yuv420p -c:a copy ${OUTPUT_FILENAME}
-
+    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "subtitles=${SUBTITLE_FILENAME}:force_style='${STYLE}'" ${OUTPUT_FILENAME} 
+    
     printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
 
 }
