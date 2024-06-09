@@ -1974,6 +1974,10 @@ Author Link: [https://github.com/IORoot](https://github.com/IORoot)
 
 ## 10. Changelog
 
+### Version 1.9
+
+- Renamed to Video_FFMPEG-Scriptflow to be housed under the video umbrella.
+
 ### Version 1.8
 
 - ff_concat can now reformat files first.
