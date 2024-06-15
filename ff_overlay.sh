@@ -251,7 +251,9 @@ function main()
     print_flags
 
     # With Alpha
-    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i ${OVERLAY} -filter_complex "[1:v]setpts=PTS-${START}/TB[ovr];[0:v][ovr]overlay=enable='between(t,${START},${END})'" -pix_fmt yuv420p -c:a copy ${OUTPUT_FILENAME}
+    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i ${OVERLAY} -filter_complex "[1:v]setpts=PTS-STARTPTS+${START}/TB[ovr];[0:v][ovr]overlay=enable='between(t,${START},${END})'" -pix_fmt yuv420p -c:a copy ${OUTPUT_FILENAME}
+
+
 
     printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
 

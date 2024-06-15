@@ -7,10 +7,10 @@
 	},
 
 	"ff_overlay": {
-		"input": "sample_video.mp4",
-		"overlay": "sample_image.jpeg",
+		"input": "output.mp4",
+		"overlay": "overlay_video.mov",
 		"start": "3",
-		"end": "5",
+		"end": "6",
 		"output": "test_result_ff_overlay.mp4"
 	}
 
