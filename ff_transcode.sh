@@ -23,8 +23,7 @@ OUTPUT_FILENAME="ff_transcode.mp4"
 VIDEO_CODEC="libx264"
 AUDIO_CODEC="aac"
 FPS="30"
-SAR="1:1"
-DAR="16:9"
+SAR="1/1"
 GREP=""
 TARGET_WIDTH="1920"
 TARGET_HEIGHT="1080"
@@ -71,9 +70,6 @@ usage()
 
         printf " -s | --sar <SAR>\n"
         printf "\tThe Sample Aspect Ratio to convert all files to.\n\n"
-
-        printf " -d | --dar <DAR>\n"
-        printf "\tThe Display Aspect Ratio to convert all files to.\n\n"
 
         printf " -w | --width <WIDTH>\n"
         printf "\tThe width to convert all files to. [default 1920]\n\n"
@@ -153,13 +149,6 @@ function arguments()
 
         -s|--sar)
             SAR="$2"
-            shift 
-            shift
-            ;;
-
-
-        -d|--dar)
-            DAR="$2"
             shift 
             shift
             ;;
@@ -281,6 +270,32 @@ function exit_gracefully()
 # ╭───────────────────────────────────────────────────────╮
 # │             Transcode to common filetype               │
 # ╰───────────────────────────────────────────────────────╯
+# function transcode_file() 
+# {
+#     INPUT_FILE=$1
+#     OUTPUT_FILE=$2
+
+#     # Get video dimensions
+#     dimensions=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$INPUT_FILE")
+#     width=$(echo "$dimensions" | cut -d 'x' -f1)
+#     height=$(echo "$dimensions" | cut -d 'x' -f2)
+
+#     # Calculate padding to maintain aspect ratio
+#     if [ "$height" -gt "$width" ]; then
+#         scale="iw*sar*min($TARGET_WIDTH/(iw*sar)\,$TARGET_HEIGHT/ih):ih*min($TARGET_WIDTH/(iw*sar)\,$TARGET_HEIGHT/ih)"
+#         pad="($TARGET_WIDTH-iw*min($TARGET_WIDTH/iw\,$TARGET_HEIGHT/ih))/2:($TARGET_HEIGHT-ih*min($TARGET_WIDTH/iw\,$TARGET_HEIGHT/ih))/2"
+#     else
+#         scale="min(iw\,$TARGET_WIDTH):min(ih\,$TARGET_HEIGHT)"
+#         pad="($TARGET_WIDTH-iw)/2:($TARGET_HEIGHT-ih)/2"
+#     fi
+
+
+#     # Add black background and resize using pad filter
+#     ffmpeg -v ${LOGLEVEL} -i "$INPUT_FILE" -vf "scale=$scale,pad=$TARGET_WIDTH:$TARGET_HEIGHT:$pad:black" \
+#     -c:v $VIDEO_CODEC -c:a $AUDIO_CODEC -r $FPS "$OUTPUT_FILE"
+
+# }
+
 function transcode_file() 
 {
     INPUT_FILE=$1
@@ -291,21 +306,16 @@ function transcode_file()
     width=$(echo "$dimensions" | cut -d 'x' -f1)
     height=$(echo "$dimensions" | cut -d 'x' -f2)
 
-    # Calculate padding to maintain aspect ratio
-    if [ "$height" -gt "$width" ]; then
-        scale="iw*sar*min($TARGET_WIDTH/(iw*sar)\,$TARGET_HEIGHT/ih):ih*min($TARGET_WIDTH/(iw*sar)\,$TARGET_HEIGHT/ih)"
-        pad="($TARGET_WIDTH-iw*min($TARGET_WIDTH/iw\,$TARGET_HEIGHT/ih))/2:($TARGET_HEIGHT-ih*min($TARGET_WIDTH/iw\,$TARGET_HEIGHT/ih))/2"
-    else
-        scale="min(iw\,$TARGET_WIDTH):min(ih\,$TARGET_HEIGHT)"
-        pad="($TARGET_WIDTH-iw)/2:($TARGET_HEIGHT-ih)/2"
-    fi
+    # Calculate aspect ratio and scaling
+    scale="scale=w=min($TARGET_WIDTH\,iw*($TARGET_HEIGHT/ih*$SAR)):h=min($TARGET_HEIGHT\,ih*($TARGET_WIDTH/iw/$SAR)):force_original_aspect_ratio=decrease"
+    pad="pad=$TARGET_WIDTH:$TARGET_HEIGHT:(ow-iw)/2:(oh-ih)/2"
 
-
-    # Add black background and resize using pad filter
-    ffmpeg -v ${LOGLEVEL} -i "$INPUT_FILE" -vf "scale=$scale,pad=$TARGET_WIDTH:$TARGET_HEIGHT:$pad:black" \
+    # Transcode with scaling and padding
+    ffmpeg -v ${LOGLEVEL} -i "$INPUT_FILE" -vf "$scale,$pad,setsar=1" \
     -c:v $VIDEO_CODEC -c:a $AUDIO_CODEC -r $FPS "$OUTPUT_FILE"
-
 }
+
+
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
@@ -329,7 +339,12 @@ function main()
         LIST_OF_FILES=$(find "$INPUT_FILENAME" -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
 
         for INPUT_FILE in $LIST_OF_FILES; do
-            OUTPUT_FILEPATH="./${LOOP}_${OUTPUT_FILENAME}"
+
+            OUTPUT_BASENAME=$(basename ${OUTPUT_FILENAME})
+            OUTPUT_PATH=$(dirname ${OUTPUT_FILENAME})
+            OUTPUT_FULLPATH=$(realpath ${OUTPUT_PATH})
+            OUTPUT_FILEPATH="${OUTPUT_FULLPATH}/${LOOP}_${OUTPUT_BASENAME}"
+
             pre_flight_checks "$INPUT_FILE"
             transcode_file "$INPUT_FILE" "$OUTPUT_FILEPATH"
             printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILEPATH"
