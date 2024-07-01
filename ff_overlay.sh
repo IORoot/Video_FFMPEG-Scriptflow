@@ -260,7 +260,7 @@ function resize_overlay_to_fit()
     sar=$(echo "$video_info" | sed -n '4p' | sed 's/:/\//')
     fps=$(echo "$video_info" | sed -n '5p' | cut -d '/' -f 1)
 
-    ffmpeg -v "$LOGLEVEL" -i "$OVERLAY" -vf "scale=$width:$height,setsar=1" "$RESIZED_OVERLAY"
+    ffmpeg -v "$LOGLEVEL" -i "$OVERLAY" -vf "scale=$width:$height" "$RESIZED_OVERLAY"
 }
 
 # ╭──────────────────────────────────────────────────────────╮
