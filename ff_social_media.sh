@@ -45,7 +45,7 @@ usage()
         printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> [-ig] [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Overlay an audio file on the video.\n\n"
+        printf "Convert ready for Social Media (pix_fmt=yuv420p)\n\n"
 
         printf "Flags:\n"
 

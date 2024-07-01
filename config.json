@@ -1,0 +1,30 @@
+{
+    "ff_transcode": {
+        "input": "./videos/",
+        "fps": "30",
+        "width": "1920",
+        "height": "1080",
+        "output": "ff_transcode.mp4",
+        "loglevel": "quiet"
+    },
+    "ff_transition": {
+        "grep": "ff_transcode",
+        "effects": [
+            {
+                "effect": "fade"
+            }
+        ],
+        "duration": "1",
+        "output": "ff_transition.mp4",
+        "loglevel": "quiet",
+        "input0": "./"
+    },
+    "ff_overlay": {
+        "input": "ff_transition.mp4",
+        "overlay": "./overlay/overlay_video.mov",
+        "start": "1",
+        "end": "4",
+        "output": "output.mp4",
+        "loglevel": "quiet"
+    }
+}

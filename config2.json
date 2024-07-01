@@ -1,0 +1,14 @@
+{
+    "ff_transition": {
+        "grep": "",
+        "effects": [
+            {
+                "effect": "fade"
+            }
+        ],
+        "duration": "1",
+        "output": "ff_transition.mp4",
+        "loglevel": "quiet",
+        "input0": "./videos"
+    }
+}

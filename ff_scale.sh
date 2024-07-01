@@ -78,10 +78,10 @@ usage()
         printf "\tih*.5 : input height divided by 0.5 (half height).\n\n"
 
         printf " -d | --sar <SAR>\n"
-        printf "\tSet the SAR. (Display Aspect Ratio - dimensions of the image) Default is 16/9.\n\n"
+        printf "\tSet the SAR. (Sample Aspect Ratio - dimensions of the image) Default is 1/1.\n\n"
 
         printf " -d | --dar <DAR>\n"
-        printf "\tSet the DAR. (Sample Aspect Ratio - dimensions of a pixel) Default is 1/1.\n\n"
+        printf "\tSet the DAR. (Display Aspect Ratio - dimensions of a pixel) Default is 16/9.\n\n"
 
         printf " -g | --grep <STRING>\n"
         printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
@@ -304,7 +304,7 @@ function main()
         printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
     fi
 
-    # If this is a drectory
+    # If this is a directory
     if [ -d "$INPUT_FILENAME" ]; then
         LOOP=0
         LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")

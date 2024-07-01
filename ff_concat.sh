@@ -52,7 +52,7 @@ usage()
         printf "\tThe name of the output file. Specify only one.\n\n"
 
         printf " -i | --input <INPUT_FILE>\n"
-        printf "\tThe name of an input file. Specify as many as you wish.\n\n"
+        printf "\tThe name of an input file or folder. Specify as many as you wish.\n\n"
 
         printf " -C | --config <CONFIG_FILE>\n"
         printf "\tSupply a config.json file with settings instead of command-line. Requires JQ installed.\n\n"

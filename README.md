@@ -199,19 +199,19 @@ Current list of scripts and their purposes.
 | `ff_blur.sh`         | Simple blur function using an unsharp mask                       |
 | `ff_colour.sh`       | Change brightness, contrast, gamma, saturation of video          |
 | `ff_concat.sh`       | Concatenate multiple videos together                             |
-| `ff_convert.sh`      | Convert an apple quicktime MOV to MP4 file                       |
-| `ff_crop.sh`         | Crop video to specific size                                      |
+| `ff_convert.sh`      | Convert an apple quicktime MOV to MP4 file                        |
+| `ff_crop.sh`         | Crop video to specific size                                       |
 | `ff_cut.sh`          | Cut video from start time to end time.                           |
-| `ff_download.sh`     | Use CURL to download multiple files. Useful for scriptflow.      |
-| `ff_flip.sh`         | Horizontally and/or vertically flip the video                    |
-| `ff_fps.sh`          | Alter the FPS with changing length of video                      |
+| `ff_download.sh`     | Use CURL to download multiple files. Useful for scriptflow.        |
+| `ff_flip.sh`          | Horizontally and/or vertically flip the video                     |
+| `ff_fps.sh`          | Alter the FPS without changing length of video                   |
 | `ff_grouptime.sh`    | Proportionally trims and concats videos to target video duration |
 | `ff_image.sh`        | Make a video from a looped image                                 |
-| `ff_lut.sh`          | Apply a 3DL/Cube LUT file to a video                             |
+| `ff_lut.sh`          | Apply a 3DL/Cube LUT file to a video                              |
 | `ff_middle.sh`       | Remove equal number of seconds from start and end of video       |
 | `ff_overlay.sh`      | Overlay an image or video on top of another video                |
 | `ff_pad.sh`          | Add a background padding around the video                        |
-| `ff_proxy.sh`        | Create a down-scaled,res,fps,crf proxy file for a video          |
+| `ff_proxy.sh`        | Create a down-scaled,res,fps,crf proxy file for a video           |
 | `ff_rotate.sh`       | Rotate a video in 90 degree increments                           |
 | `ff_scale.sh`        | Change the width and height of the video                         |
 | `ff_sharpen.sh`      | Simple sharpen function using an unsharp mask                    |

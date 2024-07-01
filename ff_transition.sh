@@ -184,7 +184,6 @@ function read_config()
     # Read file
     LIST_OF_INPUTS=$(cat ${CONFIG_FILE} | jq -r 'to_entries[] | ["--" + .key, .value] | @sh' | xargs) 
 
-
     # Send to the arguments function again to override.
     arguments $LIST_OF_INPUTS
 }
