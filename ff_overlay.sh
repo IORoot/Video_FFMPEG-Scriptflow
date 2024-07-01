@@ -255,18 +255,13 @@ function resize_overlay_to_fit()
     audio_codec=$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "$INPUT_FILENAME")
 
     # Parse video information into variables
-    width=$(echo "$video_info" | sed -n '1p')
-    height=$(echo "$video_info" | sed -n '2p')
-    fps=$(echo "$video_info" | sed -n '3p')
-    sar=$(echo "$video_info" | sed -n '4p')
-    video_codec=$(echo "$video_info" | sed -n '5p')
+    video_codec=$(echo "$video_info" | sed -n '1p')
+    width=$(echo "$video_info" | sed -n '2p')
+    height=$(echo "$video_info" | sed -n '3p')
+    sar=$(echo "$video_info" | sed -n '4p' | sed 's/:/\//')
+    fps=$(echo "$video_info" | sed -n '5p' | cut -d '/' -f 1)
 
-    # Calculate aspect ratio and scaling
-    scale="scale=w=min($width\,iw*($height/ih*$sar)):h=min($height\,ih*($width/iw/$sar)):force_original_aspect_ratio=decrease"
-    pad="pad=$width:$height:(ow-iw)/2:(oh-ih)/2"
-
-    # Transcode Overlay
-    ffmpeg -v "$LOGLEVEL" -i "$OVERLAY" -vf "$scale,$pad,setsar=1" -c:v "$video_codec" -c:a "$audio_codec" -r "$fps" "$RESIZED_OVERLAY"
+    ffmpeg -v "$LOGLEVEL" -i "$OVERLAY" -vf "scale=$width:$height,setsar=1" "$RESIZED_OVERLAY"
 }
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -294,7 +289,6 @@ function main()
 
     # With Alpha
     ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -i ${OVERLAY} -filter_complex "[1:v]setpts=PTS-STARTPTS+${START}/TB[ovr];[0:v][ovr]overlay=enable='between(t,${START},${END})'" -pix_fmt yuv420p -c:a copy ${OUTPUT_FILENAME}
-
 
     # output
     printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
