@@ -134,7 +134,6 @@ function arguments()
         -f|--fit)
             FIT="TRUE"
             shift 
-            shift
             ;;
 
 
