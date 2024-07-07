@@ -196,6 +196,7 @@ Current list of scripts and their purposes.
 | -------------------- | ---------------------------------------------------------------- |
 | `ff_append.sh`       | This will concatenate two videos together and re-encode them     |
 | `ff_aspect_ratio.sh` | Changes the container metadata's Display Aspect Ratio (DAR)      |
+| `ff_audio.sh`        | Overlay audio onto video track                                   |
 | `ff_blur.sh`         | Simple blur function using an unsharp mask                       |
 | `ff_colour.sh`       | Change brightness, contrast, gamma, saturation of video          |
 | `ff_concat.sh`       | Concatenate multiple videos together                             |
@@ -207,6 +208,7 @@ Current list of scripts and their purposes.
 | `ff_fps.sh`          | Alter the FPS without changing length of video                   |
 | `ff_grouptime.sh`    | Proportionally trims and concats videos to target video duration |
 | `ff_image.sh`        | Make a video from a looped image                                 |
+| `ff_kenburns.sh`     | Generate a video from an image with a zoom-pan effect            |
 | `ff_lut.sh`          | Apply a 3DL/Cube LUT file to a video                              |
 | `ff_middle.sh`       | Remove equal number of seconds from start and end of video       |
 | `ff_overlay.sh`      | Overlay an image or video on top of another video                |
@@ -214,12 +216,17 @@ Current list of scripts and their purposes.
 | `ff_proxy.sh`        | Create a down-scaled,res,fps,crf proxy file for a video           |
 | `ff_rotate.sh`       | Rotate a video in 90 degree increments                           |
 | `ff_scale.sh`        | Change the width and height of the video                         |
+| `ff_sh_runner.sh`    | Run any shell command (dangerous!)                               |
 | `ff_sharpen.sh`      | Simple sharpen function using an unsharp mask                    |
+| `ff_social_media.sh` | Converts the video, ready for various social platforms           |
 | `ff_stack.sh`        | Align two videos vertically, horizontally or in a 2x2 grid.      |
+| `ff_subtitles.sh`    | Use SRT File to overlay hard-embedded subtitles                  |
 | `ff_text.sh`         | Add text (with background box) on top of the video               |
 | `ff_thumbnail.sh`    | Create thumbnail(s) from the video                               |
 | `ff_to_landscape.sh` | Rotate a portrait video to landscape                             |
 | `ff_to_portrait.sh`  | Rotate a landscape video to portrait                             |
+| `ff_transcode.sh`    | Bulk Convert videos to specific file format and specs              |
+| `ff_transition.sh`   | Concatenate multiple videos with transition effects              |
 | `ff_unsharp.sh`      | Use an unsharp mask to blur/sharpen luma,gamma,alpha             |
 | `ff_watermark.sh`    | Overlay a watermark image/video                                  |
 
@@ -319,6 +326,9 @@ This will alter the container metadata (DAR) of the video to the new aspect rati
     Target aspect ratio should be expressed as X:Y
     Default is 1:1
 
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
@@ -354,6 +364,13 @@ This will overlay audio on top of the video.
 
 -r | --remove
     tRemove the audio.
+    
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
+-l | --loglevel <LOGLEVEL>
+    The FFMPEG loglevel to use. Default is 'error' only.
+    Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
 ```
 
 ---
@@ -391,6 +408,9 @@ graph LR
 -s | --sharpen <AMOUNT>
     Set the sharpen strength. It must be a floating point number. -2.0 to 5.0. Default value is 1.0.
     Negative values will blur the input video, while positive values will sharpen it, a value of zero will disable the effect.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -444,6 +464,9 @@ graph LR
 -w | --weight <GAMMAWEIGHT>
     Change the gamma weight value from 0.0 to 1.0.
 
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
@@ -469,6 +492,9 @@ The first video will set the FPS and dimensions, so make sure all videos are the
 
 -i | --input <INPUT_FILE>
     The name of an input file (or folder). Specify as many as you wish.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -528,6 +554,9 @@ graph LR
     These can be used to calculate areas of the screen. For example:
     The center of the screen on x-axis is 'x=(ow-iw)/2
 
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
@@ -558,6 +587,9 @@ Change the length of the video.
 
 -e | --end <TIMESTAMP>
     When to finish the cut. Format is HH:MM:SS. Default is 10 seconds into the video. 00:00:10.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -717,6 +749,9 @@ Flip video horizontally and/or vertically.
 -v | --vertical
     Flip video vertically.
 
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
@@ -746,6 +781,9 @@ Change the FPS of a video without changing the length.
     The frames per second the video should be converted to. The default value is 30.
     The length of the video will not change, but frames will either be added or removed.
 
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
@@ -768,11 +806,14 @@ Trim input videos by a percentage on start and end to get output video to correc
     The name of an input file.
 
 -o | --output <OUTPUT_FILE>
-    Default is output_grouptime.mp4
+    Default is ff_grouptime.mp4
     The name of the output file.
 
 -d | --duration <DURATION>
     The final duration of the output file in seconds. Default is 60.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -780,6 +821,95 @@ Trim input videos by a percentage on start and end to get output video to correc
 ```
 
 ---
+
+### `ff_image.sh`
+
+#### Description
+
+Create a video from an image
+
+#### Flags
+
+```
+-i | --input <INPUT_FILE>
+    The name of an input file.
+
+-o | --output <OUTPUT_FILE>
+    Default is ff_image.mp4
+    The name of the output file.
+
+-d | --duration <DURATION>
+    The final duration of the output file in seconds. Default is 60.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
+-l | --loglevel <LOGLEVEL>
+    The FFMPEG loglevel to use. Default is 'error' only.
+    Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
+```
+
+---
+
+
+### `ff_kenburns.sh`
+
+#### Description
+
+Create a video from an image with a zoom-pan effect.
+
+#### Flags
+
+```
+ -i | --input <INPUT_FILE>
+    The name of the input file.
+
+ -t | --target <TARGET>
+    The target of the zoom.
+    TopLeft    | TopRight.
+    BottomLeft | BottomRight.
+    Random
+
+ -f | --fps <FPS>
+    Default is 30
+    The Output Frames Per Second.
+
+ -w | --width <PIXELS>
+    Default is 1024
+    The output width.
+
+ -h | --height <PIXELS>
+    Default is 720
+    The output height.
+
+ -d | --duration <SECS>
+    Default is 10
+    The output duration in seconds.
+
+ -s | --speed <FLOAT>
+    Default is 0.003
+    The speed of the zoom.
+
+ -b | --bitrate <BITRATE>
+    Default is 5000k
+    The bitrate of the output file.
+
+ -o | --output <OUTPUT_FILE>
+    Default is ff_kenburns.mp4
+    The name of the output file.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
+-l | --loglevel <LOGLEVEL>
+    The FFMPEG loglevel to use. Default is 'error' only.
+    Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
+
+```
+
+---
+
+
 
 ### `ff_lut.sh`
 
@@ -800,6 +930,9 @@ Apply a 3DL/Cube Look-Up Table (LUT) file to a video.
 -t | --lut <LUT_FILE>
     The Look-Up-Table (LUT) should be in a 3DL/Cube format.
     there is no default, so must be supplied.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -828,6 +961,9 @@ Trim input video from start and end by a number of seconds.
 
 -t | --trim <TRIM>
     Number of seconds to remove from the start and end of video. Default is 1 second. (1)
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -860,6 +996,9 @@ graph LR
 -o | --output <OUTPUT_FILE>
     Default is output_mov.mp4
     The name of the output file.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -909,6 +1048,9 @@ Create padding around the edges of the video.
 -c | --colour <COLOUR>
     Colour to use for the padding. See https://ffmpeg.org/ffmpeg-utils.html#color-syntax
     Can use a word 'Aqua, Beige, Cyan, etc...', the word 'random' or hex code : RRGGBB[AA]
+
+-C | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -1025,10 +1167,34 @@ Change the scale (Width/Height) of a video.
 -h | --height <PIXELS>
     The height of the video. The default value is 1920.
 
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
 ```
+
+---
+
+
+### `ff_sh_runner.sh`
+
+#### Description
+
+WARNING! This is dangerous to have on a machine! Gives access to the shell to run
+any command. If in doubt, remove this script.
+
+This is only available through the scriptflow runner to enable running commands
+through a JSON object.
+
+#### Flags
+
+```
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+```
+
 
 ---
 
@@ -1054,6 +1220,39 @@ Simple version of unsharp mask.
 -s | --sharpen <AMOUNT>
     Set the sharpen strength. It must be a floating point number. -2.0 to 5.0. Default value is 1.0.
     Negative values will blur the input video, while positive values will sharpen it, a value of zero will disable the effect.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
+-l | --loglevel <LOGLEVEL>
+    The FFMPEG loglevel to use. Default is 'error' only.
+    Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
+```
+
+---
+
+
+### `ff_social_media.sh`
+
+#### Description
+
+Converts the video, ready for various social platforms
+
+#### Flags
+
+```
+-i | --input <INPUT_FILE>
+    The name of an input file.
+
+-o | --output <OUTPUT_FILE>
+    Default is output_sharpen.mp4
+    The name of the output file.
+
+-ig | --instagram 
+    Convert ready for Instagram.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -1085,6 +1284,113 @@ Stack multiple videos. Either two vertically, two horizontally or four in a 2x2 
 -v | --vertical
 
 -g | --grid
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
+-l | --loglevel <LOGLEVEL>
+    The FFMPEG loglevel to use. Default is 'error' only.
+    Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
+```
+
+---
+
+### `ff_subtitles.sh`
+
+#### Description
+
+Overlay an audio file on the video using an .SRT file
+
+### Forced Styles:
+More information : https://aegisub.org/docs/3.2/ASS_Tags/
+
+FontName: Specifies the font name or family for the subtitles.
+`force_style='FontName=Arial'`
+
+FontSize: Sets the font size for the subtitles.
+`force_style='FontSize=24'`
+
+PrimaryColour: Specifies the color of the subtitles' text.
+`force_style='PrimaryColour=&H00FF00' # Green color`
+
+SecondaryColour: Specifies the color of the subtitles' secondary text.
+`force_style='SecondaryColour=&HFFFF00' # Yellow color`
+
+OutlineColour: Specifies the color of the outline of the subtitles' text.
+`force_style='OutlineColour=&H55000000' # Semi-transparent black outline`
+
+BackColour: Specifies the background color behind the subtitles' text.
+`force_style='BackColour=&H55000000' # Semi-transparent black background`
+
+Bold: Enables or disables bold text style for the subtitles.
+`force_style='Bold=1' # Enable bold`
+
+Italic: Enables or disables italic text style for the subtitles.
+`force_style='Italic=1' # Enable italic`
+
+Underline: Enables or disables underline text style for the subtitles.
+`force_style='Underline=1' # Enable underline`
+
+StrikeOut: Enables or disables strikeout text style for the subtitles.
+`force_style='StrikeOut=1' # Enable strikeout`
+
+ScaleX: Scales the width of the subtitles' text.
+`force_style='ScaleX=1.5' # Scale width by 1.5`
+
+ScaleY: Scales the height of the subtitles' text.
+`force_style='ScaleY=1.5' # Scale height by 1.5`
+
+Spacing: Adjusts the spacing between characters in the subtitles.
+`force_style='Spacing=2' # Increase spacing by 2 pixels`
+
+Angle: Specifies the angle of rotation for the subtitles' text.
+`force_style='Angle=45' # Rotate text by 45 degrees`
+
+BorderStyle: Sets the style of the border around the subtitles' text.
+`force_style='BorderStyle=3' # Drop shadow border style`
+
+Outline: Sets the width of the outline around the subtitles' text.
+`force_style='Outline=2' # Set outline width to 2 pixels`
+
+Shadow: Sets the distance and angle of shadow for the subtitles' text.
+`force_style='Shadow=2,2,black' # Shadow offset (2 pixels horizontal, 2 pixels vertical) and color (black)`
+
+Alignment: Specifies the alignment of the subtitles within their bounding box.
+`force_style='Alignment=6' # Middle center alignment`
+
+MarginL: Sets the left margin for the subtitles.
+`force_style='MarginL=10' # Set left margin to 10 pixels`
+
+MarginR: Sets the right margin for the subtitles.
+`force_style='MarginR=10' # Set right margin to 10 pixels`
+
+MarginV: Sets the vertical margin for the subtitles.
+`force_style='MarginV=10' # Set vertical margin to 10 pixels`
+
+AlphaLevel: Sets the transparency level for the subtitles' text.
+`force_style='AlphaLevel=50' # Set transparency to 50%`
+
+Encoding: Specifies the character encoding used for the subtitles.
+`force_style='Encoding=1' # Set character encoding to Unicode (UTF-16LE)`
+
+#### Flags
+
+```
+-i | --input <INPUT_FILE>
+    The name of an input file.
+
+-s | --subtitles <INPUT_FILE>
+    The name of an subtitle SRT file.
+
+-f | --styles <FORCE_STYLE>
+    The Forced Style for the subtitles.
+
+-o | --output <OUTPUT_FILE>
+    Default is ff_subtitle.mp4
+    The name of the output file.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -1147,6 +1453,9 @@ Add text (with background box) on top of the video.
     These can be used to calculate areas of the screen. For example:
     The center of the screen on x-axis is 'x=(ow-iw)/2
 
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
@@ -1173,9 +1482,15 @@ Create thumbnails representative of the video.
 -c | --count <COUNT>
     The number of thumbnails to create. The default value is 1.
     Uses a batch sample size of 300 frames. If there are less frames than the count, you will get less thumbnails.
+
 -s | --sample <SAMPLE>
     The batch sample sizee. The default value is 300.
     Size of the number of frames to analyse to create a thumbnail from. Each thumbnail will use the next batch.
+
+
+-C | --config <CONFIG_FILE>
+    The name of an input config file.
+
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
@@ -1208,6 +1523,9 @@ Convert a portrait video to landscape.
     2 = 90CounterClockwise (default)
     3 = 90Clockwise and Vertical Flip
 
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
@@ -1238,6 +1556,9 @@ Convert a landscape video to portrait.
     1 = 90Clockwise (default)
     2 = 90CounterClockwise
     3 = 90Clockwise and Vertical Flip
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
@@ -1386,6 +1707,9 @@ Uses an unsharp mask to alter the luma,chroma and alpha of a video.
 
     All parameters are optional and default to the equivalent of the string '5:5:1.0:5:5:0.0'.
 
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
+
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.
     Options: quiet,panic,fatal,error,warning,info,verbose,debug,trace
@@ -1433,6 +1757,9 @@ Overlay a watermark on the video.
 
 -a | --alpha <ALPHA>
     Transparency (alpha channel) of the watermark. From 0 to 1. Default is 1.
+
+-c | --config <CONFIG_FILE>
+    The name of an input config file.
 
 -l | --loglevel <LOGLEVEL>
     The FFMPEG loglevel to use. Default is 'error' only.

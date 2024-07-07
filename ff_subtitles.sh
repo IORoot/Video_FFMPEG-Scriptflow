@@ -127,7 +127,7 @@ usage()
         printf " -s | --subtitles <INPUT_FILE>\n"
         printf "\tThe name of an subtitle SRT file.\n\n"
 
-        printf " -f | --styles\n"
+        printf " -f | --styles <FORCE_STYLE>\n"
         printf "\tThe Forced Style for the subtitles.\n\n"
 
         printf " -o | --output <OUTPUT_FILE>\n"
