@@ -6,16 +6,22 @@
 
 <h3 align="center">FFMPEG Util scripts and Templates</h3>
 
-<p align="center">
-    This project automates multimedia processing tasks using FFMPEG wrapper scripts and a script runner that reads JSON configuration files. The wrapper scripts provide an interface for executing specific tasks, while the script runner allows users to define a series of tasks to be performed on a set of media files. This automation pipeline saves time and effort, enabling users to execute multiple tasks on numerous media files with a single command.
-</p>    
-</div>
+FFMPEG wrapper scripts and a script runner that reads JSON configuration files. 
+The wrapper scripts provide an interface for executing specific tasks, while the script runner allows users to define a series of tasks to be performed on a set of media files. 
+This automation pipeline saves time and effort, enabling users to execute multiple tasks on numerous media files with a single command.
 
-## 1. Table of Contents
+## Highlights
+
+- 🏃‍♂️ Automate FFMPEG steps using a JSON file
+- 💡 Simple independent scripts for specific ffmpeg tasks.
+- 🏗️ Build videos in a pipeline automatically
+- 📲 Download from external sources
+- 📦 Run bulk tasks on folders of video files
+- 🎨 Built-in variables for randomness, folders, colour and tailwindcss palettes
 
 <!-- TOC -->
 
-- [Table of Contents](#table-of-contents)
+- [Highlights](#highlights)
 - [About The Project](#about-the-project)
     - [Built With](#built-with)
     - [Installation](#installation)
@@ -157,6 +163,7 @@
 - [License](#license)
 - [Contact](#contact)
 - [Changelog](#changelog)
+    - [Version 1.10](#version-110)
     - [Version 1.9](#version-19)
     - [Version 1.8](#version-18)
     - [Version 1.7](#version-17)
@@ -164,6 +171,11 @@
     - [Version 1.5](#version-15)
     - [Version 1.4](#version-14)
     - [Version 1.3](#version-13)
+    - [Version 1.2](#version-12)
+    - [Version 1.1](#version-11)
+    - [Version 1.0](#version-10)
+
+<!-- /TOC -->
     - [Version 1.2](#version-12)
     - [Version 1.1](#version-11)
     - [Version 1.0](#version-10)
