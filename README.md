@@ -5,10 +5,12 @@
 <img src="https://svg-rewriter.sachinraja.workers.dev/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2F%40mdi%2Fsvg%406.7.96%2Fsvg%2Fvideo-box.svg&fill=%234cae4c&width=200px&height=200px" style="width:200px;"/>
 
 <h3 align="center">FFMPEG Util scripts and Templates</h3>
+</div>
 
 FFMPEG wrapper scripts and a script runner that reads JSON configuration files. 
 The wrapper scripts provide an interface for executing specific tasks, while the script runner allows users to define a series of tasks to be performed on a set of media files. 
 This automation pipeline saves time and effort, enabling users to execute multiple tasks on numerous media files with a single command.
+
 
 ## Highlights
 
@@ -18,7 +20,6 @@ This automation pipeline saves time and effort, enabling users to execute multip
 - 📲 Download from external sources
 - 📦 Run bulk tasks on folders of video files
 - 🎨 Built-in variables for randomness, folders, colour and tailwindcss palettes
-
 <!-- TOC -->
 
 - [Highlights](#highlights)
@@ -175,6 +176,7 @@ This automation pipeline saves time and effort, enabling users to execute multip
     - [Version 1.1](#version-11)
     - [Version 1.0](#version-10)
 
+<!-- /TOC -->
 <!-- /TOC -->
     - [Version 1.2](#version-12)
     - [Version 1.1](#version-11)
