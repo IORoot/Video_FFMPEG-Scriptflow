@@ -12,7 +12,7 @@ The wrapper scripts provide an interface for executing specific tasks, while the
 This automation pipeline saves time and effort, enabling users to execute multiple tasks on numerous media files with a single command.
 
 
-## Highlights
+# Highlights
 
 - 🏃‍♂️ Automate FFMPEG steps using a JSON file
 - 💡 Simple independent scripts for specific ffmpeg tasks.
@@ -21,206 +21,6 @@ This automation pipeline saves time and effort, enabling users to execute multip
 - 📦 Run bulk tasks on folders of video files
 - 🎨 Built-in variables for randomness, folders, colour and tailwindcss palettes
 
-
-## Table of contents
-<!-- TOC -->
-
-- [Highlights](#highlights)
-- [Table of contents](#table-of-contents)
-- [About The Project](#about-the-project)
-    - [Built With](#built-with)
-    - [Installation](#installation)
-- [Usage](#usage)
-- [Configs](#configs)
-- [Script Details](#script-details)
-    - [ff_append.sh](#ff_appendsh)
-        - [Description](#description)
-        - [Flags](#flags)
-        - [Example](#example)
-    - [ff_aspect_ratio.sh](#ff_aspect_ratiosh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_audio.sh](#ff_audiosh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_blur.sh](#ff_blursh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_colour.sh](#ff_coloursh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_concat.sh](#ff_concatsh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_crop.sh](#ff_cropsh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_cut.sh](#ff_cutsh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_download.sh](#ff_downloadsh)
-        - [Flags](#flags)
-        - [Examples](#examples)
-            - [Single Download](#single-download)
-            - [Multiple Downloads](#multiple-downloads)
-            - [Using a URL Source.](#using-a-url-source)
-            - [URL Source randomised strategy.](#url-source-randomised-strategy)
-    - [ff_flip.sh](#ff_flipsh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_fps.sh](#ff_fpssh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_grouptime.sh](#ff_grouptimesh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_image.sh](#ff_imagesh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_kenburns.sh](#ff_kenburnssh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_lut.sh](#ff_lutsh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_middle.sh](#ff_middlesh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_mov_to_mp4.sh](#ff_mov_to_mp4sh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_pad.sh](#ff_padsh)
-        - [Description](#description)
-        - [Flags](#flags)
-        - [Examples](#examples)
-    - [ff_proxy.sh](#ff_proxysh)
-        - [Flags](#flags)
-    - [ff_rotate.sh](#ff_rotatesh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_scale.sh](#ff_scalesh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_sh_runner.sh](#ff_sh_runnersh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_sharpen.sh](#ff_sharpensh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_social_media.sh](#ff_social_mediash)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_stack.sh](#ff_stacksh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_subtitles.sh](#ff_subtitlessh)
-        - [Description](#description)
-    - [Forced Styles:](#forced-styles)
-        - [Flags](#flags)
-    - [ff_text.sh](#ff_textsh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_thumbnail.sh](#ff_thumbnailsh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_to_landscape.sh](#ff_to_landscapesh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_to_portrait.sh](#ff_to_portraitsh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_transcode.sh](#ff_transcodesh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_transition.sh](#ff_transitionsh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_unsharp.sh](#ff_unsharpsh)
-        - [Description](#description)
-        - [Flags](#flags)
-    - [ff_watermark.sh](#ff_watermarksh)
-        - [Description](#description)
-        - [Flags](#flags)
-        - [Examples](#examples)
-- [ScriptFlow](#scriptflow)
-    - [Blank flags](#blank-flags)
-    - [nulls](#nulls)
-    - [Multiple duplicate scripts](#multiple-duplicate-scripts)
-    - [Scripts with multiple inputs](#scripts-with-multiple-inputs)
-    - [Keyword Replacements](#keyword-replacements)
-        - [<ENV\_\*>](#env%5C_%5C)
-        - [<FOLDER_NAME>](#folder_name)
-        - [<FOLDER_TITLE>](#folder_title)
-        - [<DATE_format>](#date_format)
-        - [<RANDOM_VIDEO>](#random_video)
-        - [<RANDOM_VIDEO_FILTER_string>](#random_video_filter_string)
-        - [<RANDOM_COLOUR>](#random_colour)
-        - [<RANDOM_CONTRAST_COLOUR>](#random_contrast_colour)
-        - [<CONSTANT_RANDOM_COLOUR>](#constant_random_colour)
-        - [<CONSTANT_CONTRAST_COLOUR>](#constant_contrast_colour)
-    - [Output & Cleanup](#output--cleanup)
-    - [pwd and file references](#pwd-and-file-references)
-    - [descriptions](#descriptions)
-- [Customising](#customising)
-- [Troubleshooting](#troubleshooting)
-    - [Output Files.](#output-files)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
-- [Changelog](#changelog)
-    - [Version 1.10](#version-110)
-    - [Version 1.9](#version-19)
-    - [Version 1.8](#version-18)
-    - [Version 1.7](#version-17)
-    - [Version 1.6](#version-16)
-    - [Version 1.5](#version-15)
-    - [Version 1.4](#version-14)
-    - [Version 1.3](#version-13)
-    - [Version 1.2](#version-12)
-    - [Version 1.1](#version-11)
-    - [Version 1.0](#version-10)
-
-<!-- /TOC -->
-
-## 2. About The Project
-
-This is a collection of scripts to automate simple video editing tasks.
-
-They can be easily chained together for more complex video effects and tasks by simply using a JSON configuration file.
-
-These are all based on BASH and FFMPEG.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-### 2.1. Built With
-
-This project was built with the following frameworks, technologies and software.
-
--   [JQ](https://stedolan.github.io/jq/)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-### 2.2. Installation
-
-These are the steps to get up and running with this theme.
-
-1. Clone the repo
-
-```sh
-git clone https://github.com/IORoot/ffmpeg__bash-scripts
-```
-
-2. Either update your $PATH to include this folder or create a link in `/usr/local/bin` to each script.
-
-```
-PATH=$PATH:$(pwd)
-```
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-## 3. Usage
-
-Current list of scripts and their purposes.
 
 | Script               | Description                                                      |
 | -------------------- | ---------------------------------------------------------------- |
@@ -259,6 +59,201 @@ Current list of scripts and their purposes.
 | `ff_transition.sh`   | Concatenate multiple videos with transition effects              |
 | `ff_unsharp.sh`      | Use an unsharp mask to blur/sharpen luma,gamma,alpha             |
 | `ff_watermark.sh`    | Overlay a watermark image/video                                  |
+
+# Table of Contents
+<!-- TOC -->
+
+- [Highlights](#highlights)
+- [Table of Contents](#table-of-contents)
+    - [About The Project](#about-the-project)
+        - [Built With](#built-with)
+        - [Installation](#installation)
+    - [Configs](#configs)
+    - [Script Details](#script-details)
+        - [ff_append.sh](#ff_appendsh)
+            - [Description](#description)
+            - [Flags](#flags)
+            - [Example](#example)
+        - [ff_aspect_ratio.sh](#ff_aspect_ratiosh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_audio.sh](#ff_audiosh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_blur.sh](#ff_blursh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_colour.sh](#ff_coloursh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_concat.sh](#ff_concatsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_crop.sh](#ff_cropsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_cut.sh](#ff_cutsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_download.sh](#ff_downloadsh)
+            - [Flags](#flags)
+            - [Examples](#examples)
+                - [Single Download](#single-download)
+                - [Multiple Downloads](#multiple-downloads)
+                - [Using a URL Source.](#using-a-url-source)
+                - [URL Source randomised strategy.](#url-source-randomised-strategy)
+        - [ff_flip.sh](#ff_flipsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_fps.sh](#ff_fpssh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_grouptime.sh](#ff_grouptimesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_image.sh](#ff_imagesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_kenburns.sh](#ff_kenburnssh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_lut.sh](#ff_lutsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_middle.sh](#ff_middlesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_mov_to_mp4.sh](#ff_mov_to_mp4sh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_pad.sh](#ff_padsh)
+            - [Description](#description)
+            - [Flags](#flags)
+            - [Examples](#examples)
+        - [ff_proxy.sh](#ff_proxysh)
+            - [Flags](#flags)
+        - [ff_rotate.sh](#ff_rotatesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_scale.sh](#ff_scalesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_sh_runner.sh](#ff_sh_runnersh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_sharpen.sh](#ff_sharpensh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_social_media.sh](#ff_social_mediash)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_stack.sh](#ff_stacksh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_subtitles.sh](#ff_subtitlessh)
+            - [Description](#description)
+        - [Forced Styles:](#forced-styles)
+            - [Flags](#flags)
+        - [ff_text.sh](#ff_textsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_thumbnail.sh](#ff_thumbnailsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_to_landscape.sh](#ff_to_landscapesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_to_portrait.sh](#ff_to_portraitsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_transcode.sh](#ff_transcodesh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_transition.sh](#ff_transitionsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_unsharp.sh](#ff_unsharpsh)
+            - [Description](#description)
+            - [Flags](#flags)
+        - [ff_watermark.sh](#ff_watermarksh)
+            - [Description](#description)
+            - [Flags](#flags)
+            - [Examples](#examples)
+    - [ScriptFlow](#scriptflow)
+        - [Blank flags](#blank-flags)
+        - [nulls](#nulls)
+        - [Multiple duplicate scripts](#multiple-duplicate-scripts)
+        - [Scripts with multiple inputs](#scripts-with-multiple-inputs)
+        - [Keyword Replacements](#keyword-replacements)
+            - [<ENV\_\*>](#env%5C_%5C)
+            - [<FOLDER_NAME>](#folder_name)
+            - [<FOLDER_TITLE>](#folder_title)
+            - [<DATE_format>](#date_format)
+            - [<RANDOM_VIDEO>](#random_video)
+            - [<RANDOM_VIDEO_FILTER_string>](#random_video_filter_string)
+            - [<RANDOM_COLOUR>](#random_colour)
+            - [<RANDOM_CONTRAST_COLOUR>](#random_contrast_colour)
+            - [<CONSTANT_RANDOM_COLOUR>](#constant_random_colour)
+            - [<CONSTANT_CONTRAST_COLOUR>](#constant_contrast_colour)
+        - [Output & Cleanup](#output--cleanup)
+        - [pwd and file references](#pwd-and-file-references)
+        - [descriptions](#descriptions)
+    - [Customising](#customising)
+    - [Troubleshooting](#troubleshooting)
+        - [Output Files.](#output-files)
+    - [Contributing](#contributing)
+    - [License](#license)
+    - [Contact](#contact)
+    - [Changelog](#changelog)
+        - [Version 1.10](#version-110)
+        - [Version 1.9](#version-19)
+        - [Version 1.8](#version-18)
+        - [Version 1.7](#version-17)
+        - [Version 1.6](#version-16)
+        - [Version 1.5](#version-15)
+        - [Version 1.4](#version-14)
+        - [Version 1.3](#version-13)
+        - [Version 1.2](#version-12)
+        - [Version 1.1](#version-11)
+        - [Version 1.0](#version-10)
+
+<!-- /TOC -->
+
+## 2. About The Project
+
+This is a collection of scripts to automate simple video editing tasks.
+
+They can be easily chained together for more complex video effects and tasks by simply using a JSON configuration file.
+
+These are all based on BASH and FFMPEG.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### 2.1. Built With
+
+This project was built with the following frameworks, technologies and software.
+
+-   [JQ](https://stedolan.github.io/jq/)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### 2.2. Installation
+
+These are the steps to get up and running with this theme.
+
+1. Clone the repo
+
+```sh
+git clone https://github.com/IORoot/ffmpeg__bash-scripts
+```
+
+2. Either update your $PATH to include this folder or create a link in `/usr/local/bin` to each script.
+
+```
+PATH=$PATH:$(pwd)
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 Additionally:
 
