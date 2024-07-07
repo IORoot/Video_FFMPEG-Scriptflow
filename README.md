@@ -61,6 +61,8 @@ This automation pipeline saves time and effort, enabling users to execute multip
 | `ff_unsharp.sh`      | Use an unsharp mask to blur/sharpen luma,gamma,alpha             |
 | `ff_watermark.sh`    | Overlay a watermark image/video                                  |
 
+
+# Table of Contents
 <!-- TOC -->
 
 - [Highlights](#highlights)
@@ -218,7 +220,6 @@ This automation pipeline saves time and effort, enabling users to execute multip
         - [Version 1.1](#version-11)
         - [Version 1.0](#version-10)
 
-<!-- /TOC -->
 <!-- /TOC -->
 
 ## 2. About The Project
