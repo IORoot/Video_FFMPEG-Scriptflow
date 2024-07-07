@@ -23,10 +23,10 @@ This automation pipeline saves time and effort, enabling users to execute multip
 
 
 ## Table of contents
-
 <!-- TOC -->
 
 - [Highlights](#highlights)
+- [Table of contents](#table-of-contents)
 - [About The Project](#about-the-project)
     - [Built With](#built-with)
     - [Installation](#installation)
@@ -176,12 +176,6 @@ This automation pipeline saves time and effort, enabling users to execute multip
     - [Version 1.5](#version-15)
     - [Version 1.4](#version-14)
     - [Version 1.3](#version-13)
-    - [Version 1.2](#version-12)
-    - [Version 1.1](#version-11)
-    - [Version 1.0](#version-10)
-
-<!-- /TOC -->
-<!-- /TOC -->
     - [Version 1.2](#version-12)
     - [Version 1.1](#version-11)
     - [Version 1.0](#version-10)
