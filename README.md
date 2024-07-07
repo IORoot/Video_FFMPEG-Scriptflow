@@ -20,6 +20,10 @@ This automation pipeline saves time and effort, enabling users to execute multip
 - 📲 Download from external sources
 - 📦 Run bulk tasks on folders of video files
 - 🎨 Built-in variables for randomness, folders, colour and tailwindcss palettes
+
+
+## Table of contents
+
 <!-- TOC -->
 
 - [Highlights](#highlights)
