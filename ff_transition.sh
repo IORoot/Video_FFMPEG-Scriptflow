@@ -28,6 +28,7 @@ TMP_FILE="/tmp/tmp_ffmpeg_transition_list.txt"
 GREP=""
 FX_CSV="fade"
 DURATION="1"
+SORT_FLAGS=""
 
 function stylesheet()
 {
@@ -54,7 +55,7 @@ usage()
         printf "Concat videos with a transition effect between each.\n\n"
 
         printf "Flags:\n"
-
+        
         printf " -i | --input <INPUT_FILE>\n"
         printf "\tThe name of an input file(s) / folder.\n\n"
 
@@ -64,6 +65,10 @@ usage()
 
         printf " -g | --grep <STRING>\n"
         printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
+
+        printf " -s | --sort <SORT_FLAGS>\n"
+        printf "\tSupply flags to sort command for order of file input.\n"
+        printf "\tAdd in quotes. e.g. \"--reverse --random-sort\"\n\n"
 
         printf " -e | --effects <CSV_STRING>\n"
         printf "\tA csv string of each effect to use. If the effect list is shorter than\n"
@@ -111,6 +116,13 @@ function arguments()
 
         -g|--grep)
             GREP="$2"
+            shift 
+            shift
+            ;;
+
+
+        -s|--sort)
+            SORT_FLAGS="$2"
             shift 
             shift
             ;;
@@ -190,7 +202,7 @@ function read_config()
 
 
 # ╭──────────────────────────────────────────────────────────╮
-# │     Write the absolute path into the temporary file      │
+# │     Write the absolute path into the temporary file       │
 # ╰──────────────────────────────────────────────────────────╯
 function write_to_temp()
 {
@@ -200,7 +212,7 @@ function write_to_temp()
     # if this a folder
     if [ -d "$FILE" ]; then
         LOOP=0
-        LIST_OF_FILES=$(find $FILE -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP" | sort)
+        LIST_OF_FILES=$(find $FILE -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP" | sort )
         for FILE in $LIST_OF_FILES
         do
             pre_flight_checks $FILE
@@ -220,10 +232,11 @@ function write_to_temp()
 
 # ╭──────────────────────────────────────────────────────────╮
 # │ If the GREP is set AFTER the input, we need to grep file. │
+# │ Add sort too.                                            │
 # ╰──────────────────────────────────────────────────────────╯
-function grep_file()
+function grep_file_and_sort()
 {
-    cat ${TMP_FILE} | grep "${GREP}" > ${TMP_FILE}.grep
+    cat ${TMP_FILE} | grep "${GREP}" | sort "$SORT_FLAGS" > ${TMP_FILE}.grep
     mv ${TMP_FILE}.grep ${TMP_FILE}
 }
 
@@ -369,7 +382,7 @@ function main()
         exit_gracefully
     fi
 
-    grep_file
+    grep_file_and_sort
 
     effects_csv_to_array
 

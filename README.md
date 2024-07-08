@@ -1673,6 +1673,9 @@ Note. You must have all files the same type. Use `ff_transcode` for a common for
     -g | --grep <GREP>
         Supply a grep string for filtering the inputs if a folder is specified.
 
+    -s | --sort <SORT_FLAG>
+        Allow the files to be sorted in different orders.
+
     -e | --effects <CSV_STRING>"
         A csv string of each effect to use. If the effect list is shorter than"
         video list, then the effects will be repeated. [default 'fade'] (https://trac.ffmpeg.org/wiki/Xfade)"
