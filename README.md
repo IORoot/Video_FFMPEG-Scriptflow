@@ -890,7 +890,10 @@ Create a video from an image with a zoom-pan effect.
 
 ```
  -i | --input <INPUT_FILE>
-    The name of the input file.
+    The name of the input file or folder
+
+ -g | --grep <STRING>
+    The filter to apply to the folder
 
  -t | --target <TARGET>
     The target of the zoom.
