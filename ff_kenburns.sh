@@ -22,9 +22,10 @@ FPS="30"
 CROP_WIDTH="1024" 
 CROP_HEIGHT="720" 
 DURATION="10" 
-ZOOM_SPEED="0.003" 
+ZOOM_SPEED="0.001" 
 BITRATE="5000k"
 TARGET="TopLeft"
+GREP=""
 
 function stylesheet()
 {
@@ -52,8 +53,11 @@ usage()
 
         printf "Flags:\n"
 
-        printf " -i | --input <INPUT_FILE>\n"
-        printf "\tThe name of the input file.\n\n"
+        printf " -i | --input <INPUT_STRING>\n"
+        printf "\tThe name of the single file or folder.\n\n"
+
+        printf " -g | --grep <GREP_STRING>\n"
+        printf "\If an input folder is provided, filter input files with grep.\n\n"
 
         printf " -t | --target <TARGET>\n"
         printf "\tThe target of the zoom.\n"
@@ -114,6 +118,13 @@ function arguments()
 
         -i|--input)
             INPUT_FILENAME=$(realpath "$2")
+            shift
+            shift
+            ;;
+
+
+        -g|--grep)
+            GREP="$2"
             shift
             shift
             ;;
@@ -252,9 +263,11 @@ function read_config()
 function pre_flight_checks()
 {
 
+    INPUT_FILE=$1
+
     # Check input file exists.
-    if [ ! -f "$INPUT_FILENAME" ]; then
-        printf "\t❌ First file not found. Exiting.\n"
+    if [ ! -f "$INPUT_FILE" ]; then
+        printf "\t❌ File not found. Exiting.\n"
         exit_gracefully
     fi
 
@@ -263,8 +276,14 @@ function pre_flight_checks()
 function calculate_variables()
 {
 
-    IMAGE_WIDTH=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$INPUT_FILENAME")
-    IMAGE_HEIGHT=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 "$INPUT_FILENAME")
+    $INPUT_FILE="$1"
+
+    IMAGE_WIDTH=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$INPUT_FILE")
+    IMAGE_HEIGHT=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 "$INPUT_FILE")
+
+    [ "$TARGET" = "Random" ] && TARGET=$(printf "%s\n" "TopLeft" "TopRight" "BottomLeft" "BottomRight" | shuf -n 1)
+
+    echo "TARGET:$TARGET"
 
     # Determine x and y values based on the position
     case "$TARGET" in
@@ -284,16 +303,14 @@ function calculate_variables()
             X=${IMAGE_WIDTH}
             Y=${IMAGE_HEIGHT}
             ;;
-        Random)
-            X=$(shuf -i 0-${IMAGE_WIDTH} -n 1)
-            Y=$(shuf -i 0-${IMAGE_HEIGHT} -n 1)
-            ;;
         *)
             echo "Invalid position: $TARGET"
             echo "Valid positions are: TopLeft, TopRight, BottomLeft, BottomRight, Random"
             exit 1
             ;;
     esac
+
+
 
 
     # Calculate the duration in frames
@@ -365,15 +382,34 @@ function print_flags()
 function main()
 {
 
-    pre_flight_checks
-
-    calculate_variables
-
     print_flags
     
-    ffmpeg -loop 1 -i "$INPUT_FILENAME" -y -filter_complex "$FILTER_COMPLEX" -acodec aac -vcodec libx264 -b:v "${BITRATE}" -map [out] -map 0:a? -pix_fmt yuv420p -r "${FPS}" -t "${DURATION}" "${OUTPUT_FILENAME}"
-                                                                            
-    printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
+
+    # If this is a file
+    if [ -f "$INPUT_FILENAME" ]; then
+        pre_flight_checks $INPUT_FILENAME
+        calculate_variables $INPUT_FILENAME
+        ffmpeg -loop 1 -i "$INPUT_FILENAME" -y -filter_complex "$FILTER_COMPLEX" -acodec aac -vcodec libx264 -b:v "${BITRATE}" -map [out] -map 0:a? -pix_fmt yuv420p -r "${FPS}" -t "${DURATION}" "${OUTPUT_FILENAME}"
+        printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
+    fi
+    
+    # If a directory
+    if [ -d "$INPUT_FILENAME" ]; then
+        LOOP=0
+        LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg'  \) | grep "$GREP")
+        for INPUT_FILENAME in $LIST_OF_FILES
+        do
+            pre_flight_checks $INPUT_FILENAME
+
+            calculate_variables $INPUT_FILENAME
+
+            ffmpeg -loop 1 -i "$INPUT_FILENAME" -y -filter_complex "$FILTER_COMPLEX" -acodec aac -vcodec libx264 -b:v "${BITRATE}" -map [out] -map 0:a? -pix_fmt yuv420p -r "${FPS}" -t "${DURATION}" "${LOOP}_${OUTPUT_FILENAME}"
+    
+            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "${LOOP}_${OUTPUT_FILENAME}"
+
+            LOOP=$(expr $LOOP + 1)
+        done
+    fi        
 
 }
 
