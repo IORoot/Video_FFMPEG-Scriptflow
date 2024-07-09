@@ -19,10 +19,8 @@ INPUT_FILENAME="input.png"
 OUTPUT_FILENAME="ff_kenburns.mp4"
 LOGLEVEL="error" 
 FPS="30" 
-CROP_WIDTH="1024" 
-CROP_HEIGHT="720" 
-DURATION="10" 
-ZOOM_SPEED="0.005" 
+DURATION="5" 
+ZOOM_SPEED="0.0005" 
 BITRATE="5000k"
 TARGET="TopLeft"
 GREP=""
@@ -145,14 +143,14 @@ function arguments()
 
 
         -w|--width)
-            CROP_WIDTH="$2"
+            WIDTH="$2"
             shift
             shift
             ;;
 
 
         -h|--height)
-            CROP_HEIGHT="$2"
+            HEIGHT="$2"
             shift
             shift
             ;;
@@ -278,12 +276,18 @@ function calculate_variables()
 
     $INPUT_FILE="$1"
 
-    IMAGE_WIDTH=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$INPUT_FILE")
-    IMAGE_HEIGHT=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 "$INPUT_FILE")
+    # If no width set, default to the image width
+    if [[ -z ${WIDTH+x} ]]; then
+        WIDTH=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$INPUT_FILE")
+    fi
 
+    # If no height set, default to the image height
+    if [[ -z ${HEIGHT+x} ]]; then
+        HEIGHT=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 "$INPUT_FILE")
+    fi
+    
+    # Determine Random
     [ "$TARGET" = "Random" ] && TARGET=$(printf "%s\n" "TopLeft" "TopRight" "BottomLeft" "BottomRight" | shuf -n 1)
-
-    echo "TARGET:$TARGET"
 
     # Determine x and y values based on the position
     case "$TARGET" in
@@ -292,16 +296,16 @@ function calculate_variables()
             Y=0
             ;;
         TopRight)
-            X=${IMAGE_WIDTH}
+            X=${WIDTH}
             Y=0
             ;;
         BottomLeft)
             X=0
-            Y=${IMAGE_HEIGHT}
+            Y=${HEIGHT}
             ;;
         BottomRight)
-            X=${IMAGE_WIDTH}
-            Y=${IMAGE_HEIGHT}
+            X=${WIDTH}
+            Y=${HEIGHT}
             ;;
         *)
             echo "Invalid position: $TARGET"
@@ -311,67 +315,84 @@ function calculate_variables()
     esac
 
 
+    # ╭───────────────────────────────────────────────────────╮
+    # │     STEP 1 - Scale Image to specified START size       │
+    # ╰───────────────────────────────────────────────────────╯
+    # Scale filter to specified width and height (if set)
+    # If NOT set, default to image dimensions.
+    SCALE_FILTER="scale=${WIDTH}:${HEIGHT},setsar=1:1"
 
 
-    # Calculate the duration in frames
-    DURATION_FRAMES=$((DURATION * FPS))
-
-    # Scale filter to resize the image (not used for cropping)
-    SCALE_FILTER="scale=${IMAGE_WIDTH}:${IMAGE_HEIGHT}"
-
-    # Set sample aspect ratio filter
-    SETSAR_FILTER="setsar=1:1"
-
+    # ╭───────────────────────────────────────────────────────╮
+    # │         STEP 2 - Crop image to the same size          │
+    # ╰───────────────────────────────────────────────────────╯
     # Crop filter to ensure the output matches the specified dimensions
-    CROP_X=$(( ($IMAGE_WIDTH - $CROP_WIDTH) / 2 ))
-    CROP_Y=$(( ($IMAGE_HEIGHT - $CROP_HEIGHT) / 2 ))
-    CROP_FILTER="crop=${CROP_WIDTH}:${CROP_HEIGHT}"
+    CROP_FILTER="crop=${WIDTH}:${HEIGHT}"
 
-    # Zoom expression to incrementally increase zoom
-    ZOOM="zoom+${ZOOM_SPEED}"
-
-    # Output dimensions for the zoompan filter
-    SIZE="${CROP_WIDTH}x${CROP_HEIGHT}"
-
-    # Combine the zoompan filter components into one filter
-    ZOOMPAN_FILTER="zoompan=z=${ZOOM}:x=${X}:y=${Y}:d=${DURATION_FRAMES}:s=${SIZE}:fps=${FPS}"
-
+    # ╭───────────────────────────────────────────────────────╮
+    # │               STEP 3 - UPSCALE TO 8000!               │
+    # ╰───────────────────────────────────────────────────────╯
     # Smooth scale
     SMOOTH_SCALE="scale=8000:-1"
 
-    # Combine all filters into filter_complex
-    FILTER_COMPLEX="[0]${SCALE_FILTER},${SETSAR_FILTER}[out];[out]${CROP_FILTER}[out];[out]${SMOOTH_SCALE},${ZOOMPAN_FILTER}[out]"
+    # ╭───────────────────────────────────────────────────────╮
+    # │                STEP 4 - Build ZoomPan                 │
+    # ╰───────────────────────────────────────────────────────╯
+    # Zoom expression to incrementally increase zoom
+    ZOOM="z=zoom+${ZOOM_SPEED}"
+
+    # X-Coordinate of where to zoom into
+    XCOORD="x=${X}"
+
+    # Y-Coordinate of where to zoom into
+    YCOORD="y=${Y}"
+
+    # Calculate the duration in frames
+    FRAMES="d=$((DURATION * FPS))"
+
+    # Output dimensions for the zoompan filter
+    SIZE="s=${WIDTH}x${HEIGHT}"
+
+    # Frames Per Second
+    FRAMESPERSECOND="fps=${FPS}"
+
+    # Combine the zoompan filter components into one filter
+    ZOOMPAN_FILTER="zoompan=${ZOOM}:${XCOORD}:${YCOORD}:${FRAMES}:${SIZE}:${FRAMESPERSECOND}"
+
+    # ╭───────────────────────────────────────────────────────╮
+    # │   STEP 5 - Combine all filters into filter_complex      │
+    # ╰───────────────────────────────────────────────────────╯
+    FILTER_COMPLEX="[0]${SCALE_FILTER}[out];[out]${CROP_FILTER}[out];[out]${SMOOTH_SCALE},${ZOOMPAN_FILTER}[out]"
 
 }
 
 
 function print_flags()
 {
-    printf "🏞️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Input File" "$INPUT_FILENAME"
-    printf "🏞️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Target" "$TARGET"
-    printf "🏞️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "FPS" "$FPS"
-    printf "🏞️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Duration" "$DURATION"
-    printf "🏞️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Zoom Speed" "$ZOOM_SPEED"
-    printf "🏞️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Bitrate" "$BITRATE"
-    printf "🏞️  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "IMAGE_WIDTH" "$IMAGE_WIDTH"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "IMAGE_HEIGHT" "$IMAGE_HEIGHT"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "DIMENSIONS" "$DIMENSIONS"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "DURATION_FRAMES" "$DURATION_FRAMES"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "SCALE_FILTER" "$SCALE_FILTER"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "SETSAR_FILTER" "$SETSAR_FILTER"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "X" "$X"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Y" "$Y"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "CROP_WIDTH" "$CROP_WIDTH"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "CROP_HEIGHT" "$CROP_HEIGHT"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "CROP_X" "$CROP_X"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "CROP_Y" "$CROP_Y"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "CROP_FILTER" "$CROP_FILTER"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "ZOOM" "$ZOOM"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "DURATION_FRAMES" "$DURATION_FRAMES"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "SIZE" "$SIZE"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "ZoomPan Filter" "$ZOOMPAN_FILTER"
-    printf "🌆  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Filter Complex" "$FILTER_COMPLEX"
+    printf "🏞️  ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "Input File" "$INPUT_FILENAME"
+    printf "🏞️  ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "Target" "$TARGET"
+    printf "🏞️  ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "FPS" "$FPS"
+    printf "🏞️  ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "Duration" "$DURATION"
+    printf "🏞️  ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "Zoom Speed" "$ZOOM_SPEED"
+    printf "🏞️  ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "Bitrate" "$BITRATE"
+    printf "🏞️  ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "IMAGE_WIDTH" "$IMAGE_WIDTH"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "IMAGE_HEIGHT" "$IMAGE_HEIGHT"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "DURATION_FRAMES" "$DURATION_FRAMES"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "SCALE_FILTER" "$SCALE_FILTER"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "SETSAR_FILTER" "$SETSAR_FILTER"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "X" "$X"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "Y" "$Y"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "WIDTH" "$WIDTH"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "HEIGHT" "$HEIGHT"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "CROP_X" "$CROP_X"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "CROP_Y" "$CROP_Y"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "CROP_FILTER" "$CROP_FILTER"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "ZOOM" "$ZOOM"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "DURATION_FRAMES" "$DURATION_FRAMES"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "SIZE" "$SIZE"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "ZoomPan Filter" "$ZOOMPAN_FILTER"
+    printf "🌆 ${TEXT_GREEN_400}%-20s :${TEXT_RESET} %s\n" "Filter Complex" "$FILTER_COMPLEX"
 }
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -382,15 +403,17 @@ function print_flags()
 function main()
 {
 
-    print_flags
-    
-
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then
         pre_flight_checks $INPUT_FILENAME
+
         calculate_variables $INPUT_FILENAME
+
+        print_flags
+
         ffmpeg -loop 1 -i "$INPUT_FILENAME" -y -filter_complex "$FILTER_COMPLEX" -acodec aac -vcodec libx264 -b:v "${BITRATE}" -map [out] -map 0:a? -pix_fmt yuv420p -r "${FPS}" -t "${DURATION}" "${OUTPUT_FILENAME}"
-        printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
+        
+        printf "✅ ${TEXT_PURPLE_500}%-20s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
     fi
     
     # If a directory
@@ -402,10 +425,12 @@ function main()
             pre_flight_checks $INPUT_FILENAME
 
             calculate_variables $INPUT_FILENAME
-
+            
+            print_flags
+            
             ffmpeg -loop 1 -i "$INPUT_FILENAME" -y -filter_complex "$FILTER_COMPLEX" -acodec aac -vcodec libx264 -b:v "${BITRATE}" -map [out] -map 0:a? -pix_fmt yuv420p -r "${FPS}" -t "${DURATION}" "${LOOP}_${OUTPUT_FILENAME}"
     
-            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "${LOOP}_${OUTPUT_FILENAME}"
+            printf "✅ ${TEXT_PURPLE_500}%-20s :${TEXT_RESET} %s\n" "Output" "${LOOP}_${OUTPUT_FILENAME}"
 
             LOOP=$(expr $LOOP + 1)
         done
