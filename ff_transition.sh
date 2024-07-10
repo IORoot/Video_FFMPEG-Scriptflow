@@ -328,31 +328,36 @@ function create_command()
 
     # Construct the filter_complex string
     FILTER_COMPLEX=""
+    OFFSET=0
+
     for (( i=0; i<NUM_FILES; i++ ))
     do
+    
         if [[ $i -gt 0 ]]; then
+
             # Select the xfade effect, wrapping around the FX list
             FX_INDEX=$(( (i-1) % NUM_FX ))
-            XF_EFFECT=${FX[$FX_INDEX]}
+            FX_EFFECT=${FX[$FX_INDEX]}
 
             # Get duration of previous video
-            PREVIOUS_DURATION=$(get_duration "${FILES[$(($i-1))]}")
+            VIDEO_DURATION=$(get_duration "${FILES[$(($i-1))]}")
 
             # Calculate the offset for the xfade transition
-            OFFSET=$(echo "$PREVIOUS_DURATION - $DURATION" | bc)
+            OFFSET=$(echo "($VIDEO_DURATION - $DURATION) + $OFFSET" | bc)
 
+            VIDEOOUT="v$i"
+            # If its the last out-video, change to 'outv' instead.
+            if [[ $i == $(( NUM_FILES-1 )) ]]; then
+                VIDEOOUT="outv"
+            fi
             # Add xfade transition
-            FILTER_COMPLEX+="[$(($i-1)):v][$i:v]xfade=transition=${XF_EFFECT}:duration=${DURATION}:offset=$OFFSET[v$i];"
+            VIDEOINPUT="v$(($i-1))"
+            if [[ $i == 1 ]]; then
+                VIDEOINPUT="0:v"
+            fi
+            FILTER_COMPLEX+="[$VIDEOINPUT][$i:v]xfade=transition=${FX_EFFECT}:duration=${DURATION}:offset=$OFFSET[$VIDEOOUT];"
         fi
     done
-
-    # Final concatenation
-    FILTER_COMPLEX+="[v1]"
-    for (( i=2; i<NUM_FILES; i++ ))
-    do
-        FILTER_COMPLEX+="[v$i]"
-    done
-    FILTER_COMPLEX+="concat=n=$((NUM_FILES-1)):v=1:a=0[outv]"
 
     # Construct the FFmpeg command
     FFMPEG_CMD="ffmpeg"

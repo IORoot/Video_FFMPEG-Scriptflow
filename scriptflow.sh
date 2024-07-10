@@ -275,16 +275,15 @@ contrast_colour() {
 }
 
 # ╭──────────────────────────────────────────────────────────╮
-# │                Remove any temporary files                │
+# │                Remove any temporary files                 │
 # ╰──────────────────────────────────────────────────────────╯
 function cleanup()
 {
     if [[ -z ${TIDY+x} ]]; then
         rm -f ${TEMP_FOLDER}/temp_config_ff*
-        find . -type f -name 'ff*.mp4' -delete
-        find . -type f -regex './[0-9][0-9]*_ff.*' -delete
+        # find . -type f -name 'ff*.mp4' -delete
+        # find . -type f -regex './[0-9][0-9]*_ff.*' -delete
     fi
-
 
 }
 
@@ -349,7 +348,7 @@ function main()
 
 }
 
-cleanup
+# cleanup
 generate_colours
 usage $@
 arguments "$@"
