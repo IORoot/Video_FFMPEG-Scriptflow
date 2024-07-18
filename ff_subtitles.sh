@@ -94,6 +94,7 @@ INPUT_FILENAME=""
 SUBTITLE_FILENAME=""
 OUTPUT_FILENAME="ff_subtitle.mp4"
 LOGLEVEL="error"  
+ASS_FILE="subtitles.ass"
 
 function stylesheet()
 {
@@ -323,6 +324,16 @@ function get_height_width()
     fi
 
 }
+# ╭───────────────────────────────────────────────────────╮
+# │                                                       │
+# │     ASS Files have more ability to change styles      │
+# │                                                       │
+# ╰───────────────────────────────────────────────────────╯
+function convert_to_ass_file()
+{
+    ffmpeg -i ${SUBTITLE_FILENAME} ${ASS_FILE}
+}
+
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                                                          │
@@ -334,13 +345,17 @@ function main()
 
     pre_flight_checks
 
+    convert_to_ass_file
+
     get_height_width
 
     print_flags
 
-    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "subtitles=${SUBTITLE_FILENAME}:force_style='${STYLE}'" ${OUTPUT_FILENAME} 
+    ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf "subtitles=${ASS_FILE}:force_style='${STYLE}'" ${OUTPUT_FILENAME} 
     
     printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
+
+    rm $ASS_FILE
 
 }
 
