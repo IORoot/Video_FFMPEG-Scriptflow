@@ -118,7 +118,7 @@ usage()
         printf "ℹ️ Usage:\n $0 -i <INPUT_FILE> -s <SUBTITLE_FILENAME> -f <FORCED_STYLE> [-o <OUTPUT_FILE>] [-l loglevel]\n\n" >&2 
 
         printf "Summary:\n"
-        printf "Overlay an audio file on the video.\n\n"
+        printf "Hard embed subtitles on the video. Change styles and features.\n\n"
 
         printf "Flags:\n"
 
@@ -130,6 +130,12 @@ usage()
 
         printf " -f | --styles <FORCE_STYLE>\n"
         printf "\tThe Forced Style for the subtitles.\n\n"
+
+        printf " -r | --removedupes\n"
+        printf "\tRemove any duplicate lines in the subtitles file.\n\n"
+
+        printf " -d | --dynamictext\n"
+        printf "\tConvert subtitles into dynamic text. Splits all lines into single words.\n\n"
 
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
@@ -176,6 +182,18 @@ function arguments()
             STYLE="$2"
             shift 
             shift
+            ;;
+
+
+        -r|--removedupes)
+            REMOVEDUPES="TRUE"
+            shift 
+            ;;
+
+
+        -d|--dynamictext)
+            DYNAMICTEXT="TRUE"
+            shift 
             ;;
 
 
@@ -334,16 +352,226 @@ function convert_to_ass_file()
     ffmpeg -i ${SUBTITLE_FILENAME} ${ASS_FILE}
 }
 
+# ╭──────────────────────────────────────────────────────────────────────────╮
+# │                                                                          │░
+# │             REMOVE DUPLICATE LINES AND CLEANUP SUBTITLE FILE             │░
+# │                                                                          │░
+# ╰░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-# ╭──────────────────────────────────────────────────────────╮
-# │                                                          │
-# │                      Main Function                       │
-# │                                                          │
-# ╰──────────────────────────────────────────────────────────╯
+function remove_dupes()
+{
+
+    dedup_temp_file1=$(mktemp)
+    dedup_temp_file2=$(mktemp)
+    dedup_temp_file3=$(mktemp)
+    dedup_temp_file4=$(mktemp)
+
+    # STEP 1 - Remove duplicate lines
+    awk '!seen[$1]++' ${SUBTITLE_FILENAME} > $dedup_temp_file1
+
+    # STEP 2 - Remove any newlines
+    sed '/^$/d' $dedup_temp_file1 > $dedup_temp_file2
+
+    # STEP 3 - Add newlines above each block
+    awk '/^[0-9]+$/{print ""} 1' $dedup_temp_file2 > $dedup_temp_file3 
+
+    # STEP 4 - Remove blank blocks
+    awk '/^[0-9]+$/{block=$0} /-->/{time=$0; getline; if ($0 != "") print block ORS time ORS $0}' $dedup_temp_file3  > $dedup_temp_file4
+
+    # STEP 5 - Add newlines above each block
+    awk '/^[0-9]+$/{print ""} 1' $dedup_temp_file4 > ${SUBTITLE_FILENAME} 
+
+    cp $SUBTITLE_FILENAME "${SUBTITLE_FILENAME}.dedup"
+
+    rm "$dedup_temp_file1"
+    rm "$dedup_temp_file2"
+    rm "$dedup_temp_file3"
+    rm "$dedup_temp_file4"
+}
+
+
+
+
+
+# ╭──────────────────────────────────────────────────────────────────────────╮
+# │                                                                          │░
+# │                         CONVERT TO DYNAMIC TEXT                          │░
+# │                 CONVERTS LINES TO ONE-WORD PER SUBTITLE                  │░
+# │                                                                          │░
+# ╰░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+# ╭───────────────────────────────────────────────────────╮
+# │       Function to convert timestamp to seconds        │
+# ╰───────────────────────────────────────────────────────╯
+function timestamp_to_seconds() {
+    local timestamp=$1
+    
+
+    local h=$(echo $timestamp | cut -d":" -f1)
+    local m=$(echo $timestamp | cut -d":" -f2)
+    local s=$(echo $timestamp | cut -d":" -f3 | cut -d"," -f1)
+    local ms=$(echo $timestamp | cut -d"," -f2)
+    
+    # Convert milliseconds to seconds
+    local ms_seconds=$(echo "scale=3; $ms / 1000" | bc -l)
+    
+    # Calculate total seconds
+    echo "($h * 3600) + ($m * 60) + $s + $ms_seconds" | bc -l
+}
+
+# ╭───────────────────────────────────────────────────────╮
+# │ Function to convert seconds back to timestamp format  │
+# ╰───────────────────────────────────────────────────────╯
+seconds_to_timestamp() {
+
+    total_seconds=$1
+
+    if [[ "$total_seconds" == "0" ]]; then
+        hours=0
+        minutes=0
+        seconds=0
+    else
+        # Calculate hours
+        hours=$(echo "$total_seconds / 3600" | bc)
+        remainder=$(echo "$total_seconds % 3600" | bc)
+
+        # Calculate minutes
+        minutes=$(echo "$remainder / 60" | bc)
+        remainder=$(echo "$remainder % 60" | bc)
+
+        # Remaining seconds (including fractional part)
+        seconds=$(echo "scale=3; $remainder" | bc)
+
+        # Format the output with zero-padding
+        printf "%02d:%02d:%06.3f\n" $hours $minutes $seconds
+    fi
+}
+
+# ╭───────────────────────────────────────────────────────╮
+# │         Convert each line into a single word          │
+# ╰───────────────────────────────────────────────────────╯
+function dynamic_text()
+{
+
+    dynamic_temp_file=$(mktemp)
+
+    # Read the input file and loop
+    loop=1
+    while IFS= read -r line; do
+
+        # ╭───────────────────────────────────────────────────────╮
+        # │               If this is a block number               │
+        # ╰───────────────────────────────────────────────────────╯
+        if [[ $line =~ ^[0-9]+$ ]]; then
+            block_number=$line
+
+        # ╭───────────────────────────────────────────────────────╮
+        # │                If this is a timestamp                 │
+        # ╰───────────────────────────────────────────────────────╯
+        elif [[ $line == *"-->"* ]]; then
+
+            # ╭───────────────────────────────────────────────────────╮
+            # │         Parse the start / end time from line          │
+            # ╰───────────────────────────────────────────────────────╯
+            start_time=$(echo "$line" | awk '{print $1}')
+            end_time=$(echo "$line" | awk '{print $3}')
+            
+            # ╭───────────────────────────────────────────────────────╮
+            # │ Calculate the amount of time in seconds/milliseconds  │
+            # ╰───────────────────────────────────────────────────────╯
+            start_seconds=$(timestamp_to_seconds "$start_time")
+            end_seconds=$(timestamp_to_seconds "$end_time")
+            total_duration=$(echo "scale=10; $end_seconds - $start_seconds" | bc)
+            # printf "start_seconds: %s secs \n" $start_seconds
+            # printf "end_seconds: %s secs \n" $end_seconds
+            # printf "total_duration: %s secs \n" $total_duration
+            
+            # ╭───────────────────────────────────────────────────────╮
+            # │             Count number of words in line             │
+            # ╰───────────────────────────────────────────────────────╯
+            words=($(IFS=' ' read -ra text; echo "${text[@]:1}"))
+            word_count=${#words[@]}
+            # printf "number of words: %s \n" $word_count
+
+            # ╭───────────────────────────────────────────────────────╮
+            # │  Calculate the amount of time each word should take   │
+            # ╰───────────────────────────────────────────────────────╯
+            time_per_word=$(echo "scale=4; $total_duration / $word_count" | bc -l)
+            # printf "time per word: %s \n" $time_per_word
+            
+
+            # Ensure there are words to process
+            if [[ $word_count -gt 0 ]]; then
+
+                # Set the initial current_time
+                current_time=$start_seconds
+                # printf "current_time: %s \n" $current_time
+
+                # ╭───────────────────────────────────────────────────────╮
+                # │                loop through each word.                │
+                # ╰───────────────────────────────────────────────────────╯
+                for (( i=0; i<$word_count; i++ )); do
+
+                    # calculate the increment to the next time
+                    next_time=$(echo "$current_time + $time_per_word" | bc -l)
+                    # printf "next_time: %s ($current_time + $time_per_word) \n" $next_time
+
+                    # Create the timestamps
+                    current_time_timestamp=$(seconds_to_timestamp $(printf "%.3f" $current_time))
+                    # printf "current_time_timestamp: %s \n" $current_time_timestamp
+
+                    next_time_timestamp=$(seconds_to_timestamp $(printf "%.3f" $next_time))
+                    # printf "next_time_timestamp: %s \n" $next_time_timestamp
+
+                    # output
+                    printf "%d\n" "$loop"
+                    printf "%s --> %s\n" "$current_time_timestamp" "$next_time_timestamp"
+                    printf "%s\n\n" "${words[i]}"
+
+                    # Increment the current_time
+                    current_time=$next_time
+
+                    # add to loop
+                    loop=$(( loop + 1 ))
+                done
+            else
+                # If no words to process, output original block
+                printf "%d\n" "$loop"
+                printf "%s --> %s\n" "$start_time" "$end_time"
+                printf "%s\n\n" "${words[$last]}"
+            fi
+            
+        fi
+        
+    done < "$SUBTITLE_FILENAME" > "$dynamic_temp_file"
+
+    rm $SUBTITLE_FILENAME
+    mv $dynamic_temp_file $SUBTITLE_FILENAME
+    cp $SUBTITLE_FILENAME "${SUBTITLE_FILENAME}.dynamictext"
+}
+
+
+# ╭──────────────────────────────────────────────────────────────────────────╮
+# │                                                                          │░
+# │                              MAIN FUNCTION                               │░
+# │                                                                          │░
+# ╰░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
 function main()
 {
 
     pre_flight_checks
+
+    cp ${SUBTITLE_FILENAME} "${SUBTITLE_FILENAME}.original"
+
+    if [[ ! -z "${REMOVEDUPES+x}" ]]; then 
+        remove_dupes
+    fi
+
+    if [[ ! -z "${DYNAMICTEXT+x}" ]]; then
+        remove_dupes
+        dynamic_text
+    fi
 
     convert_to_ass_file
 
