@@ -343,6 +343,7 @@ function main()
 
     # Copy the last
     if [ -f "$FF_SCRIPT.mp4" ]; then
+        echo "Final: Copying $FF_SCRIPT.mp4 to $OUTPUT_FILENAME"
         cp $FF_SCRIPT.mp4 $OUTPUT_FILENAME
     fi
 
