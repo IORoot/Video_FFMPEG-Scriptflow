@@ -28,7 +28,6 @@ TMP_FILE="/tmp/tmp_ffmpeg_transition_list.txt"
 GREP=""
 FX_CSV="fade"
 DURATION="1"
-SORT_FLAGS=""
 
 function stylesheet()
 {
@@ -208,7 +207,7 @@ function write_to_temp()
 {
 
     FILE=$1
-
+    printf "Processing Files:\n"
     # if this a folder
     if [ -d "$FILE" ]; then
         LOOP=0
@@ -216,6 +215,7 @@ function write_to_temp()
         for FILE in $LIST_OF_FILES
         do
             pre_flight_checks $FILE
+            printf " - %s\n" "${FILE}"
             printf "%s\n" "${FILE}" >> ${TMP_FILE}
             LOOP=$(expr $LOOP + 1)
         done 
@@ -236,7 +236,7 @@ function write_to_temp()
 # ╰──────────────────────────────────────────────────────────╯
 function grep_file_and_sort()
 {
-    cat ${TMP_FILE} | grep "${GREP}" | sort "$SORT_FLAGS" > ${TMP_FILE}.grep
+    cat ${TMP_FILE} | grep "${GREP}" | sort $SORT_FLAGS > ${TMP_FILE}.grep
     mv ${TMP_FILE}.grep ${TMP_FILE}
 }
 
