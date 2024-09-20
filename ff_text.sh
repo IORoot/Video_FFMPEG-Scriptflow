@@ -145,7 +145,7 @@ function arguments()
     case $1 in
 
         -i|--input)
-            INPUT_FILENAME=$(realpath "$2")
+            INPUT_FILENAME=$(realpath $2)
             shift
             shift
             ;;

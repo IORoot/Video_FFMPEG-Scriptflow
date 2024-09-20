@@ -95,7 +95,7 @@ function arguments()
 
 
         -i|--input)
-            INPUT_FILENAME=$(realpath "$2")
+            INPUT_FILENAME=$(realpath $2)
             shift
             shift
             ;;
