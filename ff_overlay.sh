@@ -111,7 +111,7 @@ function arguments()
 
 
         -v|--overlay)
-            OVERLAY=$(realpath "$2")
+            OVERLAY=$(realpath $2)
             shift 
             shift
             ;;
