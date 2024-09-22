@@ -178,7 +178,7 @@ function arguments()
             ;;
 
 
-        -f|--style)
+        -f|--styles)
             STYLE="$2"
             shift 
             shift
@@ -320,7 +320,7 @@ function print_flags()
 {
     printf "💬 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Subtitle File" "$SUBTITLE_FILENAME"
     printf "🙋‍♀️ ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Video Height" "$HEIGHT"
-    printf "🎨 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Style" "$STYLE"
+    printf "🎨 ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Styles" "$STYLE"
 }
 
 function get_height_width()
