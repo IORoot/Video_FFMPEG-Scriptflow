@@ -1,0 +1,242 @@
+---
+alwaysApply: true
+---
+
+# Video FFMPEG Scriptflow - Cursor Rules
+
+<project_overview>
+## Project Overview
+This is a collection of BASH wrapper scripts for FFMPEG operations, designed for video editing automation. The project includes individual scripts for specific tasks and a scriptflow runner that executes JSON configurations sequentially.
+</project_overview>
+
+<code_structure_patterns>
+## Code Structure & Patterns
+
+<script_naming_convention>
+### Script Naming Convention
+- All scripts follow the pattern: `ff_[operation].sh`
+- Examples: `ff_scale.sh`, `ff_crop.sh`, `ff_concat.sh`
+- Main runner: `scriptflow.sh`
+</script_naming_convention>
+
+<script_architecture>
+### Script Architecture
+Each script follows this consistent structure:
+1. **Header comment block** with ASCII art and description
+2. **Defaults section** with variable declarations
+3. **Stylesheet function** for colored output
+4. **Usage function** with detailed help text
+5. **Arguments function** for command-line parsing
+6. **Main execution logic** with FFMPEG commands
+7. **Cleanup and error handling**
+</script_architecture>
+
+<key_variables_pattern>
+### Key Variables Pattern
+```bash
+INPUT_FILENAME="input.mp4"
+OUTPUT_FILENAME="ff_[operation].mp4"
+LOGLEVEL="error"
+# Operation-specific variables follow
+```
+</key_variables_pattern>
+
+<common_flags_pattern>
+### Common Flags Pattern
+All scripts support these standard flags:
+- `-i | --input` - Input file
+- `-o | --output` - Output file  
+- `-C | --config` - JSON config file
+- `-l | --loglevel` - FFMPEG log level
+- `-g | --grep` - File filtering (for folder inputs)
+</common_flags_pattern>
+</code_structure_patterns>
+
+<ffmpeg_integration>
+## FFMPEG Integration
+
+<command_structure>
+### Command Structure
+- Use `ffmpeg` with appropriate flags and filters
+- Support for complex filter chains
+- Variable substitution for dimensions (iw, ih, ow, oh)
+- Aspect ratio calculations and constraints
+</command_structure>
+
+<common_filter_patterns>
+### Common Filter Patterns
+- Scale: `scale=w:h:flags=`
+- Crop: `crop=w:h:x:y`
+- Pad: `pad=w:h:x:y:color`
+- Overlay: `overlay=x:y`
+- Text: `drawtext=text='':fontfile=:fontsize=:x=:y=:color=`
+</common_filter_patterns>
+</ffmpeg_integration>
+
+<json_configuration_system>
+## JSON Configuration System
+
+<scriptflow_format>
+### ScriptFlow Format
+```json
+{
+  "ff_script_name": {
+    "description": "Human readable description",
+    "input": "input_file.mp4",
+    "output": "output_file.mp4",
+    "parameter": "value"
+  }
+}
+```
+</scriptflow_format>
+
+<special_keywords>
+### Special Keywords
+- `<ENV_VARIABLE>` - Environment variable substitution
+- `<FOLDER_NAME>` - Current folder name
+- `<FOLDER_TITLE>` - Folder name with spaces
+- `<DATE_format>` - Date formatting (see man date)
+- `<RANDOM_VIDEO>` - Random video selection
+- `<RANDOM_COLOUR>` - Tailwind CSS color palette
+- `<CONSTANT_RANDOM_COLOUR>` - Persistent random color
+</special_keywords>
+
+<multiple_scripts>
+### Multiple Scripts
+- Use numeric suffixes: `ff_scale1`, `ff_scale2`
+- Multiple inputs: `input1`, `input2`, etc.
+</multiple_scripts>
+</json_configuration_system>
+
+<development_guidelines>
+## Development Guidelines
+
+<adding_new_scripts>
+### When Adding New Scripts
+1. Follow the established naming convention `ff_[operation].sh`
+2. Include the standard header comment block with ASCII art
+3. Implement the standard variable structure
+4. Support all common flags (-i, -o, -C, -l, -g)
+5. Include comprehensive usage() function
+6. Use the stylesheet() function for colored output
+7. Support both command-line and JSON config modes
+8. Add corresponding test JSON file in `tests/` directory
+</adding_new_scripts>
+
+<error_handling>
+### Error Handling
+- Use `set -o errexit` for critical errors (commented by default)
+- Use `set -o pipefail` for pipeline failures (commented by default)
+- Support `DEBUG=1` environment variable for debugging
+- Provide meaningful error messages with color coding
+</error_handling>
+
+<output_naming>
+### Output Naming
+- Default output follows pattern: `ff_[operation].mp4`
+- Avoid naming outputs starting with `ff*.mp4` (cleanup will delete them)
+- Support custom output names via `-o` flag
+</output_naming>
+</development_guidelines>
+
+<testing>
+### Testing
+- Each script should have a corresponding test JSON file
+- Test files should demonstrate key functionality
+- Include cleanup commands using `ff_sh_runner`
+- Test both individual scripts and scriptflow integration
+</testing>
+</development_guidelines>
+
+<file_organization>
+## File Organization
+
+<core_scripts>
+### Core Scripts
+- Root level: Individual FFMPEG operation scripts
+- `scriptflow.sh`: Main JSON configuration runner
+- `lib/`: Supporting resources (images, LUTs)
+</core_scripts>
+
+<test_files>
+### Test Files
+- `tests/`: JSON configuration test files
+- `tests/sample_*.mp4`: Test media files
+- Each script should have `test_ff_[operation].json`
+</test_files>
+
+<documentation>
+### Documentation
+- `README.md`: Comprehensive project documentation
+- `QuickStart.md`: Quick reference for script categories
+</documentation>
+</file_organization>
+
+<common_operations>
+## Common Operations
+
+<video_manipulation>
+### Video Manipulation
+- **Size**: scale, crop, pad, aspect_ratio
+- **Orientation**: rotate, flip, to_landscape, to_portrait
+- **Effects**: blur, sharpen, unsharp, colour, lut
+- **Composition**: overlay, stack, watermark, text, subtitles
+</video_manipulation>
+
+<video_processing>
+### Video Processing
+- **Format**: convert, transcode, social_media
+- **Timing**: cut, fps, middle, grouptime
+- **Assembly**: concat, append, transition
+- **Generation**: image, kenburns, thumbnail
+</video_processing>
+
+<utilities>
+### Utilities
+- **Download**: Remote file retrieval
+- **Proxy**: Low-res preview generation
+- **Audio**: Audio overlay/removal
+</utilities>
+</common_operations>
+
+<best_practices>
+## Best Practices
+
+<performance>
+### Performance
+- Use appropriate FFMPEG presets for encoding
+- Consider proxy workflows for large files
+- Batch processing for multiple files
+</performance>
+
+<compatibility>
+### Compatibility
+- Support common video formats (MP4, MOV)
+- Use widely supported codecs (H.264, AAC)
+- Maintain aspect ratio awareness
+</compatibility>
+
+<user_experience>
+### User Experience
+- Provide clear error messages
+- Support both CLI and JSON workflows
+- Include helpful usage examples
+- Use consistent parameter naming
+</user_experience>
+</best_practices>
+
+<dependencies>
+## Dependencies
+- **FFMPEG**: Core video processing
+- **JQ**: JSON parsing for scriptflow
+- **BASH**: Script execution environment
+- **CURL**: File downloading capabilities
+</dependencies>
+
+<security_notes>
+## Security Notes
+- `ff_sh_runner.sh` is dangerous - provides shell access
+- Validate input parameters
+- Sanitize file paths
+- Use relative paths when possible
+</security_notes>

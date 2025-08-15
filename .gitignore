@@ -1,3 +1,4 @@
 example_input_folder*
 example_*
 configs
+.DS_Store
