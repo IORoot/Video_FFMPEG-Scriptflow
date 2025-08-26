@@ -11,13 +11,13 @@ interface SidebarProps {
 
 const NodeItem: React.FC<{ 
   node: NodeDefinition; 
-  onDragStart: (node: NodeDefinition) => void;
+  onDragStart: (event: React.DragEvent, node: NodeDefinition) => void;
 }> = ({ node, onDragStart }) => {
   return (
     <div
       className="p-3 bg-card border border-border rounded-lg cursor-grab active:cursor-grabbing hover:bg-accent transition-colors"
       draggable
-      onDragStart={() => onDragStart(node)}
+      onDragStart={(e) => onDragStart(e, node)}
     >
       <div className="flex items-start space-x-3">
         <div className="w-8 h-8 bg-primary/10 rounded-md flex items-center justify-center flex-shrink-0">
@@ -49,7 +49,7 @@ const CategorySection: React.FC<{
   nodes: NodeDefinition[];
   isExpanded: boolean;
   onToggle: () => void;
-  onNodeDragStart: (node: NodeDefinition) => void;
+  onNodeDragStart: (event: React.DragEvent, node: NodeDefinition) => void;
 }> = ({ category, nodes, isExpanded, onToggle, onNodeDragStart }) => {
   return (
     <div className="space-y-2">
@@ -103,12 +103,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
     setExpandedCategories(newExpanded);
   };
 
-  const handleNodeDragStart = (node: NodeDefinition) => {
+  const handleNodeDragStart = (event: React.DragEvent, node: NodeDefinition) => {
+    console.log('Starting drag for node:', node.id);
     // Store the node definition ID in the drag data
-    const dragEvent = new DragEvent('dragstart');
-    if (dragEvent.dataTransfer) {
-      dragEvent.dataTransfer.setData('application/node-definition', node.id);
-    }
+    event.dataTransfer.setData('application/node-definition', node.id);
+    event.dataTransfer.effectAllowed = 'copy';
   };
 
   const filteredNodes = searchTerm

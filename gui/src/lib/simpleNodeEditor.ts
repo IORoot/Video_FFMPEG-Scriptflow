@@ -76,19 +76,47 @@ export class SimpleNodeEditor {
   addNode(nodeType: string, position: NodePosition): string {
     const nodeId = `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    // This would normally come from nodeDefinitions
+    // Import nodeDefinitions here to avoid circular imports
+    const { getNodeDefinition } = require('./nodeDefinitions');
+    const nodeDefinition = getNodeDefinition(nodeType);
+    
+    if (!nodeDefinition) {
+      console.error(`Unknown node type: ${nodeType}`);
+      return nodeId;
+    }
+    
+    // Create inputs based on node definition
+    const inputs = nodeDefinition.inputs.map((inputDef: any) => ({
+      id: inputDef.name,
+      type: 'input' as const,
+      dataType: inputDef.type === 'file' ? 'video' as const : 'text' as const,
+      name: inputDef.name
+    }));
+    
+    // Create outputs based on node definition
+    const outputs = nodeDefinition.outputs.map((outputDef: any) => ({
+      id: outputDef.name,
+      type: 'output' as const,
+      dataType: outputDef.type as 'video' | 'audio' | 'image' | 'text' | 'number',
+      name: outputDef.name
+    }));
+    
+    // Set default parameters
+    const parameters: { [key: string]: any } = {};
+    nodeDefinition.inputs.forEach((inputDef: any) => {
+      if (inputDef.default !== undefined) {
+        parameters[inputDef.name] = inputDef.default;
+      }
+    });
+    
     const newNode: EditorNode = {
       id: nodeId,
       type: nodeType,
-      name: nodeType.replace('ff_', '').replace('_', ' '),
+      name: nodeDefinition.name,
       position,
-      inputs: [
-        { id: 'input', type: 'input', dataType: 'video', name: 'Input' }
-      ],
-      outputs: [
-        { id: 'output', type: 'output', dataType: 'video', name: 'Output' }
-      ],
-      parameters: {},
+      inputs,
+      outputs,
+      parameters,
       selected: false
     };
 

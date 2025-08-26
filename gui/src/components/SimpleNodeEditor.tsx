@@ -87,7 +87,7 @@ const NodeComponent: React.FC<{
       </div>
 
       {/* Parameters */}
-      {nodeDefinition?.inputs.map((inputDef) => (
+      {nodeDefinition?.inputs.map((inputDef: any) => (
         inputDef.type !== 'file' && (
           <div key={inputDef.name} className="mb-2">
             <label className="text-xs text-muted-foreground block mb-1">
@@ -99,7 +99,7 @@ const NodeComponent: React.FC<{
                 onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
                 className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
               >
-                {inputDef.options?.map((option) => (
+                {inputDef.options?.map((option: string) => (
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
@@ -191,19 +191,24 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const nodeDefinitionId = e.dataTransfer.getData('application/node-definition');
-    if (!nodeDefinitionId || !canvasRef.current) return;
+    if (!nodeDefinitionId || !canvasRef.current) {
+      console.log('Drop failed: no node ID or canvas ref');
+      return;
+    }
 
     const rect = canvasRef.current.getBoundingClientRect();
     const position = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      x: e.clientX - rect.left - 100, // Offset so node appears where cursor is
+      y: e.clientY - rect.top - 50
     };
 
+    console.log('Dropping node:', nodeDefinitionId, 'at position:', position);
     editor.addNode(nodeDefinitionId, position);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
   };
 
   const handleNodeMove = (nodeId: string, x: number, y: number) => {
@@ -242,6 +247,10 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
       onClick={handleCanvasClick}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
+      onDragEnter={(e) => {
+        e.preventDefault();
+        console.log('Drag enter canvas');
+      }}
       style={{ minHeight: '600px' }}
     >
       {/* Grid background */}
