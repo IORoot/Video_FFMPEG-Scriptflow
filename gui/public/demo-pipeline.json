@@ -1,0 +1,25 @@
+{
+  "ff_scale": {
+    "description": "Scale video to 720p",
+    "input": "sample_video.mp4",
+    "width": "1280",
+    "height": "720",
+    "output": "scaled_video.mp4"
+  },
+  "ff_blur": {
+    "description": "Apply light blur effect",
+    "input": "scaled_video.mp4",
+    "strength": "3",
+    "output": "blurred_video.mp4"
+  },
+  "ff_text": {
+    "description": "Add title text overlay",
+    "input": "blurred_video.mp4",
+    "text": "Demo Video Pipeline",
+    "x": "50",
+    "y": "50",
+    "fontsize": "32",
+    "color": "white",
+    "output": "final_video.mp4"
+  }
+}

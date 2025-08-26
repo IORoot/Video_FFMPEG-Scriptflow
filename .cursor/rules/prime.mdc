@@ -4,6 +4,9 @@ alwaysApply: true
 
 # Video FFMPEG Scriptflow - Cursor Rules
 
+IMPORTANT - ALWAYS CHECK THE MCP SERVER FOR LAYOUT PROBLEMS, ERRORS AND CONSOLE ISSUES.
+
+
 <project_overview>
 ## Project Overview
 This is a collection of BASH wrapper scripts for FFMPEG operations, designed for video editing automation. The project includes individual scripts for specific tasks and a scriptflow runner that executes JSON configurations sequentially.

@@ -1,0 +1,184 @@
+/* Additional app-specific styles */
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent-foreground));
+}
+
+/* Custom animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px hsl(var(--primary) / 0);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Line clamping utility */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Drag and drop styles */
+.drag-over {
+  background-color: hsl(var(--accent) / 0.1);
+  border: 2px dashed hsl(var(--primary));
+}
+
+/* Node editor specific overrides */
+.rete-editor .rete-node {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.rete-editor .rete-node:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.rete-editor .rete-node.selected {
+  box-shadow: 0 0 0 2px hsl(var(--primary)), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Connection styles */
+.rete-editor .rete-connection path {
+  stroke-width: 3px;
+  stroke: hsl(var(--primary));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.rete-editor .rete-connection:hover path {
+  stroke-width: 4px;
+  stroke: hsl(var(--primary));
+}
+
+/* Socket styles */
+.rete-editor .rete-socket {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid hsl(var(--background));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.rete-editor .rete-socket:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Control styles */
+.rete-editor .rete-control {
+  margin: 4px 0;
+}
+
+.rete-editor .rete-control input,
+.rete-editor .rete-control select {
+  background: hsl(var(--input));
+  border: 1px solid hsl(var(--border));
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: hsl(var(--foreground));
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.rete-editor .rete-control input:focus,
+.rete-editor .rete-control select:focus {
+  outline: none;
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+/* Minimap styles */
+.rete-minimap {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+}
+
+/* Context menu styles */
+.rete-context-menu {
+  background: hsl(var(--popover));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.rete-context-menu .item {
+  color: hsl(var(--popover-foreground));
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.rete-context-menu .item:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .rete-editor .rete-node {
+    min-width: 150px;
+  }
+  
+  .rete-editor .rete-control input,
+  .rete-editor .rete-control select {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
