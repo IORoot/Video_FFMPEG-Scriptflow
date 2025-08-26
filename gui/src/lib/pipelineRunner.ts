@@ -149,31 +149,18 @@ export class PipelineRunner {
 
   private async executeScriptflow(configPath: string, configContent: string): Promise<PipelineRunResult> {
     try {
-      // Write config file
-      const fs = require('fs').promises;
-      await fs.writeFile(configPath, configContent);
-
-      // Execute scriptflow.sh
-      const { exec } = require('child_process');
-      const util = require('util');
-      const execPromise = util.promisify(exec);
-
+      // In a browser environment, we can't directly execute shell commands
+      // This would need to be handled by a backend API or Electron app
       const command = `cd /Users/andypearson/Code/Video_FFMPEG-Scriptflow && ./scriptflow.sh -C ${configPath}`;
       
-      this.addLog(`Executing: ${command}`);
-      
-      const { stdout, stderr } = await execPromise(command, {
-        timeout: 300000, // 5 minutes timeout
-        maxBuffer: 1024 * 1024 * 10 // 10MB buffer
-      });
-
-      if (stderr) {
-        this.addLog(`Warnings/Errors: ${stderr}`);
-      }
+      this.addLog(`Would execute: ${command}`);
+      this.addLog('Note: Actual execution requires a backend service or Electron app');
+      this.addLog('Config content:');
+      this.addLog(configContent);
 
       return {
         success: true,
-        output: stdout
+        output: 'Simulated execution completed (browser mode)'
       };
 
     } catch (error) {

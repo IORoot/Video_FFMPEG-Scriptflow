@@ -14,7 +14,8 @@ const NodeComponent: React.FC<{
   onMove: (nodeId: string, x: number, y: number) => void;
   onSelect: (nodeId: string) => void;
   onParameterChange: (nodeId: string, param: string, value: any) => void;
-}> = ({ node, onMove, onSelect, onParameterChange }) => {
+  onSocketMouseDown: (nodeId: string, socketId: string, type: 'input' | 'output', e: React.MouseEvent) => void;
+}> = ({ node, onMove, onSelect, onParameterChange, onSocketMouseDown }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
@@ -22,7 +23,6 @@ const NodeComponent: React.FC<{
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
     setDragOffset({
       x: e.clientX - node.position.x,
       y: e.clientY - node.position.y
@@ -64,6 +64,7 @@ const NodeComponent: React.FC<{
         top: node.position.y,
         zIndex: node.selected ? 10 : 1
       }}
+      data-node-id={node.id}
       onMouseDown={handleMouseDown}
     >
       <div className="text-sm font-medium text-card-foreground mb-2">
@@ -76,14 +77,26 @@ const NodeComponent: React.FC<{
         </div>
       )}
 
-      {/* Input sockets */}
+      {/* Input sockets - only show for 'file' type inputs that can receive connections */}
       <div className="space-y-1 mb-2">
-        {node.inputs.map((input) => (
-          <div key={input.id} className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-accent rounded-full border-2 border-background" />
-            <span className="text-xs">{input.name}</span>
-          </div>
-        ))}
+        {nodeDefinition?.inputs
+          .filter(input => input.type === 'file')
+          .map((input) => (
+            <div key={input.name} className="flex items-center space-x-2">
+              <div 
+                className="w-4 h-4 bg-orange-500 rounded-full border-2 border-white cursor-pointer hover:bg-orange-400 transition-colors shadow-sm"
+                data-socket-type="input"
+                data-node-id={node.id}
+                data-socket-id={input.name}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  onSocketMouseDown(node.id, input.name, 'input', e);
+                }}
+                title={`Input: ${input.name}`}
+              />
+              <span className="text-xs">{input.name}</span>
+            </div>
+          ))}
       </div>
 
       {/* Parameters */}
@@ -121,7 +134,17 @@ const NodeComponent: React.FC<{
         {node.outputs.map((output) => (
           <div key={output.id} className="flex items-center justify-end space-x-2">
             <span className="text-xs">{output.name}</span>
-            <div className="w-3 h-3 bg-primary rounded-full border-2 border-background" />
+            <div 
+              className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white cursor-pointer hover:bg-blue-400 transition-colors shadow-sm"
+              data-socket-type="output"
+              data-node-id={node.id}
+              data-socket-id={output.id}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                onSocketMouseDown(node.id, output.id, 'output', e);
+              }}
+              title={`Output: ${output.name}`}
+            />
           </div>
         ))}
       </div>
@@ -144,6 +167,10 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
   const canvasRef = useRef<HTMLDivElement>(null);
   const [editor] = useState(() => new SimpleNodeEditor());
   const [editorState, setEditorState] = useState<EditorState>(editor.getState());
+  const [connectionDrag, setConnectionDrag] = useState<{
+    from: { nodeId: string; socketId: string; type: 'input' | 'output' };
+    to: { x: number; y: number };
+  } | null>(null);
 
   useEffect(() => {
     const handleStateChange = (state: EditorState) => {
@@ -211,6 +238,123 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     e.dataTransfer.dropEffect = 'copy';
   };
 
+  const handleSocketMouseDown = (nodeId: string, socketId: string, type: 'input' | 'output', e: React.MouseEvent) => {
+    console.log('Socket mouse down:', { nodeId, socketId, type });
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (type === 'output') {
+      // Start connection drag from output socket - use dynamic positioning
+      const fromNode = editorState.nodes.find(n => n.id === nodeId);
+      if (fromNode && canvasRef.current) {
+        // Use the same DOM coordinate-based calculation as connection lines
+        const calculateSocketPosition = (node: EditorNode, socketType: 'input' | 'output', socketId: string) => {
+          if (socketType === 'output') {
+            // Get the actual node element to get its rendered position
+            const nodeElement = document.querySelector(`[data-node-id="${node.id}"]`);
+            const canvasElement = canvasRef.current;
+            
+            if (nodeElement && canvasElement) {
+              const nodeRect = nodeElement.getBoundingClientRect();
+              const canvasRect = canvasElement.getBoundingClientRect();
+              
+              // Convert to canvas-relative coordinates
+              const relativeX = nodeRect.left - canvasRect.left;
+              const relativeY = nodeRect.top - canvasRect.top;
+              const nodeWidth = nodeRect.width;
+              const nodeHeight = nodeRect.height;
+              
+              return {
+                x: relativeX + nodeWidth - 16, // 16px from right edge
+                y: relativeY + nodeHeight - 16 // 16px from bottom edge
+              };
+            }
+            
+            // Fallback to calculated dimensions
+            const nodeDefinition = getNodeDefinition(node.type);
+            if (!nodeDefinition) return { x: 0, y: 0 };
+            
+            const titleHeight = 30;
+            const descriptionHeight = 20;
+            const connectionInputs = nodeDefinition.inputs.filter(input => input.type === 'file');
+            const inputSocketsHeight = connectionInputs.length * 25;
+            const parametersHeight = Object.keys(node.parameters).length * 30;
+            const outputSocketsHeight = node.outputs.length * 25;
+            const padding = 20;
+            
+            const calculatedWidth = 200;
+            const calculatedHeight = titleHeight + descriptionHeight + inputSocketsHeight + parametersHeight + outputSocketsHeight + padding;
+            
+            return {
+              x: node.position.x + calculatedWidth - 16,
+              y: node.position.y + calculatedHeight - 16
+            };
+          }
+          return { x: 0, y: 0 };
+        };
+        
+        const socketPos = calculateSocketPosition(fromNode, 'output', socketId);
+        
+        const dragData = {
+          from: { nodeId, socketId, type },
+          to: { x: socketPos.x, y: socketPos.y }
+        };
+        console.log('Starting connection drag from calculated socket position:', dragData);
+        setConnectionDrag(dragData);
+      }
+    } else {
+      console.log('Clicked on input socket - connections start from outputs');
+    }
+  };
+
+  const handleCanvasMouseMove = (e: React.MouseEvent) => {
+    if (connectionDrag && canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const newPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      console.log('Canvas mouse move - updating drag to:', newPos);
+      setConnectionDrag({
+        ...connectionDrag,
+        to: newPos
+      });
+    }
+  };
+
+  const handleCanvasMouseUp = (e: React.MouseEvent) => {
+    console.log('Canvas mouse up, connectionDrag:', connectionDrag);
+    if (connectionDrag) {
+      // Check if we're over an input socket
+      const target = e.target as HTMLElement;
+      console.log('Mouse up target:', target);
+      const socketElement = target.closest('[data-socket-type="input"]');
+      console.log('Found socket element:', socketElement);
+      
+      if (socketElement) {
+        const targetNodeId = socketElement.getAttribute('data-node-id');
+        const targetSocketId = socketElement.getAttribute('data-socket-id');
+        console.log('Target socket:', { targetNodeId, targetSocketId });
+        
+        if (targetNodeId && targetSocketId) {
+          console.log('Creating connection:', {
+            from: connectionDrag.from,
+            to: { nodeId: targetNodeId, socketId: targetSocketId }
+          });
+          // Create connection
+          editor.addConnection(
+            connectionDrag.from.nodeId,
+            connectionDrag.from.socketId,
+            targetNodeId,
+            targetSocketId
+          );
+        }
+      } else {
+        console.log('No input socket found at drop location');
+      }
+      
+      console.log('Clearing connection drag');
+      setConnectionDrag(null);
+    }
+  };
+
   const handleNodeMove = (nodeId: string, x: number, y: number) => {
     editor.moveNode(nodeId, { x, y });
   };
@@ -251,6 +395,8 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
         e.preventDefault();
         console.log('Drag enter canvas');
       }}
+      onMouseMove={handleCanvasMouseMove}
+      onMouseUp={handleCanvasMouseUp}
       style={{ minHeight: '600px' }}
     >
       {/* Grid background */}
@@ -264,32 +410,159 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           onMove={handleNodeMove}
           onSelect={handleNodeSelect}
           onParameterChange={handleParameterChange}
+          onSocketMouseDown={handleSocketMouseDown}
         />
       ))}
 
-      {/* Connections - simplified for now */}
-      <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-        {editorState.connections.map((connection) => {
+      {/* Connections - Simple and Visible */}
+      <svg 
+        className="absolute inset-0 pointer-events-none" 
+        style={{ zIndex: 10, width: '100%', height: '100%' }}
+        viewBox={`0 0 ${canvasRef.current?.offsetWidth || 1200} ${canvasRef.current?.offsetHeight || 800}`}
+      >
+        {/* Test line to verify SVG is working */}
+        <line x1="50" y1="50" x2="150" y2="50" stroke="red" strokeWidth="2" />
+        <text x="50" y="40" fill="red" fontSize="12">SVG Test Line</text>
+        
+        {editorState.connections.map((connection, index) => {
+          console.log(`Rendering connection ${index}:`, connection);
           const fromNode = editorState.nodes.find(n => n.id === connection.from.nodeId);
           const toNode = editorState.nodes.find(n => n.id === connection.to.nodeId);
           
-          if (!fromNode || !toNode) return null;
+          if (!fromNode || !toNode) {
+            console.log('Missing nodes for connection:', { fromNode, toNode, connection });
+            return null;
+          }
 
-          const fromX = fromNode.position.x + 192; // node width
-          const fromY = fromNode.position.y + 40;
-          const toX = toNode.position.x;
-          const toY = toNode.position.y + 40;
+          // Calculate socket positions using actual DOM coordinates
+          const calculateSocketPosition = (node: EditorNode, socketType: 'input' | 'output', socketId: string) => {
+            // Get the actual node element to get its rendered position
+            const nodeElement = document.querySelector(`[data-node-id="${node.id}"]`);
+            const canvasElement = canvasRef.current;
+            
+            if (nodeElement && canvasElement) {
+              const nodeRect = nodeElement.getBoundingClientRect();
+              const canvasRect = canvasElement.getBoundingClientRect();
+              
+              // Convert to canvas-relative coordinates
+              const relativeX = nodeRect.left - canvasRect.left;
+              const relativeY = nodeRect.top - canvasRect.top;
+              const nodeWidth = nodeRect.width;
+              const nodeHeight = nodeRect.height;
+              
+              if (socketType === 'input') {
+                // Input sockets are on the left side - only show for 'file' type parameters
+                const nodeDefinition = getNodeDefinition(node.type);
+                if (!nodeDefinition) return { x: 0, y: 0 };
+                
+                // Find connection inputs (only 'file' type parameters that can receive connections)
+                const connectionInputs = nodeDefinition.inputs.filter(input => input.type === 'file');
+                const inputIndex = connectionInputs.findIndex(input => input.name === socketId);
+                
+                if (inputIndex >= 0) {
+                  return {
+                    x: relativeX + 16, // 16px from left edge
+                    y: relativeY + 60 + (inputIndex * 25) // After title/desc + spacing
+                  };
+                }
+              } else {
+                // Output sockets are at the bottom right corner
+                return {
+                  x: relativeX + nodeWidth - 16, // 16px from right edge
+                  y: relativeY + nodeHeight - 16 // 16px from bottom edge
+                };
+              }
+            }
+            
+            // Fallback to calculated dimensions if DOM element not found
+            const nodeDefinition = getNodeDefinition(node.type);
+            if (!nodeDefinition) return { x: 0, y: 0 };
+            
+            // Calculate dynamic dimensions based on content
+            const titleHeight = 30;
+            const descriptionHeight = 20;
+            const connectionInputs = nodeDefinition.inputs.filter(input => input.type === 'file');
+            const inputSocketsHeight = connectionInputs.length * 25;
+            const parametersHeight = Object.keys(node.parameters).length * 30;
+            const outputSocketsHeight = node.outputs.length * 25;
+            const padding = 20;
+            
+            const calculatedWidth = 200; // Base width
+            const calculatedHeight = titleHeight + descriptionHeight + inputSocketsHeight + parametersHeight + outputSocketsHeight + padding;
+            
+            if (socketType === 'input') {
+              const inputIndex = connectionInputs.findIndex(input => input.name === socketId);
+              if (inputIndex >= 0) {
+                return {
+                  x: node.position.x + 16,
+                  y: node.position.y + titleHeight + descriptionHeight + 20 + (inputIndex * 25)
+                };
+              }
+            } else {
+              return {
+                x: node.position.x + calculatedWidth - 16,
+                y: node.position.y + calculatedHeight - 16
+              };
+            }
+            
+            return { x: 0, y: 0 };
+          };
+          
+          // Calculate exact positions for both sockets
+          const fromPos = calculateSocketPosition(fromNode, 'output', connection.from.socketId);
+          const toPos = calculateSocketPosition(toNode, 'input', connection.to.socketId);
+          
+          const fromX = fromPos.x;
+          const fromY = fromPos.y;
+          const toX = toPos.x;
+          const toY = toPos.y;
+
+          console.log(`Connection ${index} coordinates:`, { fromX, fromY, toX, toY });
 
           return (
+            <g key={connection.id || `conn-${index}`}>
+              {/* Curved connection line */}
+              <path
+                d={`M ${fromX} ${fromY} C ${fromX + 80} ${fromY} ${toX - 80} ${toY} ${toX} ${toY}`}
+                stroke="#3b82f6"
+                strokeWidth="3"
+                fill="none"
+                opacity="0.9"
+              />
+              {/* Socket connection points - larger for debugging */}
+              <circle cx={fromX} cy={fromY} r="6" fill="#3b82f6" stroke="#fff" strokeWidth="2" />
+              <circle cx={toX} cy={toY} r="6" fill="#f97316" stroke="#fff" strokeWidth="2" />
+              
+              {/* Debug labels */}
+              <text x={fromX + 10} y={fromY - 10} fill="#3b82f6" fontSize="10" fontWeight="bold">
+                OUT
+              </text>
+              <text x={toX + 10} y={toY - 10} fill="#f97316" fontSize="10" fontWeight="bold">
+                IN
+              </text>
+            </g>
+          );
+        })}
+        
+        {/* Connection drag line */}
+        {connectionDrag && (() => {
+          const fromNode = editorState.nodes.find(n => n.id === connectionDrag.from.nodeId);
+          if (!fromNode) return null;
+          
+          // Calculate socket position (simplified)
+          const fromX = fromNode.position.x + 200; // Approximate right side of node
+          const fromY = fromNode.position.y + 50; // Approximate middle height
+          
+          return (
             <path
-              key={connection.id}
-              d={`M ${fromX} ${fromY} C ${fromX + 50} ${fromY} ${toX - 50} ${toY} ${toX} ${toY}`}
+              d={`M ${fromX} ${fromY} Q ${(fromX + connectionDrag.to.x) / 2} ${fromY} ${connectionDrag.to.x} ${connectionDrag.to.y}`}
               stroke="hsl(var(--primary))"
               strokeWidth="2"
               fill="none"
+              strokeDasharray="5,5"
             />
           );
-        })}
+        })()}
       </svg>
 
       {/* Help text */}
@@ -297,7 +570,37 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
         <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
           <div className="text-center">
             <p className="text-lg mb-2">Drag nodes from the sidebar to get started</p>
-            <p className="text-sm">Create your video processing pipeline visually</p>
+            <p className="text-sm mb-4">Create your video processing pipeline visually</p>
+            {/* Test buttons to create a demo pipeline */}
+            <div className="space-x-2">
+              <button
+                onClick={() => {
+                  // Create a demo pipeline: Download -> Scale -> Crop
+                  const downloadId = editor.addNode('ff_download', { x: 100, y: 200 });
+                  const scaleId = editor.addNode('ff_scale', { x: 400, y: 200 });
+                  const cropId = editor.addNode('ff_crop', { x: 700, y: 200 });
+                  
+                  // Add connections after a small delay to ensure nodes are created
+                  setTimeout(() => {
+                    editor.addConnection(downloadId, 'video', scaleId, 'input');
+                    editor.addConnection(scaleId, 'video', cropId, 'input');
+                  }, 100);
+                }}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm"
+              >
+                🎬 Create Demo Pipeline
+              </button>
+              <button
+                onClick={() => {
+                  // Create just two nodes for manual connection testing
+                  editor.addNode('ff_download', { x: 150, y: 150 });
+                  editor.addNode('ff_scale', { x: 450, y: 150 });
+                }}
+                className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors text-sm"
+              >
+                ⚡ Create Test Nodes
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -305,9 +608,15 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
       {/* Debug info */}
       <div className="absolute bottom-4 left-4 text-xs text-muted-foreground bg-card/80 backdrop-blur-sm border border-border rounded px-3 py-2">
         <div>Nodes: {editorState.nodes.length} | Connections: {editorState.connections.length}</div>
+        {connectionDrag && (
+          <div className="text-blue-400">🔗 Dragging connection from {connectionDrag.from.nodeId}...</div>
+        )}
         {editorState.selectedNodes.length > 0 && (
           <div>Selected: {editorState.selectedNodes.length}</div>
         )}
+        <div className="mt-1 text-xs opacity-75">
+          💡 Drag from 🔵 blue (output) to 🟠 orange (input)
+        </div>
       </div>
     </div>
   );

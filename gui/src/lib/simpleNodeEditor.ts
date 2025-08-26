@@ -198,10 +198,7 @@ export class SimpleNodeEditor {
     this.notifyListeners();
   }
 
-  removeConnection(connectionId: string) {
-    this.state.connections = this.state.connections.filter(c => c.id !== connectionId);
-    this.notifyListeners();
-  }
+
 
   updateNodeParameter(nodeId: string, paramName: string, value: any) {
     const node = this.state.nodes.find(n => n.id === nodeId);
@@ -220,6 +217,33 @@ export class SimpleNodeEditor {
       connectionState: { isConnecting: false }
     };
     this.notifyListeners();
+  }
+
+  addConnection(fromNodeId: string, fromSocket: string, toNodeId: string, toSocket: string): void {
+    // Check if connection already exists
+    const exists = this.state.connections.some(
+      conn => conn.from.nodeId === fromNodeId && conn.to.nodeId === toNodeId && 
+               conn.from.socketId === fromSocket && conn.to.socketId === toSocket
+    );
+    
+    if (!exists) {
+      const newConnection: NodeConnection = {
+        id: `conn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        from: { nodeId: fromNodeId, socketId: fromSocket },
+        to: { nodeId: toNodeId, socketId: toSocket }
+      };
+      
+      this.state.connections.push(newConnection);
+      this.notifyListeners();
+    }
+  }
+
+  removeConnection(connectionId: string): void {
+    const index = this.state.connections.findIndex(conn => conn.id === connectionId);
+    if (index !== -1) {
+      this.state.connections.splice(index, 1);
+      this.notifyListeners();
+    }
   }
 
   // Export data for JSON generation
