@@ -247,12 +247,29 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
       // Start connection drag from output socket - use dynamic positioning
       const fromNode = editorState.nodes.find(n => n.id === nodeId);
       if (fromNode && canvasRef.current) {
-        // Use the same DOM coordinate-based calculation as connection lines
+        // Use the same socket element-based calculation as connection lines
         const calculateSocketPosition = (node: EditorNode, socketType: 'input' | 'output', socketId: string) => {
           if (socketType === 'output') {
-            // Get the actual node element to get its rendered position
-            const nodeElement = document.querySelector(`[data-node-id="${node.id}"]`);
             const canvasElement = canvasRef.current;
+            
+            if (canvasElement) {
+              // Try to find the actual socket element
+              const socketElement = document.querySelector(`[data-node-id="${node.id}"][data-socket-id="${socketId}"][data-socket-type="${socketType}"]`);
+              
+              if (socketElement) {
+                const socketRect = socketElement.getBoundingClientRect();
+                const canvasRect = canvasElement.getBoundingClientRect();
+                
+                // Get the center of the socket element
+                return {
+                  x: socketRect.left - canvasRect.left + socketRect.width / 2,
+                  y: socketRect.top - canvasRect.top + socketRect.height / 2
+                };
+              }
+            }
+            
+            // Fallback to calculated position if socket element not found
+            const nodeElement = document.querySelector(`[data-node-id="${node.id}"]`);
             
             if (nodeElement && canvasElement) {
               const nodeRect = nodeElement.getBoundingClientRect();
@@ -269,26 +286,6 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
                 y: relativeY + nodeHeight - 16 // 16px from bottom edge
               };
             }
-            
-            // Fallback to calculated dimensions
-            const nodeDefinition = getNodeDefinition(node.type);
-            if (!nodeDefinition) return { x: 0, y: 0 };
-            
-            const titleHeight = 30;
-            const descriptionHeight = 20;
-            const connectionInputs = nodeDefinition.inputs.filter(input => input.type === 'file');
-            const inputSocketsHeight = connectionInputs.length * 25;
-            const parametersHeight = Object.keys(node.parameters).length * 30;
-            const outputSocketsHeight = node.outputs.length * 25;
-            const padding = 20;
-            
-            const calculatedWidth = 200;
-            const calculatedHeight = titleHeight + descriptionHeight + inputSocketsHeight + parametersHeight + outputSocketsHeight + padding;
-            
-            return {
-              x: node.position.x + calculatedWidth - 16,
-              y: node.position.y + calculatedHeight - 16
-            };
           }
           return { x: 0, y: 0 };
         };
@@ -434,11 +431,28 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
             return null;
           }
 
-          // Calculate socket positions using actual DOM coordinates
+          // Calculate socket positions using actual socket element positions
           const calculateSocketPosition = (node: EditorNode, socketType: 'input' | 'output', socketId: string) => {
-            // Get the actual node element to get its rendered position
-            const nodeElement = document.querySelector(`[data-node-id="${node.id}"]`);
             const canvasElement = canvasRef.current;
+            
+            if (canvasElement) {
+              // Try to find the actual socket element
+              const socketElement = document.querySelector(`[data-node-id="${node.id}"][data-socket-id="${socketId}"][data-socket-type="${socketType}"]`);
+              
+              if (socketElement) {
+                const socketRect = socketElement.getBoundingClientRect();
+                const canvasRect = canvasElement.getBoundingClientRect();
+                
+                // Get the center of the socket element
+                return {
+                  x: socketRect.left - canvasRect.left + socketRect.width / 2,
+                  y: socketRect.top - canvasRect.top + socketRect.height / 2
+                };
+              }
+            }
+            
+            // Fallback to calculated position if socket element not found
+            const nodeElement = document.querySelector(`[data-node-id="${node.id}"]`);
             
             if (nodeElement && canvasElement) {
               const nodeRect = nodeElement.getBoundingClientRect();
@@ -472,37 +486,6 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
                   y: relativeY + nodeHeight - 16 // 16px from bottom edge
                 };
               }
-            }
-            
-            // Fallback to calculated dimensions if DOM element not found
-            const nodeDefinition = getNodeDefinition(node.type);
-            if (!nodeDefinition) return { x: 0, y: 0 };
-            
-            // Calculate dynamic dimensions based on content
-            const titleHeight = 30;
-            const descriptionHeight = 20;
-            const connectionInputs = nodeDefinition.inputs.filter(input => input.type === 'file');
-            const inputSocketsHeight = connectionInputs.length * 25;
-            const parametersHeight = Object.keys(node.parameters).length * 30;
-            const outputSocketsHeight = node.outputs.length * 25;
-            const padding = 20;
-            
-            const calculatedWidth = 200; // Base width
-            const calculatedHeight = titleHeight + descriptionHeight + inputSocketsHeight + parametersHeight + outputSocketsHeight + padding;
-            
-            if (socketType === 'input') {
-              const inputIndex = connectionInputs.findIndex(input => input.name === socketId);
-              if (inputIndex >= 0) {
-                return {
-                  x: node.position.x + 16,
-                  y: node.position.y + titleHeight + descriptionHeight + 20 + (inputIndex * 25)
-                };
-              }
-            } else {
-              return {
-                x: node.position.x + calculatedWidth - 16,
-                y: node.position.y + calculatedHeight - 16
-              };
             }
             
             return { x: 0, y: 0 };
