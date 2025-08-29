@@ -169,6 +169,7 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
   const [editorState, setEditorState] = useState<EditorState>(editor.getState());
   const [connectionDrag, setConnectionDrag] = useState<{
     from: { nodeId: string; socketId: string; type: 'input' | 'output' };
+    fromPos: { x: number; y: number };
     to: { x: number; y: number };
   } | null>(null);
 
@@ -294,7 +295,8 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
         
         const dragData = {
           from: { nodeId, socketId, type },
-          to: { x: socketPos.x, y: socketPos.y }
+          fromPos: { x: socketPos.x, y: socketPos.y }, // Store the original socket position
+          to: { x: socketPos.x, y: socketPos.y } // Start at the same position
         };
         console.log('Starting connection drag from calculated socket position:', dragData);
         setConnectionDrag(dragData);
@@ -532,9 +534,9 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           const fromNode = editorState.nodes.find(n => n.id === connectionDrag.from.nodeId);
           if (!fromNode) return null;
           
-          // Calculate socket position (simplified)
-          const fromX = fromNode.position.x + 200; // Approximate right side of node
-          const fromY = fromNode.position.y + 50; // Approximate middle height
+          // Use the actual socket position that was calculated in onSocketMouseDown
+          const fromX = connectionDrag.fromPos.x;
+          const fromY = connectionDrag.fromPos.y;
           
           return (
             <path
