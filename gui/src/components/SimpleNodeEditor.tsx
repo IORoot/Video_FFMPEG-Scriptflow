@@ -276,6 +276,7 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     y: number;
     nodeId: string;
   } | null>(null);
+  const [selectedConnection, setSelectedConnection] = useState<string | null>(null);
 
   useEffect(() => {
     const handleStateChange = (state: EditorState) => {
@@ -323,7 +324,11 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
       }
 
       if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (editorState.selectedNodes.length > 0) {
+        if (selectedConnection) {
+          e.preventDefault();
+          editor.removeConnection(selectedConnection);
+          setSelectedConnection(null);
+        } else if (editorState.selectedNodes.length > 0) {
           e.preventDefault();
           editorState.selectedNodes.forEach(nodeId => {
             editor.removeNode(nodeId);
@@ -347,12 +352,13 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('click', handleClickOutside);
     };
-  }, [editor, editorState.selectedNodes]);
+  }, [editor, editorState.selectedNodes, selectedConnection]);
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     if (e.target === canvasRef.current) {
       editor.clearSelection();
       setContextMenu(null);
+      setSelectedConnection(null);
     }
   };
 
@@ -671,13 +677,35 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
 
           return (
             <g key={connection.id || `conn-${index}`}>
-              {/* Curved connection line */}
+              {/* Clickable connection line with wider hit area */}
               <path
                 d={`M ${fromX} ${fromY} C ${fromX + 80} ${fromY} ${toX - 80} ${toY} ${toX} ${toY}`}
-                stroke="#3b82f6"
-                strokeWidth="3"
+                stroke="transparent"
+                strokeWidth="20"
+                fill="none"
+                className="cursor-pointer hover:stroke-red-500 hover:stroke-2 transition-colors"
+                style={{ pointerEvents: 'auto' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedConnection(connection.id);
+                  setContextMenu(null); // Close any open context menu
+                }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (window.confirm('Delete this connection?')) {
+                    editor.removeConnection(connection.id);
+                  }
+                }}
+              />
+              {/* Visible connection line */}
+              <path
+                d={`M ${fromX} ${fromY} C ${fromX + 80} ${fromY} ${toX - 80} ${toY} ${toX} ${toY}`}
+                stroke={selectedConnection === connection.id ? "#ef4444" : "#3b82f6"}
+                strokeWidth={selectedConnection === connection.id ? "4" : "3"}
                 fill="none"
                 opacity="0.9"
+                className="pointer-events-none"
               />
               {/* Socket connection points - larger for debugging */}
               <circle cx={fromX} cy={fromY} r="6" fill="#3b82f6" stroke="#fff" strokeWidth="2" />
@@ -794,8 +822,11 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
         {editorState.selectedNodes.length > 0 && (
           <div className="text-yellow-400">Selected: {editorState.selectedNodes.length} (Press Delete to remove)</div>
         )}
+        {selectedConnection && (
+          <div className="text-red-400">Connection selected (Press Delete to remove)</div>
+        )}
         <div className="mt-1 text-xs opacity-75">
-          💡 Drag from 🔵 blue (output) to 🟠 orange (input) | Right-click nodes for menu
+          💡 Drag from 🔵 blue (output) to 🟠 orange (input) | Click connections to delete | Right-click nodes for menu
         </div>
       </div>
     </div>

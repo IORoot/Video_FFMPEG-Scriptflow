@@ -34,6 +34,17 @@ export const nodeCategories = [
 export const nodeDefinitions: NodeDefinition[] = [
   // Input nodes
   {
+    id: 'input',
+    name: 'Input',
+    category: 'input',
+    description: 'Manual file input - enter a file path',
+    inputs: [
+      { name: 'filepath', type: 'string', required: true, description: 'Path to input file' }
+    ],
+    outputs: [{ name: 'video', type: 'video' }]
+  },
+
+  {
     id: 'ff_download',
     name: 'Download',
     category: 'input',

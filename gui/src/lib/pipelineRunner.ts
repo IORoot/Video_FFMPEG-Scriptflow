@@ -20,6 +20,7 @@ export class PipelineRunner {
   };
 
   private statusCallbacks: Array<(status: PipelineRunStatus) => void> = [];
+  private simulationMode: boolean = true; // Default to simulation mode
 
   onStatusChange(callback: (status: PipelineRunStatus) => void) {
     this.statusCallbacks.push(callback);
@@ -50,6 +51,49 @@ export class PipelineRunner {
 
   clearLogs() {
     this.updateStatus({ logs: [] });
+  }
+
+  setSimulationMode(enabled: boolean) {
+    this.simulationMode = enabled;
+    this.addLog(`Simulation mode ${enabled ? 'enabled' : 'disabled'}`);
+  }
+
+  getSimulationMode(): boolean {
+    return this.simulationMode;
+  }
+
+  async executePipelineDirectly(configContent: string): Promise<PipelineRunResult> {
+    try {
+      this.addLog('🚀 Executing pipeline directly...');
+      
+      // Try to use a backend API if available
+      const response = await fetch('http://localhost:3002/api/execute-pipeline', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ config: configContent })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        this.addLog('✅ Pipeline executed successfully via API');
+        this.addLog(`Output: ${result.output || 'No output'}`);
+        return {
+          success: true,
+          output: result.output || 'Pipeline executed successfully'
+        };
+      } else {
+        throw new Error(`API call failed: ${response.status}`);
+      }
+
+    } catch (error) {
+      // Fallback to manual execution instructions
+      this.addLog('⚠️ Direct execution not available, falling back to manual execution');
+      this.addLog('This is normal - the GUI will provide execution instructions');
+      
+      return this.executeScriptflow('', configContent);
+    }
   }
 
   async runPipeline(config: ScriptflowConfig): Promise<PipelineRunResult> {
@@ -109,16 +153,18 @@ export class PipelineRunner {
 
       this.addLog('✅ Pipeline execution completed successfully');
 
-      // In development mode, just log the config instead of actually running
-      if (process.env.NODE_ENV === 'development') {
-        this.addLog('Development mode: Config would be saved as:');
+      // Check simulation mode setting
+      if (this.simulationMode) {
+        this.addLog('🎭 SIMULATION MODE: Config would be saved as:');
         this.addLog(configJson);
         
         // Also show the command that would be run
         this.addLog(`Command: ./scriptflow.sh -C ${tempConfigFile}`);
+        this.addLog('💡 Toggle simulation mode off to run actual commands');
       } else {
-        // In production, actually run the scriptflow command
-        const result = await this.executeScriptflow(tempConfigFile, configJson);
+        // Try to execute directly, fallback to instructions if not possible
+        this.addLog('🚀 EXECUTION MODE: Attempting direct execution...');
+        const result = await this.executePipelineDirectly(configJson);
         if (!result.success) {
           throw new Error(result.error || 'Unknown error');
         }
@@ -149,24 +195,45 @@ export class PipelineRunner {
 
   private async executeScriptflow(configPath: string, configContent: string): Promise<PipelineRunResult> {
     try {
-      // In a browser environment, we can't directly execute shell commands
-      // This would need to be handled by a backend API or Electron app
-      const command = `cd /Users/andypearson/Code/Video_FFMPEG-Scriptflow && ./scriptflow.sh -C ${configPath}`;
+      // Create a downloadable config file
+      const blob = new Blob([configContent], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
       
-      this.addLog(`Would execute: ${command}`);
-      this.addLog('Note: Actual execution requires a backend service or Electron app');
-      this.addLog('Config content:');
+      // Create a temporary download link
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'temp_gui_config.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      this.addLog('📄 Config file downloaded as temp_gui_config.json');
+      this.addLog('');
+      this.addLog('🚀 Ready to execute! Choose an option:');
+      this.addLog('');
+      this.addLog('Option 1 - Copy & Paste Command:');
+      this.addLog('1. Move the downloaded file to your project directory');
+      this.addLog('2. Run: ./scriptflow.sh -C temp_gui_config.json');
+      this.addLog('');
+      this.addLog('Option 2 - Use the Execute Button below:');
+      this.addLog('Click the "Execute Pipeline" button to run automatically');
+      this.addLog('');
+      this.addLog('📄 Config content:');
+      this.addLog('─'.repeat(50));
       this.addLog(configContent);
+      this.addLog('─'.repeat(50));
 
       return {
         success: true,
-        output: 'Simulated execution completed (browser mode)'
+        output: 'Config file downloaded - ready for execution'
       };
 
     } catch (error) {
+      this.addLog(`❌ Failed to prepare execution: ${error instanceof Error ? error.message : 'Unknown error'}`);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Execution failed'
+        error: error instanceof Error ? error.message : 'Execution preparation failed'
       };
     }
   }

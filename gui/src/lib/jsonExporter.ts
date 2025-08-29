@@ -94,6 +94,11 @@ export class JsonExporter {
     const nodeDefinition = getNodeDefinition(node.name);
     if (!nodeDefinition) return null;
 
+    // Special handling for input nodes - they just pass through the filepath
+    if (node.name === 'input' && node.data.filepath) {
+      return node.data.filepath;
+    }
+
     // For most nodes, the output filename is stored in the 'output' parameter
     // Some nodes might have different output parameters
     if (node.data.output) {
@@ -153,6 +158,11 @@ export class JsonExporter {
           continue;
         }
 
+        // Skip input nodes - they're just file references, not script steps
+        if (node.name === 'input') {
+          continue;
+        }
+
         // Resolve input mappings from connections
         const resolvedData = this.resolveInputMappings(node, orderedNodes);
 
@@ -198,6 +208,14 @@ export class JsonExporter {
       const nodeDefinition = getNodeDefinition(node.name);
       if (!nodeDefinition) {
         errors.push(`Unknown node type: ${node.name}`);
+        continue;
+      }
+
+      // Special validation for input nodes
+      if (node.name === 'input') {
+        if (!node.data.filepath || node.data.filepath.trim() === '') {
+          errors.push(`Input node "${node.id}" missing filepath`);
+        }
         continue;
       }
 

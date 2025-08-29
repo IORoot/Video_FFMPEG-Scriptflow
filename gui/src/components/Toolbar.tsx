@@ -24,6 +24,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [validationResult, setValidationResult] = useState<{ isValid: boolean; errors: string[] } | null>(null);
   const [showJsonModal, setShowJsonModal] = useState(false);
+  const [simulationMode, setSimulationMode] = useState(runner.getSimulationMode());
 
   const handleExportJSON = async () => {
     if (!exporter) {
@@ -151,6 +152,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     }
   };
 
+  const handleSimulationModeToggle = () => {
+    const newMode = !simulationMode;
+    setSimulationMode(newMode);
+    runner.setSimulationMode(newMode);
+  };
+
   const getRunButtonContent = () => {
     if (runStatus.isRunning) {
       return (
@@ -190,6 +197,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             </button>
 
             <div className="h-6 w-px bg-border" />
+
+            <button
+              onClick={handleSimulationModeToggle}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+                simulationMode 
+                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white' 
+                  : 'bg-green-600 hover:bg-green-700 text-white'
+              }`}
+              title={simulationMode ? 'Currently in simulation mode - click to run real commands' : 'Currently in execution mode - click to enable simulation'}
+            >
+              <span>{simulationMode ? '🎭' : '🚀'}</span>
+              <span className="hidden sm:inline">{simulationMode ? 'Simulation' : 'Execute'}</span>
+            </button>
 
             <button
               onClick={handleSavePipeline}
