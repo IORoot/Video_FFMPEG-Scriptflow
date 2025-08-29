@@ -15,7 +15,9 @@ const NodeComponent: React.FC<{
   onSelect: (nodeId: string) => void;
   onParameterChange: (nodeId: string, param: string, value: any) => void;
   onSocketMouseDown: (nodeId: string, socketId: string, type: 'input' | 'output', e: React.MouseEvent) => void;
-}> = ({ node, onMove, onSelect, onParameterChange, onSocketMouseDown }) => {
+  onDeleteNode: (nodeId: string) => void;
+  onContextMenu: (nodeId: string, x: number, y: number) => void;
+}> = ({ node, onMove, onSelect, onParameterChange, onSocketMouseDown, onDeleteNode, onContextMenu }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
@@ -72,9 +74,27 @@ const NodeComponent: React.FC<{
       }}
       data-node-id={node.id}
       onMouseDown={handleMouseDown}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        onContextMenu(node.id, e.clientX, e.clientY);
+      }}
     >
-      <div className="text-sm font-medium text-card-foreground mb-2">
-        {nodeDefinition?.name || node.name}
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-sm font-medium text-card-foreground">
+          {nodeDefinition?.name || node.name}
+        </div>
+        {node.selected && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteNode(node.id);
+            }}
+            className="text-red-500 hover:text-red-700 hover:bg-red-500/10 rounded p-1 transition-colors"
+            title="Delete node (or press Delete key)"
+          >
+            ✕
+          </button>
+        )}
       </div>
       
       {nodeDefinition?.description && (
@@ -83,58 +103,70 @@ const NodeComponent: React.FC<{
         </div>
       )}
 
-      {/* Input sockets - only show for 'file' type inputs that can receive connections */}
-      <div className="space-y-1 mb-2">
-        {nodeDefinition?.inputs
-          .filter(input => input.type === 'file')
-          .map((input) => (
-            <div key={input.name} className="flex items-center space-x-2">
+      {/* All Input Parameters */}
+      {nodeDefinition?.inputs.map((inputDef: any) => (
+        <div key={inputDef.name} className="mb-2">
+          <div className="flex items-center space-x-2 mb-1">
+            {inputDef.type === 'file' && (
               <div 
-                className="w-4 h-4 bg-orange-500 rounded-full border-2 border-white cursor-pointer hover:bg-orange-400 transition-colors shadow-sm"
+                className="w-4 h-4 bg-orange-500 rounded-full border-2 border-white cursor-pointer hover:bg-orange-400 transition-colors shadow-sm flex-shrink-0"
                 data-socket-type="input"
                 data-node-id={node.id}
-                data-socket-id={input.name}
+                data-socket-id={inputDef.name}
                 onMouseDown={(e) => {
                   e.stopPropagation();
-                  onSocketMouseDown(node.id, input.name, 'input', e);
+                  onSocketMouseDown(node.id, inputDef.name, 'input', e);
                 }}
-                title={`Input: ${input.name}`}
-              />
-              <span className="text-xs">{input.name}</span>
-            </div>
-          ))}
-      </div>
-
-      {/* Parameters */}
-      {nodeDefinition?.inputs.map((inputDef: any) => (
-        inputDef.type !== 'file' && (
-          <div key={inputDef.name} className="mb-2">
-            <label className="text-xs text-muted-foreground block mb-1">
-              {inputDef.name}
-            </label>
-            {inputDef.type === 'select' ? (
-              <select
-                value={node.parameters[inputDef.name] || inputDef.default || ''}
-                onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
-                onMouseDown={(e) => e.stopPropagation()}
-                className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
-              >
-                {inputDef.options?.map((option: string) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            ) : (
-              <input
-                type={inputDef.type === 'number' ? 'number' : 'text'}
-                value={node.parameters[inputDef.name] || inputDef.default || ''}
-                onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
-                onMouseDown={(e) => e.stopPropagation()}
-                className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
-                placeholder={inputDef.description}
+                title={`Connect to: ${inputDef.name}`}
               />
             )}
+            <label className="text-xs text-muted-foreground">
+              {inputDef.name}
+              {inputDef.required && <span className="text-red-400 ml-1">*</span>}
+            </label>
           </div>
-        )
+          
+          {inputDef.type === 'select' ? (
+            <select
+              value={node.parameters[inputDef.name] || inputDef.default || ''}
+              onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
+              onMouseDown={(e) => e.stopPropagation()}
+              className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
+            >
+              {inputDef.options?.map((option: string) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          ) : inputDef.type === 'boolean' ? (
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={node.parameters[inputDef.name] || inputDef.default || false}
+                onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.checked)}
+                onMouseDown={(e) => e.stopPropagation()}
+                className="rounded"
+              />
+              <span className="text-xs text-muted-foreground">
+                {node.parameters[inputDef.name] || inputDef.default ? 'Enabled' : 'Disabled'}
+              </span>
+            </div>
+          ) : (
+            <input
+              type={inputDef.type === 'number' ? 'number' : 'text'}
+              value={node.parameters[inputDef.name] || inputDef.default || ''}
+              onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
+              onMouseDown={(e) => e.stopPropagation()}
+              className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
+              placeholder={inputDef.description || `Enter ${inputDef.name}`}
+            />
+          )}
+          
+          {inputDef.description && (
+            <div className="text-xs text-muted-foreground mt-1 opacity-75">
+              {inputDef.description}
+            </div>
+          )}
+        </div>
       ))}
 
       {/* Output sockets */}
@@ -180,6 +212,11 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     fromPos: { x: number; y: number };
     to: { x: number; y: number };
   } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    nodeId: string;
+  } | null>(null);
 
   useEffect(() => {
     const handleStateChange = (state: EditorState) => {
@@ -218,9 +255,45 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     return () => editor.removeListener(handleStateChange);
   }, [editor, onNodesChange, onConnectionsChange, onExportReady]);
 
+  // Handle keyboard events for node deletion
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle delete if we're not typing in an input field
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (editorState.selectedNodes.length > 0) {
+          e.preventDefault();
+          editorState.selectedNodes.forEach(nodeId => {
+            editor.removeNode(nodeId);
+          });
+        }
+      }
+
+      // Close context menu on Escape
+      if (e.key === 'Escape') {
+        setContextMenu(null);
+      }
+    };
+
+    const handleClickOutside = () => {
+      setContextMenu(null);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [editor, editorState.selectedNodes]);
+
   const handleCanvasClick = (e: React.MouseEvent) => {
     if (e.target === canvasRef.current) {
       editor.clearSelection();
+      setContextMenu(null);
     }
   };
 
@@ -374,6 +447,14 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     editor.updateNodeParameter(nodeId, param, value);
   };
 
+  const handleDeleteNode = (nodeId: string) => {
+    editor.removeNode(nodeId);
+  };
+
+  const handleNodeContextMenu = (nodeId: string, x: number, y: number) => {
+    setContextMenu({ x, y, nodeId });
+  };
+
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
     addNode: (nodeDefinition: NodeDefinition, position?: { x: number; y: number }) => {
@@ -418,6 +499,8 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           onSelect={handleNodeSelect}
           onParameterChange={handleParameterChange}
           onSocketMouseDown={handleSocketMouseDown}
+          onDeleteNode={handleDeleteNode}
+          onContextMenu={handleNodeContextMenu}
         />
       ))}
 
@@ -475,18 +558,23 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
               const nodeHeight = nodeRect.height;
               
               if (socketType === 'input') {
-                // Input sockets are on the left side - only show for 'file' type parameters
+                // Input sockets are now positioned next to their input fields
                 const nodeDefinition = getNodeDefinition(node.type);
                 if (!nodeDefinition) return { x: 0, y: 0 };
                 
-                // Find connection inputs (only 'file' type parameters that can receive connections)
-                const connectionInputs = nodeDefinition.inputs.filter(input => input.type === 'file');
-                const inputIndex = connectionInputs.findIndex(input => input.name === socketId);
+                // Find the input parameter index
+                const inputIndex = nodeDefinition.inputs.findIndex(input => input.name === socketId);
                 
                 if (inputIndex >= 0) {
+                  // Calculate position based on the new layout
+                  const titleHeight = 20; // Node title height
+                  const descHeight = nodeDefinition.description ? 40 : 0; // Description height
+                  const paramSpacing = 30; // Spacing between parameters
+                  const paramStartY = relativeY + titleHeight + descHeight + 20; // Start of parameters
+                  
                   return {
                     x: relativeX + 16, // 16px from left edge
-                    y: relativeY + 60 + (inputIndex * 25) // After title/desc + spacing
+                    y: paramStartY + (inputIndex * paramSpacing) + 8 // Center of the parameter row
                   };
                 }
               } else {
@@ -558,6 +646,36 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
         })()}
       </svg>
 
+      {/* Context Menu */}
+      {contextMenu && (
+        <div
+          className="fixed bg-card border border-border rounded-lg shadow-lg z-50 py-1 min-w-32"
+          style={{
+            left: contextMenu.x,
+            top: contextMenu.y,
+          }}
+        >
+          <button
+            onClick={() => {
+              editor.removeNode(contextMenu.nodeId);
+              setContextMenu(null);
+            }}
+            className="w-full px-3 py-2 text-left text-sm text-red-500 hover:bg-red-500/10 transition-colors"
+          >
+            🗑️ Delete Node
+          </button>
+          <button
+            onClick={() => {
+              editor.selectNode(contextMenu.nodeId);
+              setContextMenu(null);
+            }}
+            className="w-full px-3 py-2 text-left text-sm text-foreground hover:bg-accent transition-colors"
+          >
+            ✅ Select Node
+          </button>
+        </div>
+      )}
+
       {/* Help text */}
       {editorState.nodes.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
@@ -605,10 +723,10 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           <div className="text-blue-400">🔗 Dragging connection from {connectionDrag.from.nodeId}...</div>
         )}
         {editorState.selectedNodes.length > 0 && (
-          <div>Selected: {editorState.selectedNodes.length}</div>
+          <div className="text-yellow-400">Selected: {editorState.selectedNodes.length} (Press Delete to remove)</div>
         )}
         <div className="mt-1 text-xs opacity-75">
-          💡 Drag from 🔵 blue (output) to 🟠 orange (input)
+          💡 Drag from 🔵 blue (output) to 🟠 orange (input) | Right-click nodes for menu
         </div>
       </div>
     </div>
