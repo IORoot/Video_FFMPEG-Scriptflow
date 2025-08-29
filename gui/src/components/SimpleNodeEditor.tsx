@@ -585,9 +585,8 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
         style={{ zIndex: 10, width: '100%', height: '100%' }}
         viewBox={`0 0 ${canvasRef.current?.offsetWidth || 1200} ${canvasRef.current?.offsetHeight || 800}`}
       >
-        {/* Test line to verify SVG is working */}
-        <line x1="50" y1="50" x2="150" y2="50" stroke="red" strokeWidth="2" />
-        <text x="50" y="40" fill="red" fontSize="12">SVG Test Line</text>
+
+
         
         {editorState.connections.map((connection, index) => {
           console.log(`Rendering connection ${index}:`, connection);
