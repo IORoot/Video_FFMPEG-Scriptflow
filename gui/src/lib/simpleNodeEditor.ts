@@ -208,6 +208,71 @@ export class SimpleNodeEditor {
     }
   }
 
+  addDynamicInput(nodeId: string, baseInputName: string) {
+    const node = this.state.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    // Import nodeDefinitions here to avoid circular imports
+    const { getNodeDefinition } = require('./nodeDefinitions');
+    const nodeDefinition = getNodeDefinition(node.type);
+    if (!nodeDefinition) return;
+
+    // Find the base input definition
+    const baseInput = nodeDefinition.inputs.find((input: any) => input.name === baseInputName);
+    if (!baseInput || !baseInput.dynamic) return;
+
+    // Count existing dynamic inputs
+    const dynamicInputs = Object.keys(node.parameters).filter(key => 
+      key.startsWith(baseInputName.replace(/\d+$/, '')) && key !== baseInputName
+    );
+    
+    const nextNumber = dynamicInputs.length + 4; // Start from input4, input5, etc.
+    const newInputName = baseInput.dynamicPattern?.replace('%d', nextNumber.toString()) || `${baseInputName.replace(/\d+$/, '')}${nextNumber}`;
+
+    // Check max limit
+    if (baseInput.maxDynamic && dynamicInputs.length >= baseInput.maxDynamic) return;
+
+    // Add the new input parameter
+    node.parameters[newInputName] = baseInput.default || '';
+
+    // Add the input socket
+    const newSocket = {
+      id: newInputName,
+      type: 'input' as const,
+      dataType: baseInput.type === 'file' ? 'video' as const : 'text' as const,
+      name: newInputName
+    };
+    node.inputs.push(newSocket);
+
+    this.notifyListeners();
+  }
+
+  removeDynamicInput(nodeId: string, inputName: string) {
+    const node = this.state.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    // Don't remove required inputs
+    const { getNodeDefinition } = require('./nodeDefinitions');
+    const nodeDefinition = getNodeDefinition(node.type);
+    if (!nodeDefinition) return;
+
+    const inputDef = nodeDefinition.inputs.find((input: any) => input.name === inputName);
+    if (inputDef && inputDef.required) return;
+
+    // Remove the parameter
+    delete node.parameters[inputName];
+
+    // Remove the input socket
+    node.inputs = node.inputs.filter(input => input.id !== inputName);
+
+    // Remove any connections to this input
+    this.state.connections = this.state.connections.filter(
+      conn => !(conn.to.nodeId === nodeId && conn.to.socketId === inputName)
+    );
+
+    this.notifyListeners();
+  }
+
   clearAll() {
     this.state = {
       nodes: [],

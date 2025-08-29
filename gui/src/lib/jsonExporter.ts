@@ -119,16 +119,21 @@ export class JsonExporter {
           case 'ypixels':
             scriptParams.y = value;
             break;
-          case 'input1':
-          case 'input2':
-          case 'input3':
-            scriptParams[param.name] = value;
-            break;
           default:
             scriptParams[param.name] = value;
         }
       }
     }
+
+    // Handle dynamic inputs (input4, input5, etc.)
+    Object.keys(nodeData).forEach(key => {
+      if (key.match(/^input\d+$/) && !scriptParams[key]) {
+        const value = nodeData[key];
+        if (value !== undefined && value !== null && value !== '') {
+          scriptParams[key] = value;
+        }
+      }
+    });
 
     return scriptParams;
   }
@@ -211,6 +216,27 @@ export class JsonExporter {
           }
         }
       }
+
+      // Validate dynamic inputs that exist in the node data
+      Object.keys(node.data).forEach(key => {
+        if (key.match(/^input\d+$/)) {
+          const hasValue = node.data[key] !== undefined && 
+                          node.data[key] !== null && 
+                          node.data[key] !== '';
+
+          const hasConnection = this.connections.some(conn => 
+            conn.to === node.id && conn.input === key
+          );
+
+          // Dynamic inputs are optional, but if they exist they should have a value or connection
+          if (!hasValue && !hasConnection) {
+            // Only warn for dynamic inputs that are not empty
+            if (node.data[key] !== undefined) {
+              errors.push(`Node "${node.name}" (${node.id}) dynamic input "${key}" has no value or connection`);
+            }
+          }
+        }
+      });
     }
 
     // Check for circular dependencies

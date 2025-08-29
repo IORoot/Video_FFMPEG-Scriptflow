@@ -5,6 +5,9 @@ export interface NodeParameter {
   options?: string[];
   description?: string;
   required?: boolean;
+  dynamic?: boolean; // Can this input be dynamically added/removed?
+  dynamicPattern?: string; // Pattern for naming dynamic inputs (e.g., "input%d")
+  maxDynamic?: number; // Maximum number of dynamic inputs allowed
 }
 
 export interface NodeDefinition {
@@ -249,6 +252,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     inputs: [
       { name: 'input1', type: 'file', required: true, description: 'First video' },
       { name: 'input2', type: 'file', required: true, description: 'Second video' },
+      { name: 'input3', type: 'file', description: 'Third video (optional)', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 8 },
       { name: 'direction', type: 'select', options: ['horizontal', 'vertical'], default: 'horizontal', description: 'Stack direction' },
       { name: 'output', type: 'string', default: 'ff_stack.mp4', description: 'Output filename' }
     ],
@@ -420,7 +424,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     inputs: [
       { name: 'input1', type: 'file', required: true, description: 'First video' },
       { name: 'input2', type: 'file', required: true, description: 'Second video' },
-      { name: 'input3', type: 'file', description: 'Third video (optional)' },
+      { name: 'input3', type: 'file', description: 'Third video (optional)', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 10 },
       { name: 'output', type: 'string', default: 'ff_concat.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]

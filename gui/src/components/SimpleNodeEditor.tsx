@@ -17,7 +17,9 @@ const NodeComponent: React.FC<{
   onSocketMouseDown: (nodeId: string, socketId: string, type: 'input' | 'output', e: React.MouseEvent) => void;
   onDeleteNode: (nodeId: string) => void;
   onContextMenu: (nodeId: string, x: number, y: number) => void;
-}> = ({ node, onMove, onSelect, onParameterChange, onSocketMouseDown, onDeleteNode, onContextMenu }) => {
+  onAddDynamicInput: (nodeId: string, baseInputName: string) => void;
+  onRemoveDynamicInput: (nodeId: string, inputName: string) => void;
+}> = ({ node, onMove, onSelect, onParameterChange, onSocketMouseDown, onDeleteNode, onContextMenu, onAddDynamicInput, onRemoveDynamicInput }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
@@ -104,70 +106,127 @@ const NodeComponent: React.FC<{
       )}
 
       {/* All Input Parameters */}
-      {nodeDefinition?.inputs.map((inputDef: any) => (
-        <div key={inputDef.name} className="mb-2">
-          <div className="flex items-center space-x-2 mb-1">
-            {inputDef.type === 'file' && (
-              <div 
-                className="w-4 h-4 bg-orange-500 rounded-full border-2 border-white cursor-pointer hover:bg-orange-400 transition-colors shadow-sm flex-shrink-0"
-                data-socket-type="input"
-                data-node-id={node.id}
-                data-socket-id={inputDef.name}
-                onMouseDown={(e) => {
-                  e.stopPropagation();
-                  onSocketMouseDown(node.id, inputDef.name, 'input', e);
-                }}
-                title={`Connect to: ${inputDef.name}`}
-              />
-            )}
-            <label className="text-xs text-muted-foreground">
-              {inputDef.name}
-              {inputDef.required && <span className="text-red-400 ml-1">*</span>}
-            </label>
-          </div>
+      {(() => {
+        // Get all inputs (static + dynamic)
+        const allInputs = [...(nodeDefinition?.inputs || [])];
+        
+        // Add dynamic inputs that exist in the node
+        const dynamicInputs = Object.keys(node.parameters).filter(key => {
+          const baseInput = nodeDefinition?.inputs.find(input => input.dynamic && key.startsWith(input.name.replace(/\d+$/, '')));
+          return baseInput && !allInputs.find(input => input.name === key);
+        });
+        
+        dynamicInputs.forEach(inputName => {
+          const baseInput = nodeDefinition?.inputs.find(input => input.dynamic && inputName.startsWith(input.name.replace(/\d+$/, '')));
+          if (baseInput) {
+            allInputs.push({
+              ...baseInput,
+              name: inputName,
+              required: false // Dynamic inputs are never required
+            });
+          }
+        });
+
+        return allInputs.map((inputDef: any) => {
+          const isDynamic = inputDef.dynamic && inputDef.name !== nodeDefinition?.inputs.find(input => input.dynamic && inputDef.name.startsWith(input.name.replace(/\d+$/, '')))?.name;
+          const baseInputName = nodeDefinition?.inputs.find(input => input.dynamic && inputDef.name.startsWith(input.name.replace(/\d+$/, '')))?.name;
           
-          {inputDef.type === 'select' ? (
-            <select
-              value={node.parameters[inputDef.name] || inputDef.default || ''}
-              onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
-              onMouseDown={(e) => e.stopPropagation()}
-              className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
-            >
-              {inputDef.options?.map((option: string) => (
-                <option key={option} value={option}>{option}</option>
-              ))}
-            </select>
-          ) : inputDef.type === 'boolean' ? (
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={node.parameters[inputDef.name] || inputDef.default || false}
-                onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.checked)}
-                onMouseDown={(e) => e.stopPropagation()}
-                className="rounded"
-              />
-              <span className="text-xs text-muted-foreground">
-                {node.parameters[inputDef.name] || inputDef.default ? 'Enabled' : 'Disabled'}
-              </span>
+          return (
+            <div key={inputDef.name} className="mb-2">
+              <div className="flex items-center space-x-2 mb-1">
+                {inputDef.type === 'file' && (
+                  <div 
+                    className="w-4 h-4 bg-orange-500 rounded-full border-2 border-white cursor-pointer hover:bg-orange-400 transition-colors shadow-sm flex-shrink-0"
+                    data-socket-type="input"
+                    data-node-id={node.id}
+                    data-socket-id={inputDef.name}
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      onSocketMouseDown(node.id, inputDef.name, 'input', e);
+                    }}
+                    title={`Connect to: ${inputDef.name}`}
+                  />
+                )}
+                <label className="text-xs text-muted-foreground flex-1">
+                  {inputDef.name}
+                  {inputDef.required && <span className="text-red-400 ml-1">*</span>}
+                </label>
+                
+                {/* Dynamic input controls */}
+                {inputDef.dynamic && baseInputName && (
+                  <div className="flex items-center space-x-1">
+                    {isDynamic && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRemoveDynamicInput(node.id, inputDef.name);
+                        }}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-500/10 rounded p-1 transition-colors"
+                        title="Remove input"
+                      >
+                        −
+                      </button>
+                    )}
+                    {inputDef.name === baseInputName && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddDynamicInput(node.id, baseInputName);
+                        }}
+                        className="text-green-500 hover:text-green-700 hover:bg-green-500/10 rounded p-1 transition-colors"
+                        title="Add input"
+                      >
+                        +
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              {inputDef.type === 'select' ? (
+                <select
+                  value={node.parameters[inputDef.name] || inputDef.default || ''}
+                  onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
+                >
+                  {inputDef.options?.map((option: string) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              ) : inputDef.type === 'boolean' ? (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={node.parameters[inputDef.name] || inputDef.default || false}
+                    onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.checked)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="rounded"
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    {node.parameters[inputDef.name] || inputDef.default ? 'Enabled' : 'Disabled'}
+                  </span>
+                </div>
+              ) : (
+                <input
+                  type={inputDef.type === 'number' ? 'number' : 'text'}
+                  value={node.parameters[inputDef.name] || inputDef.default || ''}
+                  onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
+                  placeholder={inputDef.description || `Enter ${inputDef.name}`}
+                />
+              )}
+              
+              {inputDef.description && (
+                <div className="text-xs text-muted-foreground mt-1 opacity-75">
+                  {inputDef.description}
+                </div>
+              )}
             </div>
-          ) : (
-            <input
-              type={inputDef.type === 'number' ? 'number' : 'text'}
-              value={node.parameters[inputDef.name] || inputDef.default || ''}
-              onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
-              onMouseDown={(e) => e.stopPropagation()}
-              className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
-              placeholder={inputDef.description || `Enter ${inputDef.name}`}
-            />
-          )}
-          
-          {inputDef.description && (
-            <div className="text-xs text-muted-foreground mt-1 opacity-75">
-              {inputDef.description}
-            </div>
-          )}
-        </div>
-      ))}
+          );
+        });
+      })()}
 
       {/* Output sockets */}
       <div className="space-y-1 mt-2">
@@ -455,6 +514,14 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     setContextMenu({ x, y, nodeId });
   };
 
+  const handleAddDynamicInput = (nodeId: string, baseInputName: string) => {
+    editor.addDynamicInput(nodeId, baseInputName);
+  };
+
+  const handleRemoveDynamicInput = (nodeId: string, inputName: string) => {
+    editor.removeDynamicInput(nodeId, inputName);
+  };
+
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
     addNode: (nodeDefinition: NodeDefinition, position?: { x: number; y: number }) => {
@@ -501,6 +568,8 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           onSocketMouseDown={handleSocketMouseDown}
           onDeleteNode={handleDeleteNode}
           onContextMenu={handleNodeContextMenu}
+          onAddDynamicInput={handleAddDynamicInput}
+          onRemoveDynamicInput={handleRemoveDynamicInput}
         />
       ))}
 
