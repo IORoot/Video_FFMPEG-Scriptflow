@@ -22,6 +22,12 @@ const NodeComponent: React.FC<{
   const nodeDefinition = getNodeDefinition(node.type);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    // Don't prevent default for input fields - let them handle focus/selection
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'TEXTAREA') {
+      return;
+    }
+    
     e.preventDefault();
     setDragOffset({
       x: e.clientX - node.position.x,
@@ -110,6 +116,7 @@ const NodeComponent: React.FC<{
               <select
                 value={node.parameters[inputDef.name] || inputDef.default || ''}
                 onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
+                onMouseDown={(e) => e.stopPropagation()}
                 className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
               >
                 {inputDef.options?.map((option: string) => (
@@ -121,6 +128,7 @@ const NodeComponent: React.FC<{
                 type={inputDef.type === 'number' ? 'number' : 'text'}
                 value={node.parameters[inputDef.name] || inputDef.default || ''}
                 onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
+                onMouseDown={(e) => e.stopPropagation()}
                 className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
                 placeholder={inputDef.description}
               />

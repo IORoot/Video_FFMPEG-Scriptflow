@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 // import { Play, Download, Trash2, Menu, Save, FolderOpen, Settings, AlertTriangle, CheckCircle, Loader2, Square } from 'lucide-react';
 import { JsonExporter } from '../lib/jsonExporter';
 import { PipelineRunner, PipelineRunStatus } from '../lib/pipelineRunner';
+import { JsonModal } from './JsonModal';
 
 interface ToolbarProps {
   onToggleSidebar: () => void;
@@ -22,6 +23,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 }) => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [validationResult, setValidationResult] = useState<{ isValid: boolean; errors: string[] } | null>(null);
+  const [showJsonModal, setShowJsonModal] = useState(false);
 
   const handleExportJSON = async () => {
     if (!exporter) {
@@ -124,6 +126,31 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     window.dispatchEvent(event);
   };
 
+  const handleViewJSON = () => {
+    if (!exporter) {
+      alert('No pipeline to view');
+      return;
+    }
+
+    try {
+      const validation = exporter.validate();
+      setValidationResult(validation);
+
+      if (!validation.isValid) {
+        setShowValidationErrors(true);
+        return;
+      }
+
+      setShowJsonModal(true);
+    } catch (error) {
+      console.error('Failed to generate JSON:', error);
+      const event = new CustomEvent('show-toast', {
+        detail: { message: 'Failed to generate JSON: ' + (error instanceof Error ? error.message : 'Unknown error'), type: 'error' }
+      });
+      window.dispatchEvent(event);
+    }
+  };
+
   const getRunButtonContent = () => {
     if (runStatus.isRunning) {
       return (
@@ -203,6 +230,15 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
           {/* Right section */}
           <div className="flex items-center space-x-2">
+            <button
+              onClick={handleViewJSON}
+              disabled={runStatus.isRunning}
+              className="flex items-center space-x-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-md transition-colors"
+            >
+              <span>👁️</span>
+              <span>View JSON</span>
+            </button>
+
             <button
               onClick={handleExportJSON}
               disabled={runStatus.isRunning}
@@ -284,6 +320,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           </div>
         </div>
       )}
+
+      {/* JSON Modal */}
+      <JsonModal
+        isOpen={showJsonModal}
+        onClose={() => setShowJsonModal(false)}
+        jsonData={exporter?.exportAsString() || ''}
+      />
     </>
   );
 };
