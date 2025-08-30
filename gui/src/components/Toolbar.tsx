@@ -12,6 +12,8 @@ interface ToolbarProps {
   exporter?: JsonExporter;
   runner: PipelineRunner;
   runStatus: PipelineRunStatus;
+  gridSnapEnabled: boolean;
+  onToggleGridSnap: () => void;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -19,7 +21,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onClearAll,
   exporter,
   runner,
-  runStatus
+  runStatus,
+  gridSnapEnabled,
+  onToggleGridSnap
 }) => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [validationResult, setValidationResult] = useState<{ isValid: boolean; errors: string[] } | null>(null);
@@ -207,6 +211,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
           {/* Right section */}
           <div className="flex items-center space-x-2">
+            <button
+              onClick={onToggleGridSnap}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+                gridSnapEnabled 
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                  : 'bg-gray-600 hover:bg-gray-700 text-white'
+              }`}
+              title={gridSnapEnabled ? 'Grid snapping enabled - click to disable' : 'Grid snapping disabled - click to enable'}
+            >
+              <span>📐</span>
+              <span className="hidden sm:inline">Grid Snap</span>
+            </button>
+
             <button
               onClick={handleSimulationModeToggle}
               className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${

@@ -687,6 +687,7 @@ export interface SimpleNodeEditorHandle {
   removeSelectedNodes: () => void;
   clearAll: () => void;
   getEditor: () => SimpleNodeEditor;
+  setGridSnapEnabled: (enabled: boolean) => void;
 }
 
 export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, SimpleNodeEditorProps>(({
@@ -1011,7 +1012,10 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     clearAll: () => {
       editor.clearAll();
     },
-    getEditor: () => editor
+    getEditor: () => editor,
+    setGridSnapEnabled: (enabled: boolean) => {
+      editor.setGridSnapEnabled(enabled);
+    }
   }), [editor, editorState.selectedNodes]);
 
   return (

@@ -60,6 +60,7 @@ function App() {
   });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' | 'info' } | null>(null);
   const [nodeEditorRef, setNodeEditorRef] = useState<SimpleNodeEditorHandle | null>(null);
+  const [gridSnapEnabled, setGridSnapEnabled] = useState(true);
 
   // Listen for pipeline status changes
   useEffect(() => {
@@ -109,6 +110,14 @@ function App() {
 
   const handleClearAll = () => {
     nodeEditorRef?.clearAll();
+  };
+
+  const handleToggleGridSnap = () => {
+    if (nodeEditorRef) {
+      const newValue = !gridSnapEnabled;
+      setGridSnapEnabled(newValue);
+      nodeEditorRef.setGridSnapEnabled(newValue);
+    }
   };
 
   const handleClearLogs = () => {
@@ -181,6 +190,8 @@ function App() {
         exporter={exporter}
         runner={runner}
         runStatus={runStatus}
+        gridSnapEnabled={gridSnapEnabled}
+        onToggleGridSnap={handleToggleGridSnap}
       />
 
       {/* Log viewer toggle button */}

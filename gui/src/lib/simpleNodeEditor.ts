@@ -55,6 +55,7 @@ export interface EditorState {
     isConnecting: boolean;
     fromSocket?: { nodeId: string; socketId: string };
   };
+  gridSnapEnabled: boolean;
 }
 
 export class SimpleNodeEditor {
@@ -64,7 +65,8 @@ export class SimpleNodeEditor {
     selectedNodes: [],
     comments: [],
     dragState: { isDragging: false },
-    connectionState: { isConnecting: false }
+    connectionState: { isConnecting: false },
+    gridSnapEnabled: true
   };
 
   private listeners: Array<(state: EditorState) => void> = [];
@@ -155,7 +157,10 @@ export class SimpleNodeEditor {
   moveNode(nodeId: string, position: NodePosition) {
     const node = this.state.nodes.find(n => n.id === nodeId);
     if (node) {
-      node.position = position;
+      node.position = {
+        x: this.snapToGrid(position.x),
+        y: this.snapToGrid(position.y)
+      };
       this.notifyListeners();
     }
   }
@@ -295,9 +300,27 @@ export class SimpleNodeEditor {
       selectedNodes: [],
       comments: [],
       dragState: { isDragging: false },
-      connectionState: { isConnecting: false }
+      connectionState: { isConnecting: false },
+      gridSnapEnabled: this.state.gridSnapEnabled
     };
     this.notifyListeners();
+  }
+
+  // Grid snapping methods
+  setGridSnapEnabled(enabled: boolean) {
+    this.state.gridSnapEnabled = enabled;
+    this.notifyListeners();
+  }
+
+  getGridSnapEnabled(): boolean {
+    return this.state.gridSnapEnabled;
+  }
+
+  private snapToGrid(value: number, gridSize: number = 32): number {
+    if (!this.state.gridSnapEnabled) {
+      return value;
+    }
+    return Math.round(value / gridSize) * gridSize;
   }
 
   addConnection(fromNodeId: string, fromSocket: string, toNodeId: string, toSocket: string): void {
@@ -350,6 +373,20 @@ export class SimpleNodeEditor {
   updateComment(commentId: string, updates: Partial<CanvasComment>): void {
     const comment = this.state.comments.find(c => c.id === commentId);
     if (comment) {
+      // Apply grid snapping to position and size if they're being updated
+      if (updates.x !== undefined) {
+        updates.x = this.snapToGrid(updates.x);
+      }
+      if (updates.y !== undefined) {
+        updates.y = this.snapToGrid(updates.y);
+      }
+      if (updates.width !== undefined) {
+        updates.width = this.snapToGrid(updates.width);
+      }
+      if (updates.height !== undefined) {
+        updates.height = this.snapToGrid(updates.height);
+      }
+      
       Object.assign(comment, updates);
       this.notifyListeners();
     }
