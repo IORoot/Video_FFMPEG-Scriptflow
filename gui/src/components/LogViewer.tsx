@@ -79,7 +79,7 @@ export const LogViewer: React.FC<LogViewerProps> = ({
   return (
     <>
       {isVisible && (
-        <div className="fixed bottom-16 right-4 w-96 h-80 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl z-30 flex flex-col">
+        <div className="fixed top-16 right-0 w-96 h-[calc(100vh-4rem)] bg-gray-900 border-l border-gray-700 shadow-2xl z-30 flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-gray-700">
             <div className="flex items-center space-x-2">

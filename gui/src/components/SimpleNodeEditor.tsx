@@ -3,6 +3,30 @@ import { SimpleNodeEditor, EditorState, EditorNode } from '../lib/simpleNodeEdit
 import { NodeDefinition, getNodeDefinition } from '../lib/nodeDefinitions';
 import { JsonExporter, NodeData } from '../lib/jsonExporter';
 
+// Function to get node color based on category
+const getNodeColor = (category: string): { bg: string; dot: string } => {
+  switch (category) {
+    case 'input':
+      return { bg: 'bg-green-100', dot: 'bg-green-500' }; // Green for inputs
+    case 'size':
+      return { bg: 'bg-blue-100', dot: 'bg-blue-500' }; // Blue for size operations
+    case 'effects':
+      return { bg: 'bg-purple-100', dot: 'bg-purple-500' }; // Purple for effects
+    case 'composition':
+      return { bg: 'bg-yellow-100', dot: 'bg-yellow-500' }; // Yellow for composition
+    case 'format':
+      return { bg: 'bg-red-100', dot: 'bg-red-500' }; // Red for format operations
+    case 'timing':
+      return { bg: 'bg-teal-100', dot: 'bg-teal-500' }; // Teal for timing operations
+    case 'assembly':
+      return { bg: 'bg-indigo-100', dot: 'bg-indigo-500' }; // Indigo for assembly
+    case 'utilities':
+      return { bg: 'bg-orange-100', dot: 'bg-orange-500' }; // Orange for utilities
+    default:
+      return { bg: 'bg-gray-100', dot: 'bg-gray-500' }; // Gray for unknown
+  }
+};
+
 interface SimpleNodeEditorProps {
   onNodesChange?: (nodes: NodeData[]) => void;
   onConnectionsChange?: (connections: Array<{ from: string; to: string; output: string; input: string }>) => void;
@@ -82,8 +106,13 @@ const NodeComponent: React.FC<{
       }}
     >
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm font-medium text-card-foreground">
-          {nodeDefinition?.name || node.name}
+        <div className="flex items-center space-x-2">
+          {nodeDefinition && (
+            <div className={`w-3 h-3 ${getNodeColor(nodeDefinition.category).dot} rounded-full flex-shrink-0`} />
+          )}
+          <div className="text-sm font-medium text-card-foreground">
+            {nodeDefinition?.name || node.name}
+          </div>
         </div>
         {node.selected && (
           <button

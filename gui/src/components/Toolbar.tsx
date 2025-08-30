@@ -111,21 +111,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     }
   };
 
-  const handleSavePipeline = () => {
-    // TODO: Implement save to localStorage or file
-    const event = new CustomEvent('show-toast', {
-      detail: { message: 'Save functionality coming soon!', type: 'info' }
-    });
-    window.dispatchEvent(event);
-  };
 
-  const handleLoadPipeline = () => {
-    // TODO: Implement load from localStorage or file
-    const event = new CustomEvent('show-toast', {
-      detail: { message: 'Load functionality coming soon!', type: 'info' }
-    });
-    window.dispatchEvent(event);
-  };
 
   const handleViewJSON = () => {
     if (!exporter) {
@@ -198,36 +184,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
             <div className="h-6 w-px bg-border" />
 
-            <button
-              onClick={handleSimulationModeToggle}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-                simulationMode 
-                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white' 
-                  : 'bg-green-600 hover:bg-green-700 text-white'
-              }`}
-              title={simulationMode ? 'Currently in simulation mode - click to run real commands' : 'Currently in execution mode - click to enable simulation'}
-            >
-              <span>{simulationMode ? '🎭' : '🚀'}</span>
-              <span className="hidden sm:inline">{simulationMode ? 'Simulation' : 'Execute'}</span>
-            </button>
 
-            <button
-              onClick={handleSavePipeline}
-              className="flex items-center space-x-2 px-3 py-2 hover:bg-accent text-accent-foreground rounded-md transition-colors"
-              title="Save Pipeline"
-            >
-              <span>💾</span>
-              <span className="hidden sm:inline">Save</span>
-            </button>
-
-            <button
-              onClick={handleLoadPipeline}
-              className="flex items-center space-x-2 px-3 py-2 hover:bg-accent text-accent-foreground rounded-md transition-colors"
-              title="Load Pipeline"
-            >
-              <span>📁</span>
-              <span className="hidden sm:inline">Load</span>
-            </button>
           </div>
 
           {/* Center section - Status */}
@@ -250,6 +207,23 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
           {/* Right section */}
           <div className="flex items-center space-x-2">
+            <button
+              onClick={handleSimulationModeToggle}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
+                simulationMode 
+                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white' 
+                  : 'bg-green-600 hover:bg-green-700 text-white'
+              }`}
+              title={simulationMode ? 'Currently in simulation mode - click to run real commands' : 'Currently in execution mode - click to enable simulation'}
+            >
+              <span>{simulationMode ? '🎭' : '🚀'}</span>
+              <span className="hidden sm:inline">{simulationMode ? 'Simulation' : 'Execute'}</span>
+            </button>
+
+
+
+            <div className="h-6 w-px bg-border" />
+
             <button
               onClick={handleViewJSON}
               disabled={runStatus.isRunning}

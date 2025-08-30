@@ -449,7 +449,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     inputs: [
       { name: 'input1', type: 'file', required: true, description: 'First video' },
       { name: 'input2', type: 'file', required: true, description: 'Second video' },
-      { name: 'transition', type: 'select', options: ['fade', 'dissolve', 'wipe'], default: 'fade', description: 'Transition type' },
+      { name: 'transition', type: 'select', options: ['fade','fadeblack','fadewhite','distance','wipeleft','wiperight','wipeup','wipedown','slideleft','slideright','slideup','slidedown','smoothleft','smoothright','smoothup','smoothdown','circlecrop','rectcrop','circleclose','circleopen','horzclose','horzopen','vertclose','vertopen','diagbl','diagbr','diagtl','diagtr','hlslice','hrslice','vuslice','vdslice','dissolve','pixelize','radial','hblur','wipetl','wipetr','wipebl','wipebr','fadegrays','squeezev','squeezeh','zoomin','hlwind','hrwind','vuwind','vdwind','coverleft','coverright','coverup','coverdown','revealleft','revealright','revealup','revealdown'], default: 'fade', description: 'Transition type' },
       { name: 'output', type: 'string', default: 'ff_append.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -463,7 +463,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     inputs: [
       { name: 'input1', type: 'file', required: true, description: 'First video' },
       { name: 'input2', type: 'file', required: true, description: 'Second video' },
-      { name: 'type', type: 'select', options: ['fade', 'dissolve', 'slide', 'wipe'], default: 'fade', description: 'Transition type' },
+      { name: 'effects', type: 'select', options: ['fade','fadeblack','fadewhite','distance','wipeleft','wiperight','wipeup','wipedown','slideleft','slideright','slideup','slidedown','smoothleft','smoothright','smoothup','smoothdown','circlecrop','rectcrop','circleclose','circleopen','horzclose','horzopen','vertclose','vertopen','diagbl','diagbr','diagtl','diagtr','hlslice','hrslice','vuslice','vdslice','dissolve','pixelize','radial','hblur','wipetl','wipetr','wipebl','wipebr','fadegrays','squeezev','squeezeh','zoomin','hlwind','hrwind','vuwind','vdwind','coverleft','coverright','coverup','coverdown','revealleft','revealright','revealup','revealdown'], default: 'fade', description: 'Transition type' },
       { name: 'duration', type: 'number', default: 1, description: 'Transition duration in seconds' },
       { name: 'output', type: 'string', default: 'ff_transition.mp4', description: 'Output filename' }
     ],

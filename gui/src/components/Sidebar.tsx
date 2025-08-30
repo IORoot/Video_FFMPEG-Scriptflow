@@ -4,15 +4,41 @@ import React, { useState } from 'react';
 // import { ChevronDown, ChevronRight, Search, X } from 'lucide-react';
 import { nodeDefinitions, nodeCategories, getNodesByCategory, NodeDefinition } from '../lib/nodeDefinitions';
 
+// Function to get node color based on category
+const getNodeColor = (category: string): { bg: string; dot: string } => {
+  switch (category) {
+    case 'input':
+      return { bg: 'bg-green-100', dot: 'bg-green-500' }; // Green for inputs
+    case 'size':
+      return { bg: 'bg-blue-100', dot: 'bg-blue-500' }; // Blue for size operations
+    case 'effects':
+      return { bg: 'bg-purple-100', dot: 'bg-purple-500' }; // Purple for effects
+    case 'composition':
+      return { bg: 'bg-yellow-100', dot: 'bg-yellow-500' }; // Yellow for composition
+    case 'format':
+      return { bg: 'bg-red-100', dot: 'bg-red-500' }; // Red for format operations
+    case 'timing':
+      return { bg: 'bg-teal-100', dot: 'bg-teal-500' }; // Teal for timing operations
+    case 'assembly':
+      return { bg: 'bg-indigo-100', dot: 'bg-indigo-500' }; // Indigo for assembly
+    case 'utilities':
+      return { bg: 'bg-orange-100', dot: 'bg-orange-500' }; // Orange for utilities
+    default:
+      return { bg: 'bg-gray-100', dot: 'bg-gray-500' }; // Gray for unknown
+  }
+};
+
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
 }
 
-const NodeItem: React.FC<{ 
-  node: NodeDefinition; 
+const NodeItem: React.FC<{
+  node: NodeDefinition;
   onDragStart: (event: React.DragEvent, node: NodeDefinition) => void;
 }> = ({ node, onDragStart }) => {
+  const colors = getNodeColor(node.category);
+  
   return (
     <div
       className="p-3 bg-card border border-border rounded-lg cursor-grab active:cursor-grabbing hover:bg-accent transition-colors"
@@ -20,8 +46,8 @@ const NodeItem: React.FC<{
       onDragStart={(e) => onDragStart(e, node)}
     >
       <div className="flex items-start space-x-3">
-        <div className="w-8 h-8 bg-primary/10 rounded-md flex items-center justify-center flex-shrink-0">
-          <div className="w-3 h-3 bg-primary rounded-sm" />
+        <div className={`w-8 h-8 ${colors.bg} rounded-md flex items-center justify-center flex-shrink-0`}>
+          <div className={`w-3 h-3 ${colors.dot} rounded-sm`} />
         </div>
         <div className="min-w-0 flex-1">
           <h4 className="text-sm font-medium text-card-foreground truncate">
