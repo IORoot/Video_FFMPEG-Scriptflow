@@ -128,11 +128,19 @@ const NodeComponent: React.FC<{
         )}
       </div>
       
-      {nodeDefinition?.description && (
-        <div className="text-xs text-muted-foreground mb-3">
-          {nodeDefinition.description}
-        </div>
-      )}
+      <div className="mb-3">
+        <label className="text-xs text-muted-foreground block mb-1">
+          Description
+        </label>
+        <textarea
+          value={node.parameters.description || nodeDefinition?.description || ''}
+          onChange={(e) => onParameterChange(node.id, 'description', e.target.value)}
+          onMouseDown={(e) => e.stopPropagation()}
+          className="w-full px-2 py-1 text-xs bg-input border border-border rounded resize-none"
+          placeholder="Enter description..."
+          rows={2}
+        />
+      </div>
 
       {/* All Input Parameters */}
       {(() => {
@@ -671,7 +679,7 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
                 if (inputIndex >= 0) {
                   // Calculate position based on the new layout
                   const titleHeight = 20; // Node title height
-                  const descHeight = nodeDefinition.description ? 40 : 0; // Description height
+                  const descHeight = 40; // Description height (always present now)
                   const paramSpacing = 30; // Spacing between parameters
                   const paramStartY = relativeY + titleHeight + descHeight + 20; // Start of parameters
                   
