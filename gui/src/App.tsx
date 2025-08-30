@@ -4,6 +4,7 @@ import SimpleNodeEditorComponent, { SimpleNodeEditorHandle } from './components/
 import Sidebar from './components/Sidebar';
 import Toolbar from './components/Toolbar';
 import LogViewer, { LogToggleButton } from './components/LogViewer';
+import { SettingsModal } from './components/SettingsModal';
 import { JsonExporter, NodeData } from './lib/jsonExporter';
 import { PipelineRunner, PipelineRunStatus } from './lib/pipelineRunner';
 import './App.css';
@@ -61,6 +62,7 @@ function App() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' | 'info' } | null>(null);
   const [nodeEditorRef, setNodeEditorRef] = useState<SimpleNodeEditorHandle | null>(null);
   const [gridSnapEnabled, setGridSnapEnabled] = useState(true);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // Listen for pipeline status changes
   useEffect(() => {
@@ -142,14 +144,15 @@ function App() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full" />
-              <span>Ready</span>
-            </div>
-            <div>
-              Nodes: {nodes.length} | Connections: {connections.length}
-            </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowSettingsModal(true)}
+              className="flex items-center space-x-2 px-3 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md transition-colors"
+              title="Settings"
+            >
+              <span>⚙️</span>
+              <span className="hidden sm:inline">Settings</span>
+            </button>
           </div>
         </div>
       </header>
@@ -190,8 +193,8 @@ function App() {
         exporter={exporter}
         runner={runner}
         runStatus={runStatus}
-        gridSnapEnabled={gridSnapEnabled}
-        onToggleGridSnap={handleToggleGridSnap}
+        nodeCount={nodes.length}
+        connectionCount={connections.length}
       />
 
       {/* Log viewer toggle button */}
@@ -217,6 +220,18 @@ function App() {
           onClose={() => setToast(null)}
         />
       )}
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        gridSnapEnabled={gridSnapEnabled}
+        onToggleGridSnap={handleToggleGridSnap}
+        simulationMode={runner.getSimulationMode()}
+        onToggleSimulationMode={() => {
+          runner.setSimulationMode(!runner.getSimulationMode());
+        }}
+      />
 
       {/* Loading overlay for initial setup - commented out for now */}
       {/* <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50" style={{ pointerEvents: 'none' }}>

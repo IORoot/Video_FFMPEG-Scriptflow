@@ -12,8 +12,8 @@ interface ToolbarProps {
   exporter?: JsonExporter;
   runner: PipelineRunner;
   runStatus: PipelineRunStatus;
-  gridSnapEnabled: boolean;
-  onToggleGridSnap: () => void;
+  nodeCount: number;
+  connectionCount: number;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -22,8 +22,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   exporter,
   runner,
   runStatus,
-  gridSnapEnabled,
-  onToggleGridSnap
+  nodeCount,
+  connectionCount
 }) => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [validationResult, setValidationResult] = useState<{ isValid: boolean; errors: string[] } | null>(null);
@@ -211,31 +211,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
           {/* Right section */}
           <div className="flex items-center space-x-2">
-            <button
-              onClick={onToggleGridSnap}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-                gridSnapEnabled 
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                  : 'bg-gray-600 hover:bg-gray-700 text-white'
-              }`}
-              title={gridSnapEnabled ? 'Grid snapping enabled - click to disable' : 'Grid snapping disabled - click to enable'}
-            >
-              <span>📐</span>
-              <span className="hidden sm:inline">Grid Snap</span>
-            </button>
-
-            <button
-              onClick={handleSimulationModeToggle}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-                simulationMode 
-                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white' 
-                  : 'bg-green-600 hover:bg-green-700 text-white'
-              }`}
-              title={simulationMode ? 'Currently in simulation mode - click to run real commands' : 'Currently in execution mode - click to enable simulation'}
-            >
-              <span>{simulationMode ? '🎭' : '🚀'}</span>
-              <span className="hidden sm:inline">{simulationMode ? 'Simulation' : 'Execute'}</span>
-            </button>
 
 
 
@@ -287,6 +262,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               <span>🗑️</span>
               <span className="hidden sm:inline">Clear</span>
             </button>
+
+            <div className="h-6 w-px bg-border" />
+
+            {/* Status elements */}
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span>Ready</span>
+              </div>
+              <div>
+                Nodes: {nodeCount} | Connections: {connectionCount}
+              </div>
+            </div>
           </div>
         </div>
 
