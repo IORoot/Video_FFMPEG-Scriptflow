@@ -28,10 +28,22 @@ export interface EditorNode {
   selected: boolean;
 }
 
+export interface CanvasComment {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  text: string;
+  color: string;
+  selected: boolean;
+}
+
 export interface EditorState {
   nodes: EditorNode[];
   connections: NodeConnection[];
   selectedNodes: string[];
+  comments: CanvasComment[];
   dragState: {
     isDragging: boolean;
     draggedNode?: string;
@@ -48,6 +60,7 @@ export class SimpleNodeEditor {
     nodes: [],
     connections: [],
     selectedNodes: [],
+    comments: [],
     dragState: { isDragging: false },
     connectionState: { isConnecting: false }
   };
@@ -278,6 +291,7 @@ export class SimpleNodeEditor {
       nodes: [],
       connections: [],
       selectedNodes: [],
+      comments: [],
       dragState: { isDragging: false },
       connectionState: { isConnecting: false }
     };
@@ -309,6 +323,57 @@ export class SimpleNodeEditor {
       this.state.connections.splice(index, 1);
       this.notifyListeners();
     }
+  }
+
+  // Comment management methods
+  addComment(x: number, y: number, text: string = '', color: string = '#fef3c7'): string {
+    const comment: CanvasComment = {
+      id: `comment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      x,
+      y,
+      width: 200,
+      height: 100,
+      text,
+      color,
+      selected: false
+    };
+    
+    this.state.comments.push(comment);
+    this.notifyListeners();
+    return comment.id;
+  }
+
+  updateComment(commentId: string, updates: Partial<CanvasComment>): void {
+    const comment = this.state.comments.find(c => c.id === commentId);
+    if (comment) {
+      Object.assign(comment, updates);
+      this.notifyListeners();
+    }
+  }
+
+  deleteComment(commentId: string): void {
+    const index = this.state.comments.findIndex(c => c.id === commentId);
+    if (index !== -1) {
+      this.state.comments.splice(index, 1);
+      this.notifyListeners();
+    }
+  }
+
+  selectComment(commentId: string): void {
+    // Deselect all comments first
+    this.state.comments.forEach(comment => comment.selected = false);
+    
+    // Select the specified comment
+    const comment = this.state.comments.find(c => c.id === commentId);
+    if (comment) {
+      comment.selected = true;
+      this.notifyListeners();
+    }
+  }
+
+  clearCommentSelection(): void {
+    this.state.comments.forEach(comment => comment.selected = false);
+    this.notifyListeners();
   }
 
   // Export data for JSON generation

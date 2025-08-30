@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { SimpleNodeEditor, EditorState, EditorNode } from '../lib/simpleNodeEditor';
+import { SimpleNodeEditor, EditorState, EditorNode, CanvasComment } from '../lib/simpleNodeEditor';
 import { NodeDefinition, getNodeDefinition } from '../lib/nodeDefinitions';
 import { JsonExporter, NodeData } from '../lib/jsonExporter';
 
@@ -25,6 +25,155 @@ const getNodeColor = (category: string): { bg: string; dot: string } => {
     default:
       return { bg: 'bg-gray-100', dot: 'bg-gray-500' }; // Gray for unknown
   }
+};
+
+const CommentComponent: React.FC<{
+  comment: CanvasComment;
+  onMove: (commentId: string, x: number, y: number) => void;
+  onSelect: (commentId: string) => void;
+  onUpdate: (commentId: string, updates: Partial<CanvasComment>) => void;
+  onDelete: (commentId: string) => void;
+}> = ({ comment, onMove, onSelect, onUpdate, onDelete }) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(comment.text);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setDragOffset({
+      x: e.clientX - comment.x,
+      y: e.clientY - comment.y
+    });
+    setIsDragging(true);
+    onSelect(comment.id);
+  };
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (isDragging) {
+      const newX = e.clientX - dragOffset.x;
+      const newY = e.clientY - dragOffset.y;
+      onMove(comment.id, newX, newY);
+    } else if (isResizing) {
+      const newWidth = Math.max(100, resizeStart.width + (e.clientX - resizeStart.x));
+      const newHeight = Math.max(60, resizeStart.height + (e.clientY - resizeStart.y));
+      onUpdate(comment.id, { width: newWidth, height: newHeight });
+    }
+  }, [isDragging, isResizing, dragOffset, resizeStart, comment.id, onMove, onUpdate]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+    setIsResizing(false);
+  }, []);
+
+  useEffect(() => {
+    if (isDragging || isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
+
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+    setEditText(comment.text);
+  };
+
+  const handleTextSubmit = () => {
+    onUpdate(comment.id, { text: editText });
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleTextSubmit();
+    } else if (e.key === 'Escape') {
+      setEditText(comment.text);
+      setIsEditing(false);
+    }
+  };
+
+  const handleResizeMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizeStart({
+      x: e.clientX,
+      y: e.clientY,
+      width: comment.width,
+      height: comment.height
+    });
+    setIsResizing(true);
+    onSelect(comment.id);
+  };
+
+  return (
+    <div
+      className={`absolute border-2 rounded-lg shadow-lg cursor-move select-none ${
+        comment.selected ? 'border-blue-500' : 'border-gray-400'
+      }`}
+      style={{
+        left: comment.x,
+        top: comment.y,
+        width: comment.width,
+        height: comment.height,
+        backgroundColor: comment.color,
+        opacity: 0.8
+      }}
+      onMouseDown={handleMouseDown}
+      onDoubleClick={handleDoubleClick}
+    >
+      {/* Comment content */}
+      <div className="p-2 h-full flex flex-col">
+        {isEditing ? (
+          <textarea
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            onBlur={handleTextSubmit}
+            onKeyDown={handleKeyDown}
+            className="flex-1 w-full bg-transparent border-none outline-none resize-none text-sm"
+            autoFocus
+            placeholder="Enter comment..."
+          />
+        ) : (
+          <div className="flex-1 text-sm text-gray-800 whitespace-pre-wrap">
+            {comment.text || 'Double-click to edit'}
+          </div>
+        )}
+        
+        {/* Delete button */}
+        {comment.selected && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(comment.id);
+            }}
+            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors"
+            title="Delete comment"
+          >
+            ✕
+          </button>
+        )}
+        
+        {/* Resize handle */}
+        {comment.selected && (
+          <div
+            className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 cursor-se-resize opacity-75 hover:opacity-100 transition-opacity"
+            onMouseDown={handleResizeMouseDown}
+            title="Resize comment"
+            style={{
+              clipPath: 'polygon(100% 0%, 0% 100%, 100% 100%)'
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
 };
 
 interface SimpleNodeEditorProps {
@@ -370,6 +519,15 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           editorState.selectedNodes.forEach(nodeId => {
             editor.removeNode(nodeId);
           });
+        } else {
+          // Check for selected comments
+          const selectedComments = editorState.comments.filter(comment => comment.selected);
+          if (selectedComments.length > 0) {
+            e.preventDefault();
+            selectedComments.forEach(comment => {
+              editor.deleteComment(comment.id);
+            });
+          }
         }
       }
 
@@ -394,8 +552,20 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
   const handleCanvasClick = (e: React.MouseEvent) => {
     if (e.target === canvasRef.current) {
       editor.clearSelection();
+      editor.clearCommentSelection();
       setContextMenu(null);
       setSelectedConnection(null);
+    }
+  };
+
+  const handleCanvasDoubleClick = (e: React.MouseEvent) => {
+    if (e.target === canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Create a new comment at the click position
+      editor.addComment(x, y, 'New comment');
     }
   };
 
@@ -565,6 +735,23 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     editor.removeDynamicInput(nodeId, inputName);
   };
 
+  // Comment handlers
+  const handleCommentMove = useCallback((commentId: string, x: number, y: number) => {
+    editor.updateComment(commentId, { x, y });
+  }, [editor]);
+
+  const handleCommentSelect = useCallback((commentId: string) => {
+    editor.selectComment(commentId);
+  }, [editor]);
+
+  const handleCommentUpdate = useCallback((commentId: string, updates: Partial<CanvasComment>) => {
+    editor.updateComment(commentId, updates);
+  }, [editor]);
+
+  const handleCommentDelete = useCallback((commentId: string) => {
+    editor.deleteComment(commentId);
+  }, [editor]);
+
   // Expose methods to parent
   useImperativeHandle(ref, () => ({
     addNode: (nodeDefinition: NodeDefinition, position?: { x: number; y: number }) => {
@@ -587,6 +774,7 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
       ref={canvasRef}
       className="relative w-full h-full bg-background border border-border rounded-lg overflow-hidden"
       onClick={handleCanvasClick}
+      onDoubleClick={handleCanvasDoubleClick}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragEnter={(e) => {
@@ -613,6 +801,18 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           onContextMenu={handleNodeContextMenu}
           onAddDynamicInput={handleAddDynamicInput}
           onRemoveDynamicInput={handleRemoveDynamicInput}
+        />
+      ))}
+
+      {/* Comments */}
+      {editorState.comments.map((comment) => (
+        <CommentComponent
+          key={comment.id}
+          comment={comment}
+          onMove={handleCommentMove}
+          onSelect={handleCommentSelect}
+          onUpdate={handleCommentUpdate}
+          onDelete={handleCommentDelete}
         />
       ))}
 
