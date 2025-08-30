@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface SettingsModalProps {
+interface SettingsDropdownProps {
   isOpen: boolean;
   onClose: () => void;
   gridSnapEnabled: boolean;
@@ -9,7 +9,7 @@ interface SettingsModalProps {
   onToggleSimulationMode: () => void;
 }
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({
+export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
   isOpen,
   onClose,
   gridSnapEnabled,
@@ -20,9 +20,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-background border border-border rounded-lg shadow-lg p-6 w-96 max-w-[90vw]">
-        <div className="flex items-center justify-between mb-6">
+    <div className="absolute top-full right-0 mt-2 w-80 bg-background border border-border rounded-lg shadow-lg z-50">
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Settings</h2>
           <button
             onClick={onClose}
@@ -44,7 +44,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
               <button
                 onClick={onToggleGridSnap}
-                className={`relative inline-flex h-6 w-16 items-center rounded-full transition-colors ${
+                className={`relative inline-flex h-6 w-20 items-center rounded-full transition-colors ${
                   gridSnapEnabled ? 'bg-blue-600' : 'bg-gray-300'
                 }`}
               >
@@ -71,7 +71,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
               <button
                 onClick={onToggleSimulationMode}
-                className={`relative inline-flex h-6 w-16 items-center rounded-full transition-colors ${
+                className={`relative inline-flex h-6 w-20 items-center rounded-full transition-colors ${
                   simulationMode ? 'bg-yellow-600' : 'bg-green-600'
                 }`}
               >
@@ -85,14 +85,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-end mt-6">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
-            Done
-          </button>
-        </div>
       </div>
     </div>
   );

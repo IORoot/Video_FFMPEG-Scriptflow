@@ -4,7 +4,7 @@ import SimpleNodeEditorComponent, { SimpleNodeEditorHandle } from './components/
 import Sidebar from './components/Sidebar';
 import Toolbar from './components/Toolbar';
 import LogViewer, { LogToggleButton } from './components/LogViewer';
-import { SettingsModal } from './components/SettingsModal';
+import { SettingsDropdown } from './components/SettingsModal';
 import { JsonExporter, NodeData } from './lib/jsonExporter';
 import { PipelineRunner, PipelineRunStatus } from './lib/pipelineRunner';
 import './App.css';
@@ -63,6 +63,23 @@ function App() {
   const [nodeEditorRef, setNodeEditorRef] = useState<SimpleNodeEditorHandle | null>(null);
   const [gridSnapEnabled, setGridSnapEnabled] = useState(true);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+  // Close settings dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showSettingsModal) {
+        const target = event.target as Element;
+        if (!target.closest('.settings-container')) {
+          setShowSettingsModal(false);
+        }
+      }
+    };
+
+    if (showSettingsModal) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showSettingsModal]);
 
   // Listen for pipeline status changes
   useEffect(() => {
@@ -144,15 +161,26 @@ function App() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="relative settings-container">
             <button
-              onClick={() => setShowSettingsModal(true)}
+              onClick={() => setShowSettingsModal(!showSettingsModal)}
               className="flex items-center space-x-2 px-3 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md transition-colors"
               title="Settings"
             >
               <span>⚙️</span>
               <span className="hidden sm:inline">Settings</span>
             </button>
+            
+            <SettingsDropdown
+              isOpen={showSettingsModal}
+              onClose={() => setShowSettingsModal(false)}
+              gridSnapEnabled={gridSnapEnabled}
+              onToggleGridSnap={handleToggleGridSnap}
+              simulationMode={runner.getSimulationMode()}
+              onToggleSimulationMode={() => {
+                runner.setSimulationMode(!runner.getSimulationMode());
+              }}
+            />
           </div>
         </div>
       </header>
@@ -221,17 +249,7 @@ function App() {
         />
       )}
 
-      {/* Settings Modal */}
-      <SettingsModal
-        isOpen={showSettingsModal}
-        onClose={() => setShowSettingsModal(false)}
-        gridSnapEnabled={gridSnapEnabled}
-        onToggleGridSnap={handleToggleGridSnap}
-        simulationMode={runner.getSimulationMode()}
-        onToggleSimulationMode={() => {
-          runner.setSimulationMode(!runner.getSimulationMode());
-        }}
-      />
+
 
       {/* Loading overlay for initial setup - commented out for now */}
       {/* <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50" style={{ pointerEvents: 'none' }}>
