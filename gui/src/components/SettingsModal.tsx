@@ -7,6 +7,8 @@ interface SettingsDropdownProps {
   onToggleGridSnap: () => void;
   simulationMode: boolean;
   onToggleSimulationMode: () => void;
+  gridSize: number;
+  onGridSizeChange: (size: number) => void;
 }
 
 export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
@@ -15,7 +17,9 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
   gridSnapEnabled,
   onToggleGridSnap,
   simulationMode,
-  onToggleSimulationMode
+  onToggleSimulationMode,
+  gridSize,
+  onGridSizeChange
 }) => {
   if (!isOpen) return null;
 
@@ -56,6 +60,31 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
               </button>
             </div>
           </div>
+
+          {/* Grid Size Setting */}
+          {gridSnapEnabled && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium">Grid Size</h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Size: {gridSize}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="2"
+                  max="320"
+                  step="2"
+                  value={gridSize}
+                  onChange={(e) => onGridSizeChange(parseInt(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>2px</span>
+                  <span>320px</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Simulation Mode Setting */}
           <div className="space-y-3">

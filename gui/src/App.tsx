@@ -62,6 +62,7 @@ function App() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' | 'info' } | null>(null);
   const [nodeEditorRef, setNodeEditorRef] = useState<SimpleNodeEditorHandle | null>(null);
   const [gridSnapEnabled, setGridSnapEnabled] = useState(true);
+  const [gridSize, setGridSize] = useState(32);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // Close settings dropdown when clicking outside
@@ -139,6 +140,13 @@ function App() {
     }
   };
 
+  const handleGridSizeChange = (size: number) => {
+    setGridSize(size);
+    if (nodeEditorRef) {
+      nodeEditorRef.setGridSize(size);
+    }
+  };
+
   const handleClearLogs = () => {
     runner.clearLogs();
   };
@@ -180,6 +188,8 @@ function App() {
               onToggleSimulationMode={() => {
                 runner.setSimulationMode(!runner.getSimulationMode());
               }}
+              gridSize={gridSize}
+              onGridSizeChange={handleGridSizeChange}
             />
           </div>
         </div>

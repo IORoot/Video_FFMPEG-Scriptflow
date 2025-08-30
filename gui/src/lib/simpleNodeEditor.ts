@@ -316,11 +316,22 @@ export class SimpleNodeEditor {
     return this.state.gridSnapEnabled;
   }
 
-  private snapToGrid(value: number, gridSize: number = 32): number {
+  private gridSize: number = 32;
+
+  setGridSize(size: number) {
+    this.gridSize = size;
+    this.notifyListeners();
+  }
+
+  getGridSize(): number {
+    return this.gridSize;
+  }
+
+  private snapToGrid(value: number): number {
     if (!this.state.gridSnapEnabled) {
       return value;
     }
-    return Math.round(value / gridSize) * gridSize;
+    return Math.round(value / this.gridSize) * this.gridSize;
   }
 
   addConnection(fromNodeId: string, fromSocket: string, toNodeId: string, toSocket: string): void {

@@ -688,6 +688,8 @@ export interface SimpleNodeEditorHandle {
   clearAll: () => void;
   getEditor: () => SimpleNodeEditor;
   setGridSnapEnabled: (enabled: boolean) => void;
+  setGridSize: (size: number) => void;
+  getGridSize: () => number;
 }
 
 export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, SimpleNodeEditorProps>(({
@@ -1015,6 +1017,12 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     getEditor: () => editor,
     setGridSnapEnabled: (enabled: boolean) => {
       editor.setGridSnapEnabled(enabled);
+    },
+    setGridSize: (size: number) => {
+      editor.setGridSize(size);
+    },
+    getGridSize: () => {
+      return editor.getGridSize();
     }
   }), [editor, editorState.selectedNodes]);
 
