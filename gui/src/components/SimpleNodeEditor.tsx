@@ -40,6 +40,8 @@ const CommentComponent: React.FC<{
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.text);
+  const [showSettings, setShowSettings] = useState(false);
+  const [colorType, setColorType] = useState<'background' | 'font'>('background');
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -79,6 +81,20 @@ const CommentComponent: React.FC<{
     }
   }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
 
+  // Close settings when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showSettings) {
+        setShowSettings(false);
+      }
+    };
+
+    if (showSettings) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showSettings]);
+
   const handleDoubleClick = () => {
     setIsEditing(true);
     setEditText(comment.text);
@@ -114,8 +130,8 @@ const CommentComponent: React.FC<{
 
   return (
     <div
-      className={`absolute border-2 rounded-lg shadow-lg cursor-move select-none ${
-        comment.selected ? 'border-blue-500' : 'border-gray-400'
+      className={`absolute rounded-lg shadow-lg cursor-move select-none ${
+        comment.selected ? 'border-2 border-blue-500' : ''
       }`}
       style={{
         left: comment.x,
@@ -136,28 +152,44 @@ const CommentComponent: React.FC<{
             onChange={(e) => setEditText(e.target.value)}
             onBlur={handleTextSubmit}
             onKeyDown={handleKeyDown}
-            className="flex-1 w-full bg-transparent border-none outline-none resize-none text-sm"
+            className="flex-1 w-full bg-transparent border-none outline-none resize-none"
+            style={{ color: comment.fontColor, fontSize: `${comment.fontSize}px` }}
             autoFocus
             placeholder="Enter comment..."
           />
         ) : (
-          <div className="flex-1 text-sm text-gray-800 whitespace-pre-wrap">
+          <div 
+            className="flex-1 whitespace-pre-wrap"
+            style={{ color: comment.fontColor, fontSize: `${comment.fontSize}px` }}
+          >
             {comment.text || 'Double-click to edit'}
           </div>
         )}
         
-        {/* Delete button */}
+        {/* Settings and Delete buttons */}
         {comment.selected && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(comment.id);
-            }}
-            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors"
-            title="Delete comment"
-          >
-            ✕
-          </button>
+          <>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowSettings(!showSettings);
+              }}
+              className="absolute -top-2 -right-8 w-5 h-5 bg-gray-500 text-white rounded-full text-xs hover:bg-gray-600 transition-colors"
+              title="Comment settings"
+            >
+              ⚙️
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(comment.id);
+              }}
+              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors"
+              title="Delete comment"
+            >
+              ✕
+            </button>
+          </>
         )}
         
         {/* Resize handle */}
@@ -170,6 +202,219 @@ const CommentComponent: React.FC<{
               clipPath: 'polygon(100% 0%, 0% 100%, 100% 100%)'
             }}
           />
+        )}
+        
+        {/* Settings Modal */}
+        {showSettings && (
+          <div 
+            className="absolute top-8 right-0 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 min-w-64"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-gray-900">Comment Settings</h3>
+              
+              {/* Color Type Toggle */}
+              <div>
+                <label className="block text-xs text-gray-700 mb-2">Color Type</label>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setColorType('background')}
+                    className={`px-3 py-1 text-xs rounded transition-colors ${
+                      colorType === 'background' 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Background
+                  </button>
+                  <button
+                    onClick={() => setColorType('font')}
+                    className={`px-3 py-1 text-xs rounded transition-colors ${
+                      colorType === 'font' 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Font
+                  </button>
+                </div>
+              </div>
+              
+              {/* Color Palette */}
+              <div>
+                <label className="block text-xs text-gray-700 mb-2">
+                  {colorType === 'background' ? 'Background Color' : 'Font Color'}
+                </label>
+                <div className="grid grid-cols-6 gap-1 mb-2">
+                  {[
+                    'rgba(254, 243, 199, 0.8)', 'rgba(253, 230, 138, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(217, 119, 6, 0.8)', 'rgba(146, 64, 14, 0.8)', 'rgba(120, 53, 15, 0.8)', // Yellow/Orange
+                    'rgba(219, 234, 254, 0.8)', 'rgba(147, 197, 253, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(29, 78, 216, 0.8)', 'rgba(30, 64, 175, 0.8)', 'rgba(30, 58, 138, 0.8)', // Blue
+                    'rgba(252, 231, 243, 0.8)', 'rgba(249, 168, 212, 0.8)', 'rgba(236, 72, 153, 0.8)', 'rgba(219, 39, 119, 0.8)', 'rgba(190, 24, 93, 0.8)', 'rgba(157, 23, 77, 0.8)', // Pink
+                    'rgba(220, 252, 231, 0.8)', 'rgba(134, 239, 172, 0.8)', 'rgba(34, 197, 94, 0.8)', 'rgba(22, 163, 74, 0.8)', 'rgba(21, 128, 61, 0.8)', 'rgba(22, 101, 52, 0.8)', // Green
+                    'rgba(243, 232, 255, 0.8)', 'rgba(196, 181, 253, 0.8)', 'rgba(139, 92, 246, 0.8)', 'rgba(124, 58, 237, 0.8)', 'rgba(109, 40, 217, 0.8)', 'rgba(91, 33, 182, 0.8)', // Purple
+                    'rgba(254, 202, 202, 0.8)', 'rgba(252, 165, 165, 0.8)', 'rgba(239, 68, 68, 0.8)', 'rgba(220, 38, 38, 0.8)', 'rgba(185, 28, 28, 0.8)', 'rgba(153, 27, 27, 0.8)', // Red
+                    'rgba(229, 231, 235, 0.8)', 'rgba(209, 213, 219, 0.8)', 'rgba(156, 163, 175, 0.8)', 'rgba(107, 114, 128, 0.8)', 'rgba(75, 85, 99, 0.8)', 'rgba(55, 65, 81, 0.8)'  // Gray
+                  ].map((color) => {
+                    // Convert to the appropriate format based on color type
+                    const baseColor = color.replace(/,\s*[\d.]+\)/, ')'); // Remove alpha
+                    const finalColor = colorType === 'background' ? color : baseColor.replace(')', ', 1)');
+                    
+                    return (
+                    <button
+                      key={color}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (colorType === 'background') {
+                          onUpdate(comment.id, { color: finalColor });
+                        } else {
+                          onUpdate(comment.id, { fontColor: finalColor });
+                        }
+                        setShowSettings(false);
+                      }}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className="w-6 h-6 rounded border border-gray-300 hover:scale-110 transition-transform"
+                      style={{ backgroundColor: finalColor }}
+                      title={finalColor}
+                    />
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Custom Color Input */}
+              <div>
+                <label className="block text-xs text-gray-700 mb-1">Custom Color</label>
+                <div className="flex space-x-2">
+                  <input
+                    type="color"
+                    value={(colorType === 'background' ? comment.color : comment.fontColor).includes('rgba') ? 
+                      `#${(colorType === 'background' ? comment.color : comment.fontColor).match(/\d+/g)?.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('') || 'fef3c7'}` : 
+                      (colorType === 'background' ? comment.color : comment.fontColor).startsWith('#') ? (colorType === 'background' ? comment.color : comment.fontColor) : '#fef3c7'}
+                    onChange={(e) => {
+                      const hex = e.target.value;
+                      const r = parseInt(hex.slice(1, 3), 16);
+                      const g = parseInt(hex.slice(3, 5), 16);
+                      const b = parseInt(hex.slice(5, 7), 16);
+                      const currentColor = colorType === 'background' ? comment.color : comment.fontColor;
+                      const alpha = currentColor.includes('rgba') ? 
+                        parseFloat(currentColor.split(',')[3]?.replace(')', '') || (colorType === 'background' ? '0.8' : '1')) : (colorType === 'background' ? 0.8 : 1);
+                      const newColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                      if (colorType === 'background') {
+                        onUpdate(comment.id, { color: newColor });
+                      } else {
+                        onUpdate(comment.id, { fontColor: newColor });
+                      }
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="w-8 h-6 border border-gray-300 rounded cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={colorType === 'background' ? comment.color : comment.fontColor}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Validate and format the input
+                      if (value.startsWith('#') && value.length === 7) {
+                        // Convert hex to rgba
+                        const hex = value.replace('#', '');
+                        const r = parseInt(hex.substr(0, 2), 16);
+                        const g = parseInt(hex.substr(2, 2), 16);
+                        const b = parseInt(hex.substr(4, 2), 16);
+                        const currentColor = colorType === 'background' ? comment.color : comment.fontColor;
+                        const alpha = currentColor.includes('rgba') ? 
+                          parseFloat(currentColor.split(',')[3]?.replace(')', '') || (colorType === 'background' ? '0.8' : '1')) : (colorType === 'background' ? 0.8 : 1);
+                        const newColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                        if (colorType === 'background') {
+                          onUpdate(comment.id, { color: newColor });
+                        } else {
+                          onUpdate(comment.id, { fontColor: newColor });
+                        }
+                      } else if (value.startsWith('rgba(') && value.endsWith(')')) {
+                        // Use rgba as-is
+                        if (colorType === 'background') {
+                          onUpdate(comment.id, { color: value });
+                        } else {
+                          onUpdate(comment.id, { fontColor: value });
+                        }
+                      } else {
+                        // Update anyway for partial typing
+                        if (colorType === 'background') {
+                          onUpdate(comment.id, { color: value });
+                        } else {
+                          onUpdate(comment.id, { fontColor: value });
+                        }
+                      }
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    placeholder={colorType === 'background' ? "rgba(254, 243, 199, 0.8) or #fef3c7" : "rgba(0, 0, 0, 1) or #000000"}
+                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded text-gray-900"
+                  />
+                </div>
+              </div>
+              
+              {/* Transparency Slider - Only for background colors */}
+              {colorType === 'background' && (
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">
+                    Transparency: {Math.round((1 - (comment.color.includes('rgba') ? parseFloat(comment.color.split(',')[3]?.replace(')', '') || '0.8') : 0.8)) * 100)}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={comment.color.includes('rgba') ? parseFloat(comment.color.split(',')[3]?.replace(')', '') || '0.8') : 0.8}
+                    onChange={(e) => {
+                      const alpha = parseFloat(e.target.value);
+                      if (comment.color.includes('rgba')) {
+                        // Extract RGB values and update alpha
+                        const rgbMatch = comment.color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),/);
+                        if (rgbMatch) {
+                          const [, r, g, b] = rgbMatch;
+                          const newColor = `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(1)})`;
+                          onUpdate(comment.id, { color: newColor });
+                        }
+                      } else {
+                        // Convert hex to rgba
+                        const hex = comment.color.replace('#', '');
+                        if (hex.length === 6) {
+                          const r = parseInt(hex.substr(0, 2), 16);
+                          const g = parseInt(hex.substr(2, 2), 16);
+                          const b = parseInt(hex.substr(4, 2), 16);
+                          const newColor = `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(1)})`;
+                          onUpdate(comment.id, { color: newColor });
+                        }
+                      }
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="w-full"
+                  />
+                </div>
+              )}
+              
+              {/* Font Size Slider */}
+              <div>
+                <label className="block text-xs text-gray-700 mb-1">
+                  Font Size: {comment.fontSize}px
+                </label>
+                <input
+                  type="range"
+                  min="8"
+                  max="100"
+                  step="1"
+                  value={comment.fontSize}
+                  onChange={(e) => {
+                    const fontSize = parseInt(e.target.value);
+                    onUpdate(comment.id, { fontSize });
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className="w-full"
+                />
+              </div>
+
+            </div>
+          </div>
         )}
       </div>
     </div>

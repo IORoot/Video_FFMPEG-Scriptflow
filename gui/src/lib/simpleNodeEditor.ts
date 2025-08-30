@@ -36,6 +36,8 @@ export interface CanvasComment {
   height: number;
   text: string;
   color: string;
+  fontColor: string;
+  fontSize: number;
   selected: boolean;
 }
 
@@ -326,7 +328,7 @@ export class SimpleNodeEditor {
   }
 
   // Comment management methods
-  addComment(x: number, y: number, text: string = '', color: string = '#fef3c7'): string {
+  addComment(x: number, y: number, text: string = '', color: string = 'rgba(254, 243, 199, 0.8)', fontColor: string = 'rgba(0, 0, 0, 1)', fontSize: number = 14): string {
     const comment: CanvasComment = {
       id: `comment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       x,
@@ -335,6 +337,8 @@ export class SimpleNodeEditor {
       height: 100,
       text,
       color,
+      fontColor,
+      fontSize,
       selected: false
     };
     
