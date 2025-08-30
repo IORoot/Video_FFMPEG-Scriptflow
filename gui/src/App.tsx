@@ -147,6 +147,66 @@ function App() {
     }
   };
 
+  const handleSaveLayout = () => {
+    if (nodeEditorRef) {
+      try {
+        const layoutJson = nodeEditorRef.saveLayout();
+        const blob = new Blob([layoutJson], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `node-layout-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        setToast({ message: 'Layout saved successfully!', type: 'success' });
+      } catch (error) {
+        console.error('Failed to save layout:', error);
+        setToast({ message: 'Failed to save layout', type: 'error' });
+      }
+    }
+  };
+
+  const handleLoadLayout = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file && nodeEditorRef) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const layoutJson = e.target?.result as string;
+            const success = nodeEditorRef.loadLayout(layoutJson);
+            if (success) {
+              // Update settings state from loaded layout
+              const layoutData = JSON.parse(layoutJson);
+              if (layoutData.settings) {
+                if (typeof layoutData.settings.gridSnapEnabled === 'boolean') {
+                  setGridSnapEnabled(layoutData.settings.gridSnapEnabled);
+                }
+                if (typeof layoutData.settings.gridSize === 'number') {
+                  setGridSize(layoutData.settings.gridSize);
+                }
+              }
+              setToast({ message: 'Layout loaded successfully!', type: 'success' });
+            } else {
+              setToast({ message: 'Failed to load layout - invalid file format', type: 'error' });
+            }
+          } catch (error) {
+            console.error('Failed to load layout:', error);
+            setToast({ message: 'Failed to load layout - invalid file', type: 'error' });
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
+
   const handleClearLogs = () => {
     runner.clearLogs();
   };
@@ -190,6 +250,8 @@ function App() {
               }}
               gridSize={gridSize}
               onGridSizeChange={handleGridSizeChange}
+              onSaveLayout={handleSaveLayout}
+              onLoadLayout={handleLoadLayout}
             />
           </div>
         </div>

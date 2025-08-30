@@ -9,6 +9,8 @@ interface SettingsDropdownProps {
   onToggleSimulationMode: () => void;
   gridSize: number;
   onGridSizeChange: (size: number) => void;
+  onSaveLayout: () => void;
+  onLoadLayout: () => void;
 }
 
 export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
@@ -19,7 +21,9 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
   simulationMode,
   onToggleSimulationMode,
   gridSize,
-  onGridSizeChange
+  onGridSizeChange,
+  onSaveLayout,
+  onLoadLayout
 }) => {
   if (!isOpen) return null;
 
@@ -111,6 +115,30 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
                 />
               </button>
             </div>
+          </div>
+
+          {/* Save/Load Layout Section */}
+          <div className="space-y-3 border-t border-border pt-4">
+            <h3 className="text-sm font-medium">Layout Management</h3>
+            <div className="space-y-2">
+              <button
+                onClick={onSaveLayout}
+                className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+              >
+                <span>💾</span>
+                <span>Save Layout</span>
+              </button>
+              <button
+                onClick={onLoadLayout}
+                className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors"
+              >
+                <span>📁</span>
+                <span>Load Layout</span>
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Save and load your complete node layout, including positions, settings, and comments.
+            </p>
           </div>
         </div>
 

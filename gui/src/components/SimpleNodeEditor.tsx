@@ -138,7 +138,7 @@ const CommentComponent: React.FC<{
         top: comment.y,
         width: comment.width,
         height: comment.height,
-        backgroundColor: comment.color,
+        backgroundColor: comment.backgroundColor,
         opacity: 0.8
       }}
       onMouseDown={handleMouseDown}
@@ -266,7 +266,7 @@ const CommentComponent: React.FC<{
                       onClick={(e) => {
                         e.stopPropagation();
                         if (colorType === 'background') {
-                          onUpdate(comment.id, { color: finalColor });
+                          onUpdate(comment.id, { backgroundColor: finalColor });
                         } else {
                           onUpdate(comment.id, { fontColor: finalColor });
                         }
@@ -288,20 +288,20 @@ const CommentComponent: React.FC<{
                 <div className="flex space-x-2">
                   <input
                     type="color"
-                    value={(colorType === 'background' ? comment.color : comment.fontColor).includes('rgba') ? 
-                      `#${(colorType === 'background' ? comment.color : comment.fontColor).match(/\d+/g)?.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('') || 'fef3c7'}` : 
-                      (colorType === 'background' ? comment.color : comment.fontColor).startsWith('#') ? (colorType === 'background' ? comment.color : comment.fontColor) : '#fef3c7'}
+                    value={(colorType === 'background' ? comment.backgroundColor : comment.fontColor).includes('rgba') ? 
+                      `#${(colorType === 'background' ? comment.backgroundColor : comment.fontColor).match(/\d+/g)?.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('') || 'fef3c7'}` : 
+                      (colorType === 'background' ? comment.backgroundColor : comment.fontColor).startsWith('#') ? (colorType === 'background' ? comment.backgroundColor : comment.fontColor) : '#fef3c7'}
                     onChange={(e) => {
                       const hex = e.target.value;
                       const r = parseInt(hex.slice(1, 3), 16);
                       const g = parseInt(hex.slice(3, 5), 16);
                       const b = parseInt(hex.slice(5, 7), 16);
-                      const currentColor = colorType === 'background' ? comment.color : comment.fontColor;
+                      const currentColor = colorType === 'background' ? comment.backgroundColor : comment.fontColor;
                       const alpha = currentColor.includes('rgba') ? 
                         parseFloat(currentColor.split(',')[3]?.replace(')', '') || (colorType === 'background' ? '0.8' : '1')) : (colorType === 'background' ? 0.8 : 1);
                       const newColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
                       if (colorType === 'background') {
-                        onUpdate(comment.id, { color: newColor });
+                        onUpdate(comment.id, { backgroundColor: newColor });
                       } else {
                         onUpdate(comment.id, { fontColor: newColor });
                       }
@@ -311,7 +311,7 @@ const CommentComponent: React.FC<{
                   />
                   <input
                     type="text"
-                    value={colorType === 'background' ? comment.color : comment.fontColor}
+                    value={colorType === 'background' ? comment.backgroundColor : comment.fontColor}
                     onChange={(e) => {
                       const value = e.target.value;
                       // Validate and format the input
@@ -321,26 +321,26 @@ const CommentComponent: React.FC<{
                         const r = parseInt(hex.substr(0, 2), 16);
                         const g = parseInt(hex.substr(2, 2), 16);
                         const b = parseInt(hex.substr(4, 2), 16);
-                        const currentColor = colorType === 'background' ? comment.color : comment.fontColor;
+                        const currentColor = colorType === 'background' ? comment.backgroundColor : comment.fontColor;
                         const alpha = currentColor.includes('rgba') ? 
                           parseFloat(currentColor.split(',')[3]?.replace(')', '') || (colorType === 'background' ? '0.8' : '1')) : (colorType === 'background' ? 0.8 : 1);
                         const newColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
                         if (colorType === 'background') {
-                          onUpdate(comment.id, { color: newColor });
+                          onUpdate(comment.id, { backgroundColor: newColor });
                         } else {
                           onUpdate(comment.id, { fontColor: newColor });
                         }
                       } else if (value.startsWith('rgba(') && value.endsWith(')')) {
                         // Use rgba as-is
                         if (colorType === 'background') {
-                          onUpdate(comment.id, { color: value });
+                          onUpdate(comment.id, { backgroundColor: value });
                         } else {
                           onUpdate(comment.id, { fontColor: value });
                         }
                       } else {
                         // Update anyway for partial typing
                         if (colorType === 'background') {
-                          onUpdate(comment.id, { color: value });
+                          onUpdate(comment.id, { backgroundColor: value });
                         } else {
                           onUpdate(comment.id, { fontColor: value });
                         }
@@ -357,33 +357,33 @@ const CommentComponent: React.FC<{
               {colorType === 'background' && (
                 <div>
                   <label className="block text-xs text-gray-700 mb-1">
-                    Transparency: {Math.round((1 - (comment.color.includes('rgba') ? parseFloat(comment.color.split(',')[3]?.replace(')', '') || '0.8') : 0.8)) * 100)}%
+                    Transparency: {Math.round((1 - (comment.backgroundColor.includes('rgba') ? parseFloat(comment.backgroundColor.split(',')[3]?.replace(')', '') || '0.8') : 0.8)) * 100)}%
                   </label>
                   <input
                     type="range"
                     min="0"
                     max="1"
                     step="0.1"
-                    value={comment.color.includes('rgba') ? parseFloat(comment.color.split(',')[3]?.replace(')', '') || '0.8') : 0.8}
+                    value={comment.backgroundColor.includes('rgba') ? parseFloat(comment.backgroundColor.split(',')[3]?.replace(')', '') || '0.8') : 0.8}
                     onChange={(e) => {
                       const alpha = parseFloat(e.target.value);
-                      if (comment.color.includes('rgba')) {
+                      if (comment.backgroundColor.includes('rgba')) {
                         // Extract RGB values and update alpha
-                        const rgbMatch = comment.color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),/);
+                        const rgbMatch = comment.backgroundColor.match(/rgba\((\d+),\s*(\d+),\s*(\d+),/);
                         if (rgbMatch) {
                           const [, r, g, b] = rgbMatch;
                           const newColor = `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(1)})`;
-                          onUpdate(comment.id, { color: newColor });
+                          onUpdate(comment.id, { backgroundColor: newColor });
                         }
                       } else {
                         // Convert hex to rgba
-                        const hex = comment.color.replace('#', '');
+                        const hex = comment.backgroundColor.replace('#', '');
                         if (hex.length === 6) {
                           const r = parseInt(hex.substr(0, 2), 16);
                           const g = parseInt(hex.substr(2, 2), 16);
                           const b = parseInt(hex.substr(4, 2), 16);
                           const newColor = `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(1)})`;
-                          onUpdate(comment.id, { color: newColor });
+                          onUpdate(comment.id, { backgroundColor: newColor });
                         }
                       }
                     }}
@@ -690,6 +690,8 @@ export interface SimpleNodeEditorHandle {
   setGridSnapEnabled: (enabled: boolean) => void;
   setGridSize: (size: number) => void;
   getGridSize: () => number;
+  saveLayout: () => string;
+  loadLayout: (layoutJson: string) => boolean;
 }
 
 export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, SimpleNodeEditorProps>(({
@@ -1023,6 +1025,12 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     },
     getGridSize: () => {
       return editor.getGridSize();
+    },
+    saveLayout: () => {
+      return editor.saveLayout();
+    },
+    loadLayout: (layoutJson: string) => {
+      return editor.loadLayout(layoutJson);
     }
   }), [editor, editorState.selectedNodes]);
 

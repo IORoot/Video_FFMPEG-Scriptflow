@@ -35,7 +35,7 @@ export interface CanvasComment {
   width: number;
   height: number;
   text: string;
-  color: string;
+  backgroundColor: string;
   fontColor: string;
   fontSize: number;
   selected: boolean;
@@ -327,6 +327,104 @@ export class SimpleNodeEditor {
     return this.gridSize;
   }
 
+  saveLayout(): string {
+    const layoutData = {
+      version: "1.0",
+      timestamp: new Date().toISOString(),
+      settings: {
+        gridSnapEnabled: this.state.gridSnapEnabled,
+        gridSize: this.gridSize
+      },
+      nodes: this.state.nodes.map(node => ({
+        id: node.id,
+        type: node.type,
+        position: node.position,
+        parameters: node.parameters,
+        inputs: node.inputs,
+        outputs: node.outputs
+      })),
+      connections: this.state.connections,
+      comments: this.state.comments.map(comment => ({
+        id: comment.id,
+        text: comment.text,
+        x: comment.x,
+        y: comment.y,
+        width: comment.width,
+        height: comment.height,
+        backgroundColor: comment.backgroundColor,
+        fontColor: comment.fontColor,
+        fontSize: comment.fontSize,
+        selected: false // Don't save selection state
+      }))
+    };
+    return JSON.stringify(layoutData, null, 2);
+  }
+
+  loadLayout(layoutJson: string): boolean {
+    try {
+      const layoutData = JSON.parse(layoutJson);
+      
+      // Validate the layout data structure
+      if (!layoutData.nodes || !Array.isArray(layoutData.nodes)) {
+        throw new Error("Invalid layout: missing or invalid nodes array");
+      }
+      if (!layoutData.connections || !Array.isArray(layoutData.connections)) {
+        throw new Error("Invalid layout: missing or invalid connections array");
+      }
+      if (!layoutData.comments || !Array.isArray(layoutData.comments)) {
+        throw new Error("Invalid layout: missing or invalid comments array");
+      }
+
+      // Load settings
+      if (layoutData.settings) {
+        if (typeof layoutData.settings.gridSnapEnabled === 'boolean') {
+          this.state.gridSnapEnabled = layoutData.settings.gridSnapEnabled;
+        }
+        if (typeof layoutData.settings.gridSize === 'number' && layoutData.settings.gridSize >= 2 && layoutData.settings.gridSize <= 320) {
+          this.gridSize = layoutData.settings.gridSize;
+        }
+      }
+
+      // Load nodes
+      this.state.nodes = layoutData.nodes.map((nodeData: any) => ({
+        id: nodeData.id,
+        type: nodeData.type,
+        position: nodeData.position || { x: 0, y: 0 },
+        parameters: nodeData.parameters || {},
+        inputs: nodeData.inputs || [],
+        outputs: nodeData.outputs || []
+      }));
+
+      // Load connections
+      this.state.connections = layoutData.connections;
+
+      // Load comments
+      this.state.comments = layoutData.comments.map((commentData: any) => ({
+        id: commentData.id,
+        text: commentData.text || '',
+        x: commentData.x || 0,
+        y: commentData.y || 0,
+        width: commentData.width || 200,
+        height: commentData.height || 100,
+        backgroundColor: commentData.backgroundColor || 'rgba(255, 255, 255, 0.8)',
+        fontColor: commentData.fontColor || 'rgba(0, 0, 0, 1)',
+        fontSize: commentData.fontSize || 14,
+        selected: false
+      }));
+
+      // Clear selections
+      this.state.selectedNodes = [];
+      this.state.dragState = { isDragging: false };
+      this.state.connectionState = { isConnecting: false };
+
+      this.notifyListeners();
+      return true;
+    } catch (error) {
+      console.error('Failed to load layout:', error);
+      return false;
+    }
+  }
+
   private snapToGrid(value: number): number {
     if (!this.state.gridSnapEnabled) {
       return value;
@@ -362,7 +460,7 @@ export class SimpleNodeEditor {
   }
 
   // Comment management methods
-  addComment(x: number, y: number, text: string = '', color: string = 'rgba(254, 243, 199, 0.8)', fontColor: string = 'rgba(0, 0, 0, 1)', fontSize: number = 14): string {
+  addComment(x: number, y: number, text: string = '', backgroundColor: string = 'rgba(254, 243, 199, 0.8)', fontColor: string = 'rgba(0, 0, 0, 1)', fontSize: number = 14): string {
     const comment: CanvasComment = {
       id: `comment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       x,
@@ -370,7 +468,7 @@ export class SimpleNodeEditor {
       width: 200,
       height: 100,
       text,
-      color,
+      backgroundColor,
       fontColor,
       fontSize,
       selected: false
