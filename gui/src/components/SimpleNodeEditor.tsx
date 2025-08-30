@@ -1314,22 +1314,6 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
         </div>
       )}
 
-      {/* Debug info */}
-      <div className="absolute bottom-4 left-4 text-xs text-muted-foreground bg-card/80 backdrop-blur-sm border border-border rounded px-3 py-2">
-        <div>Nodes: {editorState.nodes.length} | Connections: {editorState.connections.length}</div>
-        {connectionDrag && (
-          <div className="text-blue-400">🔗 Dragging connection from {connectionDrag.from.nodeId}...</div>
-        )}
-        {editorState.selectedNodes.length > 0 && (
-          <div className="text-yellow-400">Selected: {editorState.selectedNodes.length} (Press Delete to remove)</div>
-        )}
-        {selectedConnection && (
-          <div className="text-red-400">Connection selected (Press Delete to remove)</div>
-        )}
-        <div className="mt-1 text-xs opacity-75">
-          💡 Drag from 🔵 blue (output) to 🟠 orange (input) | Click connections to delete | Right-click nodes for menu
-        </div>
-      </div>
     </div>
   );
 });
