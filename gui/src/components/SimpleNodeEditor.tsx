@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { SimpleNodeEditor, EditorState, EditorNode, CanvasComment } from '../lib/simpleNodeEditor';
-import { NodeDefinition, getNodeDefinition } from '../lib/nodeDefinitions';
+import { NodeDefinition, getNodeDefinition, getNodeIcon } from '../lib/nodeDefinitions';
 import { JsonExporter, NodeData } from '../lib/jsonExporter';
 
 // Function to get node color based on category
@@ -584,9 +584,44 @@ const NodeComponent: React.FC<{
     >
       <div className="flex items-center justify-between mb-2 h-5">
         <div className="flex items-center space-x-2">
-          {nodeDefinition && (
-            <div className={`w-3 h-3 ${getNodeColor(nodeDefinition.category).dot} rounded-full flex-shrink-0`} />
-          )}
+          {nodeDefinition && (() => {
+            const iconPath = getNodeIcon(nodeDefinition.id);
+            const categoryColor = getNodeColor(nodeDefinition.category).dot.replace('bg-', '').replace('-500', '');
+            const hexColor = {
+              'green-500': '#22c55e',
+              'blue-500': '#3b82f6', 
+              'purple-500': '#8b5cf6',
+              'yellow-500': '#f59e0b',
+              'red-500': '#ef4444',
+              'cyan-500': '#06b6d4',
+              'lime-500': '#84cc16',
+              'gray-500': '#6b7280',
+              'pink-500': '#ec4899'
+            }[getNodeColor(nodeDefinition.category).dot] || '#6b7280';
+            
+            return iconPath ? (
+              <img 
+                src={iconPath} 
+                alt={nodeDefinition.name}
+                className="w-4 h-4 flex-shrink-0"
+                style={{ 
+                  filter: `brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)`,
+                  // Apply category color using CSS filter
+                  ...(nodeDefinition.category === 'input' && { filter: 'brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%)' }),
+                  ...(nodeDefinition.category === 'size' && { filter: 'brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)' }),
+                  ...(nodeDefinition.category === 'effects' && { filter: 'brightness(0) saturate(100%) invert(20%) sepia(100%) saturate(7500%) hue-rotate(267deg) brightness(101%) contrast(101%)' }),
+                  ...(nodeDefinition.category === 'composition' && { filter: 'brightness(0) saturate(100%) invert(70%) sepia(98%) saturate(1552%) hue-rotate(1deg) brightness(101%) contrast(101%)' }),
+                  ...(nodeDefinition.category === 'format' && { filter: 'brightness(0) saturate(100%) invert(17%) sepia(94%) saturate(7491%) hue-rotate(359deg) brightness(95%) contrast(118%)' }),
+                  ...(nodeDefinition.category === 'timing' && { filter: 'brightness(0) saturate(100%) invert(70%) sepia(98%) saturate(1552%) hue-rotate(1deg) brightness(101%) contrast(101%)' }),
+                  ...(nodeDefinition.category === 'assembly' && { filter: 'brightness(0) saturate(100%) invert(70%) sepia(98%) saturate(1552%) hue-rotate(1deg) brightness(101%) contrast(101%)' }),
+                  ...(nodeDefinition.category === 'utilities' && { filter: 'brightness(0) saturate(100%) invert(20%) sepia(100%) saturate(7500%) hue-rotate(267deg) brightness(101%) contrast(101%)' }),
+                  ...(nodeDefinition.category === 'custom' && { filter: 'brightness(0) saturate(100%) invert(70%) sepia(98%) saturate(1552%) hue-rotate(1deg) brightness(101%) contrast(101%)' })
+                }}
+              />
+            ) : (
+              <div className={`w-3 h-3 ${getNodeColor(nodeDefinition.category).dot} rounded-full flex-shrink-0`} />
+            );
+          })()}
           <div className="text-sm font-medium text-card-foreground">
             {nodeDefinition?.name || node.name}
           </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // import { motion, AnimatePresence } from 'framer-motion';
 // Using simple text icons instead of lucide-react for now
 // import { ChevronDown, ChevronRight, Search, X } from 'lucide-react';
-import { nodeDefinitions, nodeCategories, getNodesByCategory, NodeDefinition } from '../lib/nodeDefinitions';
+import { nodeDefinitions, nodeCategories, getNodesByCategory, NodeDefinition, getNodeIcon } from '../lib/nodeDefinitions';
 
 // Function to get node color based on category
 const getNodeColor = (category: string): { bg: string; dot: string } => {
@@ -40,6 +40,7 @@ const NodeItem: React.FC<{
   onDragStart: (event: React.DragEvent, node: NodeDefinition) => void;
 }> = ({ node, onDragStart }) => {
   const colors = getNodeColor(node.category);
+  const iconPath = getNodeIcon(node.id);
   
   return (
     <div
@@ -49,7 +50,28 @@ const NodeItem: React.FC<{
     >
       <div className="flex items-start space-x-3">
         <div className={`w-8 h-8 ${colors.bg} rounded-md flex items-center justify-center flex-shrink-0`}>
-          <div className={`w-3 h-3 ${colors.dot} rounded-sm`} />
+          {iconPath ? (
+            <img 
+              src={iconPath} 
+              alt={node.name}
+              className="w-5 h-5"
+              style={{ 
+                filter: `brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)`,
+                // Apply category color using CSS filter
+                ...(node.category === 'input' && { filter: 'brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%)' }),
+                ...(node.category === 'size' && { filter: 'brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)' }),
+                ...(node.category === 'effects' && { filter: 'brightness(0) saturate(100%) invert(20%) sepia(100%) saturate(7500%) hue-rotate(267deg) brightness(101%) contrast(101%)' }),
+                ...(node.category === 'composition' && { filter: 'brightness(0) saturate(100%) invert(70%) sepia(98%) saturate(1552%) hue-rotate(1deg) brightness(101%) contrast(101%)' }),
+                ...(node.category === 'format' && { filter: 'brightness(0) saturate(100%) invert(17%) sepia(94%) saturate(7491%) hue-rotate(359deg) brightness(95%) contrast(118%)' }),
+                ...(node.category === 'timing' && { filter: 'brightness(0) saturate(100%) invert(70%) sepia(98%) saturate(1552%) hue-rotate(1deg) brightness(101%) contrast(101%)' }),
+                ...(node.category === 'assembly' && { filter: 'brightness(0) saturate(100%) invert(70%) sepia(98%) saturate(1552%) hue-rotate(1deg) brightness(101%) contrast(101%)' }),
+                ...(node.category === 'utilities' && { filter: 'brightness(0) saturate(100%) invert(20%) sepia(100%) saturate(7500%) hue-rotate(267deg) brightness(101%) contrast(101%)' }),
+                ...(node.category === 'custom' && { filter: 'brightness(0) saturate(100%) invert(70%) sepia(98%) saturate(1552%) hue-rotate(1deg) brightness(101%) contrast(101%)' })
+              }}
+            />
+          ) : (
+            <div className={`w-3 h-3 ${colors.dot} rounded-sm`} />
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <h4 className="text-sm font-medium text-card-foreground truncate">

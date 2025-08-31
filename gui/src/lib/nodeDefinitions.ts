@@ -20,6 +20,50 @@ export interface NodeDefinition {
   icon?: string;
 }
 
+// Icon mapping function
+export function getNodeIcon(nodeId: string): string | null {
+  const iconMap: Record<string, string> = {
+    'input': '/svg/input.svg',
+    'ff_download': '/svg/download.svg',
+    'ff_scale': '/svg/scale.svg',
+    'ff_crop': '/svg/crop.svg',
+    'ff_pad': '/svg/pad.svg',
+    'ff_aspect_ratio': '/svg/aspect-ratio.svg',
+    'ff_rotate': '/svg/rotate.svg',
+    'ff_flip': '/svg/flip.svg',
+    'ff_to_landscape': '/svg/landscape.svg',
+    'ff_to_portrait': '/svg/portrait.svg',
+    'ff_blur': '/svg/blur.svg',
+    'ff_sharpen': '/svg/sharpen.svg',
+    'ff_unsharp': '/svg/unsharp-mask.svg',
+    'ff_colour': '/svg/colour-adjust.svg',
+    'ff_lut': '/svg/lut.svg',
+    'ff_overlay': '/svg/overlay.svg',
+    'ff_stack': '/svg/stack.svg',
+    'ff_watermark': '/svg/watermark.svg',
+    'ff_text': '/svg/text.svg',
+    'ff_subtitles': '/svg/subtitles.svg',
+    'ff_audio': '/svg/audio-overlay.svg',
+    'ff_convert': '/svg/convert.svg',
+    'ff_transcode': '/svg/transcode.svg',
+    'ff_social_media': '/svg/social-media.svg',
+    'ff_cut': '/svg/cut.svg',
+    'ff_fps': '/svg/fps.svg',
+    'ff_middle': '/svg/middle.svg',
+    'ff_grouptime': '/svg/group-time.svg',
+    'ff_concat': '/svg/concatenate.svg',
+    'ff_append': '/svg/append.svg',
+    'ff_transition': '/svg/transition.svg',
+    'ff_image': '/svg/image-to-video.svg',
+    'ff_kenburns': '/svg/ken-burns.svg',
+    'ff_thumbnail': '/svg/thumbnail.svg',
+    'ff_proxy': '/svg/proxy.svg',
+    'ff_custom': '/svg/custom-ffmpeg.svg'
+  };
+  
+  return iconMap[nodeId] || null;
+}
+
 export const nodeCategories = [
   { id: 'input', name: 'Input', color: '#22c55e' },
   { id: 'size', name: 'Size & Position', color: '#3b82f6' },
