@@ -1325,7 +1325,7 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
                 stroke="transparent"
                 strokeWidth="20"
                 fill="none"
-                className="cursor-pointer hover:stroke-red-500 hover:stroke-2 transition-colors"
+                className="cursor-pointer"
                 style={{ pointerEvents: 'auto' }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -1363,9 +1363,19 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           const fromNode = editorState.nodes.find(n => n.id === connectionDrag.from.nodeId);
           if (!fromNode) return null;
           
-          // Use the actual socket position that was calculated in onSocketMouseDown
-          const fromX = connectionDrag.fromPos.x;
-          const fromY = connectionDrag.fromPos.y;
+          // Calculate the actual socket position dynamically
+          const nodeX = fromNode.position.x;
+          const nodeY = fromNode.position.y;
+          const nodeDefinition = getNodeDefinition(fromNode.type);
+          if (!nodeDefinition) return null;
+          
+          // Get actual node width for dynamic positioning
+          const nodeElement = document.querySelector(`[data-node-id="${fromNode.id}"]`);
+          const nodeWidth = nodeElement ? nodeElement.getBoundingClientRect().width : 200;
+          const nodeHeight = nodeElement ? nodeElement.getBoundingClientRect().height : 200;
+
+          const fromX = nodeX + nodeWidth - 20; // Output socket X position
+          const fromY = nodeY + nodeHeight - 20; // Output socket Y position
           const toX = connectionDrag.to.x;
           const toY = connectionDrag.to.y;
           
