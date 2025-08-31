@@ -581,7 +581,7 @@ const NodeComponent: React.FC<{
         onContextMenu(node.id, e.clientX, e.clientY);
       }}
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 h-5">
         <div className="flex items-center space-x-2">
           {nodeDefinition && (
             <div className={`w-3 h-3 ${getNodeColor(nodeDefinition.category).dot} rounded-full flex-shrink-0`} />
@@ -774,6 +774,10 @@ export interface SimpleNodeEditorHandle {
   getGridSize: () => number;
   saveLayout: () => string;
   loadLayout: (layoutJson: string) => boolean;
+  setPanOffset: (x: number, y: number) => void;
+  getPanOffset: () => { x: number; y: number };
+  setIsPanning: (isPanning: boolean) => void;
+  getIsPanning: () => boolean;
 }
 
 export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, SimpleNodeEditorProps>(({
@@ -795,6 +799,7 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     nodeId: string;
   } | null>(null);
   const [selectedConnection, setSelectedConnection] = useState<string | null>(null);
+  const [panStart, setPanStart] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const handleStateChange = (state: EditorState) => {
@@ -882,7 +887,8 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
   }, [editor, editorState.selectedNodes, selectedConnection]);
 
   const handleCanvasClick = (e: React.MouseEvent) => {
-    if (e.target === canvasRef.current) {
+    // Only handle clicks directly on the canvas div, not on child elements
+    if (e.target === canvasRef.current && !editorState.isPanning) {
       editor.clearSelection();
       editor.clearCommentSelection();
       setContextMenu(null);
@@ -890,14 +896,34 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     }
   };
 
+  const handleCanvasMouseDown = (e: React.MouseEvent) => {
+    // Check if we're clicking on empty space (not on nodes, comments, or other interactive elements)
+    const target = e.target as HTMLElement;
+    const isInteractiveElement = target.closest('[data-node-id], [data-comment-id], [data-socket-type], .node-component, .comment-component, .resize-handle');
+    
+    if (!isInteractiveElement && e.button === 0) { // Left mouse button and not on interactive elements
+      // Start panning
+      editor.setIsPanning(true);
+      setPanStart({ x: e.clientX, y: e.clientY });
+      e.preventDefault(); // Prevent default behavior
+    }
+  };
+
   const handleCanvasDoubleClick = (e: React.MouseEvent) => {
-    if (e.target === canvasRef.current) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      // Create a new comment at the click position
-      editor.addComment(x, y, 'New comment');
+    // Check if we're clicking on empty space (not on nodes, comments, or other interactive elements)
+    const target = e.target as HTMLElement;
+    const isInteractiveElement = target.closest('[data-node-id], [data-comment-id], [data-socket-type], .node-component, .comment-component, .resize-handle');
+    
+    if (!isInteractiveElement) {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (rect) {
+        const panOffset = editor.getPanOffset();
+        const x = e.clientX - rect.left - panOffset.x;
+        const y = e.clientY - rect.top - panOffset.y;
+        
+        // Create a new comment at the click position
+        editor.addComment(x, y, 'New comment');
+      }
     }
   };
 
@@ -905,17 +931,16 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     e.preventDefault();
     const nodeDefinitionId = e.dataTransfer.getData('application/node-definition');
     if (!nodeDefinitionId || !canvasRef.current) {
-      console.log('Drop failed: no node ID or canvas ref');
       return;
     }
 
     const rect = canvasRef.current.getBoundingClientRect();
+    const panOffset = editor.getPanOffset();
     const position = {
-      x: e.clientX - rect.left - 100, // Offset so node appears where cursor is
-      y: e.clientY - rect.top - 50
+      x: e.clientX - rect.left - 100 - panOffset.x, // Account for pan offset
+      y: e.clientY - rect.top - 50 - panOffset.y
     };
 
-    console.log('Dropping node:', nodeDefinitionId, 'at position:', position);
     editor.addNode(nodeDefinitionId, position);
   };
 
@@ -925,7 +950,6 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
   };
 
   const handleSocketMouseDown = (nodeId: string, socketId: string, type: 'input' | 'output', e: React.MouseEvent) => {
-    console.log('Socket mouse down:', { nodeId, socketId, type });
     e.preventDefault();
     e.stopPropagation();
     
@@ -983,7 +1007,6 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           fromPos: { x: socketPos.x, y: socketPos.y }, // Store the original socket position
           to: { x: socketPos.x, y: socketPos.y } // Start at the same position
         };
-        console.log('Starting connection drag from calculated socket position:', dragData);
         setConnectionDrag(dragData);
       }
     } else {
@@ -994,34 +1017,45 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
   const handleCanvasMouseMove = (e: React.MouseEvent) => {
     if (connectionDrag && canvasRef.current) {
       const rect = canvasRef.current.getBoundingClientRect();
-      const newPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      const panOffset = editor.getPanOffset();
+      const newPos = { 
+        x: e.clientX - rect.left - panOffset.x, 
+        y: e.clientY - rect.top - panOffset.y 
+      };
       console.log('Canvas mouse move - updating drag to:', newPos);
       setConnectionDrag({
         ...connectionDrag,
         to: newPos
       });
     }
+    
+    // Handle panning
+    if (panStart && editorState.isPanning) {
+      const deltaX = e.clientX - panStart.x;
+      const deltaY = e.clientY - panStart.y;
+      const currentOffset = editor.getPanOffset();
+      const newOffset = { x: currentOffset.x + deltaX, y: currentOffset.y + deltaY };
+      editor.setPanOffset(newOffset.x, newOffset.y);
+      setPanStart({ x: e.clientX, y: e.clientY });
+    }
   };
 
   const handleCanvasMouseUp = (e: React.MouseEvent) => {
-    console.log('Canvas mouse up, connectionDrag:', connectionDrag);
+    // Stop panning
+    if (editorState.isPanning) {
+      editor.setIsPanning(false);
+      setPanStart(null);
+    }
     if (connectionDrag) {
       // Check if we're over an input socket
       const target = e.target as HTMLElement;
-      console.log('Mouse up target:', target);
       const socketElement = target.closest('[data-socket-type="input"]');
-      console.log('Found socket element:', socketElement);
       
       if (socketElement) {
         const targetNodeId = socketElement.getAttribute('data-node-id');
         const targetSocketId = socketElement.getAttribute('data-socket-id');
-        console.log('Target socket:', { targetNodeId, targetSocketId });
         
         if (targetNodeId && targetSocketId) {
-          console.log('Creating connection:', {
-            from: connectionDrag.from,
-            to: { nodeId: targetNodeId, socketId: targetSocketId }
-          });
           // Create connection
           editor.addConnection(
             connectionDrag.from.nodeId,
@@ -1030,11 +1064,8 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
             targetSocketId
           );
         }
-      } else {
-        console.log('No input socket found at drop location');
       }
       
-      console.log('Clearing connection drag');
       setConnectionDrag(null);
     }
   };
@@ -1113,6 +1144,18 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
     },
     loadLayout: (layoutJson: string) => {
       return editor.loadLayout(layoutJson);
+    },
+    setPanOffset: (x: number, y: number) => {
+      editor.setPanOffset(x, y);
+    },
+    getPanOffset: () => {
+      return editor.getPanOffset();
+    },
+    setIsPanning: (isPanning: boolean) => {
+      editor.setIsPanning(isPanning);
+    },
+    getIsPanning: () => {
+      return editor.getIsPanning();
     }
   }), [editor, editorState.selectedNodes]);
 
@@ -1122,6 +1165,8 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
       className="relative w-full h-full bg-background border border-border rounded-lg overflow-hidden"
       onClick={handleCanvasClick}
       onDoubleClick={handleCanvasDoubleClick}
+      onMouseDown={handleCanvasMouseDown}
+      onMouseUp={handleCanvasMouseUp}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragEnter={(e) => {
@@ -1129,14 +1174,25 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
         console.log('Drag enter canvas');
       }}
       onMouseMove={handleCanvasMouseMove}
-      onMouseUp={handleCanvasMouseUp}
-      style={{ minHeight: '600px' }}
+      style={{ 
+        minHeight: '600px',
+        cursor: editorState.isPanning ? 'grabbing' : 'grab'
+      }}
     >
       {/* Grid background */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
 
-      {/* Nodes */}
-      {editorState.nodes.map((node) => (
+      {/* Canvas content with pan transform */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          transform: `translate(${editorState.panOffset.x}px, ${editorState.panOffset.y}px)`,
+          transformOrigin: '0 0'
+        }}
+      >
+
+        {/* Nodes */}
+        {editorState.nodes.map((node) => (
         <NodeComponent
           key={node.id}
           node={node}
@@ -1151,24 +1207,24 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
         />
       ))}
 
-      {/* Comments */}
-      {editorState.comments.map((comment) => (
-        <CommentComponent
-          key={comment.id}
-          comment={comment}
-          onMove={handleCommentMove}
-          onSelect={handleCommentSelect}
-          onUpdate={handleCommentUpdate}
-          onDelete={handleCommentDelete}
-        />
-      ))}
+        {/* Comments */}
+        {editorState.comments.map((comment) => (
+          <CommentComponent
+            key={comment.id}
+            comment={comment}
+            onMove={handleCommentMove}
+            onSelect={handleCommentSelect}
+            onUpdate={handleCommentUpdate}
+            onDelete={handleCommentDelete}
+          />
+        ))}
 
-      {/* Connections - Simple and Visible */}
-      <svg 
-        className="absolute inset-0 pointer-events-none" 
-        style={{ zIndex: 10, width: '100%', height: '100%' }}
-        viewBox={`0 0 ${canvasRef.current?.offsetWidth || 1200} ${canvasRef.current?.offsetHeight || 800}`}
-      >
+        {/* Connections - Simple and Visible (inside pan transform) */}
+        <svg 
+          className="absolute inset-0 pointer-events-none" 
+          style={{ zIndex: 10, width: '100%', height: '100%' }}
+          viewBox={`0 0 ${canvasRef.current?.offsetWidth || 1200} ${canvasRef.current?.offsetHeight || 800}`}
+        >
 
 
         
@@ -1182,66 +1238,69 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
             return null;
           }
 
-          // Calculate socket positions using actual socket element positions
+          // Calculate socket positions in original coordinate space (before pan transform)
           const calculateSocketPosition = (node: EditorNode, socketType: 'input' | 'output', socketId: string) => {
-            const canvasElement = canvasRef.current;
+            const nodeX = node.position.x;
+            const nodeY = node.position.y;
             
-            if (canvasElement) {
-              // Try to find the actual socket element
-              const socketElement = document.querySelector(`[data-node-id="${node.id}"][data-socket-id="${socketId}"][data-socket-type="${socketType}"]`);
+            if (socketType === 'input') {
+              // Input sockets are positioned next to their input fields
+              const nodeDefinition = getNodeDefinition(node.type);
+              if (!nodeDefinition) return { x: 0, y: 0 };
               
-              if (socketElement) {
-                const socketRect = socketElement.getBoundingClientRect();
-                const canvasRect = canvasElement.getBoundingClientRect();
+              // Find the input parameter index
+              const inputIndex = nodeDefinition.inputs.findIndex(input => input.name === socketId);
+              
+              if (inputIndex >= 0) {
+                // Calculate position based on the actual node layout
+                const titleHeight = 20; // Title section height
+                const titleMargin = 8; // mb-2
+                const descHeight = 40; // Description textarea height
+                const descMargin = 12; // mb-3
+                const paramSpacing = 32; // mb-2 (8px) + input height (~24px)
+                const paramStartY = titleHeight + titleMargin + descHeight + descMargin;
                 
-                // Get the center of the socket element
                 return {
-                  x: socketRect.left - canvasRect.left + socketRect.width / 2,
-                  y: socketRect.top - canvasRect.top + socketRect.height / 2
+                  x: nodeX + 23, // 8px from left edge (closer to the socket)
+                  y: nodeY + (titleMargin + titleHeight + titleMargin) + (descMargin + titleHeight + descHeight + descMargin ) + titleMargin +1// Center of the parameter row + 20px down
                 };
               }
-            }
-            
-            // Fallback to calculated position if socket element not found
-            const nodeElement = document.querySelector(`[data-node-id="${node.id}"]`);
-            
-            if (nodeElement && canvasElement) {
-              const nodeRect = nodeElement.getBoundingClientRect();
-              const canvasRect = canvasElement.getBoundingClientRect();
+            } else {
+              // Output sockets are at the bottom right corner
+              const nodeDefinition = getNodeDefinition(node.type);
+              if (!nodeDefinition) return { x: 0, y: 0 };
               
-              // Convert to canvas-relative coordinates
-              const relativeX = nodeRect.left - canvasRect.left;
-              const relativeY = nodeRect.top - canvasRect.top;
-              const nodeWidth = nodeRect.width;
-              const nodeHeight = nodeRect.height;
+              // Output sockets are positioned on the right side, not at the bottom
+              const titleHeight = 20;
+              const titleMargin = 8; // mb-2
+              const descHeight = 40;
+              const descMargin = 12; // mb-3
+              const paramSpacing = 32; // mb-2 (8px) + input height (~24px)
+              const paramStartY = titleHeight + titleMargin + descHeight + descMargin;
+              const inputsHeight = nodeDefinition.inputs.length * paramSpacing;
+              const outputMargin = 8; // mt-2
+              const outputHeight = 20; // Output section height
               
-              if (socketType === 'input') {
-                // Input sockets are now positioned next to their input fields
-                const nodeDefinition = getNodeDefinition(node.type);
-                if (!nodeDefinition) return { x: 0, y: 0 };
-                
-                // Find the input parameter index
-                const inputIndex = nodeDefinition.inputs.findIndex(input => input.name === socketId);
-                
-                if (inputIndex >= 0) {
-                  // Calculate position based on the new layout
-                  const titleHeight = 20; // Node title height
-                  const descHeight = 40; // Description height (always present now)
-                  const paramSpacing = 30; // Spacing between parameters
-                  const paramStartY = relativeY + titleHeight + descHeight + 20; // Start of parameters
-                  
-                  return {
-                    x: relativeX + 16, // 16px from left edge
-                    y: paramStartY + (inputIndex * paramSpacing) + 8 // Center of the parameter row
-                  };
-                }
-              } else {
-                // Output sockets are at the bottom right corner
-                return {
-                  x: relativeX + nodeWidth - 16, // 16px from right edge
-                  y: relativeY + nodeHeight - 16 // 16px from bottom edge
-                };
-              }
+              // Get actual node width for dynamic positioning
+              const nodeElement = document.querySelector(`[data-node-id="${node.id}"]`);
+              const nodeWidth = nodeElement ? nodeElement.getBoundingClientRect().width : 200;
+              const nodeHeight = nodeElement ? nodeElement.getBoundingClientRect().height : 200;
+
+              console.log('titleHeight:', titleHeight);
+              console.log('titleMargin:', titleMargin);
+              console.log('descHeight:', descHeight);
+              console.log('descMargin:', descMargin);
+              console.log('inputsHeight:', inputsHeight);
+              console.log('paramStartY:', paramStartY);
+              console.log('nodeY:', nodeY);
+              console.log('nodeHeight:', nodeHeight);
+
+              
+              // Output socket is positioned on the right side, at the bottom of the node
+              return {
+                x: nodeX + nodeWidth - 20, // 8px from right edge (using actual node width)
+                y: nodeY + nodeHeight - 20 // Bottom of output section
+              };
             }
             
             return { x: 0, y: 0 };
@@ -1294,13 +1353,7 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
               <circle cx={fromX} cy={fromY} r="6" fill="#3b82f6" stroke="#fff" strokeWidth="2" />
               <circle cx={toX} cy={toY} r="6" fill="#f97316" stroke="#fff" strokeWidth="2" />
               
-              {/* Debug labels */}
-              <text x={fromX + 10} y={fromY - 10} fill="#3b82f6" fontSize="10" fontWeight="bold">
-                OUT
-              </text>
-              <text x={toX + 10} y={toY - 10} fill="#f97316" fontSize="10" fontWeight="bold">
-                IN
-              </text>
+
             </g>
           );
         })}
@@ -1313,10 +1366,12 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           // Use the actual socket position that was calculated in onSocketMouseDown
           const fromX = connectionDrag.fromPos.x;
           const fromY = connectionDrag.fromPos.y;
+          const toX = connectionDrag.to.x;
+          const toY = connectionDrag.to.y;
           
           return (
             <path
-              d={`M ${fromX} ${fromY} Q ${(fromX + connectionDrag.to.x) / 2} ${fromY} ${connectionDrag.to.x} ${connectionDrag.to.y}`}
+              d={`M ${fromX} ${fromY} Q ${(fromX + toX) / 2} ${fromY} ${toX} ${toY}`}
               stroke="hsl(var(--primary))"
               strokeWidth="2"
               fill="none"
@@ -1324,7 +1379,8 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
             />
           );
         })()}
-      </svg>
+        </svg>
+      </div>
 
       {/* Context Menu */}
       {contextMenu && (

@@ -58,6 +58,11 @@ export interface EditorState {
     fromSocket?: { nodeId: string; socketId: string };
   };
   gridSnapEnabled: boolean;
+  panOffset: {
+    x: number;
+    y: number;
+  };
+  isPanning: boolean;
 }
 
 export class SimpleNodeEditor {
@@ -68,7 +73,9 @@ export class SimpleNodeEditor {
     comments: [],
     dragState: { isDragging: false },
     connectionState: { isConnecting: false },
-    gridSnapEnabled: true
+    gridSnapEnabled: true,
+    panOffset: { x: 0, y: 0 },
+    isPanning: false
   };
 
   private listeners: Array<(state: EditorState) => void> = [];
@@ -303,7 +310,9 @@ export class SimpleNodeEditor {
       comments: [],
       dragState: { isDragging: false },
       connectionState: { isConnecting: false },
-      gridSnapEnabled: this.state.gridSnapEnabled
+      gridSnapEnabled: this.state.gridSnapEnabled,
+      panOffset: { x: 0, y: 0 },
+      isPanning: false
     };
     this.notifyListeners();
   }
@@ -329,13 +338,33 @@ export class SimpleNodeEditor {
     return this.gridSize;
   }
 
+  // Pan methods
+  setPanOffset(x: number, y: number) {
+    this.state.panOffset = { x, y };
+    this.notifyListeners();
+  }
+
+  getPanOffset(): { x: number; y: number } {
+    return this.state.panOffset;
+  }
+
+  setIsPanning(isPanning: boolean) {
+    this.state.isPanning = isPanning;
+    this.notifyListeners();
+  }
+
+  getIsPanning(): boolean {
+    return this.state.isPanning;
+  }
+
   saveLayout(): string {
     const layoutData = {
       version: "1.0",
       timestamp: new Date().toISOString(),
       settings: {
         gridSnapEnabled: this.state.gridSnapEnabled,
-        gridSize: this.gridSize
+        gridSize: this.gridSize,
+        panOffset: this.state.panOffset
       },
       nodes: this.state.nodes.map(node => ({
         id: node.id,
@@ -386,6 +415,9 @@ export class SimpleNodeEditor {
         }
         if (typeof layoutData.settings.gridSize === 'number' && layoutData.settings.gridSize >= 2 && layoutData.settings.gridSize <= 320) {
           this.gridSize = layoutData.settings.gridSize;
+        }
+        if (layoutData.settings.panOffset && typeof layoutData.settings.panOffset.x === 'number' && typeof layoutData.settings.panOffset.y === 'number') {
+          this.state.panOffset = { x: layoutData.settings.panOffset.x, y: layoutData.settings.panOffset.y };
         }
       }
 
