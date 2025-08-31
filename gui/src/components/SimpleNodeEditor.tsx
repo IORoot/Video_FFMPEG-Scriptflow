@@ -47,6 +47,7 @@ const CommentComponent: React.FC<{
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent canvas panning when dragging comment
     setDragOffset({
       x: e.clientX - comment.x,
       y: e.clientY - comment.y
