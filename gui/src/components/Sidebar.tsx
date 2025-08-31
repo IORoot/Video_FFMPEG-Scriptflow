@@ -18,11 +18,13 @@ const getNodeColor = (category: string): { bg: string; dot: string } => {
     case 'format':
       return { bg: 'bg-red-100', dot: 'bg-red-500' }; // Red for format operations
     case 'timing':
-      return { bg: 'bg-teal-100', dot: 'bg-teal-500' }; // Teal for timing operations
+      return { bg: 'bg-cyan-100', dot: 'bg-cyan-500' }; // Cyan for timing operations
     case 'assembly':
-      return { bg: 'bg-indigo-100', dot: 'bg-indigo-500' }; // Indigo for assembly
+      return { bg: 'bg-lime-100', dot: 'bg-lime-500' }; // Lime green for assembly
     case 'utilities':
-      return { bg: 'bg-orange-100', dot: 'bg-orange-500' }; // Orange for utilities
+      return { bg: 'bg-gray-100', dot: 'bg-gray-500' }; // Gray for utilities
+    case 'custom':
+      return { bg: 'bg-pink-100', dot: 'bg-pink-500' }; // Pink for custom operations
     default:
       return { bg: 'bg-gray-100', dot: 'bg-gray-500' }; // Gray for unknown
   }

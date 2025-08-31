@@ -535,8 +535,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'params', type: 'string', required: true, description: 'FFMPEG parameters string (e.g., "-c:v libx264 -c:a aac -strict experimental")' },
-      { name: 'output', type: 'string', default: 'ff_custom.mp4', description: 'Output filename' },
-      { name: 'loglevel', type: 'select', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], default: 'error', description: 'FFMPEG log level' }
+      { name: 'output', type: 'string', default: 'ff_custom.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   }
