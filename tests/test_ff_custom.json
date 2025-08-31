@@ -1,0 +1,23 @@
+{
+  "ff_custom": {
+    "description": "Custom FFMPEG processing with complex parameters",
+    "input": "sample_video.mp4",
+    "output": "custom_processed.mp4",
+    "params": "-c:v libx264 -c:a aac -strict experimental -preset fast -crf 23",
+    "loglevel": "info"
+  },
+  "ff_custom2": {
+    "description": "Custom FFMPEG with drawtext filter and escaped quotes",
+    "input": "sample_video.mp4", 
+    "output": "custom_text_overlay.mp4",
+    "params": "-vf \"drawtext=text='Hello World':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2\" -c:v libx264 -c:a aac -strict experimental",
+    "loglevel": "error"
+  },
+  "ff_custom3": {
+    "description": "Custom FFMPEG with multiple filters and complex parameters",
+    "input": "sample_video.mp4",
+    "output": "custom_complex.mp4", 
+    "params": "-vf \"scale=1920:1080,drawtext=text='Custom Processing':fontcolor=yellow:fontsize=36:x=10:y=10\" -c:v libx264 -preset medium -crf 20 -c:a aac -b:a 128k",
+    "loglevel": "warning"
+  }
+}
