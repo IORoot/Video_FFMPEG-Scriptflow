@@ -153,16 +153,37 @@ const CommentComponent: React.FC<{
             onBlur={handleTextSubmit}
             onKeyDown={handleKeyDown}
             className="flex-1 w-full bg-transparent border-none outline-none resize-none"
-            style={{ color: comment.fontColor, fontSize: `${comment.fontSize}px` }}
+            style={{ 
+              color: comment.fontColor, 
+              fontSize: `${comment.fontSize}px`,
+              textAlign: comment.textAlign,
+              display: 'block',
+              height: '100%'
+            }}
             autoFocus
             placeholder="Enter comment..."
           />
         ) : (
           <div 
-            className="flex-1 whitespace-pre-wrap"
-            style={{ color: comment.fontColor, fontSize: `${comment.fontSize}px` }}
+            className="flex-1 whitespace-pre-wrap h-full flex flex-col"
+            style={{ 
+              color: comment.fontColor, 
+              fontSize: `${comment.fontSize}px`,
+              textAlign: comment.textAlign
+            }}
           >
-            {comment.text || 'Double-click to edit'}
+            <div 
+              className="flex-1"
+              style={{
+                display: 'flex',
+                alignItems: comment.verticalAlign === 'top' ? 'flex-start' : 
+                           comment.verticalAlign === 'middle' ? 'center' : 'flex-end',
+                justifyContent: comment.textAlign === 'left' ? 'flex-start' : 
+                               comment.textAlign === 'center' ? 'center' : 'flex-end'
+              }}
+            >
+              {comment.text || 'Double-click to edit'}
+            </div>
           </div>
         )}
         
@@ -411,6 +432,65 @@ const CommentComponent: React.FC<{
                   onMouseDown={(e) => e.stopPropagation()}
                   className="w-full"
                 />
+              </div>
+
+              {/* Text Alignment */}
+              <div>
+                <label className="block text-xs text-gray-700 mb-2">Text Alignment</label>
+                
+                {/* Horizontal Alignment */}
+                <div className="mb-3">
+                  <label className="block text-xs text-gray-600 mb-1">Horizontal</label>
+                  <div className="flex space-x-1">
+                    {(['left', 'center', 'right'] as const).map((align) => (
+                      <button
+                        key={align}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onUpdate(comment.id, { textAlign: align });
+                        }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        className={`flex-1 px-2 py-1 text-xs rounded transition-colors ${
+                          comment.textAlign === align
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                        }`}
+                        title={`Align ${align}`}
+                      >
+                        {align === 'left' && '⬅️'}
+                        {align === 'center' && '↔️'}
+                        {align === 'right' && '➡️'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Vertical Alignment */}
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">Vertical</label>
+                  <div className="flex space-x-1">
+                    {(['top', 'middle', 'bottom'] as const).map((align) => (
+                      <button
+                        key={align}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onUpdate(comment.id, { verticalAlign: align });
+                        }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        className={`flex-1 px-2 py-1 text-xs rounded transition-colors ${
+                          comment.verticalAlign === align
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                        }`}
+                        title={`Align ${align}`}
+                      >
+                        {align === 'top' && '⬆️'}
+                        {align === 'middle' && '↕️'}
+                        {align === 'bottom' && '⬇️'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
             </div>

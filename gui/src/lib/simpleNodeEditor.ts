@@ -38,6 +38,8 @@ export interface CanvasComment {
   backgroundColor: string;
   fontColor: string;
   fontSize: number;
+  textAlign: 'left' | 'center' | 'right';
+  verticalAlign: 'top' | 'middle' | 'bottom';
   selected: boolean;
 }
 
@@ -354,6 +356,8 @@ export class SimpleNodeEditor {
         backgroundColor: comment.backgroundColor,
         fontColor: comment.fontColor,
         fontSize: comment.fontSize,
+        textAlign: comment.textAlign,
+        verticalAlign: comment.verticalAlign,
         selected: false // Don't save selection state
       }))
     };
@@ -409,6 +413,8 @@ export class SimpleNodeEditor {
         backgroundColor: commentData.backgroundColor || 'rgba(255, 255, 255, 0.8)',
         fontColor: commentData.fontColor || 'rgba(0, 0, 0, 1)',
         fontSize: commentData.fontSize || 14,
+        textAlign: commentData.textAlign || 'left',
+        verticalAlign: commentData.verticalAlign || 'top',
         selected: false
       }));
 
@@ -460,7 +466,7 @@ export class SimpleNodeEditor {
   }
 
   // Comment management methods
-  addComment(x: number, y: number, text: string = '', backgroundColor: string = 'rgba(254, 243, 199, 0.8)', fontColor: string = 'rgba(0, 0, 0, 1)', fontSize: number = 14): string {
+  addComment(x: number, y: number, text: string = '', backgroundColor: string = 'rgba(254, 243, 199, 0.8)', fontColor: string = 'rgba(0, 0, 0, 1)', fontSize: number = 14, textAlign: 'left' | 'center' | 'right' = 'left', verticalAlign: 'top' | 'middle' | 'bottom' = 'top'): string {
     const comment: CanvasComment = {
       id: `comment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       x,
@@ -471,6 +477,8 @@ export class SimpleNodeEditor {
       backgroundColor,
       fontColor,
       fontSize,
+      textAlign,
+      verticalAlign,
       selected: false
     };
     
