@@ -28,7 +28,8 @@ export const nodeCategories = [
   { id: 'format', name: 'Format', color: '#ef4444' },
   { id: 'timing', name: 'Timing', color: '#06b6d4' },
   { id: 'assembly', name: 'Assembly', color: '#84cc16' },
-  { id: 'utilities', name: 'Utilities', color: '#6b7280' }
+  { id: 'utilities', name: 'Utilities', color: '#6b7280' },
+  { id: 'custom', name: 'Custom', color: '#ec4899' }
 ];
 
 export const nodeDefinitions: NodeDefinition[] = [
@@ -521,6 +522,21 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'scale', type: 'select', options: ['quarter', 'half', 'proxy'], default: 'half', description: 'Proxy scale' },
       { name: 'output', type: 'string', default: 'ff_proxy.mp4', description: 'Output filename' }
+    ],
+    outputs: [{ name: 'video', type: 'video' }]
+  },
+
+  // Custom
+  {
+    id: 'ff_custom',
+    name: 'Custom FFMPEG',
+    category: 'custom',
+    description: 'Custom FFMPEG processing with any parameters',
+    inputs: [
+      { name: 'input', type: 'file', required: true, description: 'Input video file' },
+      { name: 'params', type: 'string', required: true, description: 'FFMPEG parameters string (e.g., "-c:v libx264 -c:a aac -strict experimental")' },
+      { name: 'output', type: 'string', default: 'ff_custom.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], default: 'error', description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   }

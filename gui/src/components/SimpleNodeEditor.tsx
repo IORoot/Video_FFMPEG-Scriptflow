@@ -22,6 +22,8 @@ const getNodeColor = (category: string): { bg: string; dot: string } => {
       return { bg: 'bg-indigo-100', dot: 'bg-indigo-500' }; // Indigo for assembly
     case 'utilities':
       return { bg: 'bg-orange-100', dot: 'bg-orange-500' }; // Orange for utilities
+    case 'custom':
+      return { bg: 'bg-pink-100', dot: 'bg-pink-500' }; // Pink for custom operations
     default:
       return { bg: 'bg-gray-100', dot: 'bg-gray-500' }; // Gray for unknown
   }
