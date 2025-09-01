@@ -523,4 +523,49 @@ code {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   z-index: 20;
   animation: subtitlesLoop 3s ease-in-out infinite;
+  background-color: black;
+  padding: 2px;
 }
+
+/* Audio waveform animation for ff_audio preview */
+@keyframes audioWaveform {
+  0% {
+    transform: scaleY(0.3);
+  }
+  25% {
+    transform: scaleY(0.7);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+  75% {
+    transform: scaleY(0.5);
+  }
+  100% {
+    transform: scaleY(0.3);
+  }
+}
+
+.animate-audio-waveform {
+  animation: audioWaveform 2s ease-in-out infinite;
+}
+
+.audio-bar-1 { animation: audioWaveform 0.5s ease-in-out infinite; }
+.audio-bar-2 { animation: audioWaveform 0.7s ease-in-out infinite; }
+.audio-bar-3 { animation: audioWaveform 0.3s ease-in-out infinite; }
+.audio-bar-4 { animation: audioWaveform 0.9s ease-in-out infinite; }
+.audio-bar-5 { animation: audioWaveform 0.6s ease-in-out infinite; }
+.audio-bar-6 { animation: audioWaveform 0.8s ease-in-out infinite; }
+.audio-bar-7 { animation: audioWaveform 0.4s ease-in-out infinite; }
+.audio-bar-8 { animation: audioWaveform 1.0s ease-in-out infinite; }
+.audio-bar-9 { animation: audioWaveform 0.5s ease-in-out infinite; }
+.audio-bar-10 { animation: audioWaveform 0.7s ease-in-out infinite; }
+.audio-bar-11 { animation: audioWaveform 0.3s ease-in-out infinite; }
+.audio-bar-12 { animation: audioWaveform 0.8s ease-in-out infinite; }
+.audio-bar-13 { animation: audioWaveform 0.6s ease-in-out infinite; }
+.audio-bar-14 { animation: audioWaveform 0.9s ease-in-out infinite; }
+.audio-bar-15 { animation: audioWaveform 0.4s ease-in-out infinite; }
+.audio-bar-16 { animation: audioWaveform 1.0s ease-in-out infinite; }
+.audio-bar-17 { animation: audioWaveform 0.5s ease-in-out infinite; }
+.audio-bar-18 { animation: audioWaveform 0.7s ease-in-out infinite; }
+.audio-bar-19 { animation: audioWaveform 0.6s ease-in-out infinite; }

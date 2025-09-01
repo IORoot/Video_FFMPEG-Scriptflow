@@ -430,6 +430,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Audio Overlay',
     category: 'composition',
     description: 'Overlay audio track on video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'audio', type: 'file', description: 'Audio file to overlay' },

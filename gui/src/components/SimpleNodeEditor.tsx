@@ -681,6 +681,8 @@ const NodeComponent: React.FC<{
                   nodeDefinition.id === 'ff_text' ? 'animate-text-loop' : ''
                 } ${
                   nodeDefinition.id === 'ff_subtitles' ? 'animate-subtitles-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_audio' ? 'animate-audio-loop' : ''
                 }`}
                 style={{
                 objectFit: 'cover',
@@ -824,6 +826,15 @@ const NodeComponent: React.FC<{
                     
                     // For subtitles animation, we'll use CSS to show subtitle typing effect
                     // The animation will show subtitles appearing character by character at bottom center
+                  } else if (nodeDefinition.id === 'ff_audio') {
+                    const audio = node.parameters.audio || 'sample_voice.mp3';
+                    const remove = node.parameters.remove || false;
+                    const start = node.parameters.start || 0;
+                    const speed = node.parameters.speed || 1.0;
+                    const shortest = node.parameters.shortest || false;
+                    
+                    // For audio animation, we'll use CSS to show animated waveform
+                    // The animation will show audio bars moving up and down
                   }
                   
                   return transform;
@@ -855,6 +866,35 @@ const NodeComponent: React.FC<{
                  }}
                >
                  <span className="animate-subtitles-loop"></span>
+               </div>
+             )}
+             {/* Audio waveform overlay for ff_audio preview */}
+             {nodeDefinition.id === 'ff_audio' && (
+               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+                 <svg width="200" height="40" viewBox="0 0 200 40" className="animate-audio-waveform">
+                   <rect x="0" y="0" width="200" height="40" fill="rgba(0,0,0,0.7)" rx="5"/>
+                   <g className="waveform-bars">
+                     <rect x="10" y="15" width="4" height="10" fill="#00ff00" className="audio-bar-1"/>
+                     <rect x="20" y="10" width="4" height="20" fill="#00ff00" className="audio-bar-2"/>
+                     <rect x="30" y="18" width="4" height="4" fill="#00ff00" className="audio-bar-3"/>
+                     <rect x="40" y="5" width="4" height="30" fill="#00ff00" className="audio-bar-4"/>
+                     <rect x="50" y="12" width="4" height="16" fill="#00ff00" className="audio-bar-5"/>
+                     <rect x="60" y="8" width="4" height="24" fill="#00ff00" className="audio-bar-6"/>
+                     <rect x="70" y="16" width="4" height="8" fill="#00ff00" className="audio-bar-7"/>
+                     <rect x="80" y="3" width="4" height="34" fill="#00ff00" className="audio-bar-8"/>
+                     <rect x="90" y="14" width="4" height="12" fill="#00ff00" className="audio-bar-9"/>
+                     <rect x="100" y="6" width="4" height="28" fill="#00ff00" className="audio-bar-10"/>
+                     <rect x="110" y="17" width="4" height="6" fill="#00ff00" className="audio-bar-11"/>
+                     <rect x="120" y="9" width="4" height="22" fill="#00ff00" className="audio-bar-12"/>
+                     <rect x="130" y="13" width="4" height="14" fill="#00ff00" className="audio-bar-13"/>
+                     <rect x="140" y="7" width="4" height="26" fill="#00ff00" className="audio-bar-14"/>
+                     <rect x="150" y="11" width="4" height="18" fill="#00ff00" className="audio-bar-15"/>
+                     <rect x="160" y="4" width="4" height="32" fill="#00ff00" className="audio-bar-16"/>
+                     <rect x="170" y="15" width="4" height="10" fill="#00ff00" className="audio-bar-17"/>
+                     <rect x="180" y="2" width="4" height="36" fill="#00ff00" className="audio-bar-18"/>
+                     <rect x="190" y="12" width="4" height="16" fill="#00ff00" className="audio-bar-19"/>
+                   </g>
+                 </svg>
                </div>
              )}
              {/* Overlay image for ff_overlay preview */}
@@ -1022,6 +1062,10 @@ const NodeComponent: React.FC<{
                   const subtitles = node.parameters.subtitles || 'sample_subtitle.srt';
                   const styles = node.parameters.styles || '';
                   return `Subs: ${subtitles}${styles ? ` (${styles})` : ''}`;
+                } else if (nodeDefinition.id === 'ff_audio') {
+                  const audio = node.parameters.audio || 'sample_voice.mp3';
+                  const speed = node.parameters.speed || 1.0;
+                  return `Audio: ${audio} (${speed}x)`;
                 }
                 return '320×180';
               })()}
