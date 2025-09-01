@@ -8,6 +8,7 @@ export interface NodeParameter {
   dynamic?: boolean; // Can this input be dynamically added/removed?
   dynamicPattern?: string; // Pattern for naming dynamic inputs (e.g., "input%d")
   maxDynamic?: number; // Maximum number of dynamic inputs allowed
+  transitionOptions?: string[]; // Available transition options for clickable buttons
 }
 
 export interface NodeDefinition {
@@ -95,7 +96,9 @@ export const nodeDefinitions: NodeDefinition[] = [
     category: 'input',
     description: 'Download a video from URL',
     inputs: [
-      { name: 'url', type: 'string', required: true, description: 'URL to download video from' },
+      { name: 'input', type: 'string', required: true, description: 'URL to download video from' },
+      { name: 'urlsource', type: 'string', description: 'URL of a txt file with list of URLs to download' },
+      { name: 'strategy', type: 'string', default: '1', description: 'Download strategy (number or ~number for random)' },
       { name: 'output', type: 'string', default: 'ff_download.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -109,10 +112,11 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Change the scale (physical dimensions) of the video',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'width', type: 'string', default: '1920', description: 'Width in pixels (supports expressions like iw*.5)' },
-      { name: 'height', type: 'string', default: '1080', description: 'Height in pixels (supports expressions like ih*.5)' },
-      { name: 'dar', type: 'string', default: '16/9', description: 'Display Aspect Ratio' },
-      { name: 'sar', type: 'string', default: '1/1', description: 'Sample Aspect Ratio' },
+      { name: 'width', type: 'string', default: '1920', description: 'Width in pixels (supports expressions like iw*.5, -1 for aspect ratio)' },
+      { name: 'height', type: 'string', default: '1080', description: 'Height in pixels (supports expressions like ih*.5, -1 for aspect ratio)' },
+      { name: 'dar', type: 'string', description: 'Display Aspect Ratio' },
+      { name: 'sar', type: 'string', description: 'Sample Aspect Ratio' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_scale.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -129,6 +133,7 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'height', type: 'string', default: '300', description: 'Height of crop area' },
       { name: 'xpixels', type: 'string', default: '(iw-ow)/2', description: 'X position (from left)' },
       { name: 'ypixels', type: 'string', default: '(ih-oh)/2', description: 'Y position (from top)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_crop.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -141,11 +146,12 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Add padding around the video',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'width', type: 'string', default: '1920', description: 'Output width' },
-      { name: 'height', type: 'string', default: '1080', description: 'Output height' },
-      { name: 'xpixels', type: 'string', default: '(ow-iw)/2', description: 'X position of video' },
-      { name: 'ypixels', type: 'string', default: '(oh-ih)/2', description: 'Y position of video' },
+      { name: 'width', type: 'string', default: '0', description: 'Output width (0 uses input width)' },
+      { name: 'height', type: 'string', default: '2*ih', description: 'Output height (0 uses input height)' },
+      { name: 'xpixels', type: 'string', default: '(ow-iw)/2', description: 'X position of video in frame' },
+      { name: 'ypixels', type: 'string', default: '(oh-ih)/2', description: 'Y position of video in frame' },
       { name: 'colour', type: 'string', default: 'black', description: 'Padding color' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_pad.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -155,11 +161,11 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_aspect_ratio',
     name: 'Aspect Ratio',
     category: 'size',
-    description: 'Change aspect ratio of video',
+    description: 'Change aspect ratio of video (alters container metadata DAR)',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'aspect', type: 'select', options: ['16:9', '4:3', '1:1', '9:16', '21:9'], default: '16:9', description: 'Target aspect ratio' },
-      { name: 'method', type: 'select', options: ['pad', 'crop', 'stretch'], default: 'pad', description: 'How to achieve aspect ratio' },
+      { name: 'aspect', type: 'string', default: '1:1', description: 'Target aspect ratio (X:Y format)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_aspect_ratio.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -172,7 +178,8 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Rotate video by specified angle',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'angle', type: 'select', options: ['90', '180', '270'], default: '90', description: 'Rotation angle in degrees' },
+      { name: 'rotation', type: 'number', default: 90, description: 'Rotation angle in degrees' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_rotate.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -182,10 +189,12 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_flip',
     name: 'Flip',
     category: 'size',
-    description: 'Flip video horizontally or vertically',
+    description: 'Flip video horizontally and/or vertically',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'direction', type: 'select', options: ['horizontal', 'vertical'], default: 'horizontal', description: 'Flip direction' },
+      { name: 'horizontal', type: 'boolean', default: false, description: 'Flip video horizontally' },
+      { name: 'vertical', type: 'boolean', default: false, description: 'Flip video vertically' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_flip.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -198,6 +207,8 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Convert video to landscape orientation',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
+      { name: 'rotate', type: 'select', options: ['0', '1', '2', '3'], default: '2', description: 'Rotation method (0=90CCW+VFlip, 1=90CW, 2=90CCW, 3=90CW+VFlip)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_to_landscape.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -210,6 +221,8 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Convert video to portrait orientation',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
+      { name: 'rotate', type: 'select', options: ['0', '1', '2', '3'], default: '1', description: 'Rotation method (0=90CCW+VFlip, 1=90CW, 2=90CCW, 3=90CW+VFlip)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_to_portrait.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -223,7 +236,9 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Apply blur effect to video',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'strength', type: 'number', default: 5, description: 'Blur strength' },
+      { name: 'strength', type: 'number', default: 0.5, description: 'Blur strength (standard deviation of Gaussian blur)' },
+      { name: 'steps', type: 'number', default: 1, description: 'Number of times to apply blur' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_blur.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -236,7 +251,9 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Apply sharpen effect to video',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'strength', type: 'number', default: 1.0, description: 'Sharpen strength' },
+      { name: 'pixel', type: 'number', default: 5, description: 'Matrix size (odd integer 3-23)' },
+      { name: 'sharpen', type: 'number', default: 1.0, description: 'Sharpen strength (-2.0 to 5.0)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_sharpen.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -249,8 +266,16 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Apply unsharp mask filter',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'luma_strength', type: 'number', default: 1.0, description: 'Luma strength' },
-      { name: 'chroma_strength', type: 'number', default: 0.5, description: 'Chroma strength' },
+      { name: 'luma_x', type: 'number', default: 5, description: 'Luma matrix horizontal size (odd integer 3-23)' },
+      { name: 'luma_y', type: 'number', default: 5, description: 'Luma matrix vertical size (odd integer 3-23)' },
+      { name: 'luma_amount', type: 'number', default: 1.0, description: 'Luma effect strength (-2.0 to 5.0)' },
+      { name: 'chroma_x', type: 'number', default: 5, description: 'Chroma matrix horizontal size (odd integer 3-23)' },
+      { name: 'chroma_y', type: 'number', default: 5, description: 'Chroma matrix vertical size (odd integer 3-23)' },
+      { name: 'chroma_amount', type: 'number', default: 0.5, description: 'Chroma effect strength (-2.0 to 5.0)' },
+      { name: 'alpha_x', type: 'number', default: 5, description: 'Alpha matrix horizontal size (odd integer 3-23)' },
+      { name: 'alpha_y', type: 'number', default: 5, description: 'Alpha matrix vertical size (odd integer 3-23)' },
+      { name: 'alpha_amount', type: 'number', default: 0.5, description: 'Alpha effect strength (-2.0 to 5.0)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_unsharp.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -263,9 +288,12 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Adjust color properties of video',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'brightness', type: 'number', default: 0, description: 'Brightness adjustment' },
-      { name: 'contrast', type: 'number', default: 1, description: 'Contrast adjustment' },
-      { name: 'saturation', type: 'number', default: 1, description: 'Saturation adjustment' },
+      { name: 'brightness', type: 'number', default: 0, description: 'Brightness adjustment (-1.0 to 1.0)' },
+      { name: 'contrast', type: 'number', default: 1, description: 'Contrast adjustment (-1000.0 to 1000.0)' },
+      { name: 'gamma', type: 'number', default: 1, description: 'Gamma adjustment (0.1 to 10.0)' },
+      { name: 'saturation', type: 'number', default: 1, description: 'Saturation adjustment (0.0 to 3.0)' },
+      { name: 'weight', type: 'number', description: 'Gamma weight adjustment' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_colour.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -278,7 +306,8 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Apply Look-Up Table color grading',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'lut', type: 'select', options: ['Andromeda', 'Centurus', 'Circinus', 'Holmberg', 'Lacertae', 'Lundmark', 'Magellanic', 'Triangulum'], default: 'Andromeda', description: 'LUT file to apply' },
+      { name: 'lut', type: 'file', default: './lib/lut/Andromeda.cube', description: 'LUT file path (3DL/Cube format)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_lut.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -292,9 +321,10 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Overlay one video on top of another',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Background video' },
-      { name: 'overlay', type: 'file', required: true, description: 'Overlay video' },
-      { name: 'x', type: 'string', default: '0', description: 'X position' },
-      { name: 'y', type: 'string', default: '0', description: 'Y position' },
+      { name: 'overlay', type: 'file', required: true, description: 'Overlay video/image' },
+      { name: 'start', type: 'number', description: 'Start time in seconds to show overlay' },
+      { name: 'end', type: 'number', description: 'End time in seconds to show overlay' },
+      { name: 'fit', type: 'boolean', default: false, description: 'Scale overlay to fit input video' },
       { name: 'output', type: 'string', default: 'ff_overlay.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -306,10 +336,10 @@ export const nodeDefinitions: NodeDefinition[] = [
     category: 'composition',
     description: 'Stack multiple videos together',
     inputs: [
-      { name: 'input1', type: 'file', required: true, description: 'First video' },
-      { name: 'input2', type: 'file', required: true, description: 'Second video' },
-      { name: 'input3', type: 'file', description: 'Third video (optional)', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 8 },
-      { name: 'direction', type: 'select', options: ['horizontal', 'vertical'], default: 'horizontal', description: 'Stack direction' },
+      { name: 'input', type: 'file', required: true, description: 'Input video files (folder or multiple files)', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 8 },
+      { name: 'vertical', type: 'boolean', default: false, description: 'Create vertical stack (2 inputs)' },
+      { name: 'horizontal', type: 'boolean', default: false, description: 'Create horizontal stack (2 inputs)' },
+      { name: 'grid', type: 'boolean', default: false, description: 'Create 2x2 grid (4 inputs)' },
       { name: 'output', type: 'string', default: 'ff_stack.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -322,9 +352,14 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Add watermark to video',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'watermark', type: 'file', required: true, description: 'Watermark image' },
-      { name: 'position', type: 'select', options: ['top-left', 'top-right', 'bottom-left', 'bottom-right', 'center'], default: 'bottom-right', description: 'Watermark position' },
-      { name: 'opacity', type: 'number', default: 0.5, description: 'Watermark opacity' },
+      { name: 'watermark', type: 'file', required: true, description: 'Watermark image/video' },
+      { name: 'xpixels', type: 'string', default: '10', description: 'X position (supports expressions like W-w-10)' },
+      { name: 'ypixels', type: 'string', default: '10', description: 'Y position (supports expressions like H-h-10)' },
+      { name: 'scale', type: 'number', description: 'Scale factor for watermark' },
+      { name: 'alpha', type: 'number', description: 'Alpha transparency (0-1)' },
+      { name: 'start', type: 'number', description: 'Start time in seconds' },
+      { name: 'end', type: 'number', description: 'End time in seconds' },
+      { name: 'duration', type: 'number', description: 'Duration in seconds' },
       { name: 'output', type: 'string', default: 'ff_watermark.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -337,11 +372,17 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Add text overlay to video',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'text', type: 'string', required: true, description: 'Text to display' },
-      { name: 'x', type: 'string', default: '50', description: 'X position' },
-      { name: 'y', type: 'string', default: '50', description: 'Y position' },
-      { name: 'fontsize', type: 'number', default: 24, description: 'Font size' },
-      { name: 'color', type: 'string', default: 'white', description: 'Text color' },
+      { name: 'text', type: 'string', description: 'Text to display (overrides textfile)' },
+      { name: 'textfile', type: 'file', description: 'File containing text to display' },
+      { name: 'font', type: 'string', default: '/System/Library/Fonts/HelveticaNeue.ttc', description: 'Path to font file' },
+      { name: 'colour', type: 'string', default: 'white', description: 'Font color (hex RRGGBB or name, can include alpha with @0.5)' },
+      { name: 'size', type: 'number', default: 24, description: 'Font size' },
+      { name: 'reduction', type: 'number', default: 8, description: 'Font size reduction per line' },
+      { name: 'box', type: 'boolean', default: true, description: 'Show background box' },
+      { name: 'boxcolour', type: 'string', default: 'black', description: 'Background box color' },
+      { name: 'boxborder', type: 'number', default: 5, description: 'Background box border width' },
+      { name: 'xpixels', type: 'string', default: '(w-tw)/2', description: 'X position (from left)' },
+      { name: 'ypixels', type: 'string', default: '(h-th)/2', description: 'Y position (from top)' },
       { name: 'output', type: 'string', default: 'ff_text.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -351,10 +392,13 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_subtitles',
     name: 'Subtitles',
     category: 'composition',
-    description: 'Add subtitles to video',
+    description: 'Hard embed subtitles on video',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'subtitles', type: 'file', required: true, description: 'Subtitle file (.srt)' },
+      { name: 'subtitles', type: 'file', required: true, description: 'Subtitle SRT file' },
+      { name: 'styles', type: 'string', description: 'Forced style for subtitles' },
+      { name: 'removedupes', type: 'boolean', default: false, description: 'Remove duplicate lines in subtitles' },
+      { name: 'dynamictext', type: 'boolean', default: false, description: 'Convert subtitles to dynamic text (split words)' },
       { name: 'output', type: 'string', default: 'ff_subtitles.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -368,9 +412,11 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Overlay audio track on video',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'audio', type: 'file', required: true, description: 'Audio file to overlay' },
+      { name: 'audio', type: 'file', description: 'Audio file to overlay' },
+      { name: 'remove', type: 'boolean', default: false, description: 'Remove existing audio instead of overlaying' },
       { name: 'start', type: 'number', default: 0, description: 'Start time in seconds' },
       { name: 'speed', type: 'number', default: 1.0, description: 'Audio playback speed' },
+      { name: 'shortest', type: 'boolean', default: false, description: 'End when shortest input ends' },
       { name: 'output', type: 'string', default: 'ff_audio.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -381,10 +427,11 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_convert',
     name: 'Convert',
     category: 'format',
-    description: 'Convert video format',
+    description: 'Convert video format with optimal codec settings',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'format', type: 'select', options: ['mp4', 'mov', 'avi', 'webm'], default: 'mp4', description: 'Output format' },
+      { name: 'format', type: 'select', options: ['mp4', 'mov', 'avi', 'webm', 'mkv'], default: 'mp4', description: 'Output format (mp4 defaults to h264/aac)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_convert.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -396,9 +443,14 @@ export const nodeDefinitions: NodeDefinition[] = [
     category: 'format',
     description: 'Transcode video with specific codec settings',
     inputs: [
-      { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'codec', type: 'select', options: ['h264', 'h265', 'vp9'], default: 'h264', description: 'Video codec' },
-      { name: 'bitrate', type: 'string', default: '2M', description: 'Video bitrate' },
+      { name: 'input', type: 'file', required: true, description: 'Input video file', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 10 },
+      { name: 'video', type: 'string', default: 'libx264', description: 'Video codec' },
+      { name: 'audio', type: 'string', default: 'aac', description: 'Audio codec' },
+      { name: 'fps', type: 'number', default: 30, description: 'Frames per second' },
+      { name: 'sar', type: 'string', description: 'Sample Aspect Ratio' },
+      { name: 'width', type: 'number', default: 1920, description: 'Video width' },
+      { name: 'height', type: 'number', description: 'Video height' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_transcode.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -408,10 +460,10 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_social_media',
     name: 'Social Media',
     category: 'format',
-    description: 'Optimize for social media platforms',
+    description: 'Convert ready for Social Media (pix_fmt=yuv420p)',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'platform', type: 'select', options: ['instagram', 'tiktok', 'youtube', 'twitter'], default: 'instagram', description: 'Target platform' },
+      { name: 'instagram', type: 'boolean', default: false, description: 'Convert ready for Instagram' },
       { name: 'output', type: 'string', default: 'ff_social_media.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -426,7 +478,8 @@ export const nodeDefinitions: NodeDefinition[] = [
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'start', type: 'string', default: '00:00:00', description: 'Start time (HH:MM:SS)' },
-      { name: 'duration', type: 'string', default: '00:00:10', description: 'Duration (HH:MM:SS)' },
+      { name: 'end', type: 'string', default: '00:00:10', description: 'End time (HH:MM:SS)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_cut.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -436,10 +489,11 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_fps',
     name: 'FPS',
     category: 'timing',
-    description: 'Change frame rate of video',
+    description: 'Change frame rate of video without changing length',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'fps', type: 'select', options: ['24', '25', '30', '60'], default: '30', description: 'Target frame rate' },
+      { name: 'fps', type: 'number', default: 30, description: 'Target frame rate (frames added/removed, length unchanged)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_fps.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -449,10 +503,11 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_middle',
     name: 'Middle',
     category: 'timing',
-    description: 'Extract middle section of video',
+    description: 'Trim video from start and end by specified seconds',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'duration', type: 'number', default: 10, description: 'Duration in seconds' },
+      { name: 'trim', type: 'number', default: 1, description: 'Seconds to remove from start and end' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_middle.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -462,10 +517,12 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_grouptime',
     name: 'Group Time',
     category: 'timing',
-    description: 'Group multiple clips with timing',
+    description: 'Trim input videos by percentage to get correct duration',
     inputs: [
-      { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'segments', type: 'number', default: 4, description: 'Number of segments' },
+      { name: 'input', type: 'file', required: true, description: 'Input video file/folder', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 10 },
+      { name: 'duration', type: 'number', description: 'Target duration' },
+      { name: 'arrangement', type: 'select', options: ['standard', 'reversed', 'skip1', 'skip1reversed'], default: 'standard', description: 'Order to read input files' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_grouptime.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -490,11 +547,10 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_append',
     name: 'Append',
     category: 'assembly',
-    description: 'Append videos with transitions',
+    description: 'Append two files together while re-encoding to same codec',
     inputs: [
-      { name: 'input1', type: 'file', required: true, description: 'First video' },
-      { name: 'input2', type: 'file', required: true, description: 'Second video' },
-      { name: 'transition', type: 'select', options: ['fade','fadeblack','fadewhite','distance','wipeleft','wiperight','wipeup','wipedown','slideleft','slideright','slideup','slidedown','smoothleft','smoothright','smoothup','smoothdown','circlecrop','rectcrop','circleclose','circleopen','horzclose','horzopen','vertclose','vertopen','diagbl','diagbr','diagtl','diagtr','hlslice','hrslice','vuslice','vdslice','dissolve','pixelize','radial','hblur','wipetl','wipetr','wipebl','wipebr','fadegrays','squeezev','squeezeh','zoomin','hlwind','hrwind','vuwind','vdwind','coverleft','coverright','coverup','coverdown','revealleft','revealright','revealup','revealdown'], default: 'fade', description: 'Transition type' },
+      { name: 'first', type: 'file', required: true, description: 'First input file' },
+      { name: 'second', type: 'file', required: true, description: 'Second input file' },
       { name: 'output', type: 'string', default: 'ff_append.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -504,12 +560,14 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_transition',
     name: 'Transition',
     category: 'assembly',
-    description: 'Add transitions between clips',
+    description: 'Concat videos with transition effects between each',
     inputs: [
-      { name: 'input1', type: 'file', required: true, description: 'First video' },
-      { name: 'input2', type: 'file', required: true, description: 'Second video' },
-      { name: 'effects', type: 'select', options: ['fade','fadeblack','fadewhite','distance','wipeleft','wiperight','wipeup','wipedown','slideleft','slideright','slideup','slidedown','smoothleft','smoothright','smoothup','smoothdown','circlecrop','rectcrop','circleclose','circleopen','horzclose','horzopen','vertclose','vertopen','diagbl','diagbr','diagtl','diagtr','hlslice','hrslice','vuslice','vdslice','dissolve','pixelize','radial','hblur','wipetl','wipetr','wipebl','wipebr','fadegrays','squeezev','squeezeh','zoomin','hlwind','hrwind','vuwind','vdwind','coverleft','coverright','coverup','coverdown','revealleft','revealright','revealup','revealdown'], default: 'fade', description: 'Transition type' },
-      { name: 'duration', type: 'number', default: 1, description: 'Transition duration in seconds' },
+      { name: 'input', type: 'file', required: true, description: 'Input video files/folder', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 10 },
+      { name: 'duration', type: 'number', description: 'Transition duration' },
+      { name: 'sort', type: 'string', description: 'Sort flags for file input order (e.g. "--reverse --random-sort")' },
+      { name: 'effects', type: 'string', description: 'CSV string of effects to use between clips', 
+        transitionOptions: ['fade', 'fadeblack', 'fadewhite', 'distance', 'wipeleft', 'wiperight', 'wipeup', 'wipedown', 'slideleft', 'slideright', 'slideup', 'slidedown', 'smoothleft', 'smoothright', 'smoothup', 'smoothdown', 'circlecrop', 'rectcrop', 'circleclose', 'circleopen', 'horzclose', 'horzopen', 'vertclose', 'vertopen', 'diagbl', 'diagbr', 'diagtl', 'diagtr', 'hlslice', 'hrslice', 'vuslice', 'vdslice', 'dissolve', 'pixelize', 'radial', 'hblur', 'wipetl', 'wipetr', 'wipebl', 'wipebr', 'fadegrays', 'squeezev', 'squeezeh', 'zoomin', 'hlwind', 'hrwind', 'vuwind', 'vdwind', 'coverleft', 'coverright', 'coverup', 'coverdown', 'revealleft', 'revealright', 'revealup', 'revealdown'] },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_transition.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -533,11 +591,17 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_kenburns',
     name: 'Ken Burns',
     category: 'utilities',
-    description: 'Apply Ken Burns effect to image',
+    description: 'Generate video from image with ken-burns effect',
     inputs: [
-      { name: 'input', type: 'file', required: true, description: 'Input image file' },
-      { name: 'duration', type: 'number', default: 5, description: 'Duration in seconds' },
-      { name: 'zoom', type: 'number', default: 1.2, description: 'Zoom factor' },
+      { name: 'input', type: 'file', required: true, description: 'Input image file or folder' },
+      { name: 'target', type: 'select', options: ['TopLeft', 'TopRight', 'BottomLeft', 'BottomRight', 'Random'], description: 'Target of the zoom' },
+      { name: 'fps', type: 'number', description: 'Frames per second' },
+      { name: 'width', type: 'number', description: 'Output width' },
+      { name: 'height', type: 'number', description: 'Output height' },
+      { name: 'duration', type: 'number', description: 'Duration in seconds' },
+      { name: 'speed', type: 'number', description: 'Zoom speed' },
+      { name: 'bitrate', type: 'string', default: '5000k', description: 'Output bitrate (e.g., 5000k, 2M)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_kenburns.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -547,10 +611,11 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_thumbnail',
     name: 'Thumbnail',
     category: 'utilities',
-    description: 'Generate thumbnail from video',
+    description: 'Create thumbnails representative of the video',
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'time', type: 'string', default: '00:00:01', description: 'Time to capture thumbnail' },
+      { name: 'count', type: 'number', description: 'Number of thumbnails to generate' },
+      { name: 'sample', type: 'string', description: 'Sample method for thumbnail generation' },
       { name: 'output', type: 'string', default: 'thumbnail.jpg', description: 'Output filename' }
     ],
     outputs: [{ name: 'image', type: 'image' }]
@@ -561,10 +626,16 @@ export const nodeDefinitions: NodeDefinition[] = [
     id: 'ff_proxy',
     name: 'Proxy',
     category: 'utilities',
-    description: 'Generate low-resolution proxy',
+    description: 'Generate low-resolution proxy by scaling video',
     inputs: [
-      { name: 'input', type: 'file', required: true, description: 'Input video file' },
-      { name: 'scale', type: 'select', options: ['quarter', 'half', 'proxy'], default: 'half', description: 'Proxy scale' },
+      { name: 'input', type: 'file', required: true, description: 'Input video file/folder' },
+      { name: 'scalex', type: 'number', description: 'X scale factor' },
+      { name: 'scaley', type: 'number', description: 'Y scale factor' },
+      { name: 'recursive', type: 'boolean', default: false, description: 'Process folder recursively' },
+      { name: 'fps', type: 'number', description: 'Frames per second' },
+      { name: 'crf', type: 'number', default: 25, description: 'Constant Rate Factor (0-51, lower = better quality)' },
+      { name: 'codec', type: 'string', default: 'libx264', description: 'Video codec (libx264, libx265, libvpx, etc.)' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_proxy.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
@@ -579,6 +650,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'params', type: 'string', required: true, description: 'FFMPEG parameters string (e.g., "-c:v libx264 -c:a aac -strict experimental")' },
+      { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
       { name: 'output', type: 'string', default: 'ff_custom.mp4', description: 'Output filename' }
     ],
     outputs: [{ name: 'video', type: 'video' }]

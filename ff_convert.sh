@@ -22,6 +22,7 @@ INPUT_FILENAME="input.mp4"
 OUTPUT_FILENAME="ff_convert.mp4"
 LOGLEVEL="error"
 GREP=""
+FORMAT="mp4"
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Usage.                          │
@@ -43,6 +44,10 @@ usage()
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"
         printf "\tThe name of the output file.\n\n"
+
+        printf " -f | --format <FORMAT>\n"
+        printf "\tOutput format. Default is 'mp4'.\n"
+        printf "\tOptions: mp4, mov, avi, webm, mkv\n\n"
 
         printf " -g | --grep <STRING>\n"
         printf "\tSupply a grep string for filtering the inputs if a folder is specified.\n\n"
@@ -79,6 +84,13 @@ function arguments()
 
         -o|--output)
             OUTPUT_FILENAME="$2"
+            shift 
+            shift
+            ;;
+
+
+        -f|--format)
+            FORMAT="$2"
             shift 
             shift
             ;;
@@ -192,9 +204,34 @@ function pre_flight_checks()
     fi
 }
 
+function get_codecs()
+{
+    case "$FORMAT" in
+        "mp4")
+            echo "-vcodec libx264 -acodec aac"
+            ;;
+        "mov")
+            echo "-vcodec libx264 -acodec aac"
+            ;;
+        "avi")
+            echo "-vcodec libx264 -acodec mp3"
+            ;;
+        "webm")
+            echo "-vcodec libvpx-vp9 -acodec libopus"
+            ;;
+        "mkv")
+            echo "-vcodec libx264 -acodec aac"
+            ;;
+        *)
+            echo "-vcodec libx264 -acodec aac"
+            ;;
+    esac
+}
+
 function print_flags()
 {
     printf "📥  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Input" "$INPUT_FILENAME"
+    printf "📤  ${TEXT_GREEN_400}%-10s :${TEXT_RESET} %s\n" "Format" "$FORMAT"
 }
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -206,22 +243,29 @@ function main()
 {
     print_flags
 
+    # Get codecs based on format
+    CODECS=$(get_codecs)
+    
+    # Ensure output filename has correct extension
+    OUTPUT_WITH_EXT="${OUTPUT_FILENAME%.*}.${FORMAT}"
+
     # If this is a file
     if [ -f "$INPUT_FILENAME" ]; then
         pre_flight_checks $INPUT_FILENAME
-        ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vcodec h264 -acodec mp2 ${OUTPUT_FILENAME}
-        printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_FILENAME"
+        ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} ${CODECS} ${OUTPUT_WITH_EXT}
+        printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "$OUTPUT_WITH_EXT"
     fi
 
-    # If this is a drectory
+    # If this is a directory
     if [ -d "$INPUT_FILENAME" ]; then
         LOOP=0
         LIST_OF_FILES=$(find $INPUT_FILENAME -maxdepth 1 \( -iname '*.mp4' -o -iname '*.mov' \) | grep "$GREP")
         for INPUT_FILENAME in $LIST_OF_FILES
         do
             pre_flight_checks $INPUT_FILENAME
-            ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vcodec h264 -acodec mp2 ${LOOP}_${OUTPUT_FILENAME}
-            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "${LOOP}_${OUTPUT_FILENAME}"
+            OUTPUT_WITH_EXT="${LOOP}_${OUTPUT_FILENAME%.*}.${FORMAT}"
+            ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} ${CODECS} ${OUTPUT_WITH_EXT}
+            printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "${OUTPUT_WITH_EXT}"
             LOOP=$(expr $LOOP + 1)
         done
     fi

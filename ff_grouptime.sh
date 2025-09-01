@@ -104,7 +104,8 @@ usage()
         printf "Flags:\n"
 
         printf " -i | --input <INPUT_FILE>\n"
-        printf "\tThe name of an input file / folder.\n\n"
+        printf "\tThe name of an input file / folder. Multiple inputs supported.\n"
+        printf "\tUse --input1, --input2, etc. for multiple files.\n\n"
 
         printf " -o | --output <OUTPUT_FILE>\n"
         printf "\tDefault is %s\n" "${OUTPUT_FILENAME}"

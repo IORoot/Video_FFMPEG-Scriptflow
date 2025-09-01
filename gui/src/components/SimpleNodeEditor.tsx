@@ -756,6 +756,53 @@ const NodeComponent: React.FC<{
                     {node.parameters[inputDef.name] || inputDef.default ? 'Enabled' : 'Disabled'}
                   </span>
                 </div>
+              ) : inputDef.transitionOptions ? (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={node.parameters[inputDef.name] || inputDef.default || ''}
+                    onChange={(e) => onParameterChange(node.id, inputDef.name, e.target.value)}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="w-full px-2 py-1 text-xs bg-input border border-border rounded"
+                    placeholder="Click buttons below to add transitions (comma-separated)"
+                  />
+                  <div className="grid grid-cols-4 gap-1 max-h-32 overflow-y-auto">
+                    {inputDef.transitionOptions.map((transition: string) => {
+                      const currentValue = node.parameters[inputDef.name] || inputDef.default || '';
+                      const isSelected = currentValue.split(',').map((t: string) => t.trim()).includes(transition);
+                      
+                      return (
+                        <button
+                          key={transition}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const currentTransitions = currentValue.split(',').map((t: string) => t.trim()).filter((t: string) => t);
+                            let newTransitions;
+                            
+                            if (isSelected) {
+                              // Remove transition
+                              newTransitions = currentTransitions.filter((t: string) => t !== transition);
+                            } else {
+                              // Add transition
+                              newTransitions = [...currentTransitions, transition];
+                            }
+                            
+                            onParameterChange(node.id, inputDef.name, newTransitions.join(', '));
+                          }}
+                          className={`px-2 py-1 text-xs rounded border transition-colors ${
+                            isSelected 
+                              ? 'bg-blue-500 text-white border-blue-600' 
+                              : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                          }`}
+                          title={transition}
+                        >
+                          {transition}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               ) : (
                 <input
                   type={inputDef.type === 'number' ? 'number' : 'text'}

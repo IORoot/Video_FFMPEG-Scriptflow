@@ -24,7 +24,8 @@
 		"input1": "sample_video.mp4",
 		"input2": "sample_video_2.mp4",
 		"input3": "sample_video_3.mp4",
-		"effects": "wipeleft,circlecrop",
+		"effects": "fade,wipeleft,circlecrop,slideup",
+		"duration": "1",
 		"output": "test_result_ff_transition.mp4"
 	},
 

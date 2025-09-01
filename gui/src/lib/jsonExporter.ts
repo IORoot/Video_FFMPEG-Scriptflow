@@ -117,16 +117,7 @@ export class JsonExporter {
       const value = nodeData[param.name];
       if (value !== undefined && value !== null && value !== '') {
         // Map parameter names to match script expectations
-        switch (param.name) {
-          case 'xpixels':
-            scriptParams.x = value;
-            break;
-          case 'ypixels':
-            scriptParams.y = value;
-            break;
-          default:
-            scriptParams[param.name] = value;
-        }
+        scriptParams[param.name] = value;
       }
     }
 
