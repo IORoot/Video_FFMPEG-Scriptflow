@@ -683,6 +683,16 @@ const NodeComponent: React.FC<{
                   nodeDefinition.id === 'ff_subtitles' ? 'animate-subtitles-loop' : ''
                 } ${
                   nodeDefinition.id === 'ff_audio' ? 'animate-audio-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_convert' ? 'animate-convert-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_transcode' ? 'animate-transcode-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_social_media' ? 'animate-social-media-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_cut' ? 'animate-cut-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_fps' ? 'animate-fps-loop' : ''
                 }`}
                 style={{
                 objectFit: 'cover',
@@ -835,6 +845,38 @@ const NodeComponent: React.FC<{
                     
                     // For audio animation, we'll use CSS to show animated waveform
                     // The animation will show audio bars moving up and down
+                  } else if (nodeDefinition.id === 'ff_convert') {
+                    const format = node.parameters.format || 'mp4';
+                    const grep = node.parameters.grep || '';
+                    
+                    // For convert animation, we'll use CSS to show format conversion effect
+                    // The animation will show the image transitioning between formats
+                  } else if (nodeDefinition.id === 'ff_transcode') {
+                    const video = node.parameters.video || 'libx264';
+                    const audio = node.parameters.audio || 'aac';
+                    const fps = node.parameters.fps || 30;
+                    const width = node.parameters.width || 1920;
+                    const height = node.parameters.height || 1080;
+                    
+                    // For transcode animation, we'll use CSS to show codec processing effect
+                    // The animation will show the image being processed with different codecs
+                  } else if (nodeDefinition.id === 'ff_social_media') {
+                    const instagram = node.parameters.instagram || false;
+                    
+                    // For social media animation, we'll use CSS to show social media optimization
+                    // The animation will show the image being converted to portrait and scaled down
+                  } else if (nodeDefinition.id === 'ff_cut') {
+                    const start = node.parameters.start || '00:00:00';
+                    const end = node.parameters.end || '00:00:10';
+                    const grep = node.parameters.grep || '';
+                    
+                    // For cut animation, we'll use CSS to show timeline cutting effect
+                    // The animation will show scissors cutting parts of the timeline
+                  } else if (nodeDefinition.id === 'ff_fps') {
+                    const fps = node.parameters.fps || 30;
+                    
+                    // For fps animation, we'll use CSS to show frame rate flickering effect
+                    // The animation will show the image flickering at different rates
                   }
                   
                   return transform;
@@ -895,6 +937,24 @@ const NodeComponent: React.FC<{
                      <rect x="190" y="12" width="4" height="16" fill="#00ff00" className="audio-bar-19"/>
                    </g>
                  </svg>
+               </div>
+             )}
+             {/* Timeline cut overlay for ff_cut preview */}
+             {nodeDefinition.id === 'ff_cut' && (
+               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+                 <div className="relative">
+                   <div className="w-64 h-6 bg-gray-800 rounded-full border-2 border-gray-600">
+                     <div className="animate-cut-timeline h-full bg-blue-500 rounded-full"></div>
+                   </div>
+                   <div className="absolute top-0 left-0 w-full h-full">
+                     <div className="animate-cut-left-scissors absolute top-0 left-0 w-4 h-6 text-red-500">
+                       ✂️
+                     </div>
+                     <div className="animate-cut-right-scissors absolute top-0 right-0 w-4 h-6 text-red-500">
+                       ✂️
+                     </div>
+                   </div>
+                 </div>
                </div>
              )}
              {/* Overlay image for ff_overlay preview */}
@@ -1066,6 +1126,23 @@ const NodeComponent: React.FC<{
                   const audio = node.parameters.audio || 'sample_voice.mp3';
                   const speed = node.parameters.speed || 1.0;
                   return `Audio: ${audio} (${speed}x)`;
+                } else if (nodeDefinition.id === 'ff_convert') {
+                  const format = node.parameters.format || 'mp4';
+                  return `Convert: ${format.toUpperCase()}`;
+                } else if (nodeDefinition.id === 'ff_transcode') {
+                  const video = node.parameters.video || 'libx264';
+                  const fps = node.parameters.fps || 30;
+                  return `Transcode: ${video} (${fps}fps)`;
+                } else if (nodeDefinition.id === 'ff_social_media') {
+                  const instagram = node.parameters.instagram || false;
+                  return `Social: ${instagram ? 'Instagram' : 'General'}`;
+                } else if (nodeDefinition.id === 'ff_cut') {
+                  const start = node.parameters.start || '00:00:00';
+                  const end = node.parameters.end || '00:00:10';
+                  return `Cut: ${start} → ${end}`;
+                } else if (nodeDefinition.id === 'ff_fps') {
+                  const fps = node.parameters.fps || 30;
+                  return `FPS: ${fps}`;
                 }
                 return '320×180';
               })()}

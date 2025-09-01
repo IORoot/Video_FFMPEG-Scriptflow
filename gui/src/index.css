@@ -569,3 +569,183 @@ code {
 .audio-bar-17 { animation: audioWaveform 0.5s ease-in-out infinite; }
 .audio-bar-18 { animation: audioWaveform 0.7s ease-in-out infinite; }
 .audio-bar-19 { animation: audioWaveform 0.6s ease-in-out infinite; }
+
+/* Convert animation for ff_convert preview */
+@keyframes convertLoop {
+  0% {
+    transform: scale(15);
+    filter: saturate(1) brightness(1) contrast(1);
+    image-rendering: auto;
+  }
+  75% {
+    transform: scale(15) ;
+    filter: saturate(0.7) brightness(0.9) contrast(1.1);
+    image-rendering: pixelated;
+  }
+  100% {
+    transform: scale(15);
+    filter: saturate(1) brightness(1) contrast(1);
+    image-rendering: auto;
+  }
+}
+
+.animate-convert-loop {
+  animation: convertLoop 4s ease-in-out infinite;
+  overflow: hidden;
+}
+
+/* Transcode animation for ff_transcode preview */
+@keyframes transcodeLoop {
+  0% {
+    transform: scale(5) translate(-50%, -50%);
+    filter: saturate(1) brightness(1) contrast(1);
+    image-rendering: auto;
+  }
+  75% {
+    transform: scale(5) translate(-50%, -50%);
+    filter: saturate(2) brightness(2) contrast(2);
+    image-rendering: pixelated;
+  }
+  100% {
+    transform: scale(5) translate(-50%, -50%);
+    filter: saturate(1) brightness(1) contrast(1);
+    image-rendering: auto;
+  }
+}
+
+.animate-transcode-loop {
+  animation: transcodeLoop 4s ease-in-out infinite;
+  overflow: hidden;
+}
+
+/* Social Media animation for ff_social_media preview */
+@keyframes socialMediaLoop {
+  0% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    width: 320px;
+    height: 180px;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.8) rotate(90deg);
+    width: 180px;
+    height: 320px;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    width: 320px;
+    height: 180px;
+  }
+}
+
+.animate-social-media-loop {
+  animation: socialMediaLoop 4s ease-in-out infinite;
+  overflow: hidden;
+}
+
+/* Cut animation for ff_cut preview */
+@keyframes cutTimeline {
+  0% {
+    width: 100%;
+  }
+  25% {
+    width: 80%;
+  }
+  50% {
+    width: 60%;
+  }
+  75% {
+    width: 40%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes cutLeftScissors {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  25% {
+    transform: translateX(20%) scale(1.2);
+  }
+  50% {
+    transform: translateX(40%) scale(1);
+  }
+  75% {
+    transform: translateX(60%) scale(1.2);
+  }
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes cutRightScissors {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  25% {
+    transform: translateX(-20%) scale(1.2);
+  }
+  50% {
+    transform: translateX(-40%) scale(1);
+  }
+  75% {
+    transform: translateX(-60%) scale(1.2);
+  }
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-cut-timeline {
+  animation: cutTimeline 3s ease-in-out infinite;
+}
+
+.animate-cut-left-scissors {
+  animation: cutLeftScissors 3s ease-in-out infinite;
+}
+
+.animate-cut-right-scissors {
+  animation: cutRightScissors 3s ease-in-out infinite;
+}
+
+/* FPS animation for ff_fps preview */
+@keyframes fpsLoop {
+  0% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  20% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  60% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.3;
+  }
+  80% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-fps-loop {
+  animation: fpsLoop 3s ease-in-out infinite;
+}

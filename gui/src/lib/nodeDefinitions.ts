@@ -449,6 +449,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Convert',
     category: 'format',
     description: 'Convert video format with optimal codec settings',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'format', type: 'select', options: ['mp4', 'mov', 'avi', 'webm', 'mkv'], default: 'mp4', description: 'Output format (mp4 defaults to h264/aac)' },
@@ -463,6 +464,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Transcode',
     category: 'format',
     description: 'Transcode video with specific codec settings',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 10 },
       { name: 'video', type: 'string', default: 'libx264', description: 'Video codec' },
@@ -482,6 +484,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Social Media',
     category: 'format',
     description: 'Convert ready for Social Media (pix_fmt=yuv420p)',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'instagram', type: 'boolean', default: false, description: 'Convert ready for Instagram' },
@@ -496,6 +499,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Cut',
     category: 'timing',
     description: 'Cut a section from video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'start', type: 'string', default: '00:00:00', description: 'Start time (HH:MM:SS)' },
@@ -511,6 +515,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'FPS',
     category: 'timing',
     description: 'Change frame rate of video without changing length',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'fps', type: 'number', default: 30, description: 'Target frame rate (frames added/removed, length unchanged)' },
@@ -525,6 +530,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Middle',
     category: 'timing',
     description: 'Trim video from start and end by specified seconds',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'trim', type: 'number', default: 1, description: 'Seconds to remove from start and end' },
