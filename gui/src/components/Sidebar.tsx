@@ -59,7 +59,7 @@ const NodeItem: React.FC<{
                 filter: `brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)`,
                 // Apply category color using CSS filter
                 ...(node.category === 'input' && { filter: 'brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%)' }),
-                ...(node.category === 'size' && { filter: 'brightness(0) saturate(100%) invert(40%) sepia(93%) saturate(1352%) hue-rotate(187deg) brightness(119%) contrast(119%)' }),
+                ...(node.category === 'size' && { filter: 'brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)' }),
                 ...(node.category === 'effects' && { filter: 'brightness(0) saturate(100%) invert(20%) sepia(100%) saturate(7500%) hue-rotate(267deg) brightness(101%) contrast(101%)' }),
                 ...(node.category === 'composition' && { filter: 'brightness(0) saturate(100%) invert(70%) sepia(98%) saturate(1552%) hue-rotate(1deg) brightness(101%) contrast(101%)' }),
                 ...(node.category === 'format' && { filter: 'brightness(0) saturate(100%) invert(17%) sepia(94%) saturate(7491%) hue-rotate(359deg) brightness(95%) contrast(118%)' }),
