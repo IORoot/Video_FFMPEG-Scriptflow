@@ -244,6 +244,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Blur',
     category: 'effects',
     description: 'Apply blur effect to video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'strength', type: 'number', default: 0.5, description: 'Blur strength (standard deviation of Gaussian blur)' },
@@ -259,6 +260,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Sharpen',
     category: 'effects',
     description: 'Apply sharpen effect to video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'pixel', type: 'number', default: 5, description: 'Matrix size (odd integer 3-23)' },
@@ -274,6 +276,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Unsharp Mask',
     category: 'effects',
     description: 'Apply unsharp mask filter',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'luma_x', type: 'number', default: 5, description: 'Luma matrix horizontal size (odd integer 3-23)' },
@@ -296,6 +299,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Color Adjust',
     category: 'effects',
     description: 'Adjust color properties of video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'brightness', type: 'number', default: 0, description: 'Brightness adjustment (-1.0 to 1.0)' },
@@ -314,6 +318,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'LUT',
     category: 'effects',
     description: 'Apply Look-Up Table color grading',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'lut', type: 'file', default: './lib/lut/Andromeda.cube', description: 'LUT file path (3DL/Cube format)' },
@@ -329,6 +334,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Overlay',
     category: 'composition',
     description: 'Overlay one video on top of another',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Background video' },
       { name: 'overlay', type: 'file', required: true, description: 'Overlay video/image' },
@@ -345,6 +351,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Stack',
     category: 'composition',
     description: 'Stack multiple videos together',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video files (folder or multiple files)', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 8 },
       { name: 'vertical', type: 'boolean', default: false, description: 'Create vertical stack (2 inputs)' },
@@ -360,6 +367,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Watermark',
     category: 'composition',
     description: 'Add watermark to video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'watermark', type: 'file', required: true, description: 'Watermark image/video' },
@@ -380,6 +388,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Text',
     category: 'composition',
     description: 'Add text overlay to video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'text', type: 'string', description: 'Text to display (overrides textfile)' },
@@ -403,6 +412,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Subtitles',
     category: 'composition',
     description: 'Hard embed subtitles on video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'subtitles', type: 'file', required: true, description: 'Subtitle SRT file' },

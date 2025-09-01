@@ -645,27 +645,44 @@ const NodeComponent: React.FC<{
         <div className="mb-3 w-80 h-[180px]">
           <div className="w-full h-full bg-black rounded border border-border overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-            <img 
-              src="/test-image.jpg" 
-              alt="Preview"
-              className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
-                nodeDefinition.id === 'ff_scale' ? 'animate-scale-loop' : ''
-              } ${
-                nodeDefinition.id === 'ff_crop' ? 'animate-crop-loop' : ''
-              } ${
-                nodeDefinition.id === 'ff_pad' ? 'animate-pad-loop' : ''
-              } ${
-                nodeDefinition.id === 'ff_aspect_ratio' ? 'animate-aspect-ratio-loop' : ''
-              } ${
-                nodeDefinition.id === 'ff_rotate' ? 'animate-rotate-loop' : ''
-              } ${
-                nodeDefinition.id === 'ff_flip' ? 'animate-flip-loop' : ''
-              } ${
-                nodeDefinition.id === 'ff_to_landscape' ? 'animate-to-landscape-loop' : ''
-              } ${
-                nodeDefinition.id === 'ff_to_portrait' ? 'animate-to-portrait-loop' : ''
-              }`}
-              style={{
+            {nodeDefinition.id !== 'ff_stack' && (
+              <img 
+                src="/test-image.jpg" 
+                alt="Preview"
+                className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
+                  nodeDefinition.id === 'ff_scale' ? 'animate-scale-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_crop' ? 'animate-crop-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_pad' ? 'animate-pad-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_aspect_ratio' ? 'animate-aspect-ratio-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_rotate' ? 'animate-rotate-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_flip' ? 'animate-flip-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_to_landscape' ? 'animate-to-landscape-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_to_portrait' ? 'animate-to-portrait-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_blur' ? 'animate-blur-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_sharpen' ? 'animate-sharpen-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_unsharp' ? 'animate-unsharp-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_colour' ? 'animate-colour-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_lut' ? 'animate-lut-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_watermark' ? 'animate-watermark-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_text' ? 'animate-text-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_subtitles' ? 'animate-subtitles-loop' : ''
+                }`}
+                style={{
                 objectFit: 'cover',
                 objectPosition: 'center',
                 transform: (() => {
@@ -736,6 +753,77 @@ const NodeComponent: React.FC<{
                     
                     // For to_portrait animation, we'll use CSS to show portrait conversion
                     // The animation will show landscape to portrait transformation
+                  } else if (nodeDefinition.id === 'ff_blur') {
+                    const strength = node.parameters.strength || '5';
+                    const steps = node.parameters.steps || '1';
+                    
+                    // For blur animation, we'll use CSS to show blur effect
+                    // The animation will show different blur intensities
+                  } else if (nodeDefinition.id === 'ff_sharpen') {
+                    const pixel = node.parameters.pixel || '5';
+                    const sharpen = node.parameters.sharpen || '1.0';
+                    
+                    // For sharpen animation, we'll use CSS to show sharpen effect
+                    // The animation will show different sharpen intensities
+                  } else if (nodeDefinition.id === 'ff_unsharp') {
+                    const luma_x = node.parameters.luma_x || '5';
+                    const luma_y = node.parameters.luma_y || '5';
+                    const luma_amount = node.parameters.luma_amount || '1.0';
+                    
+                    // For unsharp mask animation, we'll use CSS to show unsharp mask effect
+                    // The animation will show different unsharp mask intensities
+                  } else if (nodeDefinition.id === 'ff_colour') {
+                    const brightness = node.parameters.brightness || '0';
+                    const contrast = node.parameters.contrast || '1';
+                    const gamma = node.parameters.gamma || '1';
+                    const saturation = node.parameters.saturation || '1';
+                    
+                    // For colour animation, we'll use CSS to show color adjustment effects
+                    // The animation will show different color adjustments
+                  } else if (nodeDefinition.id === 'ff_lut') {
+                    const lut = node.parameters.lut || './lib/lut/Andromeda.cube';
+                    
+                    // For LUT animation, we'll use CSS to show color grading effects
+                    // The animation will show different cinematic color grades
+                  } else if (nodeDefinition.id === 'ff_overlay') {
+                    const start = node.parameters.start || '0';
+                    const end = node.parameters.end || '0';
+                    const fit = node.parameters.fit || false;
+                    
+                    // For overlay animation, we'll use CSS to show overlay effect
+                    // The animation will show overlay positioning and opacity
+                  } else if (nodeDefinition.id === 'ff_stack') {
+                    const vertical = node.parameters.vertical || false;
+                    const horizontal = node.parameters.horizontal || false;
+                    const grid = node.parameters.grid || false;
+                    
+                    // For stack animation, we'll use CSS to show stacking effect
+                    // The animation will show different stacking arrangements
+                  } else if (nodeDefinition.id === 'ff_watermark') {
+                    const xpixels = node.parameters.xpixels || '10';
+                    const ypixels = node.parameters.ypixels || '10';
+                    const scale = node.parameters.scale || '1';
+                    const alpha = node.parameters.alpha || '1';
+                    const duration = node.parameters.duration || '0';
+                    
+                    // For watermark animation, we'll use CSS to show watermark effect
+                    // The animation will show watermark positioning and opacity
+                  } else if (nodeDefinition.id === 'ff_text') {
+                    const text = node.parameters.text || 'Hello';
+                    const font = node.parameters.font || 'Arial';
+                    const size = node.parameters.size || '24';
+                    const colour = node.parameters.colour || 'white';
+                    
+                    // For text animation, we'll use CSS to show text typing effect
+                    // The animation will show text appearing character by character
+                  } else if (nodeDefinition.id === 'ff_subtitles') {
+                    const subtitles = node.parameters.subtitles || 'sample_subtitle.srt';
+                    const styles = node.parameters.styles || '';
+                    const removedupes = node.parameters.removedupes || false;
+                    const dynamictext = node.parameters.dynamictext || false;
+                    
+                    // For subtitles animation, we'll use CSS to show subtitle typing effect
+                    // The animation will show subtitles appearing character by character at bottom center
                   }
                   
                   return transform;
@@ -744,6 +832,118 @@ const NodeComponent: React.FC<{
                 top: '50%'
               }}
             />
+                         )}
+             {/* Text overlay for ff_text preview */}
+             {nodeDefinition.id === 'ff_text' && (
+               <div 
+                 className="absolute top-4 left-4 text-white text-2xl font-bold z-20"
+                 style={{
+                   textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                   fontSize: '24px'
+                 }}
+               >
+                 <span className="animate-text-loop"></span>
+               </div>
+             )}
+             {/* Subtitles overlay for ff_subtitles preview */}
+             {nodeDefinition.id === 'ff_subtitles' && (
+               <div 
+                 className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-xl font-bold z-20"
+                 style={{
+                   textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                   fontSize: '20px'
+                 }}
+               >
+                 <span className="animate-subtitles-loop"></span>
+               </div>
+             )}
+             {/* Overlay image for ff_overlay preview */}
+            {nodeDefinition.id === 'ff_overlay' && (
+              <img 
+                src="/test-image.jpg" 
+                alt="Overlay"
+                className="absolute inset-0 w-full h-full object-cover animate-overlay-loop"
+                style={{
+                  objectFit: 'cover',
+                  objectPosition: 'center',
+                  transform: 'translate(-50%, -50%)',
+                  left: '50%',
+                  top: '50%',
+                  opacity: 1,
+                  zIndex: 10
+                }}
+              />
+            )}
+            {/* Stack grid images for ff_stack preview */}
+            {nodeDefinition.id === 'ff_stack' && (
+              <>
+                <img 
+                  src="/test-image.jpg" 
+                  alt="Stack 1"
+                  className="absolute inset-0 w-full h-full object-cover animate-stack-loop"
+                  style={{
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    transform: 'translate(-50%, -50%)',
+                    left: '25%',
+                    top: '25%',
+                    width: '50%',
+                    height: '50%',
+                    opacity: 0.8,
+                    zIndex: 10
+                  }}
+                />
+                <img 
+                  src="/test-image.jpg" 
+                  alt="Stack 2"
+                  className="absolute inset-0 w-full h-full object-cover animate-stack-loop"
+                  style={{
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    transform: 'translate(-50%, -50%)',
+                    left: '75%',
+                    top: '25%',
+                    width: '50%',
+                    height: '50%',
+                    opacity: 0.8,
+                    zIndex: 10
+                  }}
+                />
+                <img 
+                  src="/test-image.jpg" 
+                  alt="Stack 3"
+                  className="absolute inset-0 w-full h-full object-cover animate-stack-loop"
+                  style={{
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    transform: 'translate(-50%, -50%)',
+                    left: '25%',
+                    top: '75%',
+                    width: '50%',
+                    height: '50%',
+                    opacity: 0.8,
+                    zIndex: 10
+                  }}
+                />
+                <img 
+                  src="/test-image.jpg" 
+                  alt="Stack 4"
+                  className="absolute inset-0 w-full h-full object-cover animate-stack-loop"
+                  style={{
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    transform: 'translate(-50%, -50%)',
+                    left: '75%',
+                    top: '75%',
+                    width: '50%',
+                    height: '50%',
+                    opacity: 0.8,
+                    zIndex: 10
+                  }}
+                />
+              </>
+            )}
+
             <div className="absolute bottom-2 left-2 text-white text-xs bg-black/50 px-2 py-1 rounded z-20">
               {(() => {
                 if (nodeDefinition.id === 'ff_scale') {
@@ -774,6 +974,54 @@ const NodeComponent: React.FC<{
                 } else if (nodeDefinition.id === 'ff_to_portrait') {
                   const rotate = node.parameters.rotate || false;
                   return `Portrait${rotate ? ' +R' : ''}`;
+                } else if (nodeDefinition.id === 'ff_blur') {
+                  const strength = node.parameters.strength || '5';
+                  const steps = node.parameters.steps || '1';
+                  return `Blur ${strength}×${steps}`;
+                } else if (nodeDefinition.id === 'ff_sharpen') {
+                  const pixel = node.parameters.pixel || '5';
+                  const sharpen = node.parameters.sharpen || '1.0';
+                  return `Sharpen ${pixel}×${sharpen}`;
+                } else if (nodeDefinition.id === 'ff_unsharp') {
+                  const luma_x = node.parameters.luma_x || '5';
+                  const luma_y = node.parameters.luma_y || '5';
+                  const luma_amount = node.parameters.luma_amount || '1.0';
+                  return `Unsharp ${luma_x}×${luma_y}×${luma_amount}`;
+                } else if (nodeDefinition.id === 'ff_colour') {
+                  const brightness = node.parameters.brightness || '0';
+                  const contrast = node.parameters.contrast || '1';
+                  const saturation = node.parameters.saturation || '1';
+                  return `Color B${brightness}C${contrast}S${saturation}`;
+                } else if (nodeDefinition.id === 'ff_lut') {
+                  const lut = node.parameters.lut || './lib/lut/Andromeda.cube';
+                  const lutName = lut.split('/').pop()?.replace('.cube', '') || 'Andromeda';
+                  return `LUT: ${lutName}`;
+                } else if (nodeDefinition.id === 'ff_overlay') {
+                  const start = node.parameters.start || '0';
+                  const end = node.parameters.end || '0';
+                  const fit = node.parameters.fit || false;
+                  return `Overlay ${start}-${end}${fit ? 'F' : ''}`;
+                } else if (nodeDefinition.id === 'ff_stack') {
+                  const vertical = node.parameters.vertical || false;
+                  const horizontal = node.parameters.horizontal || false;
+                  const grid = node.parameters.grid || false;
+                  if (grid) return 'Stack Grid';
+                  if (vertical) return 'Stack V';
+                  if (horizontal) return 'Stack H';
+                  return 'Stack';
+                } else if (nodeDefinition.id === 'ff_watermark') {
+                  const xpixels = node.parameters.xpixels || '10';
+                  const ypixels = node.parameters.ypixels || '10';
+                  const scale = node.parameters.scale || '1';
+                  return `WM ${xpixels},${ypixels}×${scale}`;
+                } else if (nodeDefinition.id === 'ff_text') {
+                  const text = node.parameters.text || 'Hello';
+                  const size = node.parameters.size || '24';
+                  return `Text: ${text} (${size}px)`;
+                } else if (nodeDefinition.id === 'ff_subtitles') {
+                  const subtitles = node.parameters.subtitles || 'sample_subtitle.srt';
+                  const styles = node.parameters.styles || '';
+                  return `Subs: ${subtitles}${styles ? ` (${styles})` : ''}`;
                 }
                 return '320×180';
               })()}

@@ -22,7 +22,7 @@
   --border: 217.2 32.6% 17.5%;
   --input: 217.2 32.6% 17.5%;
   --ring: 212.7 26.8% 83.9%;
-  --radius: 0.5rem;
+  --radius: 0.8rem;
 }
 
 body {
@@ -89,7 +89,7 @@ code {
   border: 1px solid hsl(var(--border));
   border-radius: calc(var(--radius) - 2px);
   color: hsl(var(--foreground));
-  padding: 0.5rem;
+  padding: 0.8rem;
 }
 
 .rete-control input:focus {
@@ -104,7 +104,7 @@ code {
     transform: translate(-50%, -50%) scale(1);
   }
   50% {
-    transform: translate(-50%, -50%) scale(0.5);
+    transform: translate(-50%, -50%) scale(0.8);
   }
   100% {
     transform: translate(-50%, -50%) scale(1);
@@ -274,4 +274,253 @@ code {
 .animate-to-portrait-loop {
   animation: toPortraitLoop 3s ease-in-out infinite;
   object-fit: cover;
+}
+
+/* Blur animation for ff_blur preview */
+@keyframes blurLoop {
+  0% {
+    filter: blur(0px);
+  }
+  50% {
+    filter: blur(8px);
+  }
+  100% {
+    filter: blur(0px);
+  }
+}
+
+.animate-blur-loop {
+  animation: blurLoop 3s ease-in-out infinite;
+}
+
+/* Sharpen animation for ff_sharpen preview */
+@keyframes sharpenLoop {
+  0% {
+    filter: contrast(1) brightness(1);
+  }
+  50% {
+    filter: contrast(2) brightness(1.5);
+  }
+  100% {
+    filter: contrast(1) brightness(1);
+  }
+}
+
+.animate-sharpen-loop {
+  animation: sharpenLoop 3s ease-in-out infinite;
+}
+
+/* Unsharp mask animation for ff_unsharp preview */
+@keyframes unsharpLoop {
+  0% {
+    filter: blur(2px) contrast(1) brightness(1) saturate(1);
+  }
+  50% {
+    filter: blur(0px) contrast(2) brightness(1.2) saturate(1.3);
+  }
+  100% {
+    filter: blur(2px) contrast(1) brightness(1) saturate(1);
+  }
+}
+
+.animate-unsharp-loop {
+  animation: unsharpLoop 4s ease-in-out infinite;
+}
+
+/* Color adjustment animation for ff_colour preview */
+@keyframes colourLoop {
+  0% {
+    filter: brightness(1) contrast(1) saturate(1) hue-rotate(0deg);
+  }
+  25% {
+    filter: brightness(1.3) contrast(1.2) saturate(1.5) hue-rotate(30deg);
+  }
+  50% {
+    filter: brightness(0.7) contrast(1.8) saturate(0.8) hue-rotate(60deg);
+  }
+  75% {
+    filter: brightness(1.1) contrast(0.8) saturate(2) hue-rotate(90deg);
+  }
+  100% {
+    filter: brightness(1) contrast(1) saturate(1) hue-rotate(0deg);
+  }
+}
+
+.animate-colour-loop {
+  animation: colourLoop 5s ease-in-out infinite;
+}
+
+/* LUT animation for ff_lut preview */
+@keyframes lutLoop {
+  0% {
+    filter: sepia(0) hue-rotate(0deg) saturate(1) contrast(1);
+  }
+  25% {
+    filter: sepia(0.3) hue-rotate(45deg) saturate(1.2) contrast(1.1);
+  }
+  50% {
+    filter: sepia(0.6) hue-rotate(90deg) saturate(0.8) contrast(1.3);
+  }
+  75% {
+    filter: sepia(0.4) hue-rotate(270deg) saturate(1.4) contrast(0.9);
+  }
+  100% {
+    filter: sepia(0) hue-rotate(0deg) saturate(1) contrast(1);
+  }
+}
+
+.animate-lut-loop {
+  animation: lutLoop 6s ease-in-out infinite;
+}
+
+/* Overlay animation for ff_overlay preview */
+@keyframes overlayLoop {
+  0% {
+    transform: translate(-50%, -50%) translate(0px, 0px);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translate(-50%, -50%) translate(20px, 10px);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-50%, -50%) translate(-15px, 25px);
+    opacity: 0.3;
+  }
+  75% {
+    transform: translate(-50%, -50%) translate(30px, -20px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(0px, 0px);
+    opacity: 0.8;
+  }
+}
+
+.animate-overlay-loop {
+  animation: overlayLoop 4s ease-in-out infinite;
+}
+
+/* Stack animation for ff_stack preview */
+@keyframes stackLoop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0.3;
+  }
+}
+
+.animate-stack-loop {
+  animation: stackLoop 5s ease-in-out infinite;
+}
+
+/* Watermark animation for ff_watermark preview */
+@keyframes watermarkLoop {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-10%, -10%) scale(0.1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.animate-watermark-loop {
+  animation: watermarkLoop 5s ease-in-out infinite;
+}
+
+/* Text animation for ff_text preview */
+@keyframes textLoop {
+  0% {
+    content: '';
+  }
+  20% {
+    content: 'H';
+  }
+  40% {
+    content: 'He';
+  }
+  60% {
+    content: 'Hel';
+  }
+  80% {
+    content: 'Hell';
+  }
+  100% {
+    content: 'Hello';
+  }
+}
+
+.animate-text-loop {
+  animation: textLoop 3s ease-in-out infinite;
+}
+
+.animate-text-loop::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: white;
+  font-size: 48px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  z-index: 20;
+  animation: textLoop 3s ease-in-out infinite;
+}
+
+/* Subtitles animation for ff_subtitles preview */
+@keyframes subtitlesLoop {
+  0% {
+    content: '';
+  }
+  20% {
+    content: 'S';
+  }
+  40% {
+    content: 'Su';
+  }
+  60% {
+    content: 'Sub';
+  }
+  80% {
+    content: 'Subs';
+  }
+  100% {
+    content: 'Subs';
+  }
+}
+
+.animate-subtitles-loop {
+  animation: subtitlesLoop 3s ease-in-out infinite;
+}
+
+.animate-subtitles-loop::after {
+  content: '';
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  z-index: 20;
+  animation: subtitlesLoop 3s ease-in-out infinite;
 }
