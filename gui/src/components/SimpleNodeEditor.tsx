@@ -640,6 +640,32 @@ const NodeComponent: React.FC<{
         )}
       </div>
       
+      {/* Preview Section */}
+      {nodeDefinition?.preview && (
+        <div className="mb-3 w-80 h-[180px]">
+          <div className="w-full h-full bg-black rounded border border-border overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+            <img 
+              src="/test-image.jpg" 
+              alt="Preview"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              style={{
+                width: '320px',
+                height: '180px',
+                objectFit: 'cover',
+                objectPosition: 'center',
+                transform: 'translate(-50%, -50%)',
+                left: '50%',
+                top: '50%'
+              }}
+            />
+            <div className="absolute bottom-2 left-2 text-white text-xs bg-black/50 px-2 py-1 rounded z-20">
+              320×180
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="mb-3">
         <label className="text-xs text-muted-foreground block mb-1">
           Description

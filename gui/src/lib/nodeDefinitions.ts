@@ -19,6 +19,7 @@ export interface NodeDefinition {
   inputs: NodeParameter[];
   outputs: { name: string; type: string }[];
   icon?: string;
+  preview?: boolean;
 }
 
 // Icon mapping function
@@ -84,6 +85,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Input',
     category: 'input',
     description: 'Manual file input - enter a file path',
+    preview: true,
     inputs: [
       { name: 'filepath', type: 'string', required: true, description: 'Path to input file' }
     ],
