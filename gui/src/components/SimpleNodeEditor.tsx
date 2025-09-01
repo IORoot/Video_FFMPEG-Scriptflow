@@ -648,19 +648,135 @@ const NodeComponent: React.FC<{
             <img 
               src="/test-image.jpg" 
               alt="Preview"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
+                nodeDefinition.id === 'ff_scale' ? 'animate-scale-loop' : ''
+              } ${
+                nodeDefinition.id === 'ff_crop' ? 'animate-crop-loop' : ''
+              } ${
+                nodeDefinition.id === 'ff_pad' ? 'animate-pad-loop' : ''
+              } ${
+                nodeDefinition.id === 'ff_aspect_ratio' ? 'animate-aspect-ratio-loop' : ''
+              } ${
+                nodeDefinition.id === 'ff_rotate' ? 'animate-rotate-loop' : ''
+              } ${
+                nodeDefinition.id === 'ff_flip' ? 'animate-flip-loop' : ''
+              } ${
+                nodeDefinition.id === 'ff_to_landscape' ? 'animate-to-landscape-loop' : ''
+              } ${
+                nodeDefinition.id === 'ff_to_portrait' ? 'animate-to-portrait-loop' : ''
+              }`}
               style={{
-                width: '320px',
-                height: '180px',
                 objectFit: 'cover',
                 objectPosition: 'center',
-                transform: 'translate(-50%, -50%)',
+                transform: (() => {
+                  // Base transform for centering
+                  let transform = 'translate(-50%, -50%)';
+                  
+                  // Apply node-specific transforms
+                  if (nodeDefinition.id === 'ff_scale') {
+                    const width = node.parameters.width || '1920';
+                    const height = node.parameters.height || '1080';
+                    
+                    // Calculate scale factors (assuming original is 320x180)
+                    const originalWidth = 320;
+                    const originalHeight = 180;
+                    
+                    let scaleX = 1;
+                    let scaleY = 1;
+                    
+                    // Parse width and height values
+                    if (width !== '-1' && !isNaN(Number(width))) {
+                      scaleX = Number(width) / originalWidth;
+                    }
+                    if (height !== '-1' && !isNaN(Number(height))) {
+                      scaleY = Number(height) / originalHeight;
+                    }
+                    
+                    // Apply scale transform
+                    transform += ` scale(${scaleX}, ${scaleY})`;
+                  } else if (nodeDefinition.id === 'ff_crop') {
+                    const width = node.parameters.width || '300';
+                    const height = node.parameters.height || '300';
+                    const xpixels = node.parameters.xpixels || '(iw-ow)/2';
+                    const ypixels = node.parameters.ypixels || '(ih-oh)/2';
+                    
+                    // For crop animation, we'll use a clipping effect
+                    // The animation will show the crop area expanding and contracting
+                    transform += ' scale(1.2)'; // Slightly larger to show crop effect
+                  } else if (nodeDefinition.id === 'ff_pad') {
+                    const width = node.parameters.width || '0';
+                    const height = node.parameters.height || '2*ih';
+                    const colour = node.parameters.colour || 'black';
+                    
+                    // For pad animation, we only need centering transform
+                    // The padding effect is handled by CSS animation
+                  } else if (nodeDefinition.id === 'ff_aspect_ratio') {
+                    const aspect = node.parameters.aspect || '1:1';
+                    
+                    // For aspect ratio animation, we'll use CSS to show aspect ratio changes
+                    // The animation will show different aspect ratios
+                  } else if (nodeDefinition.id === 'ff_rotate') {
+                    const rotation = node.parameters.rotation || '90';
+                    
+                    // For rotate animation, we'll use CSS to show rotation changes
+                    // The animation will show different rotation angles
+                  } else if (nodeDefinition.id === 'ff_flip') {
+                    const horizontal = node.parameters.horizontal || false;
+                    const vertical = node.parameters.vertical || false;
+                    
+                    // For flip animation, we'll use CSS to show flip changes
+                    // The animation will show different flip combinations
+                  } else if (nodeDefinition.id === 'ff_to_landscape') {
+                    const rotate = node.parameters.rotate || false;
+                    
+                    // For to_landscape animation, we'll use CSS to show landscape conversion
+                    // The animation will show portrait to landscape transformation
+                  } else if (nodeDefinition.id === 'ff_to_portrait') {
+                    const rotate = node.parameters.rotate || false;
+                    
+                    // For to_portrait animation, we'll use CSS to show portrait conversion
+                    // The animation will show landscape to portrait transformation
+                  }
+                  
+                  return transform;
+                })(),
                 left: '50%',
                 top: '50%'
               }}
             />
             <div className="absolute bottom-2 left-2 text-white text-xs bg-black/50 px-2 py-1 rounded z-20">
-              320×180
+              {(() => {
+                if (nodeDefinition.id === 'ff_scale') {
+                  const width = node.parameters.width || '1920';
+                  const height = node.parameters.height || '1080';
+                  return `${width}×${height}`;
+                } else if (nodeDefinition.id === 'ff_crop') {
+                  const width = node.parameters.width || '300';
+                  const height = node.parameters.height || '300';
+                  return `${width}×${height}`;
+                } else if (nodeDefinition.id === 'ff_pad') {
+                  const width = node.parameters.width || '0';
+                  const height = node.parameters.height || '2*ih';
+                  return `${width}×${height}`;
+                } else if (nodeDefinition.id === 'ff_aspect_ratio') {
+                  const aspect = node.parameters.aspect || '1:1';
+                  return `AR: ${aspect}`;
+                } else if (nodeDefinition.id === 'ff_rotate') {
+                  const rotation = node.parameters.rotation || '90';
+                  return `${rotation}°`;
+                } else if (nodeDefinition.id === 'ff_flip') {
+                  const horizontal = node.parameters.horizontal || false;
+                  const vertical = node.parameters.vertical || false;
+                  return `${horizontal ? 'H' : ''}${vertical ? 'V' : ''}`;
+                } else if (nodeDefinition.id === 'ff_to_landscape') {
+                  const rotate = node.parameters.rotate || false;
+                  return `Landscape${rotate ? ' +R' : ''}`;
+                } else if (nodeDefinition.id === 'ff_to_portrait') {
+                  const rotate = node.parameters.rotate || false;
+                  return `Portrait${rotate ? ' +R' : ''}`;
+                }
+                return '320×180';
+              })()}
             </div>
           </div>
         </div>

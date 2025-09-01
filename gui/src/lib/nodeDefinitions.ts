@@ -112,6 +112,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Scale',
     category: 'size',
     description: 'Change the scale (physical dimensions) of the video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'width', type: 'string', default: '1920', description: 'Width in pixels (supports expressions like iw*.5, -1 for aspect ratio)' },
@@ -129,6 +130,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Crop',
     category: 'size',
     description: 'Crop the video to specified dimensions',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'width', type: 'string', default: '300', description: 'Width of crop area' },
@@ -146,6 +148,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Pad',
     category: 'size',
     description: 'Add padding around the video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'width', type: 'string', default: '0', description: 'Output width (0 uses input width)' },
@@ -164,6 +167,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Aspect Ratio',
     category: 'size',
     description: 'Change aspect ratio of video (alters container metadata DAR)',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'aspect', type: 'string', default: '1:1', description: 'Target aspect ratio (X:Y format)' },
@@ -178,6 +182,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Rotate',
     category: 'size',
     description: 'Rotate video by specified angle',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'rotation', type: 'number', default: 90, description: 'Rotation angle in degrees' },
@@ -192,6 +197,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Flip',
     category: 'size',
     description: 'Flip video horizontally and/or vertically',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'horizontal', type: 'boolean', default: false, description: 'Flip video horizontally' },
@@ -207,6 +213,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'To Landscape',
     category: 'size',
     description: 'Convert video to landscape orientation',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'rotate', type: 'select', options: ['0', '1', '2', '3'], default: '2', description: 'Rotation method (0=90CCW+VFlip, 1=90CW, 2=90CCW, 3=90CW+VFlip)' },
@@ -221,6 +228,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'To Portrait',
     category: 'size',
     description: 'Convert video to portrait orientation',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'rotate', type: 'select', options: ['0', '1', '2', '3'], default: '1', description: 'Rotation method (0=90CCW+VFlip, 1=90CW, 2=90CCW, 3=90CW+VFlip)' },
