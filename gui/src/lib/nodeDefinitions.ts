@@ -545,6 +545,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Group Time',
     category: 'timing',
     description: 'Trim input videos by percentage to get correct duration',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file/folder', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 10 },
       { name: 'duration', type: 'number', description: 'Target duration' },
@@ -561,6 +562,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Concatenate',
     category: 'assembly',
     description: 'Concatenate multiple videos',
+    preview: true,
     inputs: [
       { name: 'input1', type: 'file', required: true, description: 'First video' },
       { name: 'input2', type: 'file', required: true, description: 'Second video' },
@@ -575,6 +577,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Append',
     category: 'assembly',
     description: 'Append two files together while re-encoding to same codec',
+    preview: true,
     inputs: [
       { name: 'first', type: 'file', required: true, description: 'First input file' },
       { name: 'second', type: 'file', required: true, description: 'Second input file' },
@@ -588,6 +591,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Transition',
     category: 'assembly',
     description: 'Concat videos with transition effects between each',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video files/folder', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 10 },
       { name: 'duration', type: 'number', description: 'Transition duration' },

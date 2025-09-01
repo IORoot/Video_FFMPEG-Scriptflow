@@ -693,6 +693,16 @@ const NodeComponent: React.FC<{
                   nodeDefinition.id === 'ff_cut' ? 'animate-cut-loop' : ''
                 } ${
                   nodeDefinition.id === 'ff_fps' ? 'animate-fps-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_middle' ? 'animate-middle-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_grouptime' ? 'animate-grouptime-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_concat' ? 'animate-concat-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_append' ? 'animate-append-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_transition' ? 'animate-transition-loop' : ''
                 }`}
                 style={{
                 objectFit: 'cover',
@@ -877,6 +887,39 @@ const NodeComponent: React.FC<{
                     
                     // For fps animation, we'll use CSS to show frame rate flickering effect
                     // The animation will show the image flickering at different rates
+                  } else if (nodeDefinition.id === 'ff_middle') {
+                    const trim = node.parameters.trim || 1;
+                    const grep = node.parameters.grep || '';
+                    
+                    // For middle animation, we'll use CSS to show trimming from both ends
+                    // The animation will show scissors cutting from both sides of the timeline
+                  } else if (nodeDefinition.id === 'ff_grouptime') {
+                    const duration = node.parameters.duration || 10;
+                    const arrangement = node.parameters.arrangement || 'standard';
+                    const grep = node.parameters.grep || '';
+                    
+                    // For grouptime animation, we'll use CSS to show multiple videos being trimmed
+                    // The animation will show two timelines being cut from both ends simultaneously
+                  } else if (nodeDefinition.id === 'ff_concat') {
+                    const input1 = node.parameters.input1 || 'video1.mp4';
+                    const input2 = node.parameters.input2 || 'video2.mp4';
+                    const input3 = node.parameters.input3 || '';
+                    
+                    // For concat animation, we'll use CSS to show video segments being joined
+                    // The animation will show three segments being concatenated together
+                  } else if (nodeDefinition.id === 'ff_append') {
+                    const first = node.parameters.first || 'video1.mp4';
+                    const second = node.parameters.second || 'video2.mp4';
+                    
+                    // For append animation, we'll use CSS to show two files being appended
+                    // The animation will show two segments being joined with re-encoding
+                  } else if (nodeDefinition.id === 'ff_transition') {
+                    const duration = node.parameters.duration || 1;
+                    const effects = node.parameters.effects || 'fade';
+                    const sort = node.parameters.sort || '';
+                    
+                    // For transition animation, we'll use CSS to show videos with transition effects
+                    // The animation will show segments with a transition effect between them
                   }
                   
                   return transform;
@@ -952,6 +995,104 @@ const NodeComponent: React.FC<{
                      </div>
                      <div className="animate-cut-right-scissors absolute top-0 right-0 w-4 h-6 text-red-500">
                        ✂️
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             )}
+             {/* Timeline middle cut overlay for ff_middle preview */}
+             {nodeDefinition.id === 'ff_middle' && (
+               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+                 <div className="relative">
+                   <div className="w-64 h-6 bg-gray-800 rounded-full border-2 border-gray-600">
+                     <div className="animate-middle-timeline h-full bg-green-500 rounded-full"></div>
+                   </div>
+                   <div className="absolute top-0 left-0 w-full h-full">
+                     <div className="animate-middle-left-scissors absolute top-0 left-0 w-4 h-6 text-red-500">
+                       ✂️
+                     </div>
+                     <div className="animate-middle-right-scissors absolute top-0 right-0 w-4 h-6 text-red-500">
+                       ✂️
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             )}
+             {/* Dual timeline grouptime cut overlay for ff_grouptime preview */}
+             {nodeDefinition.id === 'ff_grouptime' && (
+               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+                 <div className="relative flex gap-2">
+                   <div className="relative">
+                     <div className="w-32 h-6 bg-gray-800 rounded-full border-2 border-gray-600">
+                       <div className="animate-grouptime-timeline-1 h-full bg-purple-500 rounded-full"></div>
+                     </div>
+                     <div className="absolute top-0 left-0 w-full h-full">
+                       <div className="animate-grouptime-left-scissors-1 absolute top-0 left-0 w-4 h-6 text-red-500">
+                         ✂️
+                       </div>
+                       <div className="animate-grouptime-right-scissors-1 absolute top-0 right-0 w-4 h-6 text-red-500">
+                         ✂️
+                       </div>
+                     </div>
+                   </div>
+                   <div className="relative">
+                     <div className="w-32 h-6 bg-gray-800 rounded-full border-2 border-gray-600">
+                       <div className="animate-grouptime-timeline-2 h-full bg-orange-500 rounded-full"></div>
+                     </div>
+                     <div className="absolute top-0 left-0 w-full h-full">
+                       <div className="animate-grouptime-left-scissors-2 absolute top-0 left-0 w-4 h-6 text-red-500">
+                         ✂️
+                       </div>
+                       <div className="animate-grouptime-right-scissors-2 absolute top-0 right-0 w-4 h-6 text-red-500">
+                         ✂️
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             )}
+             {/* Concatenation overlay for ff_concat preview */}
+             {nodeDefinition.id === 'ff_concat' && (
+               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+                 <div className="relative flex gap-1">
+                   <div className="animate-concat-segment-1 w-20 h-6 bg-blue-500 rounded-l-full border-2 border-blue-600"></div>
+                   <div className="animate-concat-segment-2 w-20 h-6 bg-green-500 border-2 border-green-600"></div>
+                   <div className="animate-concat-segment-3 w-20 h-6 bg-purple-500 rounded-r-full border-2 border-purple-600"></div>
+                   <div className="absolute top-0 left-0 w-full h-full">
+                     <div className="animate-concat-arrow-1 absolute top-0 left-1/4 transform -translate-x-1/2 text-yellow-400 text-lg">
+                       →
+                     </div>
+                     <div className="animate-concat-arrow-2 absolute top-0 right-1/4 transform translate-x-1/2 text-yellow-400 text-lg">
+                       →
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             )}
+             {/* Append overlay for ff_append preview */}
+             {nodeDefinition.id === 'ff_append' && (
+               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+                 <div className="relative flex gap-2">
+                   <div className="animate-append-first w-24 h-6 bg-red-500 rounded-l-full border-2 border-red-600"></div>
+                   <div className="animate-append-second w-24 h-6 bg-blue-500 rounded-r-full border-2 border-blue-600"></div>
+                   <div className="absolute top-0 left-0 w-full h-full">
+                     <div className="animate-append-arrow absolute top-0 left-1/2 transform -translate-x-1/2 text-yellow-400 text-lg">
+                       ⚡
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             )}
+             {/* Transition overlay for ff_transition preview */}
+             {nodeDefinition.id === 'ff_transition' && (
+               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
+                 <div className="relative flex gap-1">
+                   <div className="animate-transition-first w-20 h-6 bg-purple-500 rounded-l-full border-2 border-purple-600"></div>
+                   <div className="animate-transition-effect w-8 h-6 bg-gradient-to-r from-purple-500 to-orange-500 border-2 border-gray-600"></div>
+                   <div className="animate-transition-second w-20 h-6 bg-orange-500 rounded-r-full border-2 border-orange-600"></div>
+                   <div className="absolute top-0 left-0 w-full h-full">
+                     <div className="animate-transition-sparkle absolute top-0 left-1/2 transform -translate-x-1/2 text-yellow-300 text-lg">
+                       ✨
                      </div>
                    </div>
                  </div>
@@ -1143,6 +1284,25 @@ const NodeComponent: React.FC<{
                 } else if (nodeDefinition.id === 'ff_fps') {
                   const fps = node.parameters.fps || 30;
                   return `FPS: ${fps}`;
+                } else if (nodeDefinition.id === 'ff_middle') {
+                  const trim = node.parameters.trim || 1;
+                  return `Middle: ${trim}s`;
+                } else if (nodeDefinition.id === 'ff_grouptime') {
+                  const duration = node.parameters.duration || 10;
+                  const arrangement = node.parameters.arrangement || 'standard';
+                  return `Group: ${duration}s (${arrangement})`;
+                } else if (nodeDefinition.id === 'ff_concat') {
+                  const input1 = node.parameters.input1 || 'video1.mp4';
+                  const input2 = node.parameters.input2 || 'video2.mp4';
+                  return `Concat: ${input1} + ${input2}`;
+                } else if (nodeDefinition.id === 'ff_append') {
+                  const first = node.parameters.first || 'video1.mp4';
+                  const second = node.parameters.second || 'video2.mp4';
+                  return `Append: ${first} + ${second}`;
+                } else if (nodeDefinition.id === 'ff_transition') {
+                  const duration = node.parameters.duration || 1;
+                  const effects = node.parameters.effects || 'fade';
+                  return `Transition: ${effects} (${duration}s)`;
                 }
                 return '320×180';
               })()}
