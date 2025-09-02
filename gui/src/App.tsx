@@ -63,6 +63,7 @@ function App() {
   const [nodeEditorRef, setNodeEditorRef] = useState<SimpleNodeEditorHandle | null>(null);
   const [gridSnapEnabled, setGridSnapEnabled] = useState(true);
   const [gridSize, setGridSize] = useState(32);
+  const [previewEnabled, setPreviewEnabled] = useState(true);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // Close settings dropdown when clicking outside
@@ -145,6 +146,10 @@ function App() {
     if (nodeEditorRef) {
       nodeEditorRef.setGridSize(size);
     }
+  };
+
+  const handleTogglePreview = () => {
+    setPreviewEnabled(!previewEnabled);
   };
 
   const handleSaveLayout = () => {
@@ -250,6 +255,8 @@ function App() {
               }}
               gridSize={gridSize}
               onGridSizeChange={handleGridSizeChange}
+              previewEnabled={previewEnabled}
+              onTogglePreview={handleTogglePreview}
               onSaveLayout={handleSaveLayout}
               onLoadLayout={handleLoadLayout}
             />
@@ -272,6 +279,7 @@ function App() {
               onNodesChange={handleNodesChange}
               onConnectionsChange={handleConnectionsChange}
               onExportReady={handleExporterReady}
+              previewEnabled={previewEnabled}
               ref={setNodeEditorRef}
             />
           </div>

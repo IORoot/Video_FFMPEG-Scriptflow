@@ -508,6 +508,7 @@ interface SimpleNodeEditorProps {
   onNodesChange?: (nodes: NodeData[]) => void;
   onConnectionsChange?: (connections: Array<{ from: string; to: string; output: string; input: string }>) => void;
   onExportReady?: (exporter: JsonExporter) => void;
+  previewEnabled?: boolean;
 }
 
 const NodeComponent: React.FC<{
@@ -520,7 +521,8 @@ const NodeComponent: React.FC<{
   onContextMenu: (nodeId: string, x: number, y: number) => void;
   onAddDynamicInput: (nodeId: string, baseInputName: string) => void;
   onRemoveDynamicInput: (nodeId: string, inputName: string) => void;
-}> = ({ node, onMove, onSelect, onParameterChange, onSocketMouseDown, onDeleteNode, onContextMenu, onAddDynamicInput, onRemoveDynamicInput }) => {
+  previewEnabled: boolean;
+}> = ({ node, onMove, onSelect, onParameterChange, onSocketMouseDown, onDeleteNode, onContextMenu, onAddDynamicInput, onRemoveDynamicInput, previewEnabled }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
@@ -641,7 +643,7 @@ const NodeComponent: React.FC<{
       </div>
       
       {/* Preview Section */}
-      {nodeDefinition?.preview && (
+      {nodeDefinition?.preview && previewEnabled && (
         <div className="mb-3 w-80 h-[180px]">
           <div className="w-full h-full bg-black rounded border border-border overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
@@ -1484,7 +1486,8 @@ export interface SimpleNodeEditorHandle {
 export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, SimpleNodeEditorProps>(({
   onNodesChange,
   onConnectionsChange,
-  onExportReady
+  onExportReady,
+  previewEnabled = true
 }, ref) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [editor] = useState(() => new SimpleNodeEditor());
@@ -1905,6 +1908,7 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
           onContextMenu={handleNodeContextMenu}
           onAddDynamicInput={handleAddDynamicInput}
           onRemoveDynamicInput={handleRemoveDynamicInput}
+          previewEnabled={previewEnabled}
         />
       ))}
 
@@ -1958,13 +1962,13 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
                 const titleMargin = 8; // mb-2
                 const descHeight = 40; // Description textarea height
                 const descMargin = 12; // mb-3
-                const previewHeight = 194; // Preview section height
+                const previewHeight = previewEnabled ? 194 : 1; // Preview section height (dynamic based on setting)
                 const paramSpacing = 32; // mb-2 (8px) + input height (~24px)
                 const paramStartY = titleHeight + titleMargin + descHeight + descMargin;
                 
                 return {
-                  x: nodeX + 23, // 8px from left edge (closer to the socket)
-                  y: nodeY + (titleMargin + titleHeight + titleMargin) + (descMargin + titleHeight + descHeight + descMargin ) + titleMargin + previewHeight// Center of the parameter row + 20px down
+                  x: nodeX + 22, // 8px from left edge (closer to the socket)
+                  y: nodeY + (titleMargin + titleHeight + titleMargin) + (descMargin + titleHeight + descHeight + descMargin ) + titleMargin + previewHeight// Y-Position of the out dot.
                 };
               }
             } else {

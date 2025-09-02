@@ -9,6 +9,8 @@ interface SettingsDropdownProps {
   onToggleSimulationMode: () => void;
   gridSize: number;
   onGridSizeChange: (size: number) => void;
+  previewEnabled: boolean;
+  onTogglePreview: () => void;
   onSaveLayout: () => void;
   onLoadLayout: () => void;
 }
@@ -22,6 +24,8 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
   onToggleSimulationMode,
   gridSize,
   onGridSizeChange,
+  previewEnabled,
+  onTogglePreview,
   onSaveLayout,
   onLoadLayout
 }) => {
@@ -111,6 +115,33 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                     simulationMode ? 'translate-x-6' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* Preview Windows Setting */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium">Preview Windows</h3>
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  {previewEnabled 
+                    ? 'Preview animations are shown for supported nodes'
+                    : 'Preview animations are hidden for all nodes'
+                  }
+                </p>
+              </div>
+              <button
+                onClick={onTogglePreview}
+                className={`relative inline-flex h-6 w-20 items-center rounded-full transition-colors ${
+                  previewEnabled ? 'bg-purple-600' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    previewEnabled ? 'translate-x-6' : 'translate-x-0.5'
                   }`}
                 />
               </button>
