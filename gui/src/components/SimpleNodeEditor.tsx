@@ -1958,12 +1958,13 @@ export const SimpleNodeEditorComponent = forwardRef<SimpleNodeEditorHandle, Simp
                 const titleMargin = 8; // mb-2
                 const descHeight = 40; // Description textarea height
                 const descMargin = 12; // mb-3
+                const previewHeight = 194; // Preview section height
                 const paramSpacing = 32; // mb-2 (8px) + input height (~24px)
                 const paramStartY = titleHeight + titleMargin + descHeight + descMargin;
                 
                 return {
                   x: nodeX + 23, // 8px from left edge (closer to the socket)
-                  y: nodeY + (titleMargin + titleHeight + titleMargin) + (descMargin + titleHeight + descHeight + descMargin ) + titleMargin +1// Center of the parameter row + 20px down
+                  y: nodeY + (titleMargin + titleHeight + titleMargin) + (descMargin + titleHeight + descHeight + descMargin ) + titleMargin + previewHeight// Center of the parameter row + 20px down
                 };
               }
             } else {
