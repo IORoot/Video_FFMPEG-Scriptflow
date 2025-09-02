@@ -7,6 +7,7 @@ const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const { google } = require('googleapis');
 
 const app = express();
 const PORT = 3002;
@@ -29,6 +30,9 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'your-google-client-secret',
   callbackURL: "http://localhost:3002/auth/google/callback"
 }, (accessToken, refreshToken, profile, done) => {
+  // Store tokens with the profile for Google Drive access
+  profile.accessToken = accessToken;
+  profile.refreshToken = refreshToken;
   return done(null, profile);
 }));
 
@@ -51,7 +55,9 @@ app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, 'build', 'static')));
 
 // Authentication routes
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get('/auth/google', passport.authenticate('google', { 
+  scope: ['profile', 'email', 'https://www.googleapis.com/auth/drive.file'] 
+}));
 
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: 'http://localhost:3000/login' }),
@@ -85,48 +91,72 @@ app.get('/api/user', (req, res) => {
   }
 });
 
-// Layout management API
-const layoutsDir = path.join(__dirname, 'user-layouts');
-if (!fs.existsSync(layoutsDir)) {
-  fs.mkdirSync(layoutsDir, { recursive: true });
-}
+// Google Drive service
+const getDriveService = (accessToken) => {
+  const auth = new google.auth.OAuth2();
+  auth.setCredentials({ access_token: accessToken });
+  return google.drive({ version: 'v3', auth });
+};
 
-app.get('/api/layouts', (req, res) => {
+const getOrCreateLayoutsFolder = async (drive, userId) => {
+  try {
+    // Search for existing layouts folder
+    const response = await drive.files.list({
+      q: `name='FFMPEG-Scriptflow-Layouts' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields: 'files(id, name)'
+    });
+
+    if (response.data.files.length > 0) {
+      return response.data.files[0].id;
+    }
+
+    // Create new layouts folder
+    const folderResponse = await drive.files.create({
+      requestBody: {
+        name: 'FFMPEG-Scriptflow-Layouts',
+        mimeType: 'application/vnd.google-apps.folder'
+      },
+      fields: 'id'
+    });
+
+    return folderResponse.data.id;
+  } catch (error) {
+    console.error('Error creating layouts folder:', error);
+    throw error;
+  }
+};
+
+app.get('/api/layouts', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ error: 'Authentication required' });
   }
 
-  const userId = req.user.id;
-  const userLayoutsDir = path.join(layoutsDir, userId);
-  
-  if (!fs.existsSync(userLayoutsDir)) {
-    return res.json([]);
-  }
-
   try {
-    const files = fs.readdirSync(userLayoutsDir);
-    const layouts = files
-      .filter(file => file.endsWith('.json'))
-      .map(file => {
-        const filePath = path.join(userLayoutsDir, file);
-        const stats = fs.statSync(filePath);
-        const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-        return {
-          id: file.replace('.json', ''),
-          name: content.name || file.replace('.json', ''),
-          createdAt: stats.birthtime,
-          updatedAt: stats.mtime
-        };
-      })
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+    const drive = getDriveService(req.user.accessToken);
+    const folderId = await getOrCreateLayoutsFolder(drive, req.user.id);
+
+    // List all JSON files in the layouts folder
+    const response = await drive.files.list({
+      q: `'${folderId}' in parents and name contains '.json' and trashed=false`,
+      fields: 'files(id, name, createdTime, modifiedTime)',
+      orderBy: 'modifiedTime desc'
+    });
+
+    const layouts = response.data.files.map(file => ({
+      id: file.id,
+      name: file.name.replace('.json', ''),
+      createdAt: file.createdTime,
+      updatedAt: file.modifiedTime
+    }));
 
     res.json(layouts);
   } catch (error) {
+    console.error('Error loading layouts:', error);
     res.status(500).json({ error: 'Failed to load layouts' });
   }
 });
 
-app.post('/api/layouts', (req, res) => {
+app.post('/api/layouts', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ error: 'Authentication required' });
   }
@@ -136,69 +166,95 @@ app.post('/api/layouts', (req, res) => {
     return res.status(400).json({ error: 'Name and layout are required' });
   }
 
-  const userId = req.user.id;
-  const userLayoutsDir = path.join(layoutsDir, userId);
-  
-  if (!fs.existsSync(userLayoutsDir)) {
-    fs.mkdirSync(userLayoutsDir, { recursive: true });
-  }
-
-  const layoutId = Date.now().toString();
-  const layoutData = {
-    name,
-    layout,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-
   try {
-    const filePath = path.join(userLayoutsDir, `${layoutId}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(layoutData, null, 2));
-    res.json({ id: layoutId, ...layoutData });
+    const drive = getDriveService(req.user.accessToken);
+    const folderId = await getOrCreateLayoutsFolder(drive, req.user.id);
+
+    const layoutData = {
+      name,
+      layout,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const fileName = `${name}.json`;
+    const fileContent = JSON.stringify(layoutData, null, 2);
+
+    const response = await drive.files.create({
+      requestBody: {
+        name: fileName,
+        parents: [folderId]
+      },
+      media: {
+        mimeType: 'application/json',
+        body: fileContent
+      },
+      fields: 'id, name, createdTime, modifiedTime'
+    });
+
+    const savedLayout = {
+      id: response.data.id,
+      name: name,
+      createdAt: response.data.createdTime,
+      updatedAt: response.data.modifiedTime
+    };
+
+    res.json(savedLayout);
   } catch (error) {
+    console.error('Error saving layout:', error);
     res.status(500).json({ error: 'Failed to save layout' });
   }
 });
 
-app.get('/api/layouts/:id', (req, res) => {
+app.get('/api/layouts/:id', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ error: 'Authentication required' });
   }
 
   const { id } = req.params;
-  const userId = req.user.id;
-  const filePath = path.join(layoutsDir, userId, `${id}.json`);
 
   try {
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'Layout not found' });
-    }
+    const drive = getDriveService(req.user.accessToken);
+    
+    const response = await drive.files.get({
+      fileId: id,
+      alt: 'media'
+    });
 
-    const content = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    res.json(content);
+    const layoutData = JSON.parse(response.data);
+    res.json(layoutData);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to load layout' });
+    console.error('Error loading layout:', error);
+    if (error.response && error.response.status === 404) {
+      res.status(404).json({ error: 'Layout not found' });
+    } else {
+      res.status(500).json({ error: 'Failed to load layout' });
+    }
   }
 });
 
-app.delete('/api/layouts/:id', (req, res) => {
+app.delete('/api/layouts/:id', async (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ error: 'Authentication required' });
   }
 
   const { id } = req.params;
-  const userId = req.user.id;
-  const filePath = path.join(layoutsDir, userId, `${id}.json`);
 
   try {
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'Layout not found' });
-    }
+    const drive = getDriveService(req.user.accessToken);
+    
+    await drive.files.delete({
+      fileId: id
+    });
 
-    fs.unlinkSync(filePath);
     res.json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete layout' });
+    console.error('Error deleting layout:', error);
+    if (error.response && error.response.status === 404) {
+      res.status(404).json({ error: 'Layout not found' });
+    } else {
+      res.status(500).json({ error: 'Failed to delete layout' });
+    }
   }
 });
 

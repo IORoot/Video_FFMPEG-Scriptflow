@@ -115,7 +115,7 @@ export const LayoutManager: React.FC<LayoutManagerProps> = ({
                     placeholder="Layout name"
                     value={saveName}
                     onChange={(e) => setSaveName(e.target.value)}
-                    className="flex-1 px-3 py-2 border rounded"
+                    className="flex-1 px-3 py-2 border rounded text-gray-900"
                     onKeyPress={(e) => e.key === 'Enter' && handleSaveLayout()}
                   />
                   <button

@@ -17,6 +17,7 @@
     "express-session": "^1.18.2",
     "framer-motion": "^12.23.12",
     "google-auth-library": "^10.3.0",
+    "googleapis": "^159.0.0",
     "lucide-react": "^0.541.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
