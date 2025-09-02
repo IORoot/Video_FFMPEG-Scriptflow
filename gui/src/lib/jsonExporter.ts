@@ -99,6 +99,14 @@ export class JsonExporter {
       return node.data.filepath;
     }
 
+    // Special handling for ff_download - it adds a loop prefix (1_filename.mp4)
+    if (node.name === 'ff_download' && node.data.output) {
+      const baseFilename = node.data.output;
+      // Extract the filename without path and add loop prefix
+      const filename = baseFilename.split('/').pop() || baseFilename;
+      return `1_${filename}`;
+    }
+
     // For most nodes, the output filename is stored in the 'output' parameter
     // Some nodes might have different output parameters
     if (node.data.output) {

@@ -103,7 +103,7 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'string', required: true, description: 'URL to download video from' },
       { name: 'urlsource', type: 'string', description: 'URL of a txt file with list of URLs to download' },
       { name: 'strategy', type: 'string', default: '1', description: 'Download strategy (number or ~number for random)' },
-      { name: 'output', type: 'string', default: 'ff_download.mp4', description: 'Output filename' },
+      { name: 'output', type: 'string', default: 'ff_download.mp4', description: 'Output filename (actual output will be 1_filename.mp4)' },
       { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
