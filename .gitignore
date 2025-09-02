@@ -5,3 +5,5 @@ configs
 *.mp4
 node_modules
 gui/node_modules
+.env
+gui/.env

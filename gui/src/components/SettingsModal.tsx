@@ -13,6 +13,11 @@ interface SettingsDropdownProps {
   onTogglePreview: () => void;
   onSaveLayout: () => void;
   onLoadLayout: () => void;
+  onSaveLayoutToCloud: () => void;
+  onLoadLayoutFromCloud: () => void;
+  isAuthenticated: boolean;
+  user: any;
+  onLogout: () => void;
 }
 
 export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
@@ -27,7 +32,12 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
   previewEnabled,
   onTogglePreview,
   onSaveLayout,
-  onLoadLayout
+  onLoadLayout,
+  onSaveLayoutToCloud,
+  onLoadLayoutFromCloud,
+  isAuthenticated,
+  user,
+  onLogout
 }) => {
   if (!isOpen) return null;
 
@@ -148,6 +158,54 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
             </div>
           </div>
 
+          {/* Authentication Section */}
+          {isAuthenticated ? (
+            <div className="space-y-3 border-t border-border pt-4">
+              <h3 className="text-sm font-medium">Account</h3>
+              <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded">
+                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+                  {user?.picture ? (
+                    <img 
+                      src={user.picture} 
+                      alt={user?.name || 'User'}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                        if (fallback) {
+                          fallback.style.display = 'flex';
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <div 
+                    className="w-full h-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium"
+                    style={{ display: user?.picture ? 'none' : 'flex' }}
+                  >
+                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                  <p className="text-xs text-gray-500">{user?.email}</p>
+                </div>
+                <button
+                  onClick={onLogout}
+                  className="text-red-600 hover:text-red-700 text-sm"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3 border-t border-border pt-4">
+              <h3 className="text-sm font-medium">Account</h3>
+              <p className="text-xs text-muted-foreground">
+                Sign in to save and manage your layouts in the cloud.
+              </p>
+            </div>
+          )}
+
           {/* Save/Load Layout Section */}
           <div className="space-y-3 border-t border-border pt-4">
             <h3 className="text-sm font-medium">Layout Management</h3>
@@ -157,15 +215,33 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
                 className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
               >
                 <span>💾</span>
-                <span>Save Layout</span>
+                <span>Save Layout (Local)</span>
               </button>
               <button
                 onClick={onLoadLayout}
                 className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors"
               >
                 <span>📁</span>
-                <span>Load Layout</span>
+                <span>Load Layout (Local)</span>
               </button>
+              {isAuthenticated && (
+                <>
+                  <button
+                    onClick={onSaveLayoutToCloud}
+                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors"
+                  >
+                    <span>☁️</span>
+                    <span>Save to Cloud</span>
+                  </button>
+                  <button
+                    onClick={onLoadLayoutFromCloud}
+                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors"
+                  >
+                    <span>☁️</span>
+                    <span>Load from Cloud</span>
+                  </button>
+                </>
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
               Save and load your complete node layout, including positions, settings, and comments.
