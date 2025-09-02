@@ -284,7 +284,7 @@ function main()
         pre_flight_checks $INPUT_FILENAME
 
         # https://ffmpeg.org/ffmpeg-filters.html#eq
-        ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
+        ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
             eq=brightness=${BRIGHTNESS}:contrast=${CONTRAST}:gamma=${GAMMA}:saturation=${SATURATION}:gamma_weight=${WEIGHT} \
             -c:a copy ${OUTPUT_FILENAME}
         
@@ -301,7 +301,7 @@ function main()
             pre_flight_checks $INPUT_FILENAME
 
             # https://ffmpeg.org/ffmpeg-filters.html#eq
-            ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
+            ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
                 eq=brightness=${BRIGHTNESS}:contrast=${CONTRAST}:gamma=${GAMMA}:saturation=${SATURATION}:gamma_weight=${WEIGHT} \
                 -c:a copy ${LOOP}_${OUTPUT_FILENAME}
                 

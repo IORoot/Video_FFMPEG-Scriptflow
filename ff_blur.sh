@@ -246,7 +246,7 @@ function main()
         pre_flight_checks $INPUT_FILENAME
 
         # https://ffmpeg.org/ffmpeg-filters.html#eq
-        ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
+        ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
             "gblur=sigma=${STRENGTH}:steps=${STEPS}" \
             -c:a copy ${OUTPUT_FILENAME}
         
@@ -262,7 +262,7 @@ function main()
             pre_flight_checks $INPUT_FILENAME
 
             # https://ffmpeg.org/ffmpeg-filters.html#eq
-            ffmpeg  -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
+            ffmpeg -v ${LOGLEVEL} -i ${INPUT_FILENAME} -vf \
                 "gblur=sigma=${STRENGTH}:steps=${STEPS}" \
                 -c:a copy ${LOOP}_${OUTPUT_FILENAME}
             printf "✅ ${TEXT_PURPLE_500}%-10s :${TEXT_RESET} %s\n" "Output" "${LOOP}_${OUTPUT_FILENAME}"
