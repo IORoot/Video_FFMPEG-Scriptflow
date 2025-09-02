@@ -932,28 +932,29 @@ const NodeComponent: React.FC<{
                     const duration = node.parameters.duration || 5;
                     
                     // For image to video animation, we'll use CSS to show image becoming video
-                    // The animation will show the image with a video-like effect
+                    // The animation will show one static image and one moving image
                   } else if (nodeDefinition.id === 'ff_kenburns') {
                     const target = node.parameters.target || 'Random';
                     const duration = node.parameters.duration || 5;
                     const speed = node.parameters.speed || 1;
                     
-                    // For ken burns animation, we'll use CSS to show zoom effect
-                    // The animation will show the image zooming in/out
+                    // For ken burns animation, we'll use CSS to show slow zoom effect
+                    // The animation will show the image slowly zooming in
                   } else if (nodeDefinition.id === 'ff_thumbnail') {
                     const count = node.parameters.count || 1;
-                    const sample = node.parameters.sample || 'thumbnail';
+                    const sample = node.parameters.sample || '';
                     
-                    // For thumbnail animation, we'll use CSS to show thumbnail extraction
-                    // The animation will show the image being cropped to thumbnail size
+                    // For thumbnail animation, we'll use CSS to show thumbnail generation
+                    // The animation will show a flash and then a shrinking copy of the image
                   } else if (nodeDefinition.id === 'ff_proxy') {
                     const scalex = node.parameters.scalex || 0.5;
                     const scaley = node.parameters.scaley || 0.5;
+                    const fps = node.parameters.fps || 15;
                     const crf = node.parameters.crf || 25;
                     const codec = node.parameters.codec || 'libx264';
                     
-                    // For proxy animation, we'll use CSS to show scaling down effect
-                    // The animation will show the image being scaled down for proxy
+                    // For proxy animation, we'll use CSS to show low-resolution proxy generation
+                    // The animation will show the image being scaled down and pixelated
                   }
                   
                   return transform;
@@ -1130,6 +1131,30 @@ const NodeComponent: React.FC<{
                      </div>
                    </div>
                  </div>
+               </div>
+             )}
+             {/* Image to video overlay for ff_image preview */}
+             {nodeDefinition.id === 'ff_image' && (
+               <div className="absolute inset-0 z-20">
+                 {/* Moving image in bottom half */}
+                 <img 
+                   src="/test-image.jpg" 
+                   alt="Moving image"
+                   className="absolute bottom-4 left-0 w-40 h-20 object-cover border-2 border-gray-500 rounded animate-image-move"
+                 />
+               </div>
+             )}
+             {/* Thumbnail overlay for ff_thumbnail preview */}
+             {nodeDefinition.id === 'ff_thumbnail' && (
+               <div className="absolute inset-0 z-20">
+                 {/* Flash overlay */}
+                 <div className="animate-thumbnail-flash absolute inset-0 bg-white opacity-0"></div>
+                 {/* Shrinking thumbnail copy */}
+                 <img 
+                   src="/test-image.jpg" 
+                   alt="Thumbnail copy"
+                   className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-20 object-cover border-2 border-blue-500 rounded animate-thumbnail-shrink"
+                 />
                </div>
              )}
              {/* Overlay image for ff_overlay preview */}
@@ -1346,11 +1371,13 @@ const NodeComponent: React.FC<{
                   return `Ken Burns: ${target} (${duration}s)`;
                 } else if (nodeDefinition.id === 'ff_thumbnail') {
                   const count = node.parameters.count || 1;
-                  return `Thumbnail: ${count}`;
+                  const sample = node.parameters.sample || '';
+                  return `Thumbnail: ${count} ${sample ? `(${sample})` : ''}`;
                 } else if (nodeDefinition.id === 'ff_proxy') {
                   const scalex = node.parameters.scalex || 0.5;
                   const scaley = node.parameters.scaley || 0.5;
-                  return `Proxy: ${scalex}×${scaley}`;
+                  const fps = node.parameters.fps || 15;
+                  return `Proxy: ${scalex}×${scaley} (${fps}fps)`;
                 }
                 return '320×180';
               })()}
