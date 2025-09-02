@@ -79,10 +79,14 @@ export class JsonExporter {
       // Find the source node
       const sourceNode = orderedNodes.find(n => n.id === connection.from);
       if (sourceNode) {
-        // Map the output from source node to input of target node
-        const outputFilename = this.getOutputFilename(sourceNode, connection.output);
-        if (outputFilename) {
-          resolvedData[connection.input] = outputFilename;
+        // Only use connection input if the target input field is empty
+        const currentInputValue = resolvedData[connection.input];
+        if (!currentInputValue || currentInputValue === '') {
+          // Map the output from source node to input of target node
+          const outputFilename = this.getOutputFilename(sourceNode, connection.output);
+          if (outputFilename) {
+            resolvedData[connection.input] = outputFilename;
+          }
         }
       }
     }
