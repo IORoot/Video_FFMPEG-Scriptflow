@@ -1,5 +1,5 @@
 const express = require('express');
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
@@ -30,10 +30,27 @@ app.post('/api/execute-pipeline', async (req, res) => {
     // Write config to file
     fs.writeFileSync(tempConfigPath, config);
     
-    // Execute scriptflow command
-    const command = `cd "${projectRoot}" && ./scriptflow.sh -C "${tempConfigPath}"`;
-    
-    exec(command, { cwd: projectRoot }, (error, stdout, stderr) => {
+    // Execute scriptflow command using spawn for better output handling
+    const scriptflowPath = path.join(projectRoot, 'scriptflow.sh');
+    const child = spawn('bash', [scriptflowPath, '-C', tempConfigPath], {
+      cwd: projectRoot,
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    // Capture stdout
+    child.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    // Capture stderr
+    child.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    child.on('close', (code) => {
       // Clean up temp file
       try {
         fs.unlinkSync(tempConfigPath);
@@ -41,21 +58,43 @@ app.post('/api/execute-pipeline', async (req, res) => {
         console.warn('Could not clean up temp config file:', cleanupError.message);
       }
       
-      if (error) {
-        console.error('Execution failed:', error.message);
+      if (code !== 0) {
+        console.error('Execution failed with code:', code);
+        console.error('stderr:', stderr);
         res.status(500).json({ 
-          error: error.message,
+          error: `Script exited with code ${code}`,
           stderr: stderr,
+          stdout: stdout,
           success: false
         });
       } else {
-        console.log('Execution successful:', stdout);
+        console.log('Execution successful');
+        console.log('stdout:', stdout);
+        if (stderr) {
+          console.log('stderr:', stderr);
+        }
         res.json({ 
           success: true,
-          output: stdout,
+          output: stdout + (stderr ? '\n' + stderr : ''),
+          stdout: stdout,
           stderr: stderr || null
         });
       }
+    });
+
+    child.on('error', (error) => {
+      // Clean up temp file
+      try {
+        fs.unlinkSync(tempConfigPath);
+      } catch (cleanupError) {
+        console.warn('Could not clean up temp config file:', cleanupError.message);
+      }
+      
+      console.error('Spawn error:', error.message);
+      res.status(500).json({ 
+        error: error.message,
+        success: false
+      });
     });
 
   } catch (error) {
