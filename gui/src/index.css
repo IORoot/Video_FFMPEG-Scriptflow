@@ -1235,3 +1235,110 @@ code {
 .animate-transition-sparkle {
   animation: transitionSparkle 3s ease-in-out infinite;
 }
+
+/* Image to Video animation for ff_image preview */
+@keyframes imageLoop {
+  0% {
+    filter: brightness(1) contrast(1) saturate(1);
+    transform: scale(1);
+  }
+  25% {
+    filter: brightness(1.1) contrast(1.05) saturate(1.1);
+    transform: scale(1.02);
+  }
+  50% {
+    filter: brightness(1.05) contrast(1.1) saturate(1.05);
+    transform: scale(0.98);
+  }
+  75% {
+    filter: brightness(1.1) contrast(1.05) saturate(1.1);
+    transform: scale(1.02);
+  }
+  100% {
+    filter: brightness(1) contrast(1) saturate(1);
+    transform: scale(1);
+  }
+}
+
+.animate-image-loop {
+  animation: imageLoop 4s ease-in-out infinite;
+}
+
+/* Ken Burns animation for ff_kenburns preview */
+@keyframes kenburnsLoop {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  25% {
+    transform: scale(1.2) translate(-10px, -5px);
+  }
+  50% {
+    transform: scale(1.4) translate(-20px, -10px);
+  }
+  75% {
+    transform: scale(1.2) translate(-10px, -5px);
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+
+.animate-kenburns-loop {
+  animation: kenburnsLoop 6s ease-in-out infinite;
+}
+
+/* Thumbnail animation for ff_thumbnail preview */
+@keyframes thumbnailLoop {
+  0% {
+    transform: scale(1);
+    border-radius: 0%;
+  }
+  25% {
+    transform: scale(0.8);
+    border-radius: 5%;
+  }
+  50% {
+    transform: scale(0.6);
+    border-radius: 10%;
+  }
+  75% {
+    transform: scale(0.8);
+    border-radius: 5%;
+  }
+  100% {
+    transform: scale(1);
+    border-radius: 0%;
+  }
+}
+
+.animate-thumbnail-loop {
+  animation: thumbnailLoop 3s ease-in-out infinite;
+}
+
+/* Proxy animation for ff_proxy preview */
+@keyframes proxyLoop {
+  0% {
+    transform: scale(1);
+    filter: brightness(1) contrast(1);
+  }
+  25% {
+    transform: scale(0.8);
+    filter: brightness(0.9) contrast(0.9);
+  }
+  50% {
+    transform: scale(0.6);
+    filter: brightness(0.8) contrast(0.8);
+  }
+  75% {
+    transform: scale(0.8);
+    filter: brightness(0.9) contrast(0.9);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1) contrast(1);
+  }
+}
+
+.animate-proxy-loop {
+  animation: proxyLoop 4s ease-in-out infinite;
+}

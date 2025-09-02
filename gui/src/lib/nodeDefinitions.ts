@@ -610,6 +610,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Image to Video',
     category: 'utilities',
     description: 'Convert image to video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input image file' },
       { name: 'duration', type: 'number', default: 5, description: 'Duration in seconds' },
@@ -623,6 +624,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Ken Burns',
     category: 'utilities',
     description: 'Generate video from image with ken-burns effect',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input image file or folder' },
       { name: 'target', type: 'select', options: ['TopLeft', 'TopRight', 'BottomLeft', 'BottomRight', 'Random'], description: 'Target of the zoom' },
@@ -643,6 +645,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Thumbnail',
     category: 'utilities',
     description: 'Create thumbnails representative of the video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'count', type: 'number', description: 'Number of thumbnails to generate' },
@@ -658,6 +661,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Proxy',
     category: 'utilities',
     description: 'Generate low-resolution proxy by scaling video',
+    preview: true,
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file/folder' },
       { name: 'scalex', type: 'number', description: 'X scale factor' },
