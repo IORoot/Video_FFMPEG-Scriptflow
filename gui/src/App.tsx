@@ -216,15 +216,7 @@ function AppContent() {
     input.click();
   };
 
-  const handleSaveLayoutToCloud = () => {
-    if (!isAuthenticated) {
-      login();
-      return;
-    }
-    setShowLayoutManager(true);
-  };
-
-  const handleLoadLayoutFromCloud = () => {
+  const handleOpenLayoutManager = () => {
     if (!isAuthenticated) {
       login();
       return;
@@ -355,8 +347,8 @@ function AppContent() {
               onTogglePreview={handleTogglePreview}
               onSaveLayout={handleSaveLayout}
               onLoadLayout={handleLoadLayout}
-              onSaveLayoutToCloud={handleSaveLayoutToCloud}
-              onLoadLayoutFromCloud={handleLoadLayoutFromCloud}
+              onSaveLayoutToCloud={handleOpenLayoutManager}
+              onLoadLayoutFromCloud={handleOpenLayoutManager}
               isAuthenticated={isAuthenticated}
               user={user}
               onLogout={logout}

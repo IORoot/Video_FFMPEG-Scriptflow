@@ -225,22 +225,13 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps> = ({
                 <span>Load Layout (Local)</span>
               </button>
               {isAuthenticated && (
-                <>
-                  <button
-                    onClick={onSaveLayoutToCloud}
-                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors"
-                  >
-                    <span>☁️</span>
-                    <span>Save to Cloud</span>
-                  </button>
-                  <button
-                    onClick={onLoadLayoutFromCloud}
-                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors"
-                  >
-                    <span>☁️</span>
-                    <span>Load from Cloud</span>
-                  </button>
-                </>
+                <button
+                  onClick={onSaveLayoutToCloud}
+                  className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors"
+                >
+                  <span>☁️</span>
+                  <span>Layout Manager</span>
+                </button>
               )}
             </div>
             <p className="text-xs text-muted-foreground">
