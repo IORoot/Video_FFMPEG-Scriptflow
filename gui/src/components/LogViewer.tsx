@@ -37,7 +37,11 @@ export const LogViewer: React.FC<LogViewerProps> = ({
   };
 
   const copyLogsToClipboard = async () => {
-    const logsText = status.logs.join('\n');
+    // Strip ANSI codes when copying to clipboard
+    const cleanLogs = status.logs.map(log => 
+      log.replace(/\x1b\[[0-9;]*m/g, '') // Remove ANSI color codes
+    );
+    const logsText = cleanLogs.join('\n');
     try {
       await navigator.clipboard.writeText(logsText);
       // Show toast
@@ -74,6 +78,63 @@ export const LogViewer: React.FC<LogViewerProps> = ({
       default:
         return 'text-gray-300';
     }
+  };
+
+  // Function to parse ANSI color codes and convert to HTML
+  const parseAnsiToHtml = (text: string): string => {
+    // ANSI color code patterns
+    const ansiRegex = /\x1b\[([0-9;]+)m/g;
+    
+    // Color mappings for common ANSI codes
+    const colorMap: { [key: string]: string } = {
+      '30': 'color: #000000', // black
+      '31': 'color: #ff0000', // red
+      '32': 'color: #00ff00', // green
+      '33': 'color: #ffff00', // yellow
+      '34': 'color: #0000ff', // blue
+      '35': 'color: #ff00ff', // magenta
+      '36': 'color: #00ffff', // cyan
+      '37': 'color: #ffffff', // white
+      '38;2;249;115;22': 'color: #f97316', // orange
+      '38;2;37;99;235': 'color: #2563eb', // blue
+      '38;2;74;222;128': 'color: #4ade80', // green
+      '38;2;168;85;247': 'color: #a855f7', // purple
+      '39': 'color: inherit', // default
+      '0': 'color: inherit', // reset
+    };
+
+    let html = text;
+    
+    // Replace ANSI codes with HTML spans
+    html = html.replace(ansiRegex, (match, codes) => {
+      const codeArray = codes.split(';');
+      const styles: string[] = [];
+      
+      for (const code of codeArray) {
+        if (colorMap[code]) {
+          styles.push(colorMap[code]);
+        } else if (code === '38' && codeArray.length >= 3) {
+          // Handle RGB color codes like 38;2;r;g;b
+          const rgbCode = codeArray.slice(0, 3).join(';');
+          if (colorMap[rgbCode]) {
+            styles.push(colorMap[rgbCode]);
+          }
+        }
+      }
+      
+      if (styles.length > 0) {
+        return `<span style="${styles.join('; ')}">`;
+      }
+      return '';
+    });
+
+    // Handle reset codes (0m) by closing spans
+    html = html.replace(/\x1b\[0m/g, '</span>');
+    
+    // Handle newlines and make them visible
+    html = html.replace(/\n/g, '<br>');
+    
+    return html;
   };
 
   return (
@@ -164,14 +225,14 @@ export const LogViewer: React.FC<LogViewerProps> = ({
                 status.logs.map((log, index) => {
                   const level = getLogLevel(log);
                   const colorClass = getLogLevelColor(level);
+                  const parsedHtml = parseAnsiToHtml(log);
                   
                   return (
                     <div
                       key={index}
                       className={`${colorClass} leading-relaxed`}
-                    >
-                      {log}
-                    </div>
+                      dangerouslySetInnerHTML={{ __html: parsedHtml }}
+                    />
                   );
                 })
               )}
