@@ -3,3 +3,5 @@ example_*
 configs
 .DS_Store
 *.mp4
+node_modules
+gui/node_modules
