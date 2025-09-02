@@ -87,7 +87,8 @@ export const nodeDefinitions: NodeDefinition[] = [
     description: 'Manual file input - enter a file path',
     preview: true,
     inputs: [
-      { name: 'filepath', type: 'string', required: true, description: 'Path to input file' }
+      { name: 'filepath', type: 'string', required: true, description: 'Path to input file' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -102,7 +103,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'string', required: true, description: 'URL to download video from' },
       { name: 'urlsource', type: 'string', description: 'URL of a txt file with list of URLs to download' },
       { name: 'strategy', type: 'string', default: '1', description: 'Download strategy (number or ~number for random)' },
-      { name: 'output', type: 'string', default: 'ff_download.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_download.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -121,7 +123,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'dar', type: 'string', description: 'Display Aspect Ratio' },
       { name: 'sar', type: 'string', description: 'Sample Aspect Ratio' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_scale.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_scale.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -139,7 +142,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'xpixels', type: 'string', default: '(iw-ow)/2', description: 'X position (from left)' },
       { name: 'ypixels', type: 'string', default: '(ih-oh)/2', description: 'Y position (from top)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_crop.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_crop.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -158,7 +162,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'ypixels', type: 'string', default: '(oh-ih)/2', description: 'Y position of video in frame' },
       { name: 'colour', type: 'string', default: 'black', description: 'Padding color' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_pad.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_pad.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -173,7 +178,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'aspect', type: 'string', default: '1:1', description: 'Target aspect ratio (X:Y format)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_aspect_ratio.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_aspect_ratio.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -188,7 +194,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'rotation', type: 'number', default: 90, description: 'Rotation angle in degrees' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_rotate.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_rotate.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -204,7 +211,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'horizontal', type: 'boolean', default: false, description: 'Flip video horizontally' },
       { name: 'vertical', type: 'boolean', default: false, description: 'Flip video vertically' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_flip.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_flip.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -219,7 +227,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'rotate', type: 'select', options: ['0', '1', '2', '3'], default: '2', description: 'Rotation method (0=90CCW+VFlip, 1=90CW, 2=90CCW, 3=90CW+VFlip)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_to_landscape.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_to_landscape.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -234,7 +243,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'rotate', type: 'select', options: ['0', '1', '2', '3'], default: '1', description: 'Rotation method (0=90CCW+VFlip, 1=90CW, 2=90CCW, 3=90CW+VFlip)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_to_portrait.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_to_portrait.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -251,7 +261,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'strength', type: 'number', default: 0.5, description: 'Blur strength (standard deviation of Gaussian blur)' },
       { name: 'steps', type: 'number', default: 1, description: 'Number of times to apply blur' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_blur.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_blur.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -267,7 +278,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'pixel', type: 'number', default: 5, description: 'Matrix size (odd integer 3-23)' },
       { name: 'sharpen', type: 'number', default: 1.0, description: 'Sharpen strength (-2.0 to 5.0)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_sharpen.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_sharpen.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -290,7 +302,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'alpha_y', type: 'number', default: 5, description: 'Alpha matrix vertical size (odd integer 3-23)' },
       { name: 'alpha_amount', type: 'number', default: 0.5, description: 'Alpha effect strength (-2.0 to 5.0)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_unsharp.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_unsharp.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -309,7 +322,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'saturation', type: 'number', default: 1, description: 'Saturation adjustment (0.0 to 3.0)' },
       { name: 'weight', type: 'number', description: 'Gamma weight adjustment' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_colour.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_colour.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -324,7 +338,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'lut', type: 'file', default: './lib/lut/Andromeda.cube', description: 'LUT file path (3DL/Cube format)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_lut.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_lut.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -342,7 +357,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'start', type: 'number', description: 'Start time in seconds to show overlay' },
       { name: 'end', type: 'number', description: 'End time in seconds to show overlay' },
       { name: 'fit', type: 'boolean', default: false, description: 'Scale overlay to fit input video' },
-      { name: 'output', type: 'string', default: 'ff_overlay.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_overlay.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -358,7 +374,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'vertical', type: 'boolean', default: false, description: 'Create vertical stack (2 inputs)' },
       { name: 'horizontal', type: 'boolean', default: false, description: 'Create horizontal stack (2 inputs)' },
       { name: 'grid', type: 'boolean', default: false, description: 'Create 2x2 grid (4 inputs)' },
-      { name: 'output', type: 'string', default: 'ff_stack.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_stack.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -379,7 +396,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'start', type: 'number', description: 'Start time in seconds' },
       { name: 'end', type: 'number', description: 'End time in seconds' },
       { name: 'duration', type: 'number', description: 'Duration in seconds' },
-      { name: 'output', type: 'string', default: 'ff_watermark.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_watermark.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -403,7 +421,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'boxborder', type: 'number', default: 5, description: 'Background box border width' },
       { name: 'xpixels', type: 'string', default: '(w-tw)/2', description: 'X position (from left)' },
       { name: 'ypixels', type: 'string', default: '(h-th)/2', description: 'Y position (from top)' },
-      { name: 'output', type: 'string', default: 'ff_text.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_text.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -420,7 +439,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'styles', type: 'string', description: 'Forced style for subtitles' },
       { name: 'removedupes', type: 'boolean', default: false, description: 'Remove duplicate lines in subtitles' },
       { name: 'dynamictext', type: 'boolean', default: false, description: 'Convert subtitles to dynamic text (split words)' },
-      { name: 'output', type: 'string', default: 'ff_subtitles.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_subtitles.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -439,7 +459,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'start', type: 'number', default: 0, description: 'Start time in seconds' },
       { name: 'speed', type: 'number', default: 1.0, description: 'Audio playback speed' },
       { name: 'shortest', type: 'boolean', default: false, description: 'End when shortest input ends' },
-      { name: 'output', type: 'string', default: 'ff_audio.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_audio.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -455,7 +476,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'format', type: 'select', options: ['mp4', 'mov', 'avi', 'webm', 'mkv'], default: 'mp4', description: 'Output format (mp4 defaults to h264/aac)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_convert.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_convert.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -475,7 +497,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'width', type: 'number', default: 1920, description: 'Video width' },
       { name: 'height', type: 'number', description: 'Video height' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_transcode.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_transcode.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -489,7 +512,8 @@ export const nodeDefinitions: NodeDefinition[] = [
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'instagram', type: 'boolean', default: false, description: 'Convert ready for Instagram' },
-      { name: 'output', type: 'string', default: 'ff_social_media.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_social_media.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -506,7 +530,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'start', type: 'string', default: '00:00:00', description: 'Start time (HH:MM:SS)' },
       { name: 'end', type: 'string', default: '00:00:10', description: 'End time (HH:MM:SS)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_cut.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_cut.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -521,7 +546,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'fps', type: 'number', default: 30, description: 'Target frame rate (frames added/removed, length unchanged)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_fps.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_fps.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -536,7 +562,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'trim', type: 'number', default: 1, description: 'Seconds to remove from start and end' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_middle.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_middle.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -552,7 +579,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'duration', type: 'number', description: 'Target duration' },
       { name: 'arrangement', type: 'select', options: ['standard', 'reversed', 'skip1', 'skip1reversed'], default: 'standard', description: 'Order to read input files' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_grouptime.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_grouptime.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -568,7 +596,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input1', type: 'file', required: true, description: 'First video' },
       { name: 'input2', type: 'file', required: true, description: 'Second video' },
       { name: 'input3', type: 'file', description: 'Third video (optional)', dynamic: true, dynamicPattern: 'input%d', maxDynamic: 10 },
-      { name: 'output', type: 'string', default: 'ff_concat.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_concat.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -582,7 +611,8 @@ export const nodeDefinitions: NodeDefinition[] = [
     inputs: [
       { name: 'first', type: 'file', required: true, description: 'First input file' },
       { name: 'second', type: 'file', required: true, description: 'Second input file' },
-      { name: 'output', type: 'string', default: 'ff_append.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_append.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -600,7 +630,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'effects', type: 'string', description: 'CSV string of effects to use between clips', 
         transitionOptions: ['fade', 'fadeblack', 'fadewhite', 'distance', 'wipeleft', 'wiperight', 'wipeup', 'wipedown', 'slideleft', 'slideright', 'slideup', 'slidedown', 'smoothleft', 'smoothright', 'smoothup', 'smoothdown', 'circlecrop', 'rectcrop', 'circleclose', 'circleopen', 'horzclose', 'horzopen', 'vertclose', 'vertopen', 'diagbl', 'diagbr', 'diagtl', 'diagtr', 'hlslice', 'hrslice', 'vuslice', 'vdslice', 'dissolve', 'pixelize', 'radial', 'hblur', 'wipetl', 'wipetr', 'wipebl', 'wipebr', 'fadegrays', 'squeezev', 'squeezeh', 'zoomin', 'hlwind', 'hrwind', 'vuwind', 'vdwind', 'coverleft', 'coverright', 'coverup', 'coverdown', 'revealleft', 'revealright', 'revealup', 'revealdown'] },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_transition.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_transition.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -615,7 +646,8 @@ export const nodeDefinitions: NodeDefinition[] = [
     inputs: [
       { name: 'input', type: 'file', required: true, description: 'Input image file' },
       { name: 'duration', type: 'number', default: 5, description: 'Duration in seconds' },
-      { name: 'output', type: 'string', default: 'ff_image.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_image.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -636,7 +668,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'speed', type: 'number', description: 'Zoom speed' },
       { name: 'bitrate', type: 'string', default: '5000k', description: 'Output bitrate (e.g., 5000k, 2M)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_kenburns.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_kenburns.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -651,7 +684,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'count', type: 'number', description: 'Number of thumbnails to generate' },
       { name: 'sample', type: 'string', description: 'Sample method for thumbnail generation' },
-      { name: 'output', type: 'string', default: 'thumbnail.jpg', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'thumbnail.jpg', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'image', type: 'image' }]
   },
@@ -672,7 +706,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'crf', type: 'number', default: 25, description: 'Constant Rate Factor (0-51, lower = better quality)' },
       { name: 'codec', type: 'string', default: 'libx264', description: 'Video codec (libx264, libx265, libvpx, etc.)' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_proxy.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_proxy.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   },
@@ -687,7 +722,8 @@ export const nodeDefinitions: NodeDefinition[] = [
       { name: 'input', type: 'file', required: true, description: 'Input video file' },
       { name: 'params', type: 'string', required: true, description: 'FFMPEG parameters string (e.g., "-c:v libx264 -c:a aac -strict experimental")' },
       { name: 'grep', type: 'string', description: 'Filter files by pattern when input is a folder' },
-      { name: 'output', type: 'string', default: 'ff_custom.mp4', description: 'Output filename' }
+      { name: 'output', type: 'string', default: 'ff_custom.mp4', description: 'Output filename' },
+      { name: 'loglevel', type: 'select', default: 'error', options: ['quiet', 'panic', 'fatal', 'error', 'warning', 'info', 'verbose', 'debug', 'trace'], description: 'FFMPEG log level' }
     ],
     outputs: [{ name: 'video', type: 'video' }]
   }
