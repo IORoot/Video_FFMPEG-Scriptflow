@@ -97,6 +97,7 @@ export const nodeDefinitions: NodeDefinition[] = [
     name: 'Download',
     category: 'input',
     description: 'Download a video from URL',
+    preview: true,
     inputs: [
       { name: 'input', type: 'string', required: true, description: 'URL to download video from' },
       { name: 'urlsource', type: 'string', description: 'URL of a txt file with list of URLs to download' },

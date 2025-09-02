@@ -1345,3 +1345,23 @@ code {
 .animate-proxy-loop {
   animation: proxyLoop 4s ease-in-out infinite;
 }
+
+/* Download animation for ff_download preview */
+@keyframes downloadLoop {
+  0% {
+    transform: translate(-50%, -75%) scale(0.3);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -25%) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-download-loop {
+  animation: downloadLoop 3s ease-out infinite;
+}

@@ -711,6 +711,8 @@ const NodeComponent: React.FC<{
                   nodeDefinition.id === 'ff_thumbnail' ? 'animate-thumbnail-loop' : ''
                 } ${
                   nodeDefinition.id === 'ff_proxy' ? 'animate-proxy-loop' : ''
+                } ${
+                  nodeDefinition.id === 'ff_download' ? 'animate-download-loop' : ''
                 }`}
                 style={{
                 objectFit: 'cover',
@@ -955,6 +957,13 @@ const NodeComponent: React.FC<{
                     
                     // For proxy animation, we'll use CSS to show low-resolution proxy generation
                     // The animation will show the image being scaled down and pixelated
+                  } else if (nodeDefinition.id === 'ff_download') {
+                    const input = node.parameters.input || 'https://example.com/video.mp4';
+                    const strategy = node.parameters.strategy || '1';
+                    const urlsource = node.parameters.urlsource || '';
+                    
+                    // For download animation, we'll use CSS to show download effect
+                    // The animation will show the image starting small at top and expanding while panning down
                   }
                   
                   return transform;
@@ -1378,6 +1387,10 @@ const NodeComponent: React.FC<{
                   const scaley = node.parameters.scaley || 0.5;
                   const fps = node.parameters.fps || 15;
                   return `Proxy: ${scalex}×${scaley} (${fps}fps)`;
+                } else if (nodeDefinition.id === 'ff_download') {
+                  const input = node.parameters.input || 'https://example.com/video.mp4';
+                  const strategy = node.parameters.strategy || '1';
+                  return `Download: ${strategy} (URL)`;
                 }
                 return '320×180';
               })()}
