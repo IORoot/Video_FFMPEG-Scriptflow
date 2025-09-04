@@ -1,0 +1,7 @@
+{
+  "input": "samples",
+  "output": "grep_test_output.mp4",
+  "aspect": "4:3",
+  "grep": "test_video",
+  "loglevel": "error"
+}

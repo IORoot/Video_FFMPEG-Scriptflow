@@ -1,0 +1,7 @@
+{
+  "input": "samples",
+  "output": "regex_test_output.mp4",
+  "aspect": "16:9",
+  "grep": "\\d_.*\\.mp4",
+  "loglevel": "error"
+}
