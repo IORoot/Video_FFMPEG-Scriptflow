@@ -1,0 +1,9 @@
+{
+  "input": "samples",
+  "output": "flip_test",
+  "horizontal": true,
+  "vertical": true,
+  "grep": "\\d_.*\\.mp4",
+  "description": "Directory processing with regex pattern",
+  "loglevel": "error"
+}

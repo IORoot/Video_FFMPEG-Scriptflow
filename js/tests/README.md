@@ -498,6 +498,27 @@ node ../ff_custom.js -C json/test_ff_custom_filter.json
 node ../ff_custom.js -C json/test_ff_custom_regex.json
 ```
 
+#### ff_flip.js
+```bash
+# Test horizontal flip
+node ../ff_flip.js -i samples/sample_video.mp4 -h -o test_horizontal.mp4
+
+# Test vertical flip
+node ../ff_flip.js -i samples/sample_video.mp4 -v -o test_vertical.mp4
+
+# Test both horizontal and vertical flip
+node ../ff_flip.js -i samples/sample_video.mp4 -h -v -o test_both.mp4
+
+# Test with JSON config file (horizontal flip)
+node ../ff_flip.js -C json/test_ff_flip.json
+
+# Test with JSON config file (vertical flip)
+node ../ff_flip.js -C json/test_ff_flip_vertical.json
+
+# Test directory processing with regex
+node ../ff_flip.js -C json/test_ff_flip_regex.json
+```
+
 ### Automated Testing
 ```bash
 # Run ff_append.js tests
@@ -532,6 +553,10 @@ node test_ff_aspect_ratio.js
 
 # Run ff_custom.js tests
 node test_ff_custom.js
+
+# Run ff_flip.js tests
+node test_ff_flip.js
+```
 ```
 
 ## Expected Behavior
