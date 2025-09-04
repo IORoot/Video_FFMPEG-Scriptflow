@@ -63,6 +63,41 @@ Automated test runner specifically for the `ff_crop.js` script that tests:
     - **Directory processing with grep filtering** (creates numbered output files)
     - **Regex pattern matching** (supports complex regex patterns)
 
+### `json/test_ff_cut.json`
+Basic test configuration for the `ff_cut.js` script. Cuts video to first 5 seconds (00:00:00 to 00:00:05).
+
+### `json/test_ff_cut_middle.json`
+Test configuration for the `ff_cut.js` script that cuts the middle section (00:00:02 to 00:00:07).
+
+### `json/test_ff_cut_end.json`
+Test configuration for the `ff_cut.js` script that cuts the end section (00:00:05 to 00:00:10).
+
+### `json/test_ff_cut_folder.json`
+Test configuration for the `ff_cut.js` script that tests directory processing with grep filtering.
+
+### `json/test_ff_cut_regex.json`
+Test configuration for the `ff_cut.js` script that tests regex patterns in grep (e.g., `\d_.*\.mp4`).
+
+### `test_ff_cut.js`
+Automated test runner specifically for the `ff_cut.js` script that tests:
+1. **Command line argument parsing** (cut first 5 seconds)
+2. **Command line argument parsing** (cut middle section)
+3. **CLI with directory input** (directory processing)
+4. **JSON config file loading** (cut first 5 seconds)
+5. **JSON config file loading** (cut middle section)
+6. **JSON config file loading** (cut end section)
+7. **JSON config with directory and grep filtering** (directory processing via config)
+8. **JSON config with directory and regex grep filtering** (regex patterns via JSON)
+9. Help command functionality
+10. Error handling for missing files
+11. **FFprobe validation** - Verifies output file properties:
+    - Video dimensions are maintained (1280x720)
+    - Video codec is preserved (h264)
+    - Video duration is correctly cut (5 seconds for various time ranges)
+    - File size changes appropriately (cut operation)
+    - **Directory processing with grep filtering** (creates numbered output files)
+    - **Regex pattern matching** (supports complex regex patterns)
+
 ### `test_ff_convert.js`
 Automated test runner specifically for the `ff_convert.js` script that tests:
 1. **Command line argument parsing** (MP4 to MP4 conversion)
@@ -398,6 +433,48 @@ node ../ff_crop.js -i samples -o grep_crop.mp4 -w 500 -h 400 -g test_video
 # Test crop with regex patterns
 node ../ff_crop.js -i samples -o regex_crop.mp4 -w 300 -h 200 -g "\\d_.*\\.mp4"
 ```
+
+#### ff_download.js
+```bash
+# Test basic download (single URL)
+node ../ff_download.js -i https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4 -o test_download.mp4
+
+# Test multiple URLs with strategy limit
+node ../ff_download.js -i https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4 -i https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4 -i https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4 -s 2 -o test_download.mp4
+
+# Test random strategy with tilde
+node ../ff_download.js -i https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4 -i https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4 -i https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4 -s ~2 -o test_random.mp4
+
+# Test with JSON config file
+node ../ff_download.js -C json/test_ff_download.json
+
+# Test with JSON config and multiple URLs
+node ../ff_download.js -C json/test_ff_download_multiple.json
+
+# Test URL source file
+node ../ff_download.js -u test_url_list.txt -s 2 -o test_urlsource
+```
+
+#### ff_cut.js
+```bash
+# Test basic cut (first 5 seconds)
+node ../ff_cut.js -i samples/sample_video.mp4 -o test_cut.mp4 -s 00:00:00 -e 00:00:05
+
+# Test cut middle section
+node ../ff_cut.js -i samples/sample_video.mp4 -o test_middle_cut.mp4 -s 00:00:02 -e 00:00:07
+
+# Test cut end section
+node ../ff_cut.js -i samples/sample_video.mp4 -o test_end_cut.mp4 -s 00:00:05 -e 00:00:10
+
+# Test cut with directory input
+node ../ff_cut.js -i samples -o folder_cut.mp4 -s 00:00:01 -e 00:00:06
+
+# Test cut with grep filtering
+node ../ff_cut.js -i samples -o grep_cut.mp4 -s 00:00:01 -e 00:00:06 -g test_video
+
+# Test cut with regex patterns
+node ../ff_cut.js -i samples -o regex_cut.mp4 -s 00:00:03 -e 00:00:08 -g "\\d_.*\\.mp4"
+```
 ```
 
 #### ff_custom.js
@@ -440,6 +517,12 @@ node test_ff_convert.js
 
 # Run ff_crop.js tests
 node test_ff_crop.js
+
+# Run ff_download.js tests
+node test_ff_download.js
+
+# Run ff_cut.js tests
+node test_ff_cut.js
 
 # Run ff_concat.js tests
 node test_ff_concat.js

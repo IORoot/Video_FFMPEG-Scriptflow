@@ -1,0 +1,6 @@
+{
+  "input": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+  "output": "download_test",
+  "strategy": "1",
+  "loglevel": "error"
+}
