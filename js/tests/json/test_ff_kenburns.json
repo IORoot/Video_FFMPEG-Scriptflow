@@ -1,0 +1,11 @@
+{
+  "input": "tests/samples/sample_image.jpeg",
+  "output": "kenburns_test",
+  "target": "TopLeft",
+  "fps": "30",
+  "duration": "5",
+  "speed": "0.0005",
+  "bitrate": "5000k",
+  "description": "Ken Burns effect test",
+  "loglevel": "error"
+}

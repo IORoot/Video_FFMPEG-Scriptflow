@@ -475,7 +475,6 @@ node ../ff_cut.js -i samples -o grep_cut.mp4 -s 00:00:01 -e 00:00:06 -g test_vid
 # Test cut with regex patterns
 node ../ff_cut.js -i samples -o regex_cut.mp4 -s 00:00:03 -e 00:00:08 -g "\\d_.*\\.mp4"
 ```
-```
 
 #### ff_custom.js
 ```bash
@@ -582,6 +581,72 @@ node ../ff_image.js -i samples/sample_image.jpeg -d 15 -o long_video.mp4
 node ../ff_image.js -i samples/sample_image.png -d 8 -o custom_name.mp4
 ```
 
+#### ff_kenburns.js
+```bash
+# Test basic Ken Burns effect (TopLeft)
+node ../ff_kenburns.js -i samples/sample_image.jpeg -d 3 -o test_kenburns.mp4
+
+# Test TopRight target
+node ../ff_kenburns.js -i samples/sample_image.jpeg -t TopRight -d 4 -o topright_kenburns.mp4
+
+# Test Random target
+node ../ff_kenburns.js -i samples/sample_image.jpeg -t Random -d 2 -o random_kenburns.mp4
+
+# Test with JSON config file
+node ../ff_kenburns.js -C json/test_ff_kenburns.json
+
+# Test custom parameters (BottomLeft, 24fps, 6s, custom speed/bitrate)
+node ../ff_kenburns.js -i samples/sample_image.jpeg -t BottomLeft -f 24 -d 6 -s 0.001 -b 100k -o custom_kenburns.mp4
+
+# Test with custom dimensions
+node ../ff_kenburns.js -i samples/sample_image.jpeg -w 1920 -h 1080 -d 5 -o hd_kenburns.mp4
+
+# Test speed parameter (faster zoom)
+node ../ff_kenburns.js -i samples/sample_image.jpeg -s 0.002 -d 4 -o speed_kenburns.mp4
+
+# Test bitrate parameter (lower quality)
+node ../ff_kenburns.js -i samples/sample_image.jpeg -b 2000k -d 3 -o bitrate_kenburns.mp4
+```
+
+#### ff_lut.js
+```bash
+# Test basic LUT application (Andromeda)
+node ../ff_lut.js -i samples/sample_video.mp4 -t ../../lib/luts/Andromeda.cube -o test_lut.mp4
+
+# Test different LUT file (Centurus)
+node ../ff_lut.js -i samples/sample_video.mp4 -t ../../lib/luts/Centurus.CUBE -o centurus_lut.mp4
+
+# Test with JSON config file
+node ../ff_lut.js -C json/test_ff_lut.json
+
+# Test default LUT (no -t parameter)
+node ../ff_lut.js -i samples/sample_video.mp4 -o andromeda_lut.mp4
+
+# Test with custom output name
+node ../ff_lut.js -i samples/sample_video.mp4 -t ../../lib/luts/Holmberg.CUBE -o holmberg_lut.mp4
+```
+
+#### ff_middle.js
+```bash
+# Test basic middle trim (2 seconds from start/end)
+node ../ff_middle.js -i samples/sample_video.mp4 -t 2 -o test_middle.mp4
+
+# Test longer trim (5 seconds from start/end)
+node ../ff_middle.js -i samples/sample_video.mp4 -t 5 -o long_middle.mp4
+
+# Test short trim (0.5 seconds from start/end)
+node ../ff_middle.js -i samples/sample_video.mp4 -t 0.5 -o short_middle.mp4
+
+# Test with JSON config file
+node ../ff_middle.js -C json/test_ff_middle.json
+
+# Test default trim (1 second from start/end)
+node ../ff_middle.js -i samples/sample_video.mp4 -o default_middle.mp4
+
+# Test with custom output name
+node ../ff_middle.js -i samples/sample_video.mp4 -t 3 -o custom_middle.mp4
+```
+
 ### Automated Testing
 ```bash
 # Run ff_append.js tests
@@ -628,6 +693,16 @@ node test_ff_grouptime.js
 
 # Run ff_image.js tests
 node test_ff_image.js
+
+# Run ff_kenburns.js tests
+node test_ff_kenburns.js
+
+# Run ff_lut.js tests
+node test_ff_lut.js
+
+# Run ff_middle.js tests
+node test_ff_middle.js
+```
 ```
 ```
 ```
