@@ -1,0 +1,6 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "convert_mov_test",
+  "format": "mov",
+  "loglevel": "error"
+}

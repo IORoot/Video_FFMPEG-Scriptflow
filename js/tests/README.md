@@ -13,6 +13,42 @@ Test configuration for the `ff_concat.js` script that concatenates three video f
 ### `json/test_ff_concat_folder.json`
 Test configuration for the `ff_concat.js` script that tests concatenating files from a directory with grep filtering.
 
+### `json/test_ff_convert.json`
+Basic test configuration for the `ff_convert.js` script. Converts MP4 to MP4 format.
+
+### `json/test_ff_convert_webm.json`
+Test configuration for the `ff_convert.js` script that converts MP4 to WebM format.
+
+### `json/test_ff_convert_mov.json`
+Test configuration for the `ff_convert.js` script that converts MP4 to MOV format.
+
+### `json/test_ff_convert_folder.json`
+Test configuration for the `ff_convert.js` script that tests directory processing with grep filtering.
+
+### `json/test_ff_convert_regex.json`
+Test configuration for the `ff_convert.js` script that tests regex patterns in grep.
+
+### `test_ff_convert.js`
+Automated test runner specifically for the `ff_convert.js` script that tests:
+1. **Command line argument parsing** (MP4 to MP4 conversion)
+2. **Command line argument parsing** (MP4 to WebM conversion)
+3. **CLI with directory input** (directory processing)
+4. **JSON config file loading** (MP4 to MP4 conversion)
+5. **JSON config file loading** (MP4 to WebM conversion)
+6. **JSON config file loading** (MP4 to MOV conversion)
+7. **JSON config with directory and grep filtering** (directory processing via config)
+8. **JSON config with directory and regex grep filtering** (regex patterns via JSON)
+9. Help command functionality
+10. Error handling for missing files
+11. **FFprobe validation** - Verifies output file properties:
+    - Video dimensions are maintained (1280x720)
+    - Video codec changes appropriately (h264, vp9)
+    - Video duration is maintained
+    - File size changes appropriately (format conversion)
+    - **Format detection** (MP4, WebM, MOV, AVI, MKV)
+    - **Directory processing with grep filtering** (creates numbered output files)
+    - **Regex pattern matching** (supports complex regex patterns)
+
 ### `json/test_ff_concat_regex.json`
 Test configuration for the `ff_concat.js` script that tests regex patterns in grep (e.g., `\d_.*\.mp4`).
 
@@ -235,6 +271,24 @@ node ../ff_audio.js -i samples/sample_video.mp4 -r -o test_no_audio.mp4
 node ../ff_audio.js -i samples/sample_video.mp4 -a samples/sample_voice.mp3 -s 2 -p 1.5 -o test_delayed.mp4
 ```
 
+#### ff_convert.js
+```bash
+# Test basic conversion (MP4 to MP4)
+node ../ff_convert.js -i samples/sample_video.mp4 -o test_convert -f mp4
+
+# Test conversion to WebM
+node ../ff_convert.js -i samples/sample_video.mp4 -o test_webm -f webm
+
+# Test conversion to MOV
+node ../ff_convert.js -i samples/sample_video.mp4 -o test_mov -f mov
+
+# Test conversion with directory input
+node ../ff_convert.js -i samples -o folder_convert -f avi
+
+# Test conversion with grep filtering
+node ../ff_convert.js -i samples -o grep_convert -f mkv -g test_video
+```
+
 #### ff_concat.js
 ```bash
 # Test basic concatenation (two files)
@@ -303,6 +357,9 @@ node test_ff_blur.js
 
 # Run ff_colour.js tests
 node test_ff_colour.js
+
+# Run ff_convert.js tests
+node test_ff_convert.js
 
 # Run ff_concat.js tests
 node test_ff_concat.js

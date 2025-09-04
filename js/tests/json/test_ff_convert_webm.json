@@ -1,0 +1,6 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "convert_webm_test",
+  "format": "webm",
+  "loglevel": "info"
+}
