@@ -1,0 +1,6 @@
+{
+  "input": "samples",
+  "output": "concat_regex_test.mp4",
+  "grep": "\\d_.*\\.mp4",
+  "loglevel": "error"
+}

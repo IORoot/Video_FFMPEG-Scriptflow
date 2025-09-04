@@ -4,6 +4,70 @@ This directory contains test files and utilities for the JavaScript versions of 
 
 ## Test Files
 
+### `json/test_ff_concat.json`
+Basic test configuration for the `ff_concat.js` script. Concatenates two video files together.
+
+### `json/test_ff_concat_three.json`
+Test configuration for the `ff_concat.js` script that concatenates three video files together.
+
+### `json/test_ff_concat_folder.json`
+Test configuration for the `ff_concat.js` script that tests concatenating files from a directory with grep filtering.
+
+### `json/test_ff_concat_regex.json`
+Test configuration for the `ff_concat.js` script that tests regex patterns in grep (e.g., `\d_.*\.mp4`).
+
+### `test_ff_concat.js`
+Automated test runner specifically for the `ff_concat.js` script that tests:
+1. **Command line argument parsing** (two files concatenation)
+2. **Command line argument parsing** (three files concatenation)
+3. **CLI with directory input** (directory processing)
+4. **JSON config file loading** (two files concatenation)
+5. **JSON config file loading** (three files concatenation)
+6. **JSON config with directory and grep filtering** (directory processing via config)
+7. **JSON config with directory and regex grep filtering** (regex patterns via JSON)
+8. Help command functionality
+9. Error handling for missing files
+10. Error handling for no input files
+11. **FFprobe validation** - Verifies output file properties:
+    - Video dimensions are maintained (1280x720)
+    - Video codec is preserved (h264)
+    - Video duration is correctly summed (2x, 3x input duration)
+    - File size changes appropriately (concatenation)
+    - **Directory processing with grep filtering** (processes multiple files)
+    - **Regex pattern matching** (supports complex regex patterns)
+
+### `json/test_ff_colour.json`
+Basic test configuration for the `ff_colour.js` script. Applies color adjustments with default values.
+
+### `json/test_ff_colour_adjustments.json`
+Test configuration for the `ff_colour.js` script that applies various color adjustments (brightness, contrast, gamma, saturation, weight).
+
+### `json/test_ff_colour_grep.json`
+Test configuration for the `ff_colour.js` script that tests grep filtering on directory input.
+
+### `json/test_ff_colour_regex.json`
+Test configuration for the `ff_colour.js` script that tests regex patterns in grep (e.g., `\d_.*\.mp4`).
+
+### `test_ff_colour.js`
+Automated test runner specifically for the `ff_colour.js` script that tests:
+1. **Command line argument parsing** (basic color adjustments)
+2. **Command line argument parsing** (various color parameters)
+3. **CLI with grep filtering** (directory processing with pattern matching)
+4. **CLI with regex grep filtering** (regex patterns via command line)
+5. **JSON config file loading** (basic color adjustments)
+6. **JSON config file loading** (various color parameters)
+7. **JSON config with grep filtering** (directory processing via config)
+8. **JSON config with regex grep filtering** (regex patterns via JSON)
+9. Help command functionality
+10. Error handling for missing files
+11. **FFprobe validation** - Verifies output file properties:
+    - Video dimensions are maintained (1280x720)
+    - Video codec is preserved (h264)
+    - Video duration is maintained
+    - File size changes appropriately (color adjustments)
+    - **Directory processing with grep filtering** (creates numbered output files)
+    - **Regex pattern matching** (supports complex regex patterns)
+
 ### `json/test_ff_blur.json`
 Basic test configuration for the `ff_blur.js` script. Applies Gaussian blur with default settings.
 
@@ -171,6 +235,36 @@ node ../ff_audio.js -i samples/sample_video.mp4 -r -o test_no_audio.mp4
 node ../ff_audio.js -i samples/sample_video.mp4 -a samples/sample_voice.mp3 -s 2 -p 1.5 -o test_delayed.mp4
 ```
 
+#### ff_concat.js
+```bash
+# Test basic concatenation (two files)
+node ../ff_concat.js -o test_concat.mp4 -i samples/sample_video.mp4 -i samples/sample_video.mp4
+
+# Test concatenation (three files)
+node ../ff_concat.js -o test_concat_three.mp4 -i samples/sample_video.mp4 -i samples/sample_video.mp4 -i samples/sample_video.mp4
+
+# Test concatenation with directory input
+node ../ff_concat.js -o folder_concat.mp4 -i samples
+
+# Test concatenation with grep filtering
+node ../ff_concat.js -o grep_concat.mp4 -i samples -g test_video
+```
+
+#### ff_colour.js
+```bash
+# Test basic color adjustments
+node ../ff_colour.js -i samples/sample_video.mp4 -b 0 -c 1 -m 1 -s 1 -w 1 -o test_colour.mp4
+
+# Test various color adjustments
+node ../ff_colour.js -i samples/sample_video.mp4 -b 0.5 -c 1.2 -m 1.5 -s 1.8 -w 0.8 -o test_adjustments.mp4
+
+# Test color with grep filtering
+node ../ff_colour.js -i samples -b 0.3 -c 1.1 -m 1.2 -s 1.5 -w 0.9 -o grep_colour.mp4 -g test_video
+
+# Test color with regex patterns
+node ../ff_colour.js -i samples -b -0.2 -c 0.8 -m 0.7 -s 0.5 -w 0.6 -o regex_colour.mp4 -g "\\d_.*\\.mp4"
+```
+
 #### ff_blur.js
 ```bash
 # Test basic blur
@@ -206,6 +300,12 @@ node test_ff_audio.js
 
 # Run ff_blur.js tests
 node test_ff_blur.js
+
+# Run ff_colour.js tests
+node test_ff_colour.js
+
+# Run ff_concat.js tests
+node test_ff_concat.js
 
 # Run ff_aspect_ratio.js tests
 node test_ff_aspect_ratio.js

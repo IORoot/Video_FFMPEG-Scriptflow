@@ -1,0 +1,9 @@
+{
+  "input": [
+    "samples/sample_video.mp4",
+    "samples/sample_video.mp4",
+    "samples/sample_video.mp4"
+  ],
+  "output": "concat_three_test.mp4",
+  "loglevel": "info"
+}

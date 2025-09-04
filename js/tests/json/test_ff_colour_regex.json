@@ -1,0 +1,11 @@
+{
+  "input": "samples",
+  "output": "regex_colour_test.mp4",
+  "brightness": "-0.2",
+  "contrast": "0.8",
+  "gamma": "0.7",
+  "saturation": "0.5",
+  "weight": "0.6",
+  "grep": "\\d_.*\\.mp4",
+  "loglevel": "error"
+}
