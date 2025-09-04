@@ -502,7 +502,7 @@ node ../ff_pad.js -i samples/sample_video.mp4 -o test_pad_basic.mp4 --height "ih
 node ../ff_pad.js -i samples/sample_video.mp4 -o test_pad_white.mp4 --height "ih*2" -c white
 
 # Test black letterbox bars
-node ../ff_pad.js -i samples/sample_video.mp4 -o test_pad_letterbox.mp4 -w iw --height "ih+100" -y "(oh-ih)/2" -x "(ow-iw)/2" -c #000000
+node ../ff_pad.js -i samples/sample_video.mp4 -o test_pad_letterbox.mp4 -w iw --height "ih+100" -y "(oh-ih)/2" -x "(ow-iw)/2" -c "#000000"
 
 # Test centered padding with custom color
 node ../ff_pad.js -i samples/sample_video.mp4 -o test_pad_centered.mp4 -w "iw*1.5" --height "ih*1.5" -x "(ow-iw)/2" -y "(oh-ih)/2" -c "#fb923c"
