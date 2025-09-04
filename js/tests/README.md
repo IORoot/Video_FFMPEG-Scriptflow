@@ -274,6 +274,62 @@ Automated test runner specifically for the `ff_aspect_ratio.js` script that test
     - **Directory processing with grep filtering** (creates numbered output files)
     - **Regex pattern matching** (supports complex regex patterns)
 
+### `json/test_ff_pad_basic.json`
+Basic test configuration for the `ff_pad.js` script. Adds padding to double the video height with orange background.
+
+### `json/test_ff_pad_white.json`
+Test configuration for the `ff_pad.js` script that creates white background padding around the video.
+
+### `json/test_ff_pad_letterbox.json`
+Test configuration for the `ff_pad.js` script that creates black letterbox bars around the video.
+
+### `json/test_ff_pad_full.json`
+Test configuration for the `ff_pad.js` script that adds full padding on all sides with custom color.
+
+### `json/test_ff_rotate_90.json`
+Test configuration for the `ff_rotate.js` script that rotates video 90 degrees clockwise.
+
+### `json/test_ff_rotate_180.json`
+Test configuration for the `ff_rotate.js` script that rotates video 180 degrees (upside down).
+
+### `json/test_ff_rotate_270.json`
+Test configuration for the `ff_rotate.js` script that rotates video 270 degrees counter-clockwise.
+
+### `json/test_ff_rotate_multiple.json`
+Test configuration for the `ff_rotate.js` script that performs multiple rotation operations on different videos.
+
+### `test_ff_rotate.js`
+Automated test runner specifically for the `ff_rotate.js` script that tests:
+1. **Command line argument parsing** (90-degree rotation)
+2. **Command line argument parsing** (180-degree rotation)
+3. **Command line argument parsing** (270-degree rotation)
+4. **Custom loglevel** (warning instead of error)
+5. **JSON config file loading** (90-degree rotation)
+6. **Invalid rotation value handling** (graceful error handling)
+7. **Non-existent input file handling** (graceful exit)
+8. Help command functionality
+9. Error handling for missing files
+10. **FFprobe validation** - Verifies output file properties:
+    - Video duration is preserved during rotation
+    - File size changes appropriately (rotation operation)
+    - Output files are created successfully
+    - Rotation angles are applied correctly (90°, 180°, 270°)
+
+### `test_ff_pad.js`
+Automated test runner specifically for the `ff_pad.js` script that tests:
+1. **Basic padding** - Double height with default orange color
+2. **White background padding** - White padding around video
+3. **Black letterbox bars** - Letterbox effect with black bars
+4. **Centered padding with custom color** - Orange padding with 1.5x scaling
+5. **Full padding all around** - 2x scaling on all sides
+6. **FFprobe validation** - Verifies output file properties:
+   - Video dimensions are correctly padded (height doubled, width maintained, etc.)
+   - Video codec is preserved (h264)
+   - Video duration is maintained (no time changes)
+   - File size changes appropriately (padding operation)
+   - **Various padding scenarios** (letterbox, full padding, centered)
+   - **Color variations** (default orange, white, black, custom colors)
+
 ### `test_ff_append.js`
 Automated test runner specifically for the `ff_append.js` script that tests:
 1. Command line argument parsing
@@ -288,6 +344,30 @@ Automated test runner specifically for the `ff_append.js` script that tests:
    - Video dimensions are maintained (1280x720)
    - Codec is preserved (h264)
    - Input file is a valid video file
+
+### `json/test_ff_proxy.json`
+Test configuration for the `ff_proxy.js` script with four different proxy settings:
+1. **Standard editing proxy** (1280x720, 30fps, CRF 25, H.264)
+2. **Small proxy** (640x480, 24fps, CRF 30, H.264)
+3. **High-quality proxy** (1920x1080, 30fps, CRF 20, H.265)
+4. **Preview proxy** (480x270, 15fps, CRF 35, H.264)
+
+### `test_ff_proxy.js`
+Automated test runner specifically for the `ff_proxy.js` script that tests:
+1. **Basic proxy generation** (1280x720, 30fps, CRF 25)
+2. **Custom dimensions** (640x480, 24fps, CRF 30)
+3. **Different codec** (H.265 with CRF 28)
+4. **JSON configuration** (960x540, 25fps, CRF 23)
+5. **Folder processing** (batch processing with recursive option)
+6. **Error handling** (invalid files, missing inputs)
+7. **FFprobe validation** - Verifies output file properties:
+    - Video dimensions are correctly scaled (1280x720, 640x480, etc.)
+    - Frame rate is correctly changed (30fps, 24fps, 15fps)
+    - Video codec is correctly applied (H.264, H.265)
+    - File size is significantly reduced (proxy operation)
+    - **Aspect ratio preservation** (using -2 for auto-scaling)
+    - **Quality control** (CRF values affect file size/quality)
+    - **Batch processing** (creates proxy files in folders)
 
 ## Test Media Files
 
@@ -412,6 +492,53 @@ node ../ff_aspect_ratio.js -i samples -a 16:9 -g test_video
 # Test aspect ratio with regex patterns
 node ../ff_aspect_ratio.js -i samples -a 16:9 -g "\\d_.*\\.mp4"
 ```
+
+#### ff_pad.js
+```bash
+# Test basic padding - double height
+node ../ff_pad.js -i samples/sample_video.mp4 -o test_pad_basic.mp4 --height "ih*2"
+
+# Test white background padding
+node ../ff_pad.js -i samples/sample_video.mp4 -o test_pad_white.mp4 --height "ih*2" -c white
+
+# Test black letterbox bars
+node ../ff_pad.js -i samples/sample_video.mp4 -o test_pad_letterbox.mp4 -w iw --height "ih+100" -y "(oh-ih)/2" -x "(ow-iw)/2" -c #000000
+
+# Test centered padding with custom color
+node ../ff_pad.js -i samples/sample_video.mp4 -o test_pad_centered.mp4 -w "iw*1.5" --height "ih*1.5" -x "(ow-iw)/2" -y "(oh-ih)/2" -c "#fb923c"
+
+# Test full padding all around
+node ../ff_pad.js -i samples/sample_video.mp4 -o test_pad_full.mp4 -w "iw*2" --height "ih*2"
+
+# Test with JSON config
+node ../ff_pad.js -C json/test_ff_pad_basic.json
+```
+
+#### ff_proxy.js
+```bash
+# Test basic proxy generation (1280x720, 30fps, CRF 25)
+node ../ff_proxy.js -i samples/sample_video.mp4 -o test_proxy.mp4
+
+# Test custom dimensions (640x480, 24fps, CRF 30)
+node ../ff_proxy.js -i samples/sample_video.mp4 -x 640 -y 480 -f 24 -c 30 -o test_small_proxy.mp4
+
+# Test different codec (H.265 with CRF 28)
+node ../ff_proxy.js -i samples/sample_video.mp4 -d libx265 -c 28 -o test_hevc_proxy.mp4
+
+# Test high-quality proxy (1920x1080, 30fps, CRF 20)
+node ../ff_proxy.js -i samples/sample_video.mp4 -x 1920 -c 20 -o test_hq_proxy.mp4
+
+# Test preview proxy (480x270, 15fps, CRF 35)
+node ../ff_proxy.js -i samples/sample_video.mp4 -x 480 -y 270 -f 15 -c 35 -o test_preview_proxy.mp4
+
+# Test with JSON config file
+node ../ff_proxy.js -C json/test_ff_proxy.json
+
+# Test folder processing (batch processing)
+node ../ff_proxy.js -i samples -r -x 800 -y 600
+
+# Test folder processing with grep filtering
+node ../ff_proxy.js -i samples -r -g test_video -x 640 -y 480
 
 #### ff_crop.js
 ```bash
@@ -608,6 +735,54 @@ node ../ff_kenburns.js -i samples/sample_image.jpeg -s 0.002 -d 4 -o speed_kenbu
 node ../ff_kenburns.js -i samples/sample_image.jpeg -b 2000k -d 3 -o bitrate_kenburns.mp4
 ```
 
+#### ff_overlay.js
+```bash
+# Test basic video overlay (video over video)
+node ../ff_overlay.js -i samples/sample_video.mp4 -v samples/sample_video2.mp4 -o test_overlay.mp4
+
+# Test image overlay (image over video)
+node ../ff_overlay.js -i samples/sample_video.mp4 -v samples/sample_image.jpeg -o image_overlay.mp4
+
+# Test fit flag (scale overlay to fit video dimensions)
+node ../ff_overlay.js -i samples/sample_video.mp4 -v samples/sample_image.jpeg -f -o fit_overlay.mp4
+
+# Test timed overlay (show overlay from 2-5 seconds)
+node ../ff_overlay.js -i samples/sample_video.mp4 -v samples/sample_image.jpeg -S 2 -E 5 -o timed_overlay.mp4
+
+# Test with JSON config file
+node ../ff_overlay.js -C json/test_ff_overlay.json
+
+# Test with custom output name
+node ../ff_overlay.js -i samples/sample_video.mp4 -v samples/sample_image.png -o custom_overlay.mp4
+```
+
+#### ff_rotate.js
+```bash
+# Test basic 90-degree rotation
+node ../ff_rotate.js -i samples/sample_video.mp4 -r 90 -o test_rotate_90.mp4
+
+# Test 180-degree rotation (upside down)
+node ../ff_rotate.js -i samples/sample_video.mp4 -r 180 -o test_rotate_180.mp4
+
+# Test 270-degree rotation (counter-clockwise)
+node ../ff_rotate.js -i samples/sample_video.mp4 -r 270 -o test_rotate_270.mp4
+
+# Test with custom loglevel
+node ../ff_rotate.js -i samples/sample_video.mp4 -r 90 -l warning -o test_rotate_warning.mp4
+
+# Test with JSON config file
+node ../ff_rotate.js -C json/test_ff_rotate_90.json
+
+# Test with JSON config file (180 degrees)
+node ../ff_rotate.js -C json/test_ff_rotate_180.json
+
+# Test with JSON config file (270 degrees)
+node ../ff_rotate.js -C json/test_ff_rotate_270.json
+
+# Test help command
+node ../ff_rotate.js --help
+```
+
 #### ff_lut.js
 ```bash
 # Test basic LUT application (Andromeda)
@@ -702,6 +877,19 @@ node test_ff_lut.js
 
 # Run ff_middle.js tests
 node test_ff_middle.js
+
+# Run ff_overlay.js tests
+node test_ff_overlay.js
+
+# Run ff_pad.js tests
+node test_ff_pad.js
+
+# Run ff_proxy.js tests
+node test_ff_proxy.js
+
+# Run ff_rotate.js tests
+node test_ff_rotate.js
+```
 ```
 ```
 ```

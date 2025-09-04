@@ -1,0 +1,9 @@
+{
+  "ff_rotate": {
+    "description": "Rotate video 180 degrees (upside down)",
+    "input": "../../../tests/sample_video.mp4",
+    "output": "tests/ff_rotate_180.mp4",
+    "rotation": "180",
+    "loglevel": "error"
+  }
+}

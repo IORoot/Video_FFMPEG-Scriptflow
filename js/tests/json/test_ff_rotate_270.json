@@ -1,0 +1,9 @@
+{
+  "ff_rotate": {
+    "description": "Rotate video 270 degrees counter-clockwise",
+    "input": "../../../tests/sample_video.mp4",
+    "output": "tests/ff_rotate_270.mp4",
+    "rotation": "270",
+    "loglevel": "error"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "ff_pad": {
+    "description": "Add full padding on all sides with custom color",
+    "input": "tests/sample_video.mp4",
+    "output": "tests/output/ff_pad_full.mp4",
+    "width": "iw*2",
+    "height": "ih*2",
+    "xpixels": "(ow-iw)/2",
+    "ypixels": "(oh-ih)/2",
+    "colour": "#3b82f6"
+  }
+}

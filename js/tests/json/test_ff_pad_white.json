@@ -1,0 +1,12 @@
+{
+  "ff_pad": {
+    "description": "Create white background padding around the video",
+    "input": "tests/sample_video.mp4",
+    "output": "tests/output/ff_pad_white.mp4",
+    "width": "iw*1.5",
+    "height": "ih*1.5",
+    "xpixels": "(ow-iw)/2",
+    "ypixels": "(oh-ih)/2",
+    "colour": "white"
+  }
+}

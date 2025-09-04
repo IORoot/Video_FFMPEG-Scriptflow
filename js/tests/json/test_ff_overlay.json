@@ -1,0 +1,10 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "overlay_test",
+  "overlay": "samples/sample_image.jpeg",
+  "start": "1",
+  "end": "4",
+  "fit": true,
+  "description": "Overlay test with image",
+  "loglevel": "error"
+}

@@ -1,0 +1,16 @@
+{
+  "ff_rotate1": {
+    "description": "Rotate first video 90 degrees",
+    "input": "../../../tests/sample_video.mp4",
+    "output": "tests/ff_rotate_90_1.mp4",
+    "rotation": "90",
+    "loglevel": "error"
+  },
+  "ff_rotate2": {
+    "description": "Rotate second video 180 degrees",
+    "input": "../../../tests/sample_video2.mp4",
+    "output": "tests/ff_rotate_180_2.mp4",
+    "rotation": "180",
+    "loglevel": "error"
+  }
+}

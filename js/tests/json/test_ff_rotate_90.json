@@ -1,0 +1,9 @@
+{
+  "ff_rotate": {
+    "description": "Rotate video 90 degrees clockwise",
+    "input": "../../../tests/sample_video.mp4",
+    "output": "tests/ff_rotate_90.mp4",
+    "rotation": "90",
+    "loglevel": "error"
+  }
+}
