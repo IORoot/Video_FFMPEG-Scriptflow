@@ -1,0 +1,7 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "high_fps_test",
+  "fps": "60",
+  "description": "60 FPS test",
+  "loglevel": "error"
+}

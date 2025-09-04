@@ -1,0 +1,8 @@
+{
+  "input": "samples",
+  "output": "fps_test",
+  "fps": "24",
+  "grep": "\\d_.*\\.mp4",
+  "description": "Directory processing with regex pattern",
+  "loglevel": "error"
+}

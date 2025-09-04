@@ -519,6 +519,27 @@ node ../ff_flip.js -C json/test_ff_flip_vertical.json
 node ../ff_flip.js -C json/test_ff_flip_regex.json
 ```
 
+#### ff_fps.js
+```bash
+# Test 30 FPS conversion
+node ../ff_fps.js -i samples/sample_video.mp4 -f 30 -o test_30fps.mp4
+
+# Test 60 FPS conversion
+node ../ff_fps.js -i samples/sample_video.mp4 -f 60 -o test_60fps.mp4
+
+# Test 24 FPS conversion
+node ../ff_fps.js -i samples/sample_video.mp4 -f 24 -o test_24fps.mp4
+
+# Test with JSON config file (30 FPS)
+node ../ff_fps.js -C json/test_ff_fps.json
+
+# Test with JSON config file (60 FPS)
+node ../ff_fps.js -C json/test_ff_fps_high.json
+
+# Test directory processing with regex
+node ../ff_fps.js -C json/test_ff_fps_regex.json
+```
+
 ### Automated Testing
 ```bash
 # Run ff_append.js tests
@@ -556,6 +577,10 @@ node test_ff_custom.js
 
 # Run ff_flip.js tests
 node test_ff_flip.js
+
+# Run ff_fps.js tests
+node test_ff_fps.js
+```
 ```
 ```
 
