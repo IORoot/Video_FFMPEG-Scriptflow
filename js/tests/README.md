@@ -302,7 +302,7 @@ Located in `samples/` directory:
 ### Automatic Test File Creation
 Some test scripts automatically create the sample files they need:
 
-- **`test_ff_aspect_ratio.js`**: Creates `1_test_video.mp4`, `2_test_video.mp4`, `3_test_video.mp4`, and `other_file.mp4` for regex testing, then cleans them up after tests complete.
+- **`test_ff_aspect_ratio.js`**: Creates `sample_video.mp4`, `sample_video.mp4`, `sample_video.mp4`, and `other_file.mp4` for regex testing, then cleans them up after tests complete.
 
 - **`test_ff_append.js`**: Uses existing `sample_video.mp4` and `sample_voice.mp3` files.
 
@@ -540,6 +540,48 @@ node ../ff_fps.js -C json/test_ff_fps_high.json
 node ../ff_fps.js -C json/test_ff_fps_regex.json
 ```
 
+#### ff_grouptime.js
+```bash
+# Test multiple files with 30 second target
+node ../ff_grouptime.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -i samples/sample_video.mp4 -d 30 -o test_grouptime.mp4
+
+# Test multiple files with reversed arrangement
+node ../ff_grouptime.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -i samples/sample_video.mp4 -a reversed -d 20 -o reversed_grouptime.mp4
+
+# Test directory input with grep filtering
+node ../ff_grouptime.js -i samples -g ".*_video" -d 5 -o short_grouptime.mp4
+
+# Test with JSON config file (multiple files)
+node ../ff_grouptime.js -C json/test_ff_grouptime.json
+
+# Test with random arrangement
+node ../ff_grouptime.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -i samples/sample_video.mp4 -a random -d 25 -o random_grouptime.mp4
+
+# Test with even/odd arrangement
+node ../ff_grouptime.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -a even -d 30 -o even_grouptime.mp4
+```
+
+#### ff_image.js
+```bash
+# Test JPG image to video (5 seconds)
+node ../ff_image.js -i samples/sample_image.jpeg -d 5 -o sample_image.mp4
+
+# Test PNG image to video (10 seconds)
+node ../ff_image.js -i samples/sample_image.png -d 10 -o long_image.mp4
+
+# Test GIF image to video (2 seconds)
+node ../ff_image.js -i samples/sample_image.gif -d 2 -o short_image.mp4
+
+# Test with JSON config file
+node ../ff_image.js -C json/test_ff_image.json
+
+# Test with different duration
+node ../ff_image.js -i samples/sample_image.jpeg -d 15 -o long_video.mp4
+
+# Test with custom output name
+node ../ff_image.js -i samples/sample_image.png -d 8 -o custom_name.mp4
+```
+
 ### Automated Testing
 ```bash
 # Run ff_append.js tests
@@ -580,6 +622,14 @@ node test_ff_flip.js
 
 # Run ff_fps.js tests
 node test_ff_fps.js
+
+# Run ff_grouptime.js tests
+node test_ff_grouptime.js
+
+# Run ff_image.js tests
+node test_ff_image.js
+```
+```
 ```
 ```
 ```
