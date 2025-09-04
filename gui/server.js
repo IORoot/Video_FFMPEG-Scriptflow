@@ -221,7 +221,16 @@ app.get('/api/layouts/:id', async (req, res) => {
       alt: 'media'
     });
 
-    const layoutData = JSON.parse(response.data);
+    // Handle different response formats
+    let layoutData;
+    if (typeof response.data === 'string') {
+      layoutData = JSON.parse(response.data);
+    } else if (typeof response.data === 'object') {
+      layoutData = response.data;
+    } else {
+      throw new Error('Unexpected response format from Google Drive');
+    }
+
     res.json(layoutData);
   } catch (error) {
     console.error('Error loading layout:', error);
