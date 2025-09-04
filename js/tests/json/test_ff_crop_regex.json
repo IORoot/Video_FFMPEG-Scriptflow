@@ -1,0 +1,10 @@
+{
+  "input": "samples",
+  "output": "crop_regex_test.mp4",
+  "width": "300",
+  "height": "200",
+  "xpixels": "50",
+  "ypixels": "50",
+  "grep": "\\d_.*\\.mp4",
+  "loglevel": "error"
+}

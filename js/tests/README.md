@@ -28,6 +28,41 @@ Test configuration for the `ff_convert.js` script that tests directory processin
 ### `json/test_ff_convert_regex.json`
 Test configuration for the `ff_convert.js` script that tests regex patterns in grep.
 
+### `json/test_ff_crop.json`
+Basic test configuration for the `ff_crop.js` script. Crops video to 640x360 with center positioning.
+
+### `json/test_ff_crop_corner.json`
+Test configuration for the `ff_crop.js` script that crops video to 400x300 at corner position (0,0).
+
+### `json/test_ff_crop_small.json`
+Test configuration for the `ff_crop.js` script that crops video to 200x150 with offset positioning (100,100).
+
+### `json/test_ff_crop_folder.json`
+Test configuration for the `ff_crop.js` script that tests directory processing with grep filtering.
+
+### `json/test_ff_crop_regex.json`
+Test configuration for the `ff_crop.js` script that tests regex patterns in grep (e.g., `\d_.*\.mp4`).
+
+### `test_ff_crop.js`
+Automated test runner specifically for the `ff_crop.js` script that tests:
+1. **Command line argument parsing** (center crop - 640x360)
+2. **Command line argument parsing** (corner crop - 400x300 at 0,0)
+3. **CLI with directory input** (directory processing)
+4. **JSON config file loading** (center crop - 640x360)
+5. **JSON config file loading** (corner crop - 400x300 at 0,0)
+6. **JSON config file loading** (small crop with offset - 200x150 at 100,100)
+7. **JSON config with directory and grep filtering** (directory processing via config)
+8. **JSON config with directory and regex grep filtering** (regex patterns via JSON)
+9. Help command functionality
+10. Error handling for missing files
+11. **FFprobe validation** - Verifies output file properties:
+    - Video dimensions are correctly cropped (640x360, 400x300, 200x150)
+    - Video codec is preserved (h264)
+    - Video duration is maintained
+    - File size changes appropriately (crop operation)
+    - **Directory processing with grep filtering** (creates numbered output files)
+    - **Regex pattern matching** (supports complex regex patterns)
+
 ### `test_ff_convert.js`
 Automated test runner specifically for the `ff_convert.js` script that tests:
 1. **Command line argument parsing** (MP4 to MP4 conversion)
@@ -342,6 +377,48 @@ node ../ff_aspect_ratio.js -i samples -a 16:9 -g test_video
 # Test aspect ratio with regex patterns
 node ../ff_aspect_ratio.js -i samples -a 16:9 -g "\\d_.*\\.mp4"
 ```
+
+#### ff_crop.js
+```bash
+# Test basic center crop
+node ../ff_crop.js -i samples/sample_video.mp4 -o test_crop.mp4 -w 640 -h 360
+
+# Test corner crop
+node ../ff_crop.js -i samples/sample_video.mp4 -o test_corner_crop.mp4 -w 400 -h 300 -x 0 -y 0
+
+# Test small crop with offset
+node ../ff_crop.js -i samples/sample_video.mp4 -o test_small_crop.mp4 -w 200 -h 150 -x 100 -y 100
+
+# Test crop with directory input
+node ../ff_crop.js -i samples -o folder_crop.mp4 -w 500 -h 400
+
+# Test crop with grep filtering
+node ../ff_crop.js -i samples -o grep_crop.mp4 -w 500 -h 400 -g test_video
+
+# Test crop with regex patterns
+node ../ff_crop.js -i samples -o regex_crop.mp4 -w 300 -h 200 -g "\\d_.*\\.mp4"
+```
+```
+
+#### ff_custom.js
+```bash
+# Test basic codec conversion
+node ../ff_custom.js -i samples/sample_video.mp4 -o test_custom -p "-c:v libx264 -c:a aac -strict experimental"
+
+# Test with video filter (text overlay)
+node ../ff_custom.js -i samples/sample_video.mp4 -o test_text -p "-vf \"drawtext=text='Hello World':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2\" -c:v libx264 -c:a aac"
+
+# Test with video filter (blur effect)
+node ../ff_custom.js -i samples/sample_video.mp4 -o test_blur -p "-vf \"boxblur=5:5\" -c:v libx264 -c:a aac"
+
+# Test with JSON config file
+node ../ff_custom.js -C json/test_ff_custom.json
+
+# Test with JSON config and video filter
+node ../ff_custom.js -C json/test_ff_custom_filter.json
+
+# Test directory processing with regex
+node ../ff_custom.js -C json/test_ff_custom_regex.json
 ```
 
 ### Automated Testing
@@ -361,11 +438,17 @@ node test_ff_colour.js
 # Run ff_convert.js tests
 node test_ff_convert.js
 
+# Run ff_crop.js tests
+node test_ff_crop.js
+
 # Run ff_concat.js tests
 node test_ff_concat.js
 
 # Run ff_aspect_ratio.js tests
 node test_ff_aspect_ratio.js
+
+# Run ff_custom.js tests
+node test_ff_custom.js
 ```
 
 ## Expected Behavior

@@ -1,0 +1,10 @@
+{
+  "input": "samples",
+  "output": "crop_folder_test.mp4",
+  "width": "500",
+  "height": "400",
+  "xpixels": "(iw-ow)/2",
+  "ypixels": "(ih-oh)/2",
+  "grep": "test_video",
+  "loglevel": "error"
+}

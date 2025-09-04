@@ -1,0 +1,7 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "custom_test",
+  "params": "-c:v libx264 -c:a aac -strict experimental",
+  "description": "Basic custom conversion test",
+  "loglevel": "error"
+}
