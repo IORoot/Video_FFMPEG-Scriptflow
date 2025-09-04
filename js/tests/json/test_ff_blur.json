@@ -1,0 +1,7 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "blur_test.mp4",
+  "strength": "0.5",
+  "steps": "1",
+  "loglevel": "error"
+}

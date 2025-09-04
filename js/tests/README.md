@@ -4,6 +4,65 @@ This directory contains test files and utilities for the JavaScript versions of 
 
 ## Test Files
 
+### `json/test_ff_blur.json`
+Basic test configuration for the `ff_blur.js` script. Applies Gaussian blur with default settings.
+
+### `json/test_ff_blur_strong.json`
+Test configuration for the `ff_blur.js` script that applies strong blur with multiple steps.
+
+### `json/test_ff_blur_grep.json`
+Test configuration for the `ff_blur.js` script that tests grep filtering on directory input.
+
+### `json/test_ff_blur_regex.json`
+Test configuration for the `ff_blur.js` script that tests regex patterns in grep (e.g., `\d_.*\.mp4`).
+
+### `test_ff_blur.js`
+Automated test runner specifically for the `ff_blur.js` script that tests:
+1. **Command line argument parsing** (basic blur)
+2. **Command line argument parsing** (strong blur with multiple steps)
+3. **CLI with grep filtering** (directory processing with pattern matching)
+4. **CLI with regex grep filtering** (regex patterns via command line)
+5. **JSON config file loading** (basic blur)
+6. **JSON config file loading** (strong blur)
+7. **JSON config with grep filtering** (directory processing via config)
+8. **JSON config with regex grep filtering** (regex patterns via JSON)
+9. Help command functionality
+10. Error handling for missing files
+11. **FFprobe validation** - Verifies output file properties:
+    - Video dimensions are maintained (1280x720)
+    - Video codec is preserved (h264)
+    - Video duration is maintained
+    - File size changes appropriately (blur effect)
+    - **Directory processing with grep filtering** (creates numbered output files)
+    - **Regex pattern matching** (supports complex regex patterns)
+
+### `json/test_ff_audio.json`
+Basic test configuration for the `ff_audio.js` script. Overlays audio on video with default settings.
+
+### `json/test_ff_audio_remove.json`
+Test configuration for the `ff_audio.js` script that removes audio from video.
+
+### `json/test_ff_audio_delayed.json`
+Test configuration for the `ff_audio.js` script that tests delayed audio overlay with speed and shortest options.
+
+### `test_ff_audio.js`
+Automated test runner specifically for the `ff_audio.js` script that tests:
+1. **Command line argument parsing** (audio overlay)
+2. **Command line argument parsing** (audio removal)
+3. **Command line argument parsing** (delayed audio with speed)
+4. **JSON config file loading** (basic audio overlay)
+5. **JSON config file loading** (audio removal)
+6. **JSON config file loading** (delayed audio with speed and shortest)
+7. Help command functionality
+8. Error handling for missing files
+9. Error handling for missing audio files
+10. **FFprobe validation** - Verifies output file properties:
+    - Audio stream presence/absence (overlay/removal)
+    - Video dimensions are maintained (1280x720)
+    - Codec is preserved (h264)
+    - Duration changes appropriately
+    - Input files are valid video/audio files
+
 ### `json/test_ff_append.json`
 Basic test configuration for the `ff_append.js` script. Appends the same video to itself.
 
@@ -87,6 +146,8 @@ The following files must exist in the `samples/` directory:
 ## Running Tests
 
 ### Manual Testing
+
+#### ff_append.js
 ```bash
 # Test with command line arguments
 node ../ff_append.js -f samples/sample_video.mp4 -s samples/sample_video.mp4 -o test_output.mp4
@@ -96,7 +157,37 @@ node ../ff_append.js -C json/test_ff_append.json
 
 # Test help
 node ../ff_append.js --help
+```
 
+#### ff_audio.js
+```bash
+# Test audio overlay
+node ../ff_audio.js -i samples/sample_video.mp4 -a samples/sample_voice.mp3 -o test_audio.mp4
+
+# Test audio removal
+node ../ff_audio.js -i samples/sample_video.mp4 -r -o test_no_audio.mp4
+
+# Test delayed audio with speed
+node ../ff_audio.js -i samples/sample_video.mp4 -a samples/sample_voice.mp3 -s 2 -p 1.5 -o test_delayed.mp4
+```
+
+#### ff_blur.js
+```bash
+# Test basic blur
+node ../ff_blur.js -i samples/sample_video.mp4 -s 0.5 -t 1 -o test_blur.mp4
+
+# Test strong blur with multiple steps
+node ../ff_blur.js -i samples/sample_video.mp4 -s 2.0 -t 3 -o test_strong_blur.mp4
+
+# Test blur with grep filtering
+node ../ff_blur.js -i samples -s 1.0 -t 2 -o grep_blur.mp4 -g test_video
+
+# Test blur with regex patterns
+node ../ff_blur.js -i samples -s 0.8 -t 1 -o regex_blur.mp4 -g "\\d_.*\\.mp4"
+```
+
+#### ff_aspect_ratio.js
+```bash
 # Test aspect ratio with grep filtering
 node ../ff_aspect_ratio.js -i samples -a 16:9 -g test_video
 
@@ -109,6 +200,12 @@ node ../ff_aspect_ratio.js -i samples -a 16:9 -g "\\d_.*\\.mp4"
 ```bash
 # Run ff_append.js tests
 node test_ff_append.js
+
+# Run ff_audio.js tests
+node test_ff_audio.js
+
+# Run ff_blur.js tests
+node test_ff_blur.js
 
 # Run ff_aspect_ratio.js tests
 node test_ff_aspect_ratio.js

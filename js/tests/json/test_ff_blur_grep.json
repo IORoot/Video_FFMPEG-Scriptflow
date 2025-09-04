@@ -1,0 +1,8 @@
+{
+  "input": "samples",
+  "output": "grep_blur_test.mp4",
+  "strength": "1.0",
+  "steps": "2",
+  "grep": "test_video",
+  "loglevel": "error"
+}
