@@ -1,0 +1,13 @@
+{
+  "ff_unsharp": {
+    "description": "Apply unsharp mask with custom settings using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "unsharp_custom.json.mp4",
+    "lx": "5",
+    "ly": "5",
+    "la": "2.0",
+    "cx": "3",
+    "cy": "3",
+    "ca": "0.5"
+  }
+}

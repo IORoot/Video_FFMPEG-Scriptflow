@@ -460,6 +460,24 @@ Test configuration for the `ff_transition.js` script that creates transitions wi
 ### `json/test_ff_transition_verbose.json`
 Test configuration for the `ff_transition.js` script that creates video transitions with verbose logging.
 
+### `json/test_ff_unsharp_basic.json`
+Test configuration for the `ff_unsharp.js` script that applies basic unsharp mask.
+
+### `json/test_ff_unsharp_custom.json`
+Test configuration for the `ff_unsharp.js` script that applies unsharp mask with custom settings.
+
+### `json/test_ff_unsharp_max.json`
+Test configuration for the `ff_unsharp.js` script that applies maximum sharpening.
+
+### `json/test_ff_unsharp_blur.json`
+Test configuration for the `ff_unsharp.js` script that applies blur effect using negative values.
+
+### `json/test_ff_unsharp_luma.json`
+Test configuration for the `ff_unsharp.js` script that applies unsharp mask with custom luma settings.
+
+### `json/test_ff_unsharp_verbose.json`
+Test configuration for the `ff_unsharp.js` script that applies unsharp mask with verbose logging.
+
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
 1. **Command line argument parsing** (90-degree rotation)
@@ -640,6 +658,26 @@ The test validates:
 - Multiple input videos are handled properly
 - Transition timing and effects work correctly
 - File size and duration are appropriate
+
+### `tests_ff_unsharp.js`
+Automated test runner specifically for the `ff_unsharp.js` script that tests:
+1. **Basic unsharp mask** (default settings)
+2. **Custom luma settings** (7x7 matrix with 1.5 strength)
+3. **Custom chroma settings** (3x3 matrix with 0.5 strength)
+4. **Custom alpha settings** (9x9 matrix with 0.3 strength)
+5. **Blur effect** (negative values for blurring)
+6. **Custom loglevel** (verbose logging)
+7. **JSON configuration tests** - Basic, custom settings, maximum sharpening
+
+The test validates:
+- Output files are created successfully
+- Video properties are maintained (codec, dimensions)
+- Unsharp mask effects are applied correctly
+- FFmpeg commands execute without errors
+- JSON configuration files are processed correctly
+- Different matrix sizes and strength values work correctly
+- Blur effects work with negative values
+- File size and quality are appropriate
 
 ### `test_ff_pad.js`
 Automated test runner specifically for the `ff_pad.js` script that tests:
@@ -1452,6 +1490,35 @@ node ../ff_transition.js -C json/test_ff_transition_effects.json
 node ../ff_transition.js -C json/test_ff_transition_verbose.json
 ```
 
+#### ff_unsharp.js
+```bash
+# Test basic unsharp mask
+node ../ff_unsharp.js -i samples/sample_video.mp4 -o test_unsharp.mp4
+
+# Test with custom luma settings
+node ../ff_unsharp.js -i samples/sample_video.mp4 -lx 7 -ly 7 -la 1.5 -o test_unsharp_luma.mp4
+
+# Test with custom chroma settings
+node ../ff_unsharp.js -i samples/sample_video.mp4 -cx 3 -cy 3 -ca 0.5 -o test_unsharp_chroma.mp4
+
+# Test blur effect (negative values)
+node ../ff_unsharp.js -i samples/sample_video.mp4 -la -0.5 -ca -0.2 -o test_unsharp_blur.mp4
+
+# Test with custom loglevel
+node ../ff_unsharp.js -i samples/sample_video.mp4 -l info -o test_unsharp_verbose.mp4
+
+# Test help command
+node ../ff_unsharp.js --help
+
+# Test JSON configurations
+node ../ff_unsharp.js -C json/test_ff_unsharp_basic.json
+node ../ff_unsharp.js -C json/test_ff_unsharp_custom.json
+node ../ff_unsharp.js -C json/test_ff_unsharp_max.json
+node ../ff_unsharp.js -C json/test_ff_unsharp_blur.json
+node ../ff_unsharp.js -C json/test_ff_unsharp_luma.json
+node ../ff_unsharp.js -C json/test_ff_unsharp_verbose.json
+```
+
 #### ff_lut.js
 ```bash
 # Test basic LUT application (Andromeda)
@@ -1594,6 +1661,9 @@ node tests_ff_transcode.js
 
 # Run ff_transition.js tests
 node tests_ff_transition.js
+
+# Run ff_unsharp.js tests
+node tests_ff_unsharp.js
 ```
 ```
 ```
