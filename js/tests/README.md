@@ -320,6 +320,34 @@ Automated test runner specifically for the `ff_scale.js` script that tests:
 5. **Scale using input dimensions** (width=iw, height=ih/2)
 6. **Scale to even dimensions** (width=-2, height=-2)
 7. **FFprobe validation** - Verifies output file dimensions and properties:
+
+### `test_ff_sh_runner.js`
+Automated test runner specifically for the `ff_sh_runner.js` script that tests:
+1. **Basic echo command** (simple text output)
+2. **List directory contents** (ls -la command)
+3. **Create and remove file** (touch command with file verification)
+4. **Get current date** (date command)
+5. **Check system info** (uname -a command)
+6. **Count lines in file** (wc -l command)
+7. **Command execution validation** - Verifies:
+    - Commands execute successfully (exit code 0)
+    - File operations work correctly
+    - Output is captured and displayed
+    - Error handling works properly
+
+### `test_ff_sharpen.js`
+Automated test runner specifically for the `ff_sharpen.js` script that tests:
+1. **Basic sharpening with default values** (pixel=5.0, sharpen=1.0)
+2. **Light sharpening** (pixel=3.0, sharpen=0.5)
+3. **Strong sharpening** (pixel=7.0, sharpen=2.5)
+4. **Maximum sharpening** (pixel=11.0, sharpen=3.0)
+5. **Blur effect** (negative sharpen value -1.0)
+6. **No effect** (zero sharpen value 0.0)
+7. **FFprobe validation** - Verifies:
+    - Video dimensions are preserved
+    - Duration is maintained
+    - File size changes appropriately
+    - Sharpening parameters are applied correctly
     - Video duration is preserved during rotation
     - File size changes appropriately (rotation operation)
     - Output files are created successfully
@@ -820,6 +848,59 @@ node ../ff_scale.js -i samples/sample_video.mp4 -w 1280 -h 720 -l warning -o tes
 node ../ff_scale.js --help
 ```
 
+#### ff_sh_runner.js
+```bash
+# Test basic echo command
+echo '{"ff_sh_runner":{"script":"echo","parameters":"Hello World","output":""}}' > test_config.json
+node ../ff_sh_runner.js -C test_config.json
+
+# Test file creation
+echo '{"ff_sh_runner":{"script":"touch","parameters":"","output":"test_file.txt"}}' > test_config.json
+node ../ff_sh_runner.js -C test_config.json
+
+# Test directory listing
+echo '{"ff_sh_runner":{"script":"ls","parameters":"-la","output":""}}' > test_config.json
+node ../ff_sh_runner.js -C test_config.json
+
+# Test date command
+echo '{"ff_sh_runner":{"script":"date","parameters":"","output":""}}' > test_config.json
+node ../ff_sh_runner.js -C test_config.json
+
+# Test system info
+echo '{"ff_sh_runner":{"script":"uname","parameters":"-a","output":""}}' > test_config.json
+node ../ff_sh_runner.js -C test_config.json
+
+# Test help command
+node ../ff_sh_runner.js --help
+```
+
+#### ff_sharpen.js
+```bash
+# Test basic sharpening with default values
+node ../ff_sharpen.js -i samples/sample_video.mp4 -o test_sharpen_default.mp4
+
+# Test light sharpening
+node ../ff_sharpen.js -i samples/sample_video.mp4 -p 3.0 -s 0.5 -o test_sharpen_light.mp4
+
+# Test strong sharpening
+node ../ff_sharpen.js -i samples/sample_video.mp4 -p 7.0 -s 2.5 -o test_sharpen_strong.mp4
+
+# Test maximum sharpening
+node ../ff_sharpen.js -i samples/sample_video.mp4 -p 11.0 -s 3.0 -o test_sharpen_max.mp4
+
+# Test blur effect (negative sharpen)
+node ../ff_sharpen.js -i samples/sample_video.mp4 -p 5.0 -s -1.0 -o test_sharpen_blur.mp4
+
+# Test no effect (zero sharpen)
+node ../ff_sharpen.js -i samples/sample_video.mp4 -p 5.0 -s 0.0 -o test_sharpen_zero.mp4
+
+# Test with custom loglevel
+node ../ff_sharpen.js -i samples/sample_video.mp4 -p 5.0 -s 1.0 -l warning -o test_sharpen_warning.mp4
+
+# Test help command
+node ../ff_sharpen.js --help
+```
+
 #### ff_lut.js
 ```bash
 # Test basic LUT application (Andromeda)
@@ -929,6 +1010,12 @@ node test_ff_rotate.js
 
 # Run ff_scale.js tests
 node test_ff_scale.js
+
+# Run ff_sh_runner.js tests
+node tests_ff_sh_runner.js
+
+# Run ff_sharpen.js tests
+node tests_ff_sharpen.js
 ```
 ```
 ```
