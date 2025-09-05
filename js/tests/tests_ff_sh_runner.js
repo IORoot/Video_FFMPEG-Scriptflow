@@ -11,6 +11,7 @@ const path = require('path');
 const { comprehensiveCleanup } = require('./test_cleanup');
 
 const TEST_DIR = path.join(__dirname, '..', 'tests');
+const OUTPUT_DIR = __dirname;
 
 // Test configurations
 const testConfigs = [
@@ -76,7 +77,7 @@ const testConfigs = [
                 description: "Count lines in README",
                 script: "wc",
                 parameters: "-l",
-                output: "../../../README.md"
+                output: "../../README.md"
             }
         }
     },

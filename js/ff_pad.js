@@ -24,6 +24,7 @@ let XPIXELS = "(ow-iw)/2";
 let YPIXELS = "(oh-ih)/2";
 let COLOUR = "#fb923c";
 let DAR = "16/9";
+let CONFIG_FILE = null;
 let GREP = "";
 
 // ╭──────────────────────────────────────────────────────────╮
@@ -151,7 +152,7 @@ function parseArguments() {
 
             case '-C':
             case '--config':
-                readConfig(args[++i]);
+                CONFIG_FILE = args[++i];
                 break;
 
             case '-g':
@@ -186,12 +187,26 @@ function parseArguments() {
 // ╭──────────────────────────────────────────────────────────╮
 // │        Read config-file if supplied. Requires JQ         │
 // ╰──────────────────────────────────────────────────────────╯
-function readConfig(configFile) {
+function readConfig() {
+    if (!CONFIG_FILE) return;
+    
     try {
-        const config = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+        const configData = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
+        
+        // Handle nested structure (e.g., {"ff_pad": {...}})
+        let config = configData;
+        if (Object.keys(configData).length === 1 && typeof configData[Object.keys(configData)[0]] === 'object') {
+            config = configData[Object.keys(configData)[0]];
+        }
         
         // Apply config values
-        if (config.input) INPUT_FILENAME = path.resolve(config.input);
+        if (config.input) {
+            if (process.env.SCRIPTFLOW_CONFIG_DIR) {
+                INPUT_FILENAME = path.resolve(process.env.SCRIPTFLOW_CONFIG_DIR, config.input);
+            } else {
+                INPUT_FILENAME = path.resolve(path.dirname(CONFIG_FILE), config.input);
+            }
+        }
         if (config.output) OUTPUT_FILENAME = config.output;
         if (config.width) WIDTH = config.width;
         if (config.height) HEIGHT = config.height;
@@ -270,6 +285,7 @@ function printFlags() {
 // │                                                          │
 // ╰──────────────────────────────────────────────────────────╯
 async function main() {
+    readConfig();
     printFlags();
 
     const stats = fs.statSync(INPUT_FILENAME);

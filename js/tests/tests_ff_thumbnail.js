@@ -270,8 +270,11 @@ async function runAllTests() {
     
     console.log(`\n📊 Test Results: ${passedTests}/${totalTests} tests passed`);
 
-    // Final cleanup - remove all test output files
-    const totalCleaned = comprehensiveCleanup(__dirname, { verbose: true });
+    // Final cleanup - remove all test output files including images
+    const totalCleaned = comprehensiveCleanup(__dirname, { 
+        verbose: true,
+        extensions: ['.mp4', '.mov', '.avi', '.mkv', '.json', '.txt', '.srt', '.png', '.jpg', '.jpeg']
+    });
     
     if (totalCleaned > 0) {
         console.log(`\n🧹 Final cleanup completed: ${totalCleaned} files removed`);

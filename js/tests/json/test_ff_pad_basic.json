@@ -1,8 +1,8 @@
 {
   "ff_pad": {
     "description": "Add padding around the video with orange background",
-    "input": "tests/sample_video.mp4",
-    "output": "tests/output/ff_pad_basic.mp4",
+    "input": "../../../tests/sample_video.mp4",
+    "output": "ff_pad_basic.mp4",
     "height": "ih*2",
     "colour": "#fb923c"
   }

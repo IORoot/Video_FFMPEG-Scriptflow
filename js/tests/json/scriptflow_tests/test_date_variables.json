@@ -1,7 +1,7 @@
 {
   "ff_scale": {
     "description": "Scale video with date",
-    "input": "../../../tests/samples/sample_video.mp4",
+    "input": "../../../../tests/sample_video.mp4",
     "output": "scaled_<DATE_%d-%m-%y>.mp4",
     "width": 640,
     "height": 480
@@ -19,7 +19,7 @@
   "ff_watermark": {
     "description": "Add watermark with time",
     "input": "text_<DATE_%A %d %B %Y>.mp4",
-    "watermark": "../../../tests/samples/sample_image.png",
+    "watermark": "../../../../tests/sample_image.png",
     "output": "final_<DATE_%H-%M-%S>.mp4",
     "xpixels": "10",
     "ypixels": "10",

@@ -147,7 +147,19 @@ async function runTests() {
             await runPadScript(test.args);
             
             // Get output video info
-            const outputPath = test.args.find(arg => arg.endsWith('.mp4') && arg !== SAMPLE_VIDEO);
+            // Determine output file path
+            let outputPath;
+            if (test.args.includes('-C') || test.args.includes('--config')) {
+                // For JSON config tests, read the output filename from the config
+                const configIndex = test.args.findIndex(arg => arg === '-C' || arg === '--config');
+                const configFile = test.args[configIndex + 1];
+                const config = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+                const configData = config.ff_pad || config;
+                outputPath = configData.output;
+            } else {
+                // For CLI tests, find the output file in arguments
+                outputPath = test.args.find(arg => arg.endsWith('.mp4') && arg !== SAMPLE_VIDEO);
+            }
             const outputInfo = await getVideoInfo(outputPath);
             console.log(`📏 Output: ${outputInfo.width}x${outputInfo.height} (${outputInfo.duration}s)`);
 

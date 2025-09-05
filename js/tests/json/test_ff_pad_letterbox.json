@@ -1,8 +1,8 @@
 {
   "ff_pad": {
     "description": "Create black letterbox bars around the video",
-    "input": "tests/sample_video.mp4",
-    "output": "tests/output/ff_pad_letterbox.mp4",
+    "input": "../../../tests/sample_video.mp4",
+    "output": "ff_pad_letterbox.mp4",
     "width": "iw",
     "height": "ih+100",
     "xpixels": "(ow-iw)/2",

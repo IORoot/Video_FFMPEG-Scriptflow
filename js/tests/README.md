@@ -848,6 +848,22 @@ The following files must exist in the `samples/` directory:
 
 ## Running Tests
 
+### Test Runners
+
+#### Quick Test Runner (Recommended)
+Run a subset of tests for quick validation:
+```bash
+cd js/tests
+node quick_test_runner.js
+```
+
+#### Comprehensive Test Runner
+Run all 37 test scripts with detailed reporting:
+```bash
+cd js/tests
+node run_all_tests.js
+```
+
 ### Manual Testing
 
 #### ff_append.js
