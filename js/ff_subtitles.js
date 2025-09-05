@@ -520,8 +520,16 @@ async function main() {
         exitGracefully();
     }
     
+    // Create a working copy of the subtitle file to avoid modifying the original
+    const workingSubtitleFile = `${SUBTITLE_FILENAME}.working`;
+    fs.copyFileSync(SUBTITLE_FILENAME, workingSubtitleFile);
+    
     // Create backup of original subtitle file
     fs.copyFileSync(SUBTITLE_FILENAME, `${SUBTITLE_FILENAME}.original`);
+    
+    // Update SUBTITLE_FILENAME to point to the working copy
+    const originalSubtitleFilename = SUBTITLE_FILENAME;
+    SUBTITLE_FILENAME = workingSubtitleFile;
     
     if (REMOVEDUPES) {
         removeDupes();
@@ -553,9 +561,10 @@ async function main() {
         ffmpeg.on('close', (code) => {
             if (code === 0) {
                 console.log(`✅ Output : ${OUTPUT_FILENAME}`);
-                // Clean up ASS file
+                // Clean up temporary files
                 try {
                     fs.unlinkSync(ASS_FILE);
+                    fs.unlinkSync(workingSubtitleFile);
                 } catch (error) {
                     // Ignore cleanup errors
                 }
