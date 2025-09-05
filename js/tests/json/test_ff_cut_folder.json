@@ -1,0 +1,8 @@
+{
+  "input": "samples",
+  "output": "cut_folder_test.mp4",
+  "start": "00:00:01",
+  "end": "00:00:06",
+  "grep": "test_video",
+  "loglevel": "error"
+}

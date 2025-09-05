@@ -1,0 +1,7 @@
+{
+  "ff_social_media": {
+    "description": "Basic social media conversion",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "social_basic.json.mp4"
+  }
+}

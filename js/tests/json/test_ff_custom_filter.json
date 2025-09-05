@@ -1,0 +1,7 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "custom_filter_test",
+  "params": "-vf \"drawtext=text='Custom Filter Test':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2\" -c:v libx264 -c:a aac",
+  "description": "Custom conversion with video filter test",
+  "loglevel": "error"
+}

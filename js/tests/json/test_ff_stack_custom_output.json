@@ -1,0 +1,9 @@
+{
+  "ff_stack": {
+    "description": "Create horizontal stack with custom output",
+    "input1": "../../tests/samples/sample_video.mp4",
+    "input2": "../../tests/samples/sample_video2.mp4",
+    "output": "custom_horizontal_stack.json.mp4",
+    "horizontal": "TRUE"
+  }
+}

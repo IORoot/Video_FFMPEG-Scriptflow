@@ -1,0 +1,7 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "flip_test",
+  "horizontal": true,
+  "description": "Horizontal flip test",
+  "loglevel": "error"
+}

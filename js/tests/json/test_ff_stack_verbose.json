@@ -1,0 +1,10 @@
+{
+  "ff_stack": {
+    "description": "Create vertical stack with custom loglevel",
+    "input1": "../../tests/samples/sample_video.mp4",
+    "input2": "../../tests/samples/sample_video2.mp4",
+    "output": "stack_vertical_verbose.json.mp4",
+    "vertical": "TRUE",
+    "loglevel": "info"
+  }
+}

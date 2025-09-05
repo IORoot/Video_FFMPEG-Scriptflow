@@ -1,0 +1,7 @@
+{
+  "input": "samples/sample_image.jpeg",
+  "output": "image_test",
+  "duration": "7",
+  "description": "Image to video test",
+  "loglevel": "error"
+}

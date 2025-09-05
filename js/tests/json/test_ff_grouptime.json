@@ -1,0 +1,11 @@
+{
+  "input1": "samples/1_test_video.mp4",
+  "input2": "samples/2_test_video.mp4",
+  "input3": "samples/3_test_video.mp4",
+  "input4": "samples/4_test_video.mp4",
+  "output": "grouptime_test",
+  "duration": "45",
+  "arrangement": "standard",
+  "description": "Group time test with 4 files",
+  "loglevel": "error"
+}

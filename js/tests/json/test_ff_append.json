@@ -1,0 +1,6 @@
+{
+  "first": "samples/sample_video.mp4",
+  "second": "samples/sample_video.mp4",
+  "output": "js_append_output.mp4",
+  "loglevel": "error"
+}

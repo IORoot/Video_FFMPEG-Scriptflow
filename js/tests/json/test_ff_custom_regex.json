@@ -1,0 +1,8 @@
+{
+  "input": "samples",
+  "output": "custom_regex_test",
+  "params": "-c:v libx264 -c:a aac -strict experimental",
+  "description": "Custom conversion with regex pattern",
+  "grep": "\\d_.*\\.mp4",
+  "loglevel": "error"
+}

@@ -1,0 +1,8 @@
+{
+  "ff_subtitles": {
+    "description": "Embed subtitles with default settings",
+    "input": "../../tests/samples/sample_video.mp4",
+    "subtitles": "../../tests/samples/sample_subtitle.srt",
+    "output": "subtitles_basic.json.mp4"
+  }
+}

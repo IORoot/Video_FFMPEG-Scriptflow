@@ -1,0 +1,9 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "crop_small_test.mp4",
+  "width": "200",
+  "height": "150",
+  "xpixels": "100",
+  "ypixels": "100",
+  "loglevel": "error"
+}

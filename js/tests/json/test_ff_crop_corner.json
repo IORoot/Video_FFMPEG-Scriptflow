@@ -1,0 +1,9 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "crop_corner_test.mp4",
+  "width": "400",
+  "height": "300",
+  "xpixels": "0",
+  "ypixels": "0",
+  "loglevel": "info"
+}

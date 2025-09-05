@@ -1,0 +1,9 @@
+{
+  "ff_thumbnail": {
+    "description": "Generate thumbnails with custom settings using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "thumbnail_custom.json.jpg",
+    "count": "6",
+    "sample": "100"
+  }
+}

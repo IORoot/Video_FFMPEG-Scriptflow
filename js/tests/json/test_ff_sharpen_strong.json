@@ -1,0 +1,9 @@
+{
+  "ff_sharpen": {
+    "description": "Strong sharpening effect",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "sharpen_strong.json.mp4",
+    "pixel": "7.0",
+    "sharpen": "2.5"
+  }
+}

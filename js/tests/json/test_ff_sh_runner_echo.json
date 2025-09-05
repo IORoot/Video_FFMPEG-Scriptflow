@@ -1,0 +1,8 @@
+{
+  "ff_sh_runner": {
+    "description": "Run echo command",
+    "script": "echo",
+    "parameters": "Hello from JSON config",
+    "output": ""
+  }
+}

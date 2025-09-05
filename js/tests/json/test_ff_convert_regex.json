@@ -1,0 +1,7 @@
+{
+  "input": "samples",
+  "output": "convert_regex_test",
+  "format": "mkv",
+  "grep": "\\d_.*\\.mp4",
+  "loglevel": "error"
+}

@@ -1,0 +1,9 @@
+{
+  "ff_social_media": {
+    "description": "Social media conversion with warning loglevel",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "social_warning_loglevel.json.mp4",
+    "instagram": "true",
+    "loglevel": "warning"
+  }
+}

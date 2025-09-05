@@ -1,0 +1,9 @@
+{
+  "ff_scale": {
+    "description": "Scale video to 4K resolution",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "scale_4k.json.mp4",
+    "width": "3840",
+    "height": "2160"
+  }
+}

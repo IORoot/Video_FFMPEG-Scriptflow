@@ -1,0 +1,8 @@
+{
+  "ff_sh_runner": {
+    "description": "Create a test file",
+    "script": "touch",
+    "parameters": "",
+    "output": "test_file_from_json.txt"
+  }
+}

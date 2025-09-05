@@ -1,0 +1,7 @@
+{
+  "input": "tests/samples/sample_video.mp4",
+  "output": "lut_test",
+  "lut": "../../lib/luts/Andromeda.cube",
+  "description": "LUT application test",
+  "loglevel": "error"
+}

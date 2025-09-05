@@ -1,0 +1,10 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "brightness_test.mp4",
+  "brightness": "0.5",
+  "contrast": "1.2",
+  "gamma": "1.5",
+  "saturation": "1.8",
+  "weight": "0.8",
+  "loglevel": "info"
+}

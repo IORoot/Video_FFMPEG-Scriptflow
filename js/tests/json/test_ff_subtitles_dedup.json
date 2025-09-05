@@ -1,0 +1,10 @@
+{
+  "ff_subtitles": {
+    "description": "Embed subtitles with duplicate removal",
+    "input": "../../tests/samples/sample_video.mp4",
+    "subtitles": "../../tests/samples/sample_subtitle.srt",
+    "output": "subtitles_dedup.json.mp4",
+    "removedupes": "TRUE",
+    "styles": "FontSize=20"
+  }
+}

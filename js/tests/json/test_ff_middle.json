@@ -1,0 +1,7 @@
+{
+  "input": "tests/samples/sample_video.mp4",
+  "output": "middle_test",
+  "trim": "3",
+  "description": "Middle trim test",
+  "loglevel": "error"
+}

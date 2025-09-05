@@ -1,0 +1,7 @@
+{
+  "input": "samples",
+  "output": "convert_folder_test",
+  "format": "avi",
+  "grep": "test_video",
+  "loglevel": "error"
+}

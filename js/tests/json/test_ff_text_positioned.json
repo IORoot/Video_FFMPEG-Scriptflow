@@ -1,0 +1,12 @@
+{
+  "ff_text": {
+    "description": "Add text with custom positioning using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "text_positioned.json.mp4",
+    "text": "Positioned Text",
+    "xpixels": "100",
+    "ypixels": "100",
+    "colour": "red",
+    "size": "28"
+  }
+}

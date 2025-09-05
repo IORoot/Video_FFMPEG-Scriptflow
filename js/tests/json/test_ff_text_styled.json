@@ -1,0 +1,13 @@
+{
+  "ff_text": {
+    "description": "Add styled text with box using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "text_styled.json.mp4",
+    "text": "Styled JSON Text",
+    "colour": "yellow",
+    "size": "30",
+    "box": "1",
+    "boxcolour": "green",
+    "boxborder": "8"
+  }
+}

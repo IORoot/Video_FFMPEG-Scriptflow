@@ -1,0 +1,10 @@
+{
+  "ff_subtitles": {
+    "description": "Embed subtitles with dynamic text (word-by-word)",
+    "input": "../../tests/samples/sample_video.mp4",
+    "subtitles": "../../tests/samples/sample_subtitle.srt",
+    "output": "subtitles_dynamic.json.mp4",
+    "dynamictext": "TRUE",
+    "styles": "FontSize=18,PrimaryColour=&H00FFFF"
+  }
+}

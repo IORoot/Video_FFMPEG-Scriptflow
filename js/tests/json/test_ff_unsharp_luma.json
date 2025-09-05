@@ -1,0 +1,10 @@
+{
+  "ff_unsharp": {
+    "description": "Apply unsharp mask with custom luma settings",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "unsharp_luma.json.mp4",
+    "lx": "7",
+    "ly": "7",
+    "la": "1.5"
+  }
+}

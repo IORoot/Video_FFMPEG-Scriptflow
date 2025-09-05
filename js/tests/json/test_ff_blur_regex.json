@@ -1,0 +1,8 @@
+{
+  "input": "samples",
+  "output": "regex_blur_test.mp4",
+  "strength": "0.8",
+  "steps": "1",
+  "grep": "\\d_.*\\.mp4",
+  "loglevel": "error"
+}

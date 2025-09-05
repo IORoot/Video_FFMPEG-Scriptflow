@@ -1,0 +1,11 @@
+{
+  "ff_transition": {
+    "description": "Create transition with custom duration using JSON",
+    "input": [
+      "../../tests/samples/sample_video.mp4",
+      "../../tests/samples/sample_video2.mp4"
+    ],
+    "output": "transition_duration.json.mp4",
+    "duration": "2"
+  }
+}

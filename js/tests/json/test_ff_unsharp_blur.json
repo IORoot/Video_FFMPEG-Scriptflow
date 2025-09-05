@@ -1,0 +1,9 @@
+{
+  "ff_unsharp": {
+    "description": "Apply blur effect using negative unsharp values",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "unsharp_blur.json.mp4",
+    "la": "-0.5",
+    "ca": "-0.2"
+  }
+}

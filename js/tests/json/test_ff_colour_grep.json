@@ -1,0 +1,11 @@
+{
+  "input": "samples",
+  "output": "grep_colour_test.mp4",
+  "brightness": "0.3",
+  "contrast": "1.1",
+  "gamma": "1.2",
+  "saturation": "1.5",
+  "weight": "0.9",
+  "grep": "test_video",
+  "loglevel": "error"
+}

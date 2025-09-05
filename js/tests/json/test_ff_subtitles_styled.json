@@ -1,0 +1,9 @@
+{
+  "ff_subtitles": {
+    "description": "Embed subtitles with custom font and color",
+    "input": "../../tests/samples/sample_video.mp4",
+    "subtitles": "../../tests/samples/sample_subtitle.srt",
+    "output": "subtitles_styled.json.mp4",
+    "styles": "FontName=Arial,FontSize=24,PrimaryColour=&H00FF00,Outline=2"
+  }
+}

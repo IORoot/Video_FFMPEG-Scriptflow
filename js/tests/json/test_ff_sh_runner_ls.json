@@ -1,0 +1,8 @@
+{
+  "ff_sh_runner": {
+    "description": "List directory contents",
+    "script": "ls",
+    "parameters": "-la",
+    "output": ""
+  }
+}

@@ -24,24 +24,132 @@ A React-based node editor for creating visual FFMPEG pipelines using the Video F
 
 ### Prerequisites
 
-- Node.js 16+ 
-- npm or yarn
-- FFMPEG installed and available in PATH
-- JQ installed for JSON processing
+Before installing the GUI, you need the following tools installed on your macOS system:
 
-### Installation
+- **Git** - Version control system
+- **Node.js 16+** - JavaScript runtime
+- **npm or yarn** - Package managers
+- **FFMPEG** - Video processing toolkit
+- **JQ** - JSON command-line processor
 
-1. Install dependencies:
-```bash
-npm install
-```
+### Installation on macOS
 
-2. Start the development server:
-```bash
-npm start
-```
+#### Option 1: Using Homebrew (Recommended)
 
-3. Open [http://localhost:3000](http://localhost:3000) to view the GUI
+If you have Homebrew installed, this is the fastest method:
+
+1. **Install Homebrew** (if not already installed):
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+2. **Install Git**:
+   ```bash
+   brew install git
+   ```
+
+3. **Install Node.js** (includes npm):
+   ```bash
+   brew install node
+   ```
+
+4. **Install FFMPEG**:
+   ```bash
+   brew install ffmpeg
+   ```
+
+5. **Install JQ**:
+   ```bash
+   brew install jq
+   ```
+
+6. **Verify installations**:
+   ```bash
+   git --version
+   node --version
+   npm --version
+   ffmpeg -version
+   jq --version
+   ```
+
+#### Option 2: Manual Installation (without Homebrew)
+
+If you prefer not to use Homebrew, you can install each component manually:
+
+1. **Install Git**:
+   - Download from: https://git-scm.com/download/mac
+   - Or use the Xcode Command Line Tools:
+     ```bash
+     xcode-select --install
+     ```
+
+2. **Install Node.js**:
+   - Download the macOS installer from: https://nodejs.org/
+   - Choose the LTS version (recommended)
+   - Run the installer and follow the prompts
+   - Verify installation: `node --version` and `npm --version`
+
+3. **Install FFMPEG**:
+   - Download from: https://ffmpeg.org/download.html#build-mac
+   - Or use the official macOS builds: https://evermeet.cx/ffmpeg/
+   - Extract and add to PATH:
+     ```bash
+     # Add to your ~/.zshrc or ~/.bash_profile
+     export PATH="/path/to/ffmpeg:$PATH"
+     ```
+
+4. **Install JQ**:
+   - Download from: https://stedolan.github.io/jq/download/
+   - Or compile from source:
+     ```bash
+     git clone https://github.com/stedolan/jq.git
+     cd jq
+     autoreconf -i
+     ./configure --disable-maintainer-mode
+     make
+     sudo make install
+     ```
+
+#### GUI Installation
+
+Once all prerequisites are installed:
+
+1. **Navigate to the GUI directory**:
+   ```bash
+   cd gui
+   ```
+
+2. **Install Node.js dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**:
+   ```bash
+   npm start
+   ```
+
+4. **Open your browser** and navigate to [http://localhost:3000](http://localhost:3000)
+
+#### Troubleshooting Installation Issues
+
+**If npm install fails:**
+- Ensure you have the latest Node.js version
+- Clear npm cache: `npm cache clean --force`
+- Try using yarn instead: `yarn install`
+
+**If FFMPEG is not found:**
+- Verify FFMPEG is in your PATH: `which ffmpeg`
+- Add FFMPEG to PATH in your shell profile (~/.zshrc or ~/.bash_profile)
+- Restart your terminal after PATH changes
+
+**If JQ is not found:**
+- Verify JQ installation: `which jq`
+- Ensure it's executable: `chmod +x /usr/local/bin/jq`
+
+**Permission issues:**
+- Use `sudo` for system-wide installations
+- Or install with Homebrew to avoid permission problems
 
 ### Building for Production
 

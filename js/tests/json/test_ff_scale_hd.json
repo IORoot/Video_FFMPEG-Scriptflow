@@ -1,0 +1,9 @@
+{
+  "ff_scale": {
+    "description": "Scale video to HD resolution",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "scale_hd.json.mp4",
+    "width": "1280",
+    "height": "720"
+  }
+}

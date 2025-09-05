@@ -1,0 +1,6 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "aspect_ratio_test_output.mp4",
+  "aspect": "16:9",
+  "loglevel": "error"
+}

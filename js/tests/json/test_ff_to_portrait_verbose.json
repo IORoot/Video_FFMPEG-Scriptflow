@@ -1,0 +1,8 @@
+{
+  "ff_to_portrait": {
+    "description": "Convert to portrait with verbose logging using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "portrait_verbose.json.mp4",
+    "loglevel": "warning"
+  }
+}

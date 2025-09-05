@@ -1,0 +1,6 @@
+{
+  "input": "samples",
+  "output": "concat_folder_test.mp4",
+  "grep": "test_video",
+  "loglevel": "error"
+}

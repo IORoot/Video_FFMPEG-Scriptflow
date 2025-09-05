@@ -1,0 +1,42 @@
+{
+  "ff_proxy": {
+    "description": "Create a proxy version of the sample video with reduced resolution and frame rate",
+    "input": "tests/sample_video.mp4",
+    "output": "tests/output/ff_proxy.mp4",
+    "scalex": "1280",
+    "scaley": "-2",
+    "fps": "30",
+    "crf": "25",
+    "codec": "libx264"
+  },
+  "ff_proxy2": {
+    "description": "Create a smaller proxy with custom dimensions",
+    "input": "tests/sample_video.mp4",
+    "output": "tests/output/ff_proxy_small.mp4",
+    "scalex": "640",
+    "scaley": "480",
+    "fps": "24",
+    "crf": "30",
+    "codec": "libx264"
+  },
+  "ff_proxy3": {
+    "description": "Create a high-quality proxy with HEVC codec",
+    "input": "tests/sample_video.mp4",
+    "output": "tests/output/ff_proxy_hevc.mp4",
+    "scalex": "1920",
+    "scaley": "-2",
+    "fps": "30",
+    "crf": "20",
+    "codec": "libx265"
+  },
+  "ff_proxy4": {
+    "description": "Create a very low-quality proxy for quick preview",
+    "input": "tests/sample_video.mp4",
+    "output": "tests/output/ff_proxy_preview.mp4",
+    "scalex": "480",
+    "scaley": "270",
+    "fps": "15",
+    "crf": "35",
+    "codec": "libx264"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "input": "samples",
+  "output": "cut_regex_test.mp4",
+  "start": "00:00:03",
+  "end": "00:00:08",
+  "grep": "\\d_.*\\.mp4",
+  "loglevel": "error"
+}

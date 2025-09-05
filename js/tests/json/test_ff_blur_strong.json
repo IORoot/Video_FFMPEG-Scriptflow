@@ -1,0 +1,7 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "strong_blur_test.mp4",
+  "strength": "2.0",
+  "steps": "3",
+  "loglevel": "info"
+}

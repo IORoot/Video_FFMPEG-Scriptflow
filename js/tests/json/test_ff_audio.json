@@ -1,0 +1,8 @@
+{
+  "input": "samples/sample_video.mp4",
+  "audio": "samples/sample_voice.mp3",
+  "output": "audio_overlay_test.mp4",
+  "start": "0",
+  "speed": "1.0",
+  "loglevel": "error"
+}

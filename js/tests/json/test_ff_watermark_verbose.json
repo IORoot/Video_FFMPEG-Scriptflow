@@ -1,0 +1,9 @@
+{
+  "ff_watermark": {
+    "description": "Apply watermark with verbose logging using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "watermark": "../../tests/samples/sample_image.png",
+    "output": "watermark_verbose.json.mp4",
+    "loglevel": "info"
+  }
+}

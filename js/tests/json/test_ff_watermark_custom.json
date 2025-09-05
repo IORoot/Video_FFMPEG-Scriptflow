@@ -1,0 +1,12 @@
+{
+  "ff_watermark": {
+    "description": "Apply watermark with custom settings using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "watermark": "../../tests/samples/sample_image.png",
+    "output": "watermark_custom.json.mp4",
+    "xpixels": "100",
+    "ypixels": "100",
+    "scale": "0.3",
+    "alpha": "0.7"
+  }
+}

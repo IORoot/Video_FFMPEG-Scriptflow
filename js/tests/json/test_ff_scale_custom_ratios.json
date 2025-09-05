@@ -1,0 +1,11 @@
+{
+  "ff_scale": {
+    "description": "Scale with custom DAR and SAR",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "scale_custom_ratios.json.mp4",
+    "width": "1920",
+    "height": "1080",
+    "dar": "16/9",
+    "sar": "1/1"
+  }
+}

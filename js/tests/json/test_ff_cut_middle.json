@@ -1,0 +1,7 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "cut_middle_test.mp4",
+  "start": "00:00:02",
+  "end": "00:00:07",
+  "loglevel": "info"
+}

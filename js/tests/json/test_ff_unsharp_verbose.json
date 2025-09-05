@@ -1,0 +1,8 @@
+{
+  "ff_unsharp": {
+    "description": "Apply unsharp mask with verbose logging",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "unsharp_verbose.json.mp4",
+    "loglevel": "info"
+  }
+}

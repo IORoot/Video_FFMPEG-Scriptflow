@@ -1,0 +1,7 @@
+{
+  "ff_to_portrait": {
+    "description": "Convert to portrait using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "portrait_basic.json.mp4"
+  }
+}

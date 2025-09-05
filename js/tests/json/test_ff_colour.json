@@ -1,0 +1,10 @@
+{
+  "input": "samples/sample_video.mp4",
+  "output": "colour_test.mp4",
+  "brightness": "0",
+  "contrast": "1",
+  "gamma": "1",
+  "saturation": "1",
+  "weight": "1",
+  "loglevel": "error"
+}

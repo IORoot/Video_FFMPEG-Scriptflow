@@ -1,0 +1,10 @@
+{
+  "ff_text": {
+    "description": "Add multi-line text using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "text_multiline.json.mp4",
+    "text": "First Line\nSecond Line\nThird Line",
+    "size": "26",
+    "reduction": "4"
+  }
+}

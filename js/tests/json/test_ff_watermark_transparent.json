@@ -1,0 +1,9 @@
+{
+  "ff_watermark": {
+    "description": "Apply transparent watermark using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "watermark": "../../tests/samples/sample_image.png",
+    "output": "watermark_transparent.json.mp4",
+    "alpha": "0.5"
+  }
+}
