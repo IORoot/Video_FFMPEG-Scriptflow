@@ -1,0 +1,8 @@
+{
+  "ff_to_landscape": {
+    "description": "Convert to landscape with custom rotation using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "landscape_custom.json.mp4",
+    "rotate": "1"
+  }
+}

@@ -406,6 +406,24 @@ Test configuration for the `ff_thumbnail.js` script that generates thumbnails wi
 ### `json/test_ff_thumbnail_verbose.json`
 Test configuration for the `ff_thumbnail.js` script that generates thumbnails with verbose logging.
 
+### `json/test_ff_to_landscape_basic.json`
+Test configuration for the `ff_to_landscape.js` script that converts videos to landscape orientation.
+
+### `json/test_ff_to_landscape_custom.json`
+Test configuration for the `ff_to_landscape.js` script that converts videos to landscape orientation with custom rotation.
+
+### `json/test_ff_to_landscape_verbose.json`
+Test configuration for the `ff_to_landscape.js` script that converts videos to landscape orientation with verbose logging.
+
+### `json/test_ff_to_portrait_basic.json`
+Test configuration for the `ff_to_portrait.js` script that converts videos to portrait orientation.
+
+### `json/test_ff_to_portrait_custom.json`
+Test configuration for the `ff_to_portrait.js` script that converts videos to portrait orientation with custom rotation.
+
+### `json/test_ff_to_portrait_verbose.json`
+Test configuration for the `ff_to_portrait.js` script that converts videos to portrait orientation with verbose logging.
+
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
 1. **Command line argument parsing** (90-degree rotation)
@@ -514,6 +532,40 @@ The test validates:
 - JSON configuration files are processed correctly
 - Different image formats (PNG, JPEG) work correctly
 - File naming pattern follows expected format (filename-01.ext, filename-02.ext, etc.)
+
+### `tests_ff_to_landscape.js`
+Automated test runner specifically for the `ff_to_landscape.js` script that tests:
+1. **Basic landscape conversion** (default settings)
+2. **Custom rotation** (90 degree clockwise)
+3. **Custom rotation** (90 degree counter-clockwise)
+4. **Custom loglevel** (verbose logging)
+5. **JSON configuration tests** - Basic, custom rotation, verbose logging
+
+The test validates:
+- Output files are created successfully
+- Video dimensions are correct after rotation
+- FFmpeg commands execute without errors
+- JSON configuration files are processed correctly
+- Different rotation options work correctly
+- Orientation detection works properly
+- File size and properties are maintained
+
+### `tests_ff_to_portrait.js`
+Automated test runner specifically for the `ff_to_portrait.js` script that tests:
+1. **Basic portrait conversion** (default settings)
+2. **Custom rotation** (90 degree clockwise)
+3. **Custom rotation** (90 degree counter-clockwise)
+4. **Custom loglevel** (verbose logging)
+5. **JSON configuration tests** - Basic, custom rotation, verbose logging
+
+The test validates:
+- Output files are created successfully
+- Video dimensions are correct after rotation
+- FFmpeg commands execute without errors
+- JSON configuration files are processed correctly
+- Different rotation options work correctly
+- Orientation detection works properly
+- File size and properties are maintained
 
 ### `test_ff_pad.js`
 Automated test runner specifically for the `ff_pad.js` script that tests:
@@ -1219,6 +1271,52 @@ node ../ff_thumbnail.js -C json/test_ff_thumbnail_sample.json
 node ../ff_thumbnail.js -C json/test_ff_thumbnail_verbose.json
 ```
 
+#### ff_to_landscape.js
+```bash
+# Test basic landscape conversion
+node ../ff_to_landscape.js -i samples/sample_video.mp4 -o test_landscape.mp4
+
+# Test with custom rotation (90 clockwise)
+node ../ff_to_landscape.js -i samples/sample_video.mp4 -r 1 -o test_landscape_rotate1.mp4
+
+# Test with custom rotation (90 counter-clockwise)
+node ../ff_to_landscape.js -i samples/sample_video.mp4 -r 2 -o test_landscape_rotate2.mp4
+
+# Test with custom loglevel
+node ../ff_to_landscape.js -i samples/sample_video.mp4 -l info -o test_landscape_verbose.mp4
+
+# Test help command
+node ../ff_to_landscape.js --help
+
+# Test JSON configurations
+node ../ff_to_landscape.js -C json/test_ff_to_landscape_basic.json
+node ../ff_to_landscape.js -C json/test_ff_to_landscape_custom.json
+node ../ff_to_landscape.js -C json/test_ff_to_landscape_verbose.json
+```
+
+#### ff_to_portrait.js
+```bash
+# Test basic portrait conversion
+node ../ff_to_portrait.js -i samples/sample_video.mp4 -o test_portrait.mp4
+
+# Test with custom rotation (90 clockwise)
+node ../ff_to_portrait.js -i samples/sample_video.mp4 -r 1 -o test_portrait_rotate1.mp4
+
+# Test with custom rotation (90 counter-clockwise)
+node ../ff_to_portrait.js -i samples/sample_video.mp4 -r 2 -o test_portrait_rotate2.mp4
+
+# Test with custom loglevel
+node ../ff_to_portrait.js -i samples/sample_video.mp4 -l info -o test_portrait_verbose.mp4
+
+# Test help command
+node ../ff_to_portrait.js --help
+
+# Test JSON configurations
+node ../ff_to_portrait.js -C json/test_ff_to_portrait_basic.json
+node ../ff_to_portrait.js -C json/test_ff_to_portrait_custom.json
+node ../ff_to_portrait.js -C json/test_ff_to_portrait_verbose.json
+```
+
 #### ff_lut.js
 ```bash
 # Test basic LUT application (Andromeda)
@@ -1349,6 +1447,12 @@ node tests_ff_text.js
 
 # Run ff_thumbnail.js tests
 node tests_ff_thumbnail.js
+
+# Run ff_to_landscape.js tests
+node tests_ff_to_landscape.js
+
+# Run ff_to_portrait.js tests
+node tests_ff_to_portrait.js
 ```
 ```
 ```
