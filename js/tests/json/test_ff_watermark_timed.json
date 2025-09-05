@@ -1,0 +1,10 @@
+{
+  "ff_watermark": {
+    "description": "Apply watermark with custom timing using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "watermark": "../../tests/samples/sample_image.png",
+    "output": "watermark_timed.json.mp4",
+    "start": "2",
+    "end": "8"
+  }
+}

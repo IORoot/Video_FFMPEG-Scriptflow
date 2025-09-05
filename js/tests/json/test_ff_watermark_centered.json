@@ -1,0 +1,11 @@
+{
+  "ff_watermark": {
+    "description": "Apply centered watermark using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "watermark": "../../tests/samples/sample_image.png",
+    "output": "watermark_centered.json.mp4",
+    "xpixels": "(W-w)/2",
+    "ypixels": "(H-h)/2",
+    "scale": "0.4"
+  }
+}

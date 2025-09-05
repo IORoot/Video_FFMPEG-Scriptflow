@@ -478,6 +478,24 @@ Test configuration for the `ff_unsharp.js` script that applies unsharp mask with
 ### `json/test_ff_unsharp_verbose.json`
 Test configuration for the `ff_unsharp.js` script that applies unsharp mask with verbose logging.
 
+### `json/test_ff_watermark_basic.json`
+Test configuration for the `ff_watermark.js` script that applies basic watermark.
+
+### `json/test_ff_watermark_custom.json`
+Test configuration for the `ff_watermark.js` script that applies watermark with custom settings.
+
+### `json/test_ff_watermark_centered.json`
+Test configuration for the `ff_watermark.js` script that applies centered watermark.
+
+### `json/test_ff_watermark_transparent.json`
+Test configuration for the `ff_watermark.js` script that applies transparent watermark.
+
+### `json/test_ff_watermark_timed.json`
+Test configuration for the `ff_watermark.js` script that applies watermark with custom timing.
+
+### `json/test_ff_watermark_verbose.json`
+Test configuration for the `ff_watermark.js` script that applies watermark with verbose logging.
+
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
 1. **Command line argument parsing** (90-degree rotation)
@@ -677,6 +695,26 @@ The test validates:
 - JSON configuration files are processed correctly
 - Different matrix sizes and strength values work correctly
 - Blur effects work with negative values
+- File size and quality are appropriate
+
+### `tests_ff_watermark.js`
+Automated test runner specifically for the `ff_watermark.js` script that tests:
+1. **Basic watermark** (default settings)
+2. **Custom position watermark** (50x50 pixels)
+3. **Custom scale watermark** (0.1 scale)
+4. **Transparent watermark** (0.5 alpha)
+5. **Timed watermark** (2-8 seconds)
+6. **Custom loglevel** (verbose logging)
+7. **JSON configuration tests** - Basic, custom settings, centered watermark
+
+The test validates:
+- Output files are created successfully
+- Video properties are maintained (codec, dimensions)
+- Watermark overlays are applied correctly
+- FFmpeg commands execute without errors
+- JSON configuration files are processed correctly
+- Different positioning and scaling work correctly
+- Transparency and timing effects work properly
 - File size and quality are appropriate
 
 ### `test_ff_pad.js`
@@ -1519,6 +1557,41 @@ node ../ff_unsharp.js -C json/test_ff_unsharp_luma.json
 node ../ff_unsharp.js -C json/test_ff_unsharp_verbose.json
 ```
 
+#### ff_watermark.js
+```bash
+# Test basic watermark
+node ../ff_watermark.js -i samples/sample_video.mp4 -w samples/sample_image.png -o test_watermark.mp4
+
+# Test with custom position
+node ../ff_watermark.js -i samples/sample_video.mp4 -w samples/sample_image.png -x 50 -y 50 -o test_watermark_position.mp4
+
+# Test with custom scale
+node ../ff_watermark.js -i samples/sample_video.mp4 -w samples/sample_image.png -s 0.1 -o test_watermark_scale.mp4
+
+# Test transparent watermark
+node ../ff_watermark.js -i samples/sample_video.mp4 -w samples/sample_image.png -a 0.5 -o test_watermark_transparent.mp4
+
+# Test centered watermark
+node ../ff_watermark.js -i samples/sample_video.mp4 -w samples/sample_image.png -x "(W-w)/2" -y "(H-h)/2" -o test_watermark_centered.mp4
+
+# Test timed watermark
+node ../ff_watermark.js -i samples/sample_video.mp4 -w samples/sample_image.png -S 2 -E 8 -o test_watermark_timed.mp4
+
+# Test with custom loglevel
+node ../ff_watermark.js -i samples/sample_video.mp4 -w samples/sample_image.png -l info -o test_watermark_verbose.mp4
+
+# Test help command
+node ../ff_watermark.js --help
+
+# Test JSON configurations
+node ../ff_watermark.js -C json/test_ff_watermark_basic.json
+node ../ff_watermark.js -C json/test_ff_watermark_custom.json
+node ../ff_watermark.js -C json/test_ff_watermark_centered.json
+node ../ff_watermark.js -C json/test_ff_watermark_transparent.json
+node ../ff_watermark.js -C json/test_ff_watermark_timed.json
+node ../ff_watermark.js -C json/test_ff_watermark_verbose.json
+```
+
 #### ff_lut.js
 ```bash
 # Test basic LUT application (Andromeda)
@@ -1664,6 +1737,9 @@ node tests_ff_transition.js
 
 # Run ff_unsharp.js tests
 node tests_ff_unsharp.js
+
+# Run ff_watermark.js tests
+node tests_ff_watermark.js
 ```
 ```
 ```
