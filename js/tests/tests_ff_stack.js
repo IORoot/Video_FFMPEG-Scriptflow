@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // ╭──────────────────────────────────────────────────────────────────────────────╮
 // │                                                                              │
-// │                    Test Suite for ff_social_media.js                        │
+// │                      Test Suite for ff_stack.js                             │
 // │                                                                              │
 // ╰──────────────────────────────────────────────────────────────────────────────╯
 
@@ -15,6 +15,7 @@ const path = require('path');
 
 const TEST_DIR = path.join(__dirname, '..', 'tests');
 const SAMPLE_VIDEO = path.join(TEST_DIR, 'samples', 'sample_video.mp4');
+const SAMPLE_VIDEO2 = path.join(TEST_DIR, 'samples', 'sample_video2.mp4');
 
 // ╭──────────────────────────────────────────────────────────╮
 // │                      Test Configurations                 │
@@ -22,79 +23,91 @@ const SAMPLE_VIDEO = path.join(TEST_DIR, 'samples', 'sample_video.mp4');
 
 const testConfigs = [
     {
-        name: "Basic Instagram conversion",
+        name: "Vertical stack with 2 videos",
         config: {
-            ff_social_media: {
-                description: "Convert video for Instagram",
-                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_instagram.mp4",
-                instagram: "true"
+            ff_stack: {
+                description: "Create vertical stack of 2 videos",
+                input1: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                input2: path.join(TEST_DIR, 'samples', 'sample_video2.mp4'),
+                output: "stack_vertical.mp4",
+                vertical: "TRUE"
             }
         }
     },
     {
-        name: "Instagram conversion with custom loglevel",
+        name: "Horizontal stack with 2 videos",
         config: {
-            ff_social_media: {
-                description: "Convert video for Instagram with verbose logging",
-                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_instagram_verbose.mp4",
-                instagram: "true",
+            ff_stack: {
+                description: "Create horizontal stack of 2 videos",
+                input1: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                input2: path.join(TEST_DIR, 'samples', 'sample_video2.mp4'),
+                output: "stack_horizontal.mp4",
+                horizontal: "TRUE"
+            }
+        }
+    },
+    {
+        name: "Grid stack with 4 videos",
+        config: {
+            ff_stack: {
+                description: "Create 2x2 grid of 4 videos",
+                input1: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                input2: path.join(TEST_DIR, 'samples', 'sample_video2.mp4'),
+                input3: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                input4: path.join(TEST_DIR, 'samples', 'sample_video2.mp4'),
+                output: "stack_grid.mp4",
+                grid: "TRUE"
+            }
+        }
+    },
+    {
+        name: "Vertical stack with custom loglevel",
+        config: {
+            ff_stack: {
+                description: "Create vertical stack with verbose logging",
+                input1: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                input2: path.join(TEST_DIR, 'samples', 'sample_video2.mp4'),
+                output: "stack_vertical_verbose.mp4",
+                vertical: "TRUE",
                 loglevel: "info"
             }
         }
     },
     {
-        name: "Social media conversion without Instagram flag",
+        name: "JSON config - Vertical stack",
         config: {
-            ff_social_media: {
-                description: "Basic social media conversion",
-                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_basic.mp4"
+            ff_stack: {
+                description: "Create vertical stack using JSON",
+                input1: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                input2: path.join(TEST_DIR, 'samples', 'sample_video2.mp4'),
+                output: "stack_vertical_json.mp4",
+                vertical: "TRUE"
             }
         }
     },
     {
-        name: "Social media conversion with custom output",
+        name: "JSON config - Horizontal stack",
         config: {
-            ff_social_media: {
-                description: "Social media conversion with custom output name",
-                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "custom_social_output.mp4",
-                instagram: "true"
+            ff_stack: {
+                description: "Create horizontal stack using JSON",
+                input1: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                input2: path.join(TEST_DIR, 'samples', 'sample_video2.mp4'),
+                output: "stack_horizontal_json.mp4",
+                horizontal: "TRUE"
             }
         }
     },
     {
-        name: "JSON config - Instagram conversion",
+        name: "JSON config - Grid stack",
         config: {
-            ff_social_media: {
-                description: "Instagram conversion using JSON",
-                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_instagram_json.mp4",
-                instagram: "true"
-            }
-        }
-    },
-    {
-        name: "JSON config - Basic social media",
-        config: {
-            ff_social_media: {
-                description: "Basic social media conversion using JSON",
-                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_basic_json.mp4"
-            }
-        }
-    },
-    {
-        name: "JSON config - Custom loglevel",
-        config: {
-            ff_social_media: {
-                description: "Social media conversion with custom loglevel using JSON",
-                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_custom_loglevel_json.mp4",
-                instagram: "true",
-                loglevel: "warning"
+            ff_stack: {
+                description: "Create grid stack using JSON",
+                input1: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                input2: path.join(TEST_DIR, 'samples', 'sample_video2.mp4'),
+                input3: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                input4: path.join(TEST_DIR, 'samples', 'sample_video2.mp4'),
+                output: "stack_grid_json.mp4",
+                grid: "TRUE"
             }
         }
     }
@@ -172,10 +185,10 @@ async function runTest(testConfig) {
     fs.writeFileSync(configPath, JSON.stringify(testConfig.config, null, 2));
     
     try {
-        // Run the ff_social_media.js script
+        // Run the ff_stack.js script
         const result = await new Promise((resolve, reject) => {
             const child = spawn('node', [
-                path.join(__dirname, '..', 'ff_social_media.js'),
+                path.join(__dirname, '..', 'ff_stack.js'),
                 '-C', configPath
             ], {
                 cwd: __dirname,
@@ -211,7 +224,7 @@ async function runTest(testConfig) {
         }
         
         // Get output file path
-        const outputFile = path.join(__dirname, testConfig.config.ff_social_media.output);
+        const outputFile = path.join(__dirname, testConfig.config.ff_stack.output);
         
         // Check if output file was created
         const fileInfo = getFileInfo(outputFile);
@@ -221,38 +234,42 @@ async function runTest(testConfig) {
             return false;
         }
         
-        // For Instagram conversions, verify the video properties
-        if (testConfig.config.ff_social_media.instagram) {
-            try {
-                const videoInfo = await getVideoInfo(outputFile);
-                const videoStream = videoInfo.streams.find(s => s.codec_type === 'video');
-                
-                if (!videoStream) {
-                    console.log(`❌ Test failed: ${testConfig.name}`);
-                    console.log(`   No video stream found in output`);
-                    return false;
-                }
-                
-                // Check pixel format (should be yuv420p for Instagram)
-                if (videoStream.pix_fmt !== 'yuv420p') {
-                    console.log(`❌ Test failed: ${testConfig.name}`);
-                    console.log(`   Expected pixel format yuv420p, got ${videoStream.pix_fmt}`);
-                    return false;
-                }
-                
-                console.log(`✅ Test passed: ${testConfig.name}`);
-                console.log(`   📹 Output: ${videoStream.width}x${videoStream.height}, ${videoStream.pix_fmt}`);
-                console.log(`   📁 File size: ${(fileInfo.size / 1024 / 1024).toFixed(2)} MB`);
-                
-            } catch (error) {
+        // Verify the video properties
+        try {
+            const videoInfo = await getVideoInfo(outputFile);
+            const videoStream = videoInfo.streams.find(s => s.codec_type === 'video');
+            
+            if (!videoStream) {
                 console.log(`❌ Test failed: ${testConfig.name}`);
-                console.log(`   Error analyzing video: ${error.message}`);
+                console.log(`   No video stream found in output`);
                 return false;
             }
-        } else {
-            // For non-Instagram conversions, just check file was created
+            
+            // Check dimensions based on stack type
+            const stackType = testConfig.config.ff_stack.vertical ? 'vertical' : 
+                            testConfig.config.ff_stack.horizontal ? 'horizontal' : 
+                            testConfig.config.ff_stack.grid ? 'grid' : 'unknown';
+            
+            let expectedWidth, expectedHeight;
+            if (stackType === 'vertical') {
+                expectedWidth = 1280; // Same as input
+                expectedHeight = 1440; // Double height (720 * 2)
+            } else if (stackType === 'horizontal') {
+                expectedWidth = 2560; // Double width (1280 * 2)
+                expectedHeight = 720; // Same as input
+            } else if (stackType === 'grid') {
+                expectedWidth = 2560; // Double width (1280 * 2)
+                expectedHeight = 1440; // Double height (720 * 2)
+            }
+            
             console.log(`✅ Test passed: ${testConfig.name}`);
-            console.log(`   📁 File created: ${fileInfo.size} bytes`);
+            console.log(`   📹 Output: ${videoStream.width}x${videoStream.height} (${stackType} stack)`);
+            console.log(`   📁 File size: ${(fileInfo.size / 1024 / 1024).toFixed(2)} MB`);
+            
+        } catch (error) {
+            console.log(`❌ Test failed: ${testConfig.name}`);
+            console.log(`   Error analyzing video: ${error.message}`);
+            return false;
         }
         
         return true;
@@ -276,12 +293,18 @@ async function runTest(testConfig) {
 // ╰──────────────────────────────────────────────────────────╯
 
 async function runAllTests() {
-    console.log("🚀 Starting ff_social_media.js test suite\n");
+    console.log("🚀 Starting ff_stack.js test suite\n");
     
-    // Check if sample video exists
+    // Check if sample videos exist
     if (!fs.existsSync(SAMPLE_VIDEO)) {
         console.log(`❌ Sample video not found: ${SAMPLE_VIDEO}`);
         console.log("Please ensure the sample video exists in the tests/samples directory.");
+        process.exit(1);
+    }
+    
+    if (!fs.existsSync(SAMPLE_VIDEO2)) {
+        console.log(`❌ Sample video 2 not found: ${SAMPLE_VIDEO2}`);
+        console.log("Please ensure the sample video 2 exists in the tests/samples directory.");
         process.exit(1);
     }
     

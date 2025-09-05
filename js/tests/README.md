@@ -346,8 +346,35 @@ Test configuration for the `ff_social_media.js` script that converts video for I
 ### `json/test_ff_social_media_custom_output.json`
 Test configuration for the `ff_social_media.js` script that converts video for Instagram with custom output filename.
 
-### `json/test_ff_social_media_warning.json`
-Test configuration for the `ff_social_media.js` script that converts video for Instagram with warning loglevel.
+### `json/test_ff_stack_vertical.json`
+Test configuration for the `ff_stack.js` script that creates a vertical stack of 2 videos.
+
+### `json/test_ff_stack_horizontal.json`
+Test configuration for the `ff_stack.js` script that creates a horizontal stack of 2 videos.
+
+### `json/test_ff_stack_grid.json`
+Test configuration for the `ff_stack.js` script that creates a 2x2 grid of 4 videos.
+
+### `json/test_ff_stack_verbose.json`
+Test configuration for the `ff_stack.js` script that creates a vertical stack with verbose logging.
+
+### `json/test_ff_stack_custom_output.json`
+Test configuration for the `ff_stack.js` script that creates a horizontal stack with custom output filename.
+
+### `json/test_ff_subtitles_basic.json`
+Test configuration for the `ff_subtitles.js` script that embeds subtitles with default settings.
+
+### `json/test_ff_subtitles_styled.json`
+Test configuration for the `ff_subtitles.js` script that embeds subtitles with custom font and color styling.
+
+### `json/test_ff_subtitles_margin.json`
+Test configuration for the `ff_subtitles.js` script that embeds subtitles with margin and alignment settings.
+
+### `json/test_ff_subtitles_dedup.json`
+Test configuration for the `ff_subtitles.js` script that embeds subtitles with duplicate removal enabled.
+
+### `json/test_ff_subtitles_dynamic.json`
+Test configuration for the `ff_subtitles.js` script that embeds subtitles with dynamic text (word-by-word) conversion.
 
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
@@ -388,19 +415,38 @@ Automated test runner specifically for the `ff_sh_runner.js` script that tests:
     - Output is captured and displayed
     - Error handling works properly
 
-### `test_ff_social_media.js`
-Automated test runner specifically for the `ff_social_media.js` script that tests:
-1. **Basic Instagram conversion** (pix_fmt=yuv420p)
-2. **Instagram conversion with custom loglevel** (verbose logging)
-3. **Social media conversion without Instagram flag** (file copy)
-4. **Social media conversion with custom output** (custom filename)
-5. **JSON configuration tests** - Instagram conversion, basic social media, custom loglevel
+### `test_ff_stack.js`
+Automated test runner specifically for the `ff_stack.js` script that tests:
+1. **Vertical stack with 2 videos** (vstack filter)
+2. **Horizontal stack with 2 videos** (hstack filter)
+3. **Grid stack with 4 videos** (xstack filter with 2x2 layout)
+4. **Vertical stack with custom loglevel** (verbose logging)
+5. **JSON configuration tests** - Vertical stack, horizontal stack, grid stack
 6. **FFprobe validation** - Verifies:
-    - Video dimensions are preserved
-    - Pixel format is yuv420p for Instagram conversions
-    - File size changes appropriately
+    - Video dimensions are correct for each stack type
+    - Vertical stack: width preserved, height doubled
+    - Horizontal stack: height preserved, width doubled
+    - Grid stack: both width and height doubled
     - Output files are created successfully
-    - Instagram flag processing works correctly
+    - File sizes are appropriate for stacked videos
+
+### `tests_ff_subtitles.js`
+Automated test runner specifically for the `ff_subtitles.js` script that tests:
+1. **Basic subtitle embedding** (default settings)
+2. **Subtitle embedding with custom styles** (font, color, outline)
+3. **Subtitle embedding with margin and alignment** (positioning)
+4. **Subtitle embedding with remove duplicates** (cleanup)
+5. **Subtitle embedding with dynamic text** (word-by-word conversion)
+6. **Subtitle embedding with custom loglevel** (verbose logging)
+7. **JSON configuration tests** - Basic, styled, dynamic text with styles
+
+The test validates:
+- Output video contains embedded subtitles
+- Output file is created successfully
+- FFmpeg commands execute without errors
+- Backup files are created (.original, .dedup, .dynamictext)
+- JSON configuration files are processed correctly
+- Video properties are maintained (resolution, duration)
 
 ### `test_ff_pad.js`
 Automated test runner specifically for the `ff_pad.js` script that tests:
@@ -971,6 +1017,51 @@ node ../ff_social_media.js -i samples/sample_video.mp4 -ig -l warning -o test_in
 node ../ff_social_media.js --help
 ```
 
+#### ff_stack.js
+```bash
+# Test vertical stack (2 videos stacked vertically)
+node ../ff_stack.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -v -o test_vertical_stack.mp4
+
+# Test horizontal stack (2 videos stacked horizontally)
+node ../ff_stack.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -h -o test_horizontal_stack.mp4
+
+# Test grid stack (4 videos in 2x2 grid)
+node ../ff_stack.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -g -o test_grid_stack.mp4
+
+# Test vertical stack with custom loglevel
+node ../ff_stack.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -v -l info -o test_vertical_verbose.mp4
+
+# Test horizontal stack with custom output
+node ../ff_stack.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -h -o custom_horizontal_stack.mp4
+
+# Test help command
+node ../ff_stack.js --help
+```
+
+#### ff_subtitles.js
+```bash
+# Test basic subtitle embedding
+node ../ff_subtitles.js -i samples/sample_video.mp4 -s samples/sample_subtitle.srt -o test_subtitles.mp4
+
+# Test subtitle embedding with custom styles
+node ../ff_subtitles.js -i samples/sample_video.mp4 -s samples/sample_subtitle.srt -f "FontName=Arial,FontSize=24,PrimaryColour=&H00FF00" -o test_subtitles_styled.mp4
+
+# Test subtitle embedding with margin and alignment
+node ../ff_subtitles.js -i samples/sample_video.mp4 -s samples/sample_subtitle.srt -f "MarginV=h-50,Alignment=2,Outline=2" -o test_subtitles_margin.mp4
+
+# Test subtitle embedding with remove duplicates
+node ../ff_subtitles.js -i samples/sample_video.mp4 -s samples/sample_subtitle.srt -r -o test_subtitles_dedup.mp4
+
+# Test subtitle embedding with dynamic text
+node ../ff_subtitles.js -i samples/sample_video.mp4 -s samples/sample_subtitle.srt -d -o test_subtitles_dynamic.mp4
+
+# Test subtitle embedding with verbose logging
+node ../ff_subtitles.js -i samples/sample_video.mp4 -s samples/sample_subtitle.srt -l info -o test_subtitles_verbose.mp4
+
+# Test help command
+node ../ff_subtitles.js --help
+```
+
 #### JSON Configuration Examples
 
 ##### ff_scale.js with JSON
@@ -1018,22 +1109,40 @@ node ../ff_sharpen.js -C json/test_ff_sharpen_strong.json
 node ../ff_sharpen.js -C json/test_ff_sharpen_blur.json
 ```
 
-#### ff_social_media.js with JSON
+#### ff_stack.js with JSON
 ```bash
-# Test Instagram conversion with JSON config
-node ../ff_social_media.js -C json/test_ff_social_media_instagram.json
+# Test vertical stack with JSON config
+node ../ff_stack.js -C json/test_ff_stack_vertical.json
 
-# Test basic social media conversion with JSON config
-node ../ff_social_media.js -C json/test_ff_social_media_basic.json
+# Test horizontal stack with JSON config
+node ../ff_stack.js -C json/test_ff_stack_horizontal.json
 
-# Test Instagram conversion with verbose logging using JSON config
-node ../ff_social_media.js -C json/test_ff_social_media_verbose.json
+# Test grid stack with JSON config
+node ../ff_stack.js -C json/test_ff_stack_grid.json
 
-# Test Instagram conversion with custom output using JSON config
-node ../ff_social_media.js -C json/test_ff_social_media_custom_output.json
+# Test vertical stack with verbose logging using JSON config
+node ../ff_stack.js -C json/test_ff_stack_verbose.json
 
-# Test Instagram conversion with warning loglevel using JSON config
-node ../ff_social_media.js -C json/test_ff_social_media_warning.json
+# Test horizontal stack with custom output using JSON config
+node ../ff_stack.js -C json/test_ff_stack_custom_output.json
+```
+
+#### ff_subtitles.js with JSON
+```bash
+# Test basic subtitle embedding with JSON config
+node ../ff_subtitles.js -C json/test_ff_subtitles_basic.json
+
+# Test styled subtitles with JSON config
+node ../ff_subtitles.js -C json/test_ff_subtitles_styled.json
+
+# Test margin and alignment with JSON config
+node ../ff_subtitles.js -C json/test_ff_subtitles_margin.json
+
+# Test duplicate removal with JSON config
+node ../ff_subtitles.js -C json/test_ff_subtitles_dedup.json
+
+# Test dynamic text with JSON config
+node ../ff_subtitles.js -C json/test_ff_subtitles_dynamic.json
 ```
 
 #### ff_lut.js
@@ -1154,6 +1263,12 @@ node tests_ff_sharpen.js
 
 # Run ff_social_media.js tests
 node tests_ff_social_media.js
+
+# Run ff_stack.js tests
+node tests_ff_stack.js
+
+# Run ff_subtitles.js tests
+node tests_ff_subtitles.js
 ```
 ```
 ```

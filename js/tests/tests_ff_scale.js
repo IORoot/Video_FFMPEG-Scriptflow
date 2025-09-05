@@ -11,12 +11,6 @@ const path = require('path');
 
 const TEST_DIR = path.join(__dirname, '..', 'tests');
 const SAMPLE_VIDEO = path.join(TEST_DIR, 'samples', 'sample_video.mp4');
-const OUTPUT_DIR = path.join(__dirname, 'output');
-
-// Ensure output directory exists
-if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-}
 
 // Test configurations
 const testConfigs = [
@@ -179,8 +173,8 @@ function getVideoInfo(filePath) {
 async function runTest(testConfig) {
     console.log(`\n🧪 Running test: ${testConfig.name}`);
     
-    const configPath = path.join(OUTPUT_DIR, `test_scale_config_${Date.now()}.json`);
-    const outputPath = path.join(OUTPUT_DIR, testConfig.config.ff_scale.output);
+    const configPath = path.join(__dirname, `test_scale_config_${Date.now()}.json`);
+    const outputPath = path.join(__dirname, testConfig.config.ff_scale.output);
     
     try {
         // Write config file
@@ -196,7 +190,7 @@ async function runTest(testConfig) {
         
         // Run ff_scale.js
         const ffScale = spawn('node', [path.join(__dirname, '..', 'ff_scale.js'), '-C', configPath], {
-            cwd: OUTPUT_DIR
+            cwd: __dirname
         });
         
         let ffScaleOutput = '';

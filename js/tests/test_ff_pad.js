@@ -112,6 +112,21 @@ async function runTests() {
             name: 'Full padding all around',
             args: ['-i', SAMPLE_VIDEO, '-o', path.join(OUTPUT_DIR, 'test_pad_full.mp4'), '-w', 'iw*2', '--height', 'ih*2'],
             description: 'Add padding on all sides'
+        },
+        {
+            name: 'JSON config - Basic padding',
+            args: ['-C', path.join(__dirname, 'json', 'test_ff_pad_basic.json')],
+            description: 'Test basic padding using JSON configuration'
+        },
+        {
+            name: 'JSON config - White background padding',
+            args: ['-C', path.join(__dirname, 'json', 'test_ff_pad_white.json')],
+            description: 'Test white background padding using JSON configuration'
+        },
+        {
+            name: 'JSON config - Letterbox padding',
+            args: ['-C', path.join(__dirname, 'json', 'test_ff_pad_letterbox.json')],
+            description: 'Test letterbox padding using JSON configuration'
         }
     ];
 

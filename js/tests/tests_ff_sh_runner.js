@@ -10,12 +10,6 @@ const fs = require('fs');
 const path = require('path');
 
 const TEST_DIR = path.join(__dirname, '..', 'tests');
-const OUTPUT_DIR = path.join(__dirname, 'output');
-
-// Ensure output directory exists
-if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-}
 
 // Test configurations
 const testConfigs = [
@@ -124,7 +118,7 @@ const testConfigs = [
 async function runTest(testConfig) {
     console.log(`\n🧪 Running test: ${testConfig.name}`);
     
-    const configPath = path.join(OUTPUT_DIR, `test_sh_runner_config_${Date.now()}.json`);
+    const configPath = path.join(__dirname, `test_sh_runner_config_${Date.now()}.json`);
     
     try {
         // Write config file
@@ -132,7 +126,7 @@ async function runTest(testConfig) {
         
         // Run ff_sh_runner.js
         const ffShRunner = spawn('node', [path.join(__dirname, '..', 'ff_sh_runner.js'), '-C', configPath], {
-            cwd: OUTPUT_DIR
+            cwd: __dirname
         });
         
         let ffShRunnerOutput = '';

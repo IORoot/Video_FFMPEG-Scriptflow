@@ -239,6 +239,39 @@ async function testConfigFile() {
     fs.unlinkSync(configFile);
 }
 
+async function testJSONConfigFile() {
+    const jsonConfigFile = path.join(__dirname, 'json', 'test_ff_proxy.json');
+    const outputFile = path.join(OUTPUT_DIR, 'ff_proxy_json.mp4');
+    
+    // Check if JSON config file exists
+    if (!fs.existsSync(jsonConfigFile)) {
+        throw new Error(`JSON config file not found: ${jsonConfigFile}`);
+    }
+
+    await runProxyScript([
+        '-C', jsonConfigFile
+    ]);
+
+    // The output file name should be determined by the JSON config
+    // Let's check if any proxy file was created
+    const files = fs.readdirSync(OUTPUT_DIR);
+    const proxyFiles = files.filter(file => file.startsWith('ff_proxy') && file.endsWith('.mp4'));
+    
+    if (proxyFiles.length === 0) {
+        throw new Error('No proxy file was created from JSON config');
+    }
+
+    const latestProxyFile = path.join(OUTPUT_DIR, proxyFiles[proxyFiles.length - 1]);
+    const proxyInfo = await getVideoInfo(latestProxyFile);
+    const videoStream = proxyInfo.streams.find(s => s.codec_type === 'video');
+
+    if (!videoStream) {
+        throw new Error('No video stream found in proxy');
+    }
+
+    console.log(`   JSON Config Proxy: ${videoStream.width}x${videoStream.height}, ${videoStream.codec_name}`);
+}
+
 async function testFolderProcessing() {
     // Create a test folder with sample videos
     const testFolder = path.join(OUTPUT_DIR, 'test_folder');
@@ -302,6 +335,7 @@ async function runAllTests() {
         await runTest('Custom dimensions', testCustomDimensions);
         await runTest('Different codec', testDifferentCodec);
         await runTest('Config file', testConfigFile);
+        await runTest('JSON config file', testJSONConfigFile);
         await runTest('Folder processing', testFolderProcessing);
         await runTest('Error handling', testErrorHandling);
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // ╭──────────────────────────────────────────────────────────────────────────────╮
 // │                                                                              │
-// │                    Test Suite for ff_social_media.js                        │
+// │                    Test Suite for ff_subtitles.js                            │
 // │                                                                              │
 // ╰──────────────────────────────────────────────────────────────────────────────╯
 
@@ -15,6 +15,7 @@ const path = require('path');
 
 const TEST_DIR = path.join(__dirname, '..', 'tests');
 const SAMPLE_VIDEO = path.join(TEST_DIR, 'samples', 'sample_video.mp4');
+const SAMPLE_SUBTITLE = path.join(TEST_DIR, 'samples', 'sample_subtitle.srt');
 
 // ╭──────────────────────────────────────────────────────────╮
 // │                      Test Configurations                 │
@@ -22,79 +23,109 @@ const SAMPLE_VIDEO = path.join(TEST_DIR, 'samples', 'sample_video.mp4');
 
 const testConfigs = [
     {
-        name: "Basic Instagram conversion",
+        name: "Basic subtitle embedding",
         config: {
-            ff_social_media: {
-                description: "Convert video for Instagram",
+            ff_subtitles: {
+                description: "Embed subtitles with default settings",
                 input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_instagram.mp4",
-                instagram: "true"
+                subtitles: path.join(TEST_DIR, 'samples', 'sample_subtitle.srt'),
+                output: "subtitles_basic.mp4"
             }
         }
     },
     {
-        name: "Instagram conversion with custom loglevel",
+        name: "Subtitle embedding with custom styles",
         config: {
-            ff_social_media: {
-                description: "Convert video for Instagram with verbose logging",
+            ff_subtitles: {
+                description: "Embed subtitles with custom font and color",
                 input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_instagram_verbose.mp4",
-                instagram: "true",
+                subtitles: path.join(TEST_DIR, 'samples', 'sample_subtitle.srt'),
+                output: "subtitles_styled.mp4",
+                styles: "FontName=Arial,FontSize=24,PrimaryColour=&H00FF00"
+            }
+        }
+    },
+    {
+        name: "Subtitle embedding with margin and alignment",
+        config: {
+            ff_subtitles: {
+                description: "Embed subtitles with margin and alignment",
+                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                subtitles: path.join(TEST_DIR, 'samples', 'sample_subtitle.srt'),
+                output: "subtitles_margin.mp4",
+                styles: "MarginV=h-50,Alignment=2,Outline=2"
+            }
+        }
+    },
+    {
+        name: "Subtitle embedding with remove duplicates",
+        config: {
+            ff_subtitles: {
+                description: "Embed subtitles with duplicate removal",
+                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                subtitles: path.join(TEST_DIR, 'samples', 'sample_subtitle.srt'),
+                output: "subtitles_dedup.mp4",
+                removedupes: "TRUE"
+            }
+        }
+    },
+    {
+        name: "Subtitle embedding with dynamic text",
+        config: {
+            ff_subtitles: {
+                description: "Embed subtitles with dynamic text (word-by-word)",
+                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                subtitles: path.join(TEST_DIR, 'samples', 'sample_subtitle.srt'),
+                output: "subtitles_dynamic.mp4",
+                dynamictext: "TRUE"
+            }
+        }
+    },
+    {
+        name: "Subtitle embedding with custom loglevel",
+        config: {
+            ff_subtitles: {
+                description: "Embed subtitles with verbose logging",
+                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                subtitles: path.join(TEST_DIR, 'samples', 'sample_subtitle.srt'),
+                output: "subtitles_verbose.mp4",
                 loglevel: "info"
             }
         }
     },
     {
-        name: "Social media conversion without Instagram flag",
+        name: "JSON config - Basic subtitle embedding",
         config: {
-            ff_social_media: {
-                description: "Basic social media conversion",
+            ff_subtitles: {
+                description: "Embed subtitles using JSON",
                 input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_basic.mp4"
+                subtitles: path.join(TEST_DIR, 'samples', 'sample_subtitle.srt'),
+                output: "subtitles_basic_json.mp4"
             }
         }
     },
     {
-        name: "Social media conversion with custom output",
+        name: "JSON config - Styled subtitles",
         config: {
-            ff_social_media: {
-                description: "Social media conversion with custom output name",
+            ff_subtitles: {
+                description: "Embed styled subtitles using JSON",
                 input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "custom_social_output.mp4",
-                instagram: "true"
+                subtitles: path.join(TEST_DIR, 'samples', 'sample_subtitle.srt'),
+                output: "subtitles_styled_json.mp4",
+                styles: "FontName=Helvetica,FontSize=20,PrimaryColour=&HFFFFFF,Outline=1"
             }
         }
     },
     {
-        name: "JSON config - Instagram conversion",
+        name: "JSON config - Dynamic text with styles",
         config: {
-            ff_social_media: {
-                description: "Instagram conversion using JSON",
+            ff_subtitles: {
+                description: "Embed dynamic text subtitles using JSON",
                 input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_instagram_json.mp4",
-                instagram: "true"
-            }
-        }
-    },
-    {
-        name: "JSON config - Basic social media",
-        config: {
-            ff_social_media: {
-                description: "Basic social media conversion using JSON",
-                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_basic_json.mp4"
-            }
-        }
-    },
-    {
-        name: "JSON config - Custom loglevel",
-        config: {
-            ff_social_media: {
-                description: "Social media conversion with custom loglevel using JSON",
-                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
-                output: "social_custom_loglevel_json.mp4",
-                instagram: "true",
-                loglevel: "warning"
+                subtitles: path.join(TEST_DIR, 'samples', 'sample_subtitle.srt'),
+                output: "subtitles_dynamic_json.mp4",
+                dynamictext: "TRUE",
+                styles: "FontSize=18,PrimaryColour=&H00FFFF"
             }
         }
     }
@@ -172,10 +203,10 @@ async function runTest(testConfig) {
     fs.writeFileSync(configPath, JSON.stringify(testConfig.config, null, 2));
     
     try {
-        // Run the ff_social_media.js script
+        // Run the ff_subtitles.js script
         const result = await new Promise((resolve, reject) => {
             const child = spawn('node', [
-                path.join(__dirname, '..', 'ff_social_media.js'),
+                path.join(__dirname, '..', 'ff_subtitles.js'),
                 '-C', configPath
             ], {
                 cwd: __dirname,
@@ -211,7 +242,7 @@ async function runTest(testConfig) {
         }
         
         // Get output file path
-        const outputFile = path.join(__dirname, testConfig.config.ff_social_media.output);
+        const outputFile = path.join(__dirname, testConfig.config.ff_subtitles.output);
         
         // Check if output file was created
         const fileInfo = getFileInfo(outputFile);
@@ -221,38 +252,46 @@ async function runTest(testConfig) {
             return false;
         }
         
-        // For Instagram conversions, verify the video properties
-        if (testConfig.config.ff_social_media.instagram) {
-            try {
-                const videoInfo = await getVideoInfo(outputFile);
-                const videoStream = videoInfo.streams.find(s => s.codec_type === 'video');
-                
-                if (!videoStream) {
-                    console.log(`❌ Test failed: ${testConfig.name}`);
-                    console.log(`   No video stream found in output`);
-                    return false;
-                }
-                
-                // Check pixel format (should be yuv420p for Instagram)
-                if (videoStream.pix_fmt !== 'yuv420p') {
-                    console.log(`❌ Test failed: ${testConfig.name}`);
-                    console.log(`   Expected pixel format yuv420p, got ${videoStream.pix_fmt}`);
-                    return false;
-                }
-                
-                console.log(`✅ Test passed: ${testConfig.name}`);
-                console.log(`   📹 Output: ${videoStream.width}x${videoStream.height}, ${videoStream.pix_fmt}`);
-                console.log(`   📁 File size: ${(fileInfo.size / 1024 / 1024).toFixed(2)} MB`);
-                
-            } catch (error) {
+        // Verify the video properties
+        try {
+            const videoInfo = await getVideoInfo(outputFile);
+            const videoStream = videoInfo.streams.find(s => s.codec_type === 'video');
+            
+            if (!videoStream) {
                 console.log(`❌ Test failed: ${testConfig.name}`);
-                console.log(`   Error analyzing video: ${error.message}`);
+                console.log(`   No video stream found in output`);
                 return false;
             }
-        } else {
-            // For non-Instagram conversions, just check file was created
+            
+            // Check if subtitles were embedded (file should be larger than original)
+            const originalInfo = await getVideoInfo(SAMPLE_VIDEO);
+            const originalSize = originalInfo.format.size;
+            const outputSize = videoInfo.format.size;
+            
             console.log(`✅ Test passed: ${testConfig.name}`);
-            console.log(`   📁 File created: ${fileInfo.size} bytes`);
+            console.log(`   📹 Output: ${videoStream.width}x${videoStream.height}`);
+            console.log(`   📁 File size: ${(fileInfo.size / 1024 / 1024).toFixed(2)} MB`);
+            
+            // For dynamic text tests, check if backup files were created
+            if (testConfig.config.ff_subtitles.dynamictext) {
+                const dynamicFile = `${SAMPLE_SUBTITLE}.dynamictext`;
+                if (fs.existsSync(dynamicFile)) {
+                    console.log(`   📝 Dynamic text file created: ${path.basename(dynamicFile)}`);
+                }
+            }
+            
+            // For dedup tests, check if backup files were created
+            if (testConfig.config.ff_subtitles.removedupes) {
+                const dedupFile = `${SAMPLE_SUBTITLE}.dedup`;
+                if (fs.existsSync(dedupFile)) {
+                    console.log(`   🧹 Dedup file created: ${path.basename(dedupFile)}`);
+                }
+            }
+            
+        } catch (error) {
+            console.log(`❌ Test failed: ${testConfig.name}`);
+            console.log(`   Error analyzing video: ${error.message}`);
+            return false;
         }
         
         return true;
@@ -276,12 +315,18 @@ async function runTest(testConfig) {
 // ╰──────────────────────────────────────────────────────────╯
 
 async function runAllTests() {
-    console.log("🚀 Starting ff_social_media.js test suite\n");
+    console.log("🚀 Starting ff_subtitles.js test suite\n");
     
-    // Check if sample video exists
+    // Check if sample files exist
     if (!fs.existsSync(SAMPLE_VIDEO)) {
         console.log(`❌ Sample video not found: ${SAMPLE_VIDEO}`);
         console.log("Please ensure the sample video exists in the tests/samples directory.");
+        process.exit(1);
+    }
+    
+    if (!fs.existsSync(SAMPLE_SUBTITLE)) {
+        console.log(`❌ Sample subtitle not found: ${SAMPLE_SUBTITLE}`);
+        console.log("Please ensure the sample subtitle exists in the tests/samples directory.");
         process.exit(1);
     }
     

@@ -1,0 +1,9 @@
+{
+  "ff_stack": {
+    "description": "Create horizontal stack of 2 videos",
+    "input1": "../../tests/samples/sample_video.mp4",
+    "input2": "../../tests/samples/sample_video2.mp4",
+    "output": "stack_horizontal.json.mp4",
+    "horizontal": "TRUE"
+  }
+}

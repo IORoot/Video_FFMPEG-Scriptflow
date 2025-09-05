@@ -1,0 +1,9 @@
+{
+  "ff_subtitles": {
+    "description": "Embed subtitles with margin and alignment",
+    "input": "../../tests/samples/sample_video.mp4",
+    "subtitles": "../../tests/samples/sample_subtitle.srt",
+    "output": "subtitles_margin.json.mp4",
+    "styles": "MarginV=h-50,Alignment=2,Outline=2,PrimaryColour=&HFFFFFF"
+  }
+}
