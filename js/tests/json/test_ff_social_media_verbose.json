@@ -1,0 +1,9 @@
+{
+  "ff_social_media": {
+    "description": "Instagram conversion with custom loglevel",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "social_instagram_verbose.json.mp4",
+    "instagram": "true",
+    "loglevel": "info"
+  }
+}

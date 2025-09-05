@@ -1,0 +1,8 @@
+{
+  "ff_social_media": {
+    "description": "Social media conversion with custom output",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "custom_social_output.json.mp4",
+    "instagram": "true"
+  }
+}

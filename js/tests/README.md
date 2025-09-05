@@ -334,8 +334,20 @@ Test configuration for the `ff_sharpen.js` script that applies light sharpening 
 ### `json/test_ff_sharpen_strong.json`
 Test configuration for the `ff_sharpen.js` script that applies strong sharpening effect.
 
-### `json/test_ff_sharpen_blur.json`
-Test configuration for the `ff_sharpen.js` script that applies blur effect using negative sharpen value.
+### `json/test_ff_social_media_instagram.json`
+Test configuration for the `ff_social_media.js` script that converts video for Instagram with yuv420p pixel format.
+
+### `json/test_ff_social_media_basic.json`
+Test configuration for the `ff_social_media.js` script that performs basic social media conversion (file copy).
+
+### `json/test_ff_social_media_verbose.json`
+Test configuration for the `ff_social_media.js` script that converts video for Instagram with verbose logging.
+
+### `json/test_ff_social_media_custom_output.json`
+Test configuration for the `ff_social_media.js` script that converts video for Instagram with custom output filename.
+
+### `json/test_ff_social_media_warning.json`
+Test configuration for the `ff_social_media.js` script that converts video for Instagram with warning loglevel.
 
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
@@ -376,24 +388,19 @@ Automated test runner specifically for the `ff_sh_runner.js` script that tests:
     - Output is captured and displayed
     - Error handling works properly
 
-### `test_ff_sharpen.js`
-Automated test runner specifically for the `ff_sharpen.js` script that tests:
-1. **Basic sharpening with default values** (pixel=5.0, sharpen=1.0)
-2. **Light sharpening** (pixel=3.0, sharpen=0.5)
-3. **Strong sharpening** (pixel=7.0, sharpen=2.5)
-4. **Maximum sharpening** (pixel=11.0, sharpen=3.0)
-5. **Blur effect** (negative sharpen value -1.0)
-6. **No effect** (zero sharpen value 0.0)
-7. **JSON configuration tests** - Default sharpening, light sharpening, blur effect
-8. **FFprobe validation** - Verifies:
+### `test_ff_social_media.js`
+Automated test runner specifically for the `ff_social_media.js` script that tests:
+1. **Basic Instagram conversion** (pix_fmt=yuv420p)
+2. **Instagram conversion with custom loglevel** (verbose logging)
+3. **Social media conversion without Instagram flag** (file copy)
+4. **Social media conversion with custom output** (custom filename)
+5. **JSON configuration tests** - Instagram conversion, basic social media, custom loglevel
+6. **FFprobe validation** - Verifies:
     - Video dimensions are preserved
-    - Duration is maintained
+    - Pixel format is yuv420p for Instagram conversions
     - File size changes appropriately
-    - Sharpening parameters are applied correctly
-    - Video duration is preserved during rotation
-    - File size changes appropriately (rotation operation)
     - Output files are created successfully
-    - Rotation angles are applied correctly (90°, 180°, 270°)
+    - Instagram flag processing works correctly
 
 ### `test_ff_pad.js`
 Automated test runner specifically for the `ff_pad.js` script that tests:
@@ -943,6 +950,27 @@ node ../ff_sharpen.js -i samples/sample_video.mp4 -p 5.0 -s 1.0 -l warning -o te
 node ../ff_sharpen.js --help
 ```
 
+#### ff_social_media.js
+```bash
+# Test Instagram conversion (pix_fmt=yuv420p)
+node ../ff_social_media.js -i samples/sample_video.mp4 -ig -o test_instagram.mp4
+
+# Test Instagram conversion with custom loglevel
+node ../ff_social_media.js -i samples/sample_video.mp4 -ig -l info -o test_instagram_verbose.mp4
+
+# Test basic social media conversion (file copy)
+node ../ff_social_media.js -i samples/sample_video.mp4 -o test_social_basic.mp4
+
+# Test Instagram conversion with custom output
+node ../ff_social_media.js -i samples/sample_video.mp4 -ig -o custom_instagram_output.mp4
+
+# Test Instagram conversion with warning loglevel
+node ../ff_social_media.js -i samples/sample_video.mp4 -ig -l warning -o test_instagram_warning.mp4
+
+# Test help command
+node ../ff_social_media.js --help
+```
+
 #### JSON Configuration Examples
 
 ##### ff_scale.js with JSON
@@ -988,6 +1016,24 @@ node ../ff_sharpen.js -C json/test_ff_sharpen_strong.json
 
 # Test blur effect with JSON config
 node ../ff_sharpen.js -C json/test_ff_sharpen_blur.json
+```
+
+#### ff_social_media.js with JSON
+```bash
+# Test Instagram conversion with JSON config
+node ../ff_social_media.js -C json/test_ff_social_media_instagram.json
+
+# Test basic social media conversion with JSON config
+node ../ff_social_media.js -C json/test_ff_social_media_basic.json
+
+# Test Instagram conversion with verbose logging using JSON config
+node ../ff_social_media.js -C json/test_ff_social_media_verbose.json
+
+# Test Instagram conversion with custom output using JSON config
+node ../ff_social_media.js -C json/test_ff_social_media_custom_output.json
+
+# Test Instagram conversion with warning loglevel using JSON config
+node ../ff_social_media.js -C json/test_ff_social_media_warning.json
 ```
 
 #### ff_lut.js
@@ -1098,13 +1144,16 @@ node test_ff_proxy.js
 node test_ff_rotate.js
 
 # Run ff_scale.js tests
-node test_ff_scale.js
+node tests_ff_scale.js
 
 # Run ff_sh_runner.js tests
 node tests_ff_sh_runner.js
 
 # Run ff_sharpen.js tests
 node tests_ff_sharpen.js
+
+# Run ff_social_media.js tests
+node tests_ff_social_media.js
 ```
 ```
 ```
