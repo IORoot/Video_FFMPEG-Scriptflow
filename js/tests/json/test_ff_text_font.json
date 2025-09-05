@@ -1,0 +1,14 @@
+{
+  "ff_text": {
+    "description": "Add text with custom font and styling using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "text_font.json.mp4",
+    "text": "Custom Font Text",
+    "font": "/System/Library/Fonts/Arial.ttf",
+    "colour": "blue",
+    "size": "32",
+    "box": "1",
+    "boxcolour": "white",
+    "boxborder": "5"
+  }
+}

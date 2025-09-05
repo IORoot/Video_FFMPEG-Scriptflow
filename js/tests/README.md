@@ -376,6 +376,21 @@ Test configuration for the `ff_subtitles.js` script that embeds subtitles with d
 ### `json/test_ff_subtitles_dynamic.json`
 Test configuration for the `ff_subtitles.js` script that embeds subtitles with dynamic text (word-by-word) conversion.
 
+### `json/test_ff_text_basic.json`
+Test configuration for the `ff_text.js` script that adds basic text overlay to video.
+
+### `json/test_ff_text_styled.json`
+Test configuration for the `ff_text.js` script that adds styled text with background box.
+
+### `json/test_ff_text_multiline.json`
+Test configuration for the `ff_text.js` script that adds multi-line text with size reduction.
+
+### `json/test_ff_text_positioned.json`
+Test configuration for the `ff_text.js` script that adds text with custom positioning.
+
+### `json/test_ff_text_font.json`
+Test configuration for the `ff_text.js` script that adds text with custom font and styling.
+
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
 1. **Command line argument parsing** (90-degree rotation)
@@ -447,6 +462,25 @@ The test validates:
 - Backup files are created (.original, .dedup, .dynamictext)
 - JSON configuration files are processed correctly
 - Video properties are maintained (resolution, duration)
+
+### `tests_ff_text.js`
+Automated test runner specifically for the `ff_text.js` script that tests:
+1. **Basic text overlay** (default settings)
+2. **Text overlay with custom styling** (font, color, size)
+3. **Text overlay with background box** (box, box color, border)
+4. **Multi-line text with size reduction** (decreasing font size)
+5. **Text overlay with custom positioning** (x, y coordinates)
+6. **Text overlay with custom loglevel** (verbose logging)
+7. **JSON configuration tests** - Basic, styled, multi-line text
+
+The test validates:
+- Output video contains text overlay
+- Output file is created successfully
+- FFmpeg commands execute without errors
+- Text styling parameters are applied correctly
+- JSON configuration files are processed correctly
+- Video properties are maintained (resolution, duration)
+- File size increases due to text overlay
 
 ### `test_ff_pad.js`
 Automated test runner specifically for the `ff_pad.js` script that tests:
@@ -941,6 +975,11 @@ node ../ff_scale.js -i samples/sample_video.mp4 -w 1280 -h 720 -l warning -o tes
 
 # Test help command
 node ../ff_scale.js --help
+
+# Test JSON configurations
+node ../ff_scale.js -C json/test_ff_scale_hd.json
+node ../ff_scale.js -C json/test_ff_scale_4k.json
+node ../ff_scale.js -C json/test_ff_scale_aspect.json
 ```
 
 #### ff_sh_runner.js
@@ -994,6 +1033,12 @@ node ../ff_sharpen.js -i samples/sample_video.mp4 -p 5.0 -s 1.0 -l warning -o te
 
 # Test help command
 node ../ff_sharpen.js --help
+
+# Test JSON configurations
+node ../ff_sharpen.js -C json/test_ff_sharpen_default.json
+node ../ff_sharpen.js -C json/test_ff_sharpen_light.json
+node ../ff_sharpen.js -C json/test_ff_sharpen_strong.json
+node ../ff_sharpen.js -C json/test_ff_sharpen_blur.json
 ```
 
 #### ff_social_media.js
@@ -1036,6 +1081,13 @@ node ../ff_stack.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -h 
 
 # Test help command
 node ../ff_stack.js --help
+
+# Test JSON configurations
+node ../ff_stack.js -C json/test_ff_stack_vertical.json
+node ../ff_stack.js -C json/test_ff_stack_horizontal.json
+node ../ff_stack.js -C json/test_ff_stack_grid.json
+node ../ff_stack.js -C json/test_ff_stack_verbose.json
+node ../ff_stack.js -C json/test_ff_stack_custom_output.json
 ```
 
 #### ff_subtitles.js
@@ -1060,6 +1112,44 @@ node ../ff_subtitles.js -i samples/sample_video.mp4 -s samples/sample_subtitle.s
 
 # Test help command
 node ../ff_subtitles.js --help
+
+# Test JSON configurations
+node ../ff_subtitles.js -C json/test_ff_subtitles_basic.json
+node ../ff_subtitles.js -C json/test_ff_subtitles_styled.json
+node ../ff_subtitles.js -C json/test_ff_subtitles_margin.json
+node ../ff_subtitles.js -C json/test_ff_subtitles_dedup.json
+node ../ff_subtitles.js -C json/test_ff_subtitles_dynamic.json
+```
+
+#### ff_text.js
+```bash
+# Test basic text overlay
+node ../ff_text.js -i samples/sample_video.mp4 -T "Hello World! " -o test_text.mp4
+
+# Test text overlay with custom styling
+node ../ff_text.js -i samples/sample_video.mp4 -T "Styled Text" -c red -s 32 -o test_text_styled.mp4
+
+# Test text overlay with background box
+node ../ff_text.js -i samples/sample_video.mp4 -T "Boxed Text" -b 1 -p blue -B 10 -o test_text_box.mp4
+
+# Test multi-line text with size reduction
+node ../ff_text.js -i samples/sample_video.mp4 -T "Line 1\nLine 2\nLine 3" -s 28 -r 6 -o test_text_multiline.mp4
+
+# Test text overlay with custom positioning
+node ../ff_text.js -i samples/sample_video.mp4 -T "Top Left Text" -x 50 -y 50 -o test_text_positioned.mp4
+
+# Test text overlay with verbose logging
+node ../ff_text.js -i samples/sample_video.mp4 -T "Verbose Text" -l info -o test_text_verbose.mp4
+
+# Test help command
+node ../ff_text.js --help
+
+# Test JSON configurations
+node ../ff_text.js -C json/test_ff_text_basic.json
+node ../ff_text.js -C json/test_ff_text_styled.json
+node ../ff_text.js -C json/test_ff_text_multiline.json
+node ../ff_text.js -C json/test_ff_text_positioned.json
+node ../ff_text.js -C json/test_ff_text_font.json
 ```
 
 #### JSON Configuration Examples
@@ -1107,42 +1197,6 @@ node ../ff_sharpen.js -C json/test_ff_sharpen_strong.json
 
 # Test blur effect with JSON config
 node ../ff_sharpen.js -C json/test_ff_sharpen_blur.json
-```
-
-#### ff_stack.js with JSON
-```bash
-# Test vertical stack with JSON config
-node ../ff_stack.js -C json/test_ff_stack_vertical.json
-
-# Test horizontal stack with JSON config
-node ../ff_stack.js -C json/test_ff_stack_horizontal.json
-
-# Test grid stack with JSON config
-node ../ff_stack.js -C json/test_ff_stack_grid.json
-
-# Test vertical stack with verbose logging using JSON config
-node ../ff_stack.js -C json/test_ff_stack_verbose.json
-
-# Test horizontal stack with custom output using JSON config
-node ../ff_stack.js -C json/test_ff_stack_custom_output.json
-```
-
-#### ff_subtitles.js with JSON
-```bash
-# Test basic subtitle embedding with JSON config
-node ../ff_subtitles.js -C json/test_ff_subtitles_basic.json
-
-# Test styled subtitles with JSON config
-node ../ff_subtitles.js -C json/test_ff_subtitles_styled.json
-
-# Test margin and alignment with JSON config
-node ../ff_subtitles.js -C json/test_ff_subtitles_margin.json
-
-# Test duplicate removal with JSON config
-node ../ff_subtitles.js -C json/test_ff_subtitles_dedup.json
-
-# Test dynamic text with JSON config
-node ../ff_subtitles.js -C json/test_ff_subtitles_dynamic.json
 ```
 
 #### ff_lut.js
@@ -1269,6 +1323,9 @@ node tests_ff_stack.js
 
 # Run ff_subtitles.js tests
 node tests_ff_subtitles.js
+
+# Run ff_text.js tests
+node tests_ff_text.js
 ```
 ```
 ```
