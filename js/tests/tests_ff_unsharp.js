@@ -8,6 +8,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { comprehensiveCleanup } = require('./test_cleanup');
 
 // ╭──────────────────────────────────────────────────────────╮
 // │                        Test Setup                        │
@@ -303,6 +304,13 @@ async function runAllTests() {
     }
     
     console.log(`\n📊 Test Results: ${passedTests}/${totalTests} tests passed`);
+
+    // Final cleanup - remove all test output files
+    const totalCleaned = comprehensiveCleanup(__dirname, { verbose: true });
+    
+    if (totalCleaned > 0) {
+        console.log(`\n🧹 Final cleanup completed: ${totalCleaned} files removed`);
+    }
     
     if (passedTests === totalTests) {
         console.log("🎉 All tests passed!");

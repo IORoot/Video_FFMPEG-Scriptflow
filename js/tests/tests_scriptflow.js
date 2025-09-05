@@ -8,6 +8,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { comprehensiveCleanup, cleanupAfterTest } = require('./test_cleanup');
 
 // ╭──────────────────────────────────────────────────────────╮
 // │                        Test Setup                        │
@@ -244,22 +245,17 @@ async function runAllTests() {
         }
         
         // Clean up test files after each test
-        try {
-            const files = fs.readdirSync(SCRIPTFLOW_TESTS_DIR);
-            files.forEach(file => {
-                if (file.endsWith('.mp4') || file.endsWith('.json')) {
-                    const filePath = path.join(SCRIPTFLOW_TESTS_DIR, file);
-                    if (fs.existsSync(filePath) && !file.startsWith('test_')) {
-                        fs.unlinkSync(filePath);
-                    }
-                }
-            });
-        } catch (error) {
-            // Ignore cleanup errors
-        }
+        cleanupAfterTest(SCRIPTFLOW_TESTS_DIR, { verbose: true });
     }
     
     console.log(`\n📊 Test Results: ${passedTests}/${totalTests} tests passed`);
+    
+    // Final cleanup - remove any remaining test artifacts
+    const totalCleaned = comprehensiveCleanup(SCRIPTFLOW_TESTS_DIR, { verbose: true });
+    
+    if (totalCleaned > 0) {
+        console.log(`\n🧹 Final cleanup completed: ${totalCleaned} files removed`);
+    }
     
     if (passedTests === totalTests) {
         console.log("🎉 All tests passed!");
@@ -281,3 +277,4 @@ if (require.main === module) {
 }
 
 module.exports = { runAllTests, runTest, testConfigs };
+

@@ -1,6 +1,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { comprehensiveCleanup } = require('./test_cleanup');
 
 /**
  * Test suite for ff_pad.js
@@ -184,8 +185,15 @@ async function runTests() {
     console.log(`📊 Test Results: ${passedTests}/${totalTests} tests passed`);
     
     if (passedTests === totalTests) {
-        console.log('🎉 All tests passed!');
-        process.exit(0);
+        // Final cleanup - remove all test output files
+    const totalCleaned = comprehensiveCleanup(__dirname, { verbose: true });
+    
+    if (totalCleaned > 0) {
+        console.log(`\n🧹 Final cleanup completed: ${totalCleaned} files removed`);
+    }
+    
+    console.log('🎉 All tests passed!');
+    process.exit(0);
     } else {
         console.log('💥 Some tests failed!');
         process.exit(1);

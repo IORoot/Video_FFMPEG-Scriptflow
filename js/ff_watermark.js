@@ -478,6 +478,7 @@ async function main() {
     
     return new Promise((resolve, reject) => {
         const ffmpegArgs = [
+            '-y',
             '-v', LOGLEVEL,
             '-i', INPUT_FILENAME,
             '-i', WATERMARK_FILE,

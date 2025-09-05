@@ -1,15 +1,16 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { comprehensiveCleanup } = require('./test_cleanup');
 
 /**
  * Test suite for ff_proxy.js
  * Tests video proxy generation with various parameters
  */
 
-const TEST_DIR = path.join(__dirname, '..', 'tests');
+const TEST_DIR = path.join(__dirname, '..', '..', 'tests');
 const SAMPLE_VIDEO = path.join(TEST_DIR, 'sample_video.mp4');
-const OUTPUT_DIR = path.join(__dirname, '..', 'tests', 'output');
+const OUTPUT_DIR = __dirname;
 
 // Ensure output directory exists
 if (!fs.existsSync(OUTPUT_DIR)) {
@@ -54,7 +55,7 @@ function getVideoInfo(filePath) {
 // Utility function to run the proxy script
 function runProxyScript(args) {
     return new Promise((resolve, reject) => {
-        const scriptPath = path.join(__dirname, 'ff_proxy.js');
+        const scriptPath = path.join(__dirname, '..', 'ff_proxy.js');
         const child = spawn('node', [scriptPath, ...args]);
 
         let stdout = '';
@@ -344,7 +345,12 @@ async function runAllTests() {
         console.error('\n💥 Test suite failed:', error.message);
         process.exit(1);
     } finally {
-        cleanup();
+        // Final cleanup - remove all test output files
+        const totalCleaned = comprehensiveCleanup(__dirname, { verbose: true });
+        
+        if (totalCleaned > 0) {
+            console.log(`\n🧹 Final cleanup completed: ${totalCleaned} files removed`);
+        }
     }
 }
 

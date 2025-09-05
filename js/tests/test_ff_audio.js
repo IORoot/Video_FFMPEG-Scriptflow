@@ -5,6 +5,7 @@
  */
 
 const { execSync } = require('child_process');
+const { comprehensiveCleanup } = require('./test_cleanup');
 const fs = require('fs');
 const path = require('path');
 
@@ -431,3 +432,10 @@ try {
 }
 
 console.log('\n🎉 All tests completed!');
+
+// Final cleanup - remove all test output files
+const totalCleaned = comprehensiveCleanup(__dirname, { verbose: true });
+
+if (totalCleaned > 0) {
+    console.log(`\n🧹 Final cleanup completed: ${totalCleaned} files removed`);
+}

@@ -1,6 +1,7 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { comprehensiveCleanup } = require('./test_cleanup');
 
 /**
  * Test suite for ff_rotate.js

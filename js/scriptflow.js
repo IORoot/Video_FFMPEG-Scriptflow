@@ -295,10 +295,28 @@ function keywordSubstitutions(scriptContents, configDirectory) {
 function cleanup() {
     if (TIDY) {
         try {
-            const files = fs.readdirSync(TEMP_FOLDER);
-            files.forEach(file => {
+            // Clean up temporary config files from /tmp
+            const tempFiles = fs.readdirSync(TEMP_FOLDER);
+            tempFiles.forEach(file => {
                 if (file.startsWith('temp_config_ff')) {
                     fs.unlinkSync(path.join(TEMP_FOLDER, file));
+                }
+            });
+            
+            // Clean up intermediate video files from current working directory
+            const currentDir = process.cwd();
+            const files = fs.readdirSync(currentDir);
+            files.forEach(file => {
+                const filePath = path.join(currentDir, file);
+                // Clean up intermediate video files but keep the final output
+                if ((file.endsWith('.mp4') || 
+                     file.endsWith('.mov') ||
+                     file.endsWith('.avi') ||
+                     file.endsWith('.mkv')) &&
+                    file !== OUTPUT_FILENAME &&
+                    fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                    console.log(`🧹 Cleaned up intermediate file: ${file}`);
                 }
             });
         } catch (error) {

@@ -342,6 +342,7 @@ async function main() {
         
         return new Promise((resolve, reject) => {
             const ffmpegArgs = [
+                '-y',
                 '-v', LOGLEVEL,
                 '-i', INPUT_FILENAME,
                 '-vf', `unsharp=${LX}:${LY}:${LA}:${CX}:${CY}:${CA}:${AX}:${AY}:${AA}`,
@@ -385,6 +386,7 @@ async function main() {
             
             await new Promise((resolve, reject) => {
                 const ffmpegArgs = [
+                    '-y',
                     '-v', LOGLEVEL,
                     '-i', file,
                     '-vf', `unsharp=${LX}:${LY}:${LA}:${CX}:${CY}:${CA}:${AX}:${AY}:${AA}`,

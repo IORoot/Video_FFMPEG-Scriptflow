@@ -758,6 +758,15 @@ The test validates:
 - Color substitutions generate valid colors
 - Random video selection works correctly
 - File size and quality are appropriate
+- **Comprehensive cleanup** - All intermediate files and output files are automatically cleaned up after each test
+
+**Cleanup Features:**
+- Automatically removes intermediate video files (`.mp4`, `.mov`, `.avi`, `.mkv`)
+- Cleans up temporary config files (`.json`, `.txt`, `.srt`)
+- Removes temporary files from `/tmp` directory
+- Preserves original test configuration files (files starting with `test_`)
+- Provides verbose cleanup reporting
+- Final cleanup ensures no test artifacts remain
 
 ### `test_ff_pad.js`
 Automated test runner specifically for the `ff_pad.js` script that tests:
@@ -1831,10 +1840,41 @@ The JavaScript versions should behave identically to their bash counterparts:
 - Same output files
 - Same FFMPEG commands
 
+## Test Cleanup Utility
+
+The `test_cleanup.js` utility provides comprehensive cleanup functionality for all test suites:
+
+### Functions Available:
+- `cleanupTestFiles(directory, extensions, excludePatterns)` - Clean up files in a directory
+- `cleanupTempFiles(prefix)` - Clean up temporary files from `/tmp`
+- `comprehensiveCleanup(testDirectory, options)` - Full cleanup with options
+- `cleanupAfterTest(testDirectory, options)` - Clean up after individual tests
+
+### Usage:
+```javascript
+const { comprehensiveCleanup } = require('./test_cleanup');
+
+// Clean up all test files
+const cleaned = comprehensiveCleanup('./test_directory', { 
+    verbose: true,
+    extensions: ['.mp4', '.mov', '.json'],
+    excludePatterns: ['test_']
+});
+```
+
+### Features:
+- Automatically removes intermediate video files
+- Cleans up temporary config files
+- Removes files from `/tmp` directory
+- Preserves original test files
+- Provides verbose reporting
+- Configurable file extensions and exclusion patterns
+
 ## Notes
 
 - All tests clean up after themselves by removing output files
 - The help command exits with status 1 (this is expected behavior)
+- Comprehensive cleanup ensures no test artifacts remain after test execution
 - Error handling tests verify that missing files are properly detected
 - **FFprobe validation** ensures output files have correct properties for append operations
 - Duration verification allows 0.1 second tolerance for encoding differences
