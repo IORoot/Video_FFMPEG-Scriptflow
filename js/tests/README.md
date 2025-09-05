@@ -442,6 +442,24 @@ Test configuration for the `ff_transcode.js` script that transcodes videos with 
 ### `json/test_ff_transcode_fps.json`
 Test configuration for the `ff_transcode.js` script that transcodes videos with custom frame rate.
 
+### `json/test_ff_transition_basic.json`
+Test configuration for the `ff_transition.js` script that creates basic video transitions.
+
+### `json/test_ff_transition_custom.json`
+Test configuration for the `ff_transition.js` script that creates transitions with custom effects and duration.
+
+### `json/test_ff_transition_multiple.json`
+Test configuration for the `ff_transition.js` script that creates transitions between multiple videos.
+
+### `json/test_ff_transition_duration.json`
+Test configuration for the `ff_transition.js` script that creates transitions with custom duration.
+
+### `json/test_ff_transition_effects.json`
+Test configuration for the `ff_transition.js` script that creates transitions with multiple effects.
+
+### `json/test_ff_transition_verbose.json`
+Test configuration for the `ff_transition.js` script that creates video transitions with verbose logging.
+
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
 1. **Command line argument parsing** (90-degree rotation)
@@ -604,6 +622,24 @@ The test validates:
 - Different codec combinations work correctly
 - Aspect ratio and scaling calculations are correct
 - File size and quality are appropriate
+
+### `tests_ff_transition.js`
+Automated test runner specifically for the `ff_transition.js` script that tests:
+1. **Basic transition** (fade effect between two videos)
+2. **Custom transition duration** (2 second transitions)
+3. **Multiple transition effects** (fade, wipeleft effects)
+4. **Custom loglevel** (verbose logging)
+5. **JSON configuration tests** - Basic, custom effects/duration, multiple videos
+
+The test validates:
+- Output files are created successfully
+- Video properties are maintained (codec, dimensions)
+- Transition effects are applied correctly
+- FFmpeg commands execute without errors
+- JSON configuration files are processed correctly
+- Multiple input videos are handled properly
+- Transition timing and effects work correctly
+- File size and duration are appropriate
 
 ### `test_ff_pad.js`
 Automated test runner specifically for the `ff_pad.js` script that tests:
@@ -1390,6 +1426,32 @@ node ../ff_transcode.js -C json/test_ff_transcode_audio.json
 node ../ff_transcode.js -C json/test_ff_transcode_fps.json
 ```
 
+#### ff_transition.js
+```bash
+# Test basic transition between two videos
+node ../ff_transition.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -o test_transition.mp4
+
+# Test with custom transition duration
+node ../ff_transition.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -d 2 -o test_transition_duration.mp4
+
+# Test with custom transition effects
+node ../ff_transition.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -e "wipeleft" -o test_transition_effects.mp4
+
+# Test with custom loglevel
+node ../ff_transition.js -i samples/sample_video.mp4 -i samples/sample_video2.mp4 -l info -o test_transition_verbose.mp4
+
+# Test help command
+node ../ff_transition.js --help
+
+# Test JSON configurations
+node ../ff_transition.js -C json/test_ff_transition_basic.json
+node ../ff_transition.js -C json/test_ff_transition_custom.json
+node ../ff_transition.js -C json/test_ff_transition_multiple.json
+node ../ff_transition.js -C json/test_ff_transition_duration.json
+node ../ff_transition.js -C json/test_ff_transition_effects.json
+node ../ff_transition.js -C json/test_ff_transition_verbose.json
+```
+
 #### ff_lut.js
 ```bash
 # Test basic LUT application (Andromeda)
@@ -1529,6 +1591,9 @@ node tests_ff_to_portrait.js
 
 # Run ff_transcode.js tests
 node tests_ff_transcode.js
+
+# Run ff_transition.js tests
+node tests_ff_transition.js
 ```
 ```
 ```

@@ -1,0 +1,10 @@
+{
+  "ff_transition": {
+    "description": "Create basic transition using JSON",
+    "input": [
+      "../../tests/samples/sample_video.mp4",
+      "../../tests/samples/sample_video2.mp4"
+    ],
+    "output": "transition_basic.json.mp4"
+  }
+}
