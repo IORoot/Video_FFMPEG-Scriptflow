@@ -1,0 +1,8 @@
+{
+  "ff_transcode": {
+    "description": "Transcode with custom frame rate using JSON",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "transcode_fps.json.mp4",
+    "fps": "24"
+  }
+}

@@ -424,6 +424,24 @@ Test configuration for the `ff_to_portrait.js` script that converts videos to po
 ### `json/test_ff_to_portrait_verbose.json`
 Test configuration for the `ff_to_portrait.js` script that converts videos to portrait orientation with verbose logging.
 
+### `json/test_ff_transcode_basic.json`
+Test configuration for the `ff_transcode.js` script that performs basic video transcoding.
+
+### `json/test_ff_transcode_custom.json`
+Test configuration for the `ff_transcode.js` script that transcodes videos with custom video/audio codecs and settings.
+
+### `json/test_ff_transcode_hd.json`
+Test configuration for the `ff_transcode.js` script that transcodes videos to HD format with custom settings.
+
+### `json/test_ff_transcode_video.json`
+Test configuration for the `ff_transcode.js` script that transcodes videos with custom video codec.
+
+### `json/test_ff_transcode_audio.json`
+Test configuration for the `ff_transcode.js` script that transcodes videos with custom audio codec.
+
+### `json/test_ff_transcode_fps.json`
+Test configuration for the `ff_transcode.js` script that transcodes videos with custom frame rate.
+
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
 1. **Command line argument parsing** (90-degree rotation)
@@ -566,6 +584,26 @@ The test validates:
 - Different rotation options work correctly
 - Orientation detection works properly
 - File size and properties are maintained
+
+### `tests_ff_transcode.js`
+Automated test runner specifically for the `ff_transcode.js` script that tests:
+1. **Basic transcode** (default settings)
+2. **Custom video codec** (libx265)
+3. **Custom audio codec** (mp3)
+4. **Custom FPS** (24 fps)
+5. **Custom dimensions** (1280x720)
+6. **Custom SAR** (16/9)
+7. **Custom loglevel** (verbose logging)
+8. **JSON configuration tests** - Basic, custom settings, HD settings
+
+The test validates:
+- Output files are created successfully
+- Video properties match expected settings (codec, dimensions, frame rate)
+- FFmpeg commands execute without errors
+- JSON configuration files are processed correctly
+- Different codec combinations work correctly
+- Aspect ratio and scaling calculations are correct
+- File size and quality are appropriate
 
 ### `test_ff_pad.js`
 Automated test runner specifically for the `ff_pad.js` script that tests:
@@ -1317,6 +1355,41 @@ node ../ff_to_portrait.js -C json/test_ff_to_portrait_custom.json
 node ../ff_to_portrait.js -C json/test_ff_to_portrait_verbose.json
 ```
 
+#### ff_transcode.js
+```bash
+# Test basic transcode
+node ../ff_transcode.js -i samples/sample_video.mp4 -o test_transcode.mp4
+
+# Test with custom video codec
+node ../ff_transcode.js -i samples/sample_video.mp4 -v libx265 -o test_transcode_h265.mp4
+
+# Test with custom audio codec
+node ../ff_transcode.js -i samples/sample_video.mp4 -a mp3 -o test_transcode_mp3.mp4
+
+# Test with custom FPS
+node ../ff_transcode.js -i samples/sample_video.mp4 -f 24 -o test_transcode_24fps.mp4
+
+# Test with custom dimensions
+node ../ff_transcode.js -i samples/sample_video.mp4 -w 1280 -h 720 -o test_transcode_720p.mp4
+
+# Test with custom SAR
+node ../ff_transcode.js -i samples/sample_video.mp4 -s 16/9 -o test_transcode_sar.mp4
+
+# Test with custom loglevel
+node ../ff_transcode.js -i samples/sample_video.mp4 -l info -o test_transcode_verbose.mp4
+
+# Test help command
+node ../ff_transcode.js --help
+
+# Test JSON configurations
+node ../ff_transcode.js -C json/test_ff_transcode_basic.json
+node ../ff_transcode.js -C json/test_ff_transcode_custom.json
+node ../ff_transcode.js -C json/test_ff_transcode_hd.json
+node ../ff_transcode.js -C json/test_ff_transcode_video.json
+node ../ff_transcode.js -C json/test_ff_transcode_audio.json
+node ../ff_transcode.js -C json/test_ff_transcode_fps.json
+```
+
 #### ff_lut.js
 ```bash
 # Test basic LUT application (Andromeda)
@@ -1453,6 +1526,9 @@ node tests_ff_to_landscape.js
 
 # Run ff_to_portrait.js tests
 node tests_ff_to_portrait.js
+
+# Run ff_transcode.js tests
+node tests_ff_transcode.js
 ```
 ```
 ```
