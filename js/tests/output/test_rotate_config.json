@@ -1,6 +1,0 @@
-{
-  "input": "/Users/andypearson/Code/Video_FFMPEG-Scriptflow/tests/sample_video.mp4",
-  "output": "/Users/andypearson/Code/Video_FFMPEG-Scriptflow/js/tests/output/test_rotate_config.mp4",
-  "rotation": "90",
-  "loglevel": "error"
-}

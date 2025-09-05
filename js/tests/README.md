@@ -310,6 +310,16 @@ Automated test runner specifically for the `ff_rotate.js` script that tests:
 8. Help command functionality
 9. Error handling for missing files
 10. **FFprobe validation** - Verifies output file properties:
+
+### `test_ff_scale.js`
+Automated test runner specifically for the `ff_scale.js` script that tests:
+1. **Basic scaling to 1280x720** (standard HD resolution)
+2. **Scale to 4K resolution** (3840x2160)
+3. **Scale with aspect ratio preservation** (width=-1, height=480)
+4. **Scale with custom DAR and SAR** (Display and Sample Aspect Ratios)
+5. **Scale using input dimensions** (width=iw, height=ih/2)
+6. **Scale to even dimensions** (width=-2, height=-2)
+7. **FFprobe validation** - Verifies output file dimensions and properties:
     - Video duration is preserved during rotation
     - File size changes appropriately (rotation operation)
     - Output files are created successfully
@@ -783,6 +793,33 @@ node ../ff_rotate.js -C json/test_ff_rotate_270.json
 node ../ff_rotate.js --help
 ```
 
+#### ff_scale.js
+```bash
+# Test basic scaling to HD (1280x720)
+node ../ff_scale.js -i samples/sample_video.mp4 -w 1280 -h 720 -o test_scale_hd.mp4
+
+# Test scaling to 4K (3840x2160)
+node ../ff_scale.js -i samples/sample_video.mp4 -w 3840 -h 2160 -o test_scale_4k.mp4
+
+# Test scaling with aspect ratio preservation (width=-1)
+node ../ff_scale.js -i samples/sample_video.mp4 -w -1 -h 480 -o test_scale_aspect.mp4
+
+# Test scaling using input dimensions (half height)
+node ../ff_scale.js -i samples/sample_video.mp4 -w iw -h ih/2 -o test_scale_half_height.mp4
+
+# Test scaling to even dimensions
+node ../ff_scale.js -i samples/sample_video.mp4 -w -2 -h -2 -o test_scale_even.mp4
+
+# Test scaling with custom DAR and SAR
+node ../ff_scale.js -i samples/sample_video.mp4 -w 1920 -h 1080 -d 16/9 -s 1/1 -o test_scale_custom.mp4
+
+# Test with custom loglevel
+node ../ff_scale.js -i samples/sample_video.mp4 -w 1280 -h 720 -l warning -o test_scale_warning.mp4
+
+# Test help command
+node ../ff_scale.js --help
+```
+
 #### ff_lut.js
 ```bash
 # Test basic LUT application (Andromeda)
@@ -889,6 +926,9 @@ node test_ff_proxy.js
 
 # Run ff_rotate.js tests
 node test_ff_rotate.js
+
+# Run ff_scale.js tests
+node test_ff_scale.js
 ```
 ```
 ```
