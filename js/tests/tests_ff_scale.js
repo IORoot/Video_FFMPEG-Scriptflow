@@ -93,6 +93,44 @@ const testConfigs = [
                 height: "-2"
             }
         }
+    },
+    {
+        name: "JSON config - HD scaling",
+        config: {
+            ff_scale: {
+                description: "Scale video to HD resolution using JSON",
+                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                output: "scale_hd_json.mp4",
+                width: "1280",
+                height: "720"
+            }
+        }
+    },
+    {
+        name: "JSON config - Aspect ratio preservation",
+        config: {
+            ff_scale: {
+                description: "Scale with aspect ratio preservation using JSON",
+                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                output: "scale_aspect_json.mp4",
+                width: "-1",
+                height: "480"
+            }
+        }
+    },
+    {
+        name: "JSON config - Custom DAR/SAR",
+        config: {
+            ff_scale: {
+                description: "Scale with custom aspect ratios using JSON",
+                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                output: "scale_custom_json.mp4",
+                width: "1920",
+                height: "1080",
+                dar: "16/9",
+                sar: "1/1"
+            }
+        }
     }
 ];
 

@@ -84,6 +84,39 @@ const testConfigs = [
                 output: "../../../README.md"
             }
         }
+    },
+    {
+        name: "JSON config - Echo command",
+        config: {
+            ff_sh_runner: {
+                description: "Run echo command using JSON",
+                script: "echo",
+                parameters: "Hello from JSON config",
+                output: ""
+            }
+        }
+    },
+    {
+        name: "JSON config - Create file",
+        config: {
+            ff_sh_runner: {
+                description: "Create a test file using JSON",
+                script: "touch",
+                parameters: "",
+                output: "test_file_from_json.txt"
+            }
+        }
+    },
+    {
+        name: "JSON config - List directory",
+        config: {
+            ff_sh_runner: {
+                description: "List directory contents using JSON",
+                script: "ls",
+                parameters: "-la",
+                output: ""
+            }
+        }
     }
 ];
 

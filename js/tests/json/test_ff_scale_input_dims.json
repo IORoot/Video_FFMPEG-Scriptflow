@@ -1,0 +1,9 @@
+{
+  "ff_scale": {
+    "description": "Scale using input dimensions",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "scale_input_dims.json.mp4",
+    "width": "iw",
+    "height": "ih/2"
+  }
+}

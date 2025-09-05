@@ -1,0 +1,8 @@
+{
+  "ff_sh_runner": {
+    "description": "Get current date",
+    "script": "date",
+    "parameters": "",
+    "output": ""
+  }
+}

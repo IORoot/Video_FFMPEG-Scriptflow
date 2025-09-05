@@ -1,0 +1,9 @@
+{
+  "ff_scale": {
+    "description": "Scale with aspect ratio preservation",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "scale_aspect.json.mp4",
+    "width": "-1",
+    "height": "480"
+  }
+}

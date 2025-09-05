@@ -91,6 +91,42 @@ const testConfigs = [
                 sharpen: "0.0"
             }
         }
+    },
+    {
+        name: "JSON config - Default sharpening",
+        config: {
+            ff_sharpen: {
+                description: "Basic sharpening using JSON",
+                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                output: "sharpen_default_json.mp4",
+                pixel: "5.0",
+                sharpen: "1.0"
+            }
+        }
+    },
+    {
+        name: "JSON config - Light sharpening",
+        config: {
+            ff_sharpen: {
+                description: "Light sharpening using JSON",
+                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                output: "sharpen_light_json.mp4",
+                pixel: "3.0",
+                sharpen: "0.5"
+            }
+        }
+    },
+    {
+        name: "JSON config - Blur effect",
+        config: {
+            ff_sharpen: {
+                description: "Blur effect using JSON",
+                input: path.join(TEST_DIR, 'samples', 'sample_video.mp4'),
+                output: "sharpen_blur_json.mp4",
+                pixel: "5.0",
+                sharpen: "-1.0"
+            }
+        }
     }
 ];
 

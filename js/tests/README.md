@@ -298,6 +298,45 @@ Test configuration for the `ff_rotate.js` script that rotates video 270 degrees 
 ### `json/test_ff_rotate_multiple.json`
 Test configuration for the `ff_rotate.js` script that performs multiple rotation operations on different videos.
 
+### `json/test_ff_scale_hd.json`
+Test configuration for the `ff_scale.js` script that scales video to HD resolution (1280x720).
+
+### `json/test_ff_scale_4k.json`
+Test configuration for the `ff_scale.js` script that scales video to 4K resolution (3840x2160).
+
+### `json/test_ff_scale_aspect.json`
+Test configuration for the `ff_scale.js` script that scales video with aspect ratio preservation.
+
+### `json/test_ff_scale_input_dims.json`
+Test configuration for the `ff_scale.js` script that scales video using input dimensions (iw, ih/2).
+
+### `json/test_ff_scale_custom_ratios.json`
+Test configuration for the `ff_scale.js` script that scales video with custom DAR and SAR values.
+
+### `json/test_ff_sh_runner_echo.json`
+Test configuration for the `ff_sh_runner.js` script that runs an echo command.
+
+### `json/test_ff_sh_runner_touch.json`
+Test configuration for the `ff_sh_runner.js` script that creates a test file.
+
+### `json/test_ff_sh_runner_ls.json`
+Test configuration for the `ff_sh_runner.js` script that lists directory contents.
+
+### `json/test_ff_sh_runner_date.json`
+Test configuration for the `ff_sh_runner.js` script that gets the current date.
+
+### `json/test_ff_sharpen_default.json`
+Test configuration for the `ff_sharpen.js` script that applies basic sharpening with default values.
+
+### `json/test_ff_sharpen_light.json`
+Test configuration for the `ff_sharpen.js` script that applies light sharpening effect.
+
+### `json/test_ff_sharpen_strong.json`
+Test configuration for the `ff_sharpen.js` script that applies strong sharpening effect.
+
+### `json/test_ff_sharpen_blur.json`
+Test configuration for the `ff_sharpen.js` script that applies blur effect using negative sharpen value.
+
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
 1. **Command line argument parsing** (90-degree rotation)
@@ -319,7 +358,8 @@ Automated test runner specifically for the `ff_scale.js` script that tests:
 4. **Scale with custom DAR and SAR** (Display and Sample Aspect Ratios)
 5. **Scale using input dimensions** (width=iw, height=ih/2)
 6. **Scale to even dimensions** (width=-2, height=-2)
-7. **FFprobe validation** - Verifies output file dimensions and properties:
+7. **JSON configuration tests** - HD scaling, aspect ratio preservation, custom DAR/SAR
+8. **FFprobe validation** - Verifies output file dimensions and properties:
 
 ### `test_ff_sh_runner.js`
 Automated test runner specifically for the `ff_sh_runner.js` script that tests:
@@ -329,7 +369,8 @@ Automated test runner specifically for the `ff_sh_runner.js` script that tests:
 4. **Get current date** (date command)
 5. **Check system info** (uname -a command)
 6. **Count lines in file** (wc -l command)
-7. **Command execution validation** - Verifies:
+7. **JSON configuration tests** - Echo command, file creation, directory listing
+8. **Command execution validation** - Verifies:
     - Commands execute successfully (exit code 0)
     - File operations work correctly
     - Output is captured and displayed
@@ -343,7 +384,8 @@ Automated test runner specifically for the `ff_sharpen.js` script that tests:
 4. **Maximum sharpening** (pixel=11.0, sharpen=3.0)
 5. **Blur effect** (negative sharpen value -1.0)
 6. **No effect** (zero sharpen value 0.0)
-7. **FFprobe validation** - Verifies:
+7. **JSON configuration tests** - Default sharpening, light sharpening, blur effect
+8. **FFprobe validation** - Verifies:
     - Video dimensions are preserved
     - Duration is maintained
     - File size changes appropriately
@@ -899,6 +941,53 @@ node ../ff_sharpen.js -i samples/sample_video.mp4 -p 5.0 -s 1.0 -l warning -o te
 
 # Test help command
 node ../ff_sharpen.js --help
+```
+
+#### JSON Configuration Examples
+
+##### ff_scale.js with JSON
+```bash
+# Test HD scaling with JSON config
+node ../ff_scale.js -C json/test_ff_scale_hd.json
+
+# Test 4K scaling with JSON config
+node ../ff_scale.js -C json/test_ff_scale_4k.json
+
+# Test aspect ratio preservation with JSON config
+node ../ff_scale.js -C json/test_ff_scale_aspect.json
+
+# Test custom DAR/SAR with JSON config
+node ../ff_scale.js -C json/test_ff_scale_custom_ratios.json
+```
+
+##### ff_sh_runner.js with JSON
+```bash
+# Test echo command with JSON config
+node ../ff_sh_runner.js -C json/test_ff_sh_runner_echo.json
+
+# Test file creation with JSON config
+node ../ff_sh_runner.js -C json/test_ff_sh_runner_touch.json
+
+# Test directory listing with JSON config
+node ../ff_sh_runner.js -C json/test_ff_sh_runner_ls.json
+
+# Test date command with JSON config
+node ../ff_sh_runner.js -C json/test_ff_sh_runner_date.json
+```
+
+##### ff_sharpen.js with JSON
+```bash
+# Test default sharpening with JSON config
+node ../ff_sharpen.js -C json/test_ff_sharpen_default.json
+
+# Test light sharpening with JSON config
+node ../ff_sharpen.js -C json/test_ff_sharpen_light.json
+
+# Test strong sharpening with JSON config
+node ../ff_sharpen.js -C json/test_ff_sharpen_strong.json
+
+# Test blur effect with JSON config
+node ../ff_sharpen.js -C json/test_ff_sharpen_blur.json
 ```
 
 #### ff_lut.js

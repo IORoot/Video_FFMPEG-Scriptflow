@@ -1,0 +1,9 @@
+{
+  "ff_sharpen": {
+    "description": "Blur effect using negative sharpen value",
+    "input": "../../tests/samples/sample_video.mp4",
+    "output": "sharpen_blur.json.mp4",
+    "pixel": "5.0",
+    "sharpen": "-1.0"
+  }
+}
