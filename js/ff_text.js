@@ -259,37 +259,47 @@ function readConfig() {
         const config = JSON.parse(configData);
         
         // Extract ff_text config
+        let textConfig;
         if (config.ff_text) {
-            const textConfig = config.ff_text;
+            textConfig = config.ff_text;
+        } else {
+            // Direct config (from scriptflow)
+            textConfig = config;
+        }
             
-            if (textConfig.input) {
-                if (path.isAbsolute(textConfig.input)) {
-                    INPUT_FILENAME = textConfig.input;
+        if (textConfig.input) {
+            if (path.isAbsolute(textConfig.input)) {
+                INPUT_FILENAME = textConfig.input;
+            } else {
+                if (process.env.SCRIPTFLOW_CONFIG_DIR) {
+                    INPUT_FILENAME = path.resolve(process.env.SCRIPTFLOW_CONFIG_DIR, textConfig.input);
                 } else {
                     INPUT_FILENAME = path.resolve(path.dirname(CONFIG_FILE), textConfig.input);
                 }
             }
-            
-            if (textConfig.output) OUTPUT_FILENAME = textConfig.output;
-            if (textConfig.textfile) {
-                if (path.isAbsolute(textConfig.textfile)) {
-                    TEXTFILE = textConfig.textfile;
-                } else {
-                    TEXTFILE = path.resolve(path.dirname(CONFIG_FILE), textConfig.textfile);
-                }
-            }
-            if (textConfig.text) TEXT = textConfig.text;
-            if (textConfig.font) FONT = textConfig.font;
-            if (textConfig.colour) COLOUR = textConfig.colour;
-            if (textConfig.size) SIZE = textConfig.size;
-            if (textConfig.reduction) REDUCTION = textConfig.reduction;
-            if (textConfig.box) BOX = textConfig.box;
-            if (textConfig.boxcolour) BOXCOLOUR = textConfig.boxcolour;
-            if (textConfig.boxborder) BOXBORDER = textConfig.boxborder;
-            if (textConfig.xpixels) XPIXELS = textConfig.xpixels;
-            if (textConfig.ypixels) YPIXELS = textConfig.ypixels;
-            if (textConfig.loglevel) LOGLEVEL = textConfig.loglevel;
         }
+        
+        if (textConfig.output) OUTPUT_FILENAME = textConfig.output;
+        if (textConfig.textfile) {
+            if (path.isAbsolute(textConfig.textfile)) {
+                TEXTFILE = textConfig.textfile;
+            } else {
+                TEXTFILE = path.resolve(path.dirname(CONFIG_FILE), textConfig.textfile);
+            }
+        }
+        if (textConfig.text) TEXT = textConfig.text;
+        if (textConfig.font) FONT = textConfig.font;
+        if (textConfig.colour) COLOUR = textConfig.colour;
+        if (textConfig.color) COLOUR = textConfig.color; // Support both British and American spelling
+        if (textConfig.size) SIZE = textConfig.size;
+        if (textConfig.reduction) REDUCTION = textConfig.reduction;
+        if (textConfig.box) BOX = textConfig.box;
+        if (textConfig.boxcolour) BOXCOLOUR = textConfig.boxcolour;
+        if (textConfig.boxcolor) BOXCOLOUR = textConfig.boxcolor; // Support both British and American spelling
+        if (textConfig.boxborder) BOXBORDER = textConfig.boxborder;
+        if (textConfig.xpixels) XPIXELS = textConfig.xpixels;
+        if (textConfig.ypixels) YPIXELS = textConfig.ypixels;
+        if (textConfig.loglevel) LOGLEVEL = textConfig.loglevel;
     } catch (error) {
         console.error("Error reading config file:", error.message);
         process.exit(1);

@@ -177,7 +177,13 @@ function readConfig() {
         }
         
         // Apply config values
-        if (config.input) INPUT_FILENAME = path.resolve(path.dirname(CONFIG_FILE), config.input);
+        if (config.input) {
+            if (process.env.SCRIPTFLOW_CONFIG_DIR) {
+                INPUT_FILENAME = path.resolve(process.env.SCRIPTFLOW_CONFIG_DIR, config.input);
+            } else {
+                INPUT_FILENAME = path.resolve(path.dirname(CONFIG_FILE), config.input);
+            }
+        }
         if (config.output) OUTPUT_FILENAME = config.output;
         if (config.width) WIDTH = config.width;
         if (config.height) HEIGHT = config.height;

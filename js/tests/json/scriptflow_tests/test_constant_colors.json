@@ -1,0 +1,29 @@
+{
+  "ff_scale": {
+    "description": "Scale video",
+    "input": "../../../tests/samples/sample_video.mp4",
+    "output": "scaled.mp4",
+    "width": 640,
+    "height": 480
+  },
+  "ff_text": {
+    "description": "Add text with constant colors",
+    "input": "scaled.mp4",
+    "output": "text_constant.mp4",
+    "text": "Constant Colors",
+    "x": "10",
+    "y": "10",
+    "fontsize": "24",
+    "color": "<CONSTANT_RANDOM_COLOUR>"
+  },
+  "ff_watermark": {
+    "description": "Add watermark with constant contrast",
+    "input": "text_constant.mp4",
+    "watermark": "../../../tests/samples/sample_image.png",
+    "output": "final_constant.mp4",
+    "xpixels": "10",
+    "ypixels": "10",
+    "scale": "0.2",
+    "alpha": "0.7"
+  }
+}

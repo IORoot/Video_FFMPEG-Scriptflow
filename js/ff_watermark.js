@@ -260,14 +260,23 @@ function readConfig() {
         const config = JSON.parse(configData);
         
         // Extract ff_watermark config
+        let watermarkConfig;
         if (config.ff_watermark) {
-            const watermarkConfig = config.ff_watermark;
+            watermarkConfig = config.ff_watermark;
+        } else {
+            // Direct config (from scriptflow)
+            watermarkConfig = config;
+        }
             
             if (watermarkConfig.input) {
                 if (path.isAbsolute(watermarkConfig.input)) {
                     INPUT_FILENAME = watermarkConfig.input;
                 } else {
-                    INPUT_FILENAME = path.resolve(path.dirname(CONFIG_FILE), watermarkConfig.input);
+                    if (process.env.SCRIPTFLOW_CONFIG_DIR) {
+                        INPUT_FILENAME = path.resolve(process.env.SCRIPTFLOW_CONFIG_DIR, watermarkConfig.input);
+                    } else {
+                        INPUT_FILENAME = path.resolve(path.dirname(CONFIG_FILE), watermarkConfig.input);
+                    }
                 }
             }
             
@@ -275,7 +284,11 @@ function readConfig() {
                 if (path.isAbsolute(watermarkConfig.watermark)) {
                     WATERMARK_FILE = watermarkConfig.watermark;
                 } else {
-                    WATERMARK_FILE = path.resolve(path.dirname(CONFIG_FILE), watermarkConfig.watermark);
+                    if (process.env.SCRIPTFLOW_CONFIG_DIR) {
+                        WATERMARK_FILE = path.resolve(process.env.SCRIPTFLOW_CONFIG_DIR, watermarkConfig.watermark);
+                    } else {
+                        WATERMARK_FILE = path.resolve(path.dirname(CONFIG_FILE), watermarkConfig.watermark);
+                    }
                 }
             }
             
@@ -288,7 +301,6 @@ function readConfig() {
             if (watermarkConfig.end) END = watermarkConfig.end;
             if (watermarkConfig.duration) DURATION = watermarkConfig.duration;
             if (watermarkConfig.loglevel) LOGLEVEL = watermarkConfig.loglevel;
-        }
     } catch (error) {
         console.error("Error reading config file:", error.message);
         process.exit(1);

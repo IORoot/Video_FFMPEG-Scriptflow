@@ -496,6 +496,27 @@ Test configuration for the `ff_watermark.js` script that applies watermark with 
 ### `json/test_ff_watermark_verbose.json`
 Test configuration for the `ff_watermark.js` script that applies watermark with verbose logging.
 
+### `json/scriptflow_tests/test_env_variables.json`
+Test configuration for the `scriptflow.js` script that tests environment variable substitution (`<ENV_*>`).
+
+### `json/scriptflow_tests/test_folder_variables.json`
+Test configuration for the `scriptflow.js` script that tests folder name and title substitutions (`<FOLDER_NAME>`, `<FOLDER_TITLE>`).
+
+### `json/scriptflow_tests/test_date_variables.json`
+Test configuration for the `scriptflow.js` script that tests date formatting substitutions (`<DATE_*>`).
+
+### `json/scriptflow_tests/test_color_variables.json`
+Test configuration for the `scriptflow.js` script that tests random color substitutions (`<RANDOM_COLOUR>`, `<RANDOM_CONTRAST_COLOUR>`).
+
+### `json/scriptflow_tests/test_constant_colors.json`
+Test configuration for the `scriptflow.js` script that tests constant color substitutions (`<CONSTANT_RANDOM_COLOUR>`, `<CONSTANT_CONTRAST_COLOUR>`).
+
+### `json/scriptflow_tests/test_random_video.json`
+Test configuration for the `scriptflow.js` script that tests random video file substitution (`<RANDOM_VIDEO>`).
+
+### `json/scriptflow_tests/test_multi_step.json`
+Test configuration for the `scriptflow.js` script that tests complex multi-step pipeline execution.
+
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
 1. **Command line argument parsing** (90-degree rotation)
@@ -715,6 +736,27 @@ The test validates:
 - JSON configuration files are processed correctly
 - Different positioning and scaling work correctly
 - Transparency and timing effects work properly
+- File size and quality are appropriate
+
+### `tests_scriptflow.js`
+Automated test runner specifically for the `scriptflow.js` script that tests:
+1. **Environment variables test** - Tests `<ENV_*>` keyword substitution
+2. **Folder variables test** - Tests `<FOLDER_NAME>` and `<FOLDER_TITLE>` substitutions
+3. **Date variables test** - Tests `<DATE_*>` keyword substitution with various formats
+4. **Color variables test** - Tests `<RANDOM_COLOUR>` and `<RANDOM_CONTRAST_COLOUR>` substitutions
+5. **Constant colors test** - Tests `<CONSTANT_RANDOM_COLOUR>` and `<CONSTANT_CONTRAST_COLOUR>` substitutions
+6. **Random video test** - Tests `<RANDOM_VIDEO>` substitution
+7. **Multi-step pipeline test** - Tests complex multi-step pipeline execution
+
+The test validates:
+- Output files are created successfully
+- Video properties are maintained (codec, dimensions)
+- Keyword substitutions work correctly
+- Multi-step pipelines execute in sequence
+- Environment variables are properly substituted
+- Date formatting works with various formats
+- Color substitutions generate valid colors
+- Random video selection works correctly
 - File size and quality are appropriate
 
 ### `test_ff_pad.js`
@@ -1592,6 +1634,36 @@ node ../ff_watermark.js -C json/test_ff_watermark_timed.json
 node ../ff_watermark.js -C json/test_ff_watermark_verbose.json
 ```
 
+#### scriptflow.js
+```bash
+# Test environment variables
+TEST_VAR="environment_test" node ../scriptflow.js -C json/scriptflow_tests/test_env_variables.json
+
+# Test folder variables
+node ../scriptflow.js -C json/scriptflow_tests/test_folder_variables.json
+
+# Test date variables
+node ../scriptflow.js -C json/scriptflow_tests/test_date_variables.json
+
+# Test color variables
+node ../scriptflow.js -C json/scriptflow_tests/test_color_variables.json
+
+# Test constant colors
+node ../scriptflow.js -C json/scriptflow_tests/test_constant_colors.json
+
+# Test random video
+node ../scriptflow.js -C json/scriptflow_tests/test_random_video.json
+
+# Test multi-step pipeline
+node ../scriptflow.js -C json/scriptflow_tests/test_multi_step.json
+
+# Test with no cleanup
+node ../scriptflow.js -C json/scriptflow_tests/test_multi_step.json --notidy
+
+# Test help command
+node ../scriptflow.js --help
+```
+
 #### ff_lut.js
 ```bash
 # Test basic LUT application (Andromeda)
@@ -1740,6 +1812,9 @@ node tests_ff_unsharp.js
 
 # Run ff_watermark.js tests
 node tests_ff_watermark.js
+
+# Run scriptflow.js tests
+node tests_scriptflow.js
 ```
 ```
 ```

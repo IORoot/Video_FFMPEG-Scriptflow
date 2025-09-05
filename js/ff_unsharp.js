@@ -228,30 +228,38 @@ function readConfig() {
         const config = JSON.parse(configData);
         
         // Extract ff_unsharp config
+        let unsharpConfig;
         if (config.ff_unsharp) {
-            const unsharpConfig = config.ff_unsharp;
+            unsharpConfig = config.ff_unsharp;
+        } else {
+            // Direct config (from scriptflow)
+            unsharpConfig = config;
+        }
             
-            if (unsharpConfig.input) {
-                if (path.isAbsolute(unsharpConfig.input)) {
-                    INPUT_FILENAME = unsharpConfig.input;
+        if (unsharpConfig.input) {
+            if (path.isAbsolute(unsharpConfig.input)) {
+                INPUT_FILENAME = unsharpConfig.input;
+            } else {
+                if (process.env.SCRIPTFLOW_CONFIG_DIR) {
+                    INPUT_FILENAME = path.resolve(process.env.SCRIPTFLOW_CONFIG_DIR, unsharpConfig.input);
                 } else {
                     INPUT_FILENAME = path.resolve(path.dirname(CONFIG_FILE), unsharpConfig.input);
                 }
             }
-            
-            if (unsharpConfig.output) OUTPUT_FILENAME = unsharpConfig.output;
-            if (unsharpConfig.lx) LX = unsharpConfig.lx;
-            if (unsharpConfig.ly) LY = unsharpConfig.ly;
-            if (unsharpConfig.la) LA = unsharpConfig.la;
-            if (unsharpConfig.cx) CX = unsharpConfig.cx;
-            if (unsharpConfig.cy) CY = unsharpConfig.cy;
-            if (unsharpConfig.ca) CA = unsharpConfig.ca;
-            if (unsharpConfig.ax) AX = unsharpConfig.ax;
-            if (unsharpConfig.ay) AY = unsharpConfig.ay;
-            if (unsharpConfig.aa) AA = unsharpConfig.aa;
-            if (unsharpConfig.grep) GREP = unsharpConfig.grep;
-            if (unsharpConfig.loglevel) LOGLEVEL = unsharpConfig.loglevel;
         }
+        
+        if (unsharpConfig.output) OUTPUT_FILENAME = unsharpConfig.output;
+        if (unsharpConfig.lx) LX = unsharpConfig.lx;
+        if (unsharpConfig.ly) LY = unsharpConfig.ly;
+        if (unsharpConfig.la) LA = unsharpConfig.la;
+        if (unsharpConfig.cx) CX = unsharpConfig.cx;
+        if (unsharpConfig.cy) CY = unsharpConfig.cy;
+        if (unsharpConfig.ca) CA = unsharpConfig.ca;
+        if (unsharpConfig.ax) AX = unsharpConfig.ax;
+        if (unsharpConfig.ay) AY = unsharpConfig.ay;
+        if (unsharpConfig.aa) AA = unsharpConfig.aa;
+        if (unsharpConfig.grep) GREP = unsharpConfig.grep;
+        if (unsharpConfig.loglevel) LOGLEVEL = unsharpConfig.loglevel;
     } catch (error) {
         console.error("Error reading config file:", error.message);
         process.exit(1);

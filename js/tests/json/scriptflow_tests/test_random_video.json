@@ -1,0 +1,29 @@
+{
+  "ff_scale": {
+    "description": "Scale video",
+    "input": "../../../tests/samples/sample_video.mp4",
+    "output": "scaled_random.mp4",
+    "width": 640,
+    "height": 480
+  },
+  "ff_text": {
+    "description": "Add text",
+    "input": "scaled_random.mp4",
+    "output": "text_random.mp4",
+    "text": "Using random video",
+    "x": "10",
+    "y": "10",
+    "fontsize": "24",
+    "color": "<CONSTANT_RANDOM_COLOUR>"
+  },
+  "ff_watermark": {
+    "description": "Add watermark",
+    "input": "text_random.mp4",
+    "watermark": "../../../tests/samples/sample_image.png",
+    "output": "final_random.mp4",
+    "xpixels": "10",
+    "ypixels": "10",
+    "scale": "0.2",
+    "alpha": "0.7"
+  }
+}

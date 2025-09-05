@@ -1,0 +1,29 @@
+{
+  "ff_scale": {
+    "description": "Scale video with date",
+    "input": "../../../tests/samples/sample_video.mp4",
+    "output": "scaled_<DATE_%d-%m-%y>.mp4",
+    "width": 640,
+    "height": 480
+  },
+  "ff_text": {
+    "description": "Add text with date",
+    "input": "scaled_<DATE_%d-%m-%y>.mp4",
+    "output": "text_<DATE_%A %d %B %Y>.mp4",
+    "text": "Created on <DATE_%A %d %B %Y>",
+    "x": "10",
+    "y": "10",
+    "fontsize": "24",
+    "color": "<CONSTANT_RANDOM_COLOUR>"
+  },
+  "ff_watermark": {
+    "description": "Add watermark with time",
+    "input": "text_<DATE_%A %d %B %Y>.mp4",
+    "watermark": "../../../tests/samples/sample_image.png",
+    "output": "final_<DATE_%H-%M-%S>.mp4",
+    "xpixels": "10",
+    "ypixels": "10",
+    "scale": "0.2",
+    "alpha": "0.7"
+  }
+}
