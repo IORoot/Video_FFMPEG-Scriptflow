@@ -391,6 +391,21 @@ Test configuration for the `ff_text.js` script that adds text with custom positi
 ### `json/test_ff_text_font.json`
 Test configuration for the `ff_text.js` script that adds text with custom font and styling.
 
+### `json/test_ff_thumbnail_basic.json`
+Test configuration for the `ff_thumbnail.js` script that generates basic thumbnails.
+
+### `json/test_ff_thumbnail_multiple.json`
+Test configuration for the `ff_thumbnail.js` script that generates multiple thumbnails with custom sample size.
+
+### `json/test_ff_thumbnail_custom.json`
+Test configuration for the `ff_thumbnail.js` script that generates thumbnails with custom settings and JPEG format.
+
+### `json/test_ff_thumbnail_sample.json`
+Test configuration for the `ff_thumbnail.js` script that generates thumbnails with custom sample size.
+
+### `json/test_ff_thumbnail_verbose.json`
+Test configuration for the `ff_thumbnail.js` script that generates thumbnails with verbose logging.
+
 ### `test_ff_rotate.js`
 Automated test runner specifically for the `ff_rotate.js` script that tests:
 1. **Command line argument parsing** (90-degree rotation)
@@ -481,6 +496,24 @@ The test validates:
 - JSON configuration files are processed correctly
 - Video properties are maintained (resolution, duration)
 - File size increases due to text overlay
+
+### `tests_ff_thumbnail.js`
+Automated test runner specifically for the `ff_thumbnail.js` script that tests:
+1. **Basic thumbnail generation** (default settings)
+2. **Multiple thumbnails** (custom count)
+3. **Custom sample size** (different frame analysis)
+4. **JPEG output format** (different image format)
+5. **Custom loglevel** (verbose logging)
+6. **JSON configuration tests** - Basic, multiple, custom settings
+
+The test validates:
+- Thumbnail files are created successfully
+- Correct number of thumbnails generated
+- Output files exist and have appropriate sizes
+- FFmpeg commands execute without errors
+- JSON configuration files are processed correctly
+- Different image formats (PNG, JPEG) work correctly
+- File naming pattern follows expected format (filename-01.ext, filename-02.ext, etc.)
 
 ### `test_ff_pad.js`
 Automated test runner specifically for the `ff_pad.js` script that tests:
@@ -1006,6 +1039,12 @@ node ../ff_sh_runner.js -C test_config.json
 
 # Test help command
 node ../ff_sh_runner.js --help
+
+# Test JSON configurations
+node ../ff_sh_runner.js -C json/test_ff_sh_runner_echo.json
+node ../ff_sh_runner.js -C json/test_ff_sh_runner_touch.json
+node ../ff_sh_runner.js -C json/test_ff_sh_runner_ls.json
+node ../ff_sh_runner.js -C json/test_ff_sh_runner_date.json
 ```
 
 #### ff_sharpen.js
@@ -1152,51 +1191,32 @@ node ../ff_text.js -C json/test_ff_text_positioned.json
 node ../ff_text.js -C json/test_ff_text_font.json
 ```
 
-#### JSON Configuration Examples
-
-##### ff_scale.js with JSON
+#### ff_thumbnail.js
 ```bash
-# Test HD scaling with JSON config
-node ../ff_scale.js -C json/test_ff_scale_hd.json
+# Test basic thumbnail generation
+node ../ff_thumbnail.js -i samples/sample_video.mp4 -o test_thumbnail.png
 
-# Test 4K scaling with JSON config
-node ../ff_scale.js -C json/test_ff_scale_4k.json
+# Test multiple thumbnails
+node ../ff_thumbnail.js -i samples/sample_video.mp4 -c 5 -o test_thumbnails.png
 
-# Test aspect ratio preservation with JSON config
-node ../ff_scale.js -C json/test_ff_scale_aspect.json
+# Test custom sample size
+node ../ff_thumbnail.js -i samples/sample_video.mp4 -s 150 -o test_sample.png
 
-# Test custom DAR/SAR with JSON config
-node ../ff_scale.js -C json/test_ff_scale_custom_ratios.json
-```
+# Test JPEG output format
+node ../ff_thumbnail.js -i samples/sample_video.mp4 -c 3 -o test_thumbnails.jpg
 
-##### ff_sh_runner.js with JSON
-```bash
-# Test echo command with JSON config
-node ../ff_sh_runner.js -C json/test_ff_sh_runner_echo.json
+# Test with custom loglevel
+node ../ff_thumbnail.js -i samples/sample_video.mp4 -l info -o test_verbose.png
 
-# Test file creation with JSON config
-node ../ff_sh_runner.js -C json/test_ff_sh_runner_touch.json
+# Test help command
+node ../ff_thumbnail.js --help
 
-# Test directory listing with JSON config
-node ../ff_sh_runner.js -C json/test_ff_sh_runner_ls.json
-
-# Test date command with JSON config
-node ../ff_sh_runner.js -C json/test_ff_sh_runner_date.json
-```
-
-##### ff_sharpen.js with JSON
-```bash
-# Test default sharpening with JSON config
-node ../ff_sharpen.js -C json/test_ff_sharpen_default.json
-
-# Test light sharpening with JSON config
-node ../ff_sharpen.js -C json/test_ff_sharpen_light.json
-
-# Test strong sharpening with JSON config
-node ../ff_sharpen.js -C json/test_ff_sharpen_strong.json
-
-# Test blur effect with JSON config
-node ../ff_sharpen.js -C json/test_ff_sharpen_blur.json
+# Test JSON configurations
+node ../ff_thumbnail.js -C json/test_ff_thumbnail_basic.json
+node ../ff_thumbnail.js -C json/test_ff_thumbnail_multiple.json
+node ../ff_thumbnail.js -C json/test_ff_thumbnail_custom.json
+node ../ff_thumbnail.js -C json/test_ff_thumbnail_sample.json
+node ../ff_thumbnail.js -C json/test_ff_thumbnail_verbose.json
 ```
 
 #### ff_lut.js
@@ -1326,6 +1346,9 @@ node tests_ff_subtitles.js
 
 # Run ff_text.js tests
 node tests_ff_text.js
+
+# Run ff_thumbnail.js tests
+node tests_ff_thumbnail.js
 ```
 ```
 ```
