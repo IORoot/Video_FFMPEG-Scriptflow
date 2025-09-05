@@ -6,7 +6,7 @@ A React-based node editor for creating visual FFMPEG pipelines using the Video F
 
 - **Node-based Visual Editor**: Drag and drop FFMPEG operations to build complex video processing pipelines
 - **Real-time Pipeline Validation**: Validates connections and required parameters before execution
-- **JSON Export**: Export pipelines as JSON configuration files compatible with `scriptflow.sh`
+- **JSON Export**: Export pipelines as JSON configuration files compatible with `gui/js/scriptflow.js`
 - **Pipeline Execution**: Run pipelines directly from the GUI with real-time progress tracking
 - **Categorized Node Library**: Organized collection of FFMPEG operations grouped by function
 - **Dark Theme**: Clean, modern dark interface optimized for video editing workflows
@@ -180,7 +180,7 @@ npm run build
 
 1. **Validate Pipeline**: The system automatically validates your pipeline and shows any errors
 2. **Export JSON**: Click "Export JSON" to download a configuration file
-3. **Run Pipeline**: Click "Run Pipeline" to execute the pipeline using `scriptflow.sh`
+3. **Run Pipeline**: Click "Run Pipeline" to execute the pipeline using `gui/js/scriptflow.js`
 4. **Monitor Progress**: View real-time logs and progress in the log viewer
 
 ### Keyboard Shortcuts
@@ -232,7 +232,7 @@ npm run build
 
 ## Configuration
 
-The GUI generates JSON configuration files that are compatible with the main `scriptflow.sh` runner. Example output:
+The GUI generates JSON configuration files that are compatible with the main `gui/js/scriptflow.js` runner. Example output:
 
 ```json
 {

@@ -121,7 +121,7 @@ export class PipelineRunner {
       // For now, we'll simulate the process
       this.addLog(`Generated config with ${Object.keys(config).length} steps`);
 
-      // Simulate running scriptflow.sh
+      // Simulate running scriptflow.js
       const steps = Object.keys(config);
       const totalSteps = steps.length;
 
@@ -159,7 +159,7 @@ export class PipelineRunner {
         this.addLog(configJson);
         
         // Also show the command that would be run
-        this.addLog(`Command: ./scriptflow.sh -C ${tempConfigFile}`);
+        this.addLog(`Command: node gui/js/scriptflow.js -C ${tempConfigFile}`);
         this.addLog('💡 Toggle simulation mode off to run actual commands');
       } else {
         // Try to execute directly, fallback to instructions if not possible
@@ -214,7 +214,7 @@ export class PipelineRunner {
       this.addLog('');
       this.addLog('Option 1 - Copy & Paste Command:');
       this.addLog('1. Move the downloaded file to your project directory');
-      this.addLog('2. Run: ./scriptflow.sh -C temp_gui_config.json');
+      this.addLog('2. Run: node gui/js/scriptflow.js -C temp_gui_config.json');
       this.addLog('');
       this.addLog('Option 2 - Use the Execute Button below:');
       this.addLog('Click the "Execute Pipeline" button to run automatically');

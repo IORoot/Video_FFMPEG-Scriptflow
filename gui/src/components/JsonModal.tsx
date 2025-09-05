@@ -53,7 +53,7 @@ export const JsonModal: React.FC<JsonModalProps> = ({ isOpen, onClose, jsonData 
         {/* Footer */}
         <div className="p-4 border-t border-border bg-muted/20">
           <p className="text-xs text-muted-foreground">
-            This JSON can be used with the scriptflow.sh runner to execute your video processing pipeline.
+            This JSON can be used with the gui/js/scriptflow.js runner to execute your video processing pipeline.
           </p>
         </div>
       </div>

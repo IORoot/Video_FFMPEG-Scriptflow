@@ -283,10 +283,10 @@ app.post('/api/execute-pipeline', async (req, res) => {
     // Write config to file
     fs.writeFileSync(tempConfigPath, config);
     
-    // Execute scriptflow command using spawn for better output handling
-    const scriptflowPath = path.join(projectRoot, 'scriptflow.sh');
-    const child = spawn('bash', [scriptflowPath, '-C', tempConfigPath], {
-      cwd: projectRoot,
+    // Execute scriptflow command using JavaScript version for better output handling
+    const scriptflowPath = path.join(__dirname, 'js', 'scriptflow.js');
+    const child = spawn('node', [scriptflowPath, '-C', tempConfigPath], {
+      cwd: projectRoot, // Set working directory to project root so relative paths work
       stdio: ['pipe', 'pipe', 'pipe']
     });
 
